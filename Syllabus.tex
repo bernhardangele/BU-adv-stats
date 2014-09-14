@@ -1,0 +1,258 @@
+\documentclass[a4paper,12pt]{article}
+
+\textwidth=7in
+\textheight=8.5in
+\topmargin=-1in
+\headheight=1in
+\headsep=.5in
+\hoffset=-.85in
+
+
+\usepackage{termcal}
+
+% fix bug with termcal, from StackOverflow
+\makeatletter
+\renewcommand\ca@doaday[1]{% %%<--- spurious space
+	\hspace*{-1em}\hbox{\vrule depth \calboxdepth height 0pt width 0pt\vtop{%  note \hspace* in the begining
+			%% Adjust as needed.
+			#1%                                 %options specified by |\calday|
+			\csname\curdate options\endcsname%  % options specified by date
+			\ifclassday\csname C\theclassnum options\endcsname\fi%   by classnumber
+			\hbox to \hsize{\calprintdate\hfill\ifclassday\calprintclass\fi}%
+			\vspace{2pt}
+			\begingroup
+			\let\\=\ca@normbs
+			\raggedright
+			\sloppy
+			\the\weeklytext\par
+			\csname\curdate text\endcsname
+			\ifclassday\csname C\theclassnum text\endcsname
+			\stepcounter{classnum}\fi
+			\endgroup
+		}}%
+		\global\newmonthfalse
+		\advancedate%
+	}%
+\makeatother
+	
+
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+
+
+\fancyhead{}
+\fancyfoot{}
+
+\chead{\textbf{Advanced Statistics}}
+\lhead{Instructor: Bernhard Angele}
+\rhead{Thursdays 1.00 PM -- 3 PM\\ Location TBD}
+\rfoot{\thepage}
+
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+
+% Few useful commands (our classes always meet either on Monday and Wednesday 
+% or on Tuesday and Thursday)
+
+\newcommand{\TClass}{%
+	\skipday % Monday (no class)
+	\skipday % Tuesday (no class)
+	\skipday % Wednesday (no class)
+	\calday [Topic] {\classday}
+	\skipday % Friday (no class) 
+	\skipday\skipday % weekend (no class)
+}
+
+\newcommand{\Holiday}[2]{%
+	\options{#1}{\noclassday}
+	\caltext{#1}{#2}
+}
+
+\usepackage{hyperref}
+
+\begin{document}
+	\setlength{\unitlength}{1in}
+	
+	\renewcommand{\arraystretch}{2}
+	
+	\vskip.25in
+	\noindent\textbf{Instructor:}  Bernhard Angele, PhD\\
+	\textbf{Email}: \href{mailto:bangele@bournemouth.ac.uk}{bangele@bournemouth.ac.uk}\\
+
+	
+	\section{Course overview and goals}This course is designed to 
+	
+	\setlength{\parindent}{0cm}
+	
+	\section{Textbooks (required)} 
+	1.  \href{https://github.com/vasishth/Statistics-lecture-notes-Potsdam/blob/master/IntroductoryStatistics/StatisticsNotesVasishth.pdf}{Shravan Vasishth's statistics  lecture notes}. \\
+
+	This is an updated version of\\
+
+	Vasishth, S., \& Broe, M. (2010). \textit{The Foundations of Statistics: A Simulation-based Approach: A Simulation-Based Approach.} Springer.
+	\\
+
+	2. \href{http://health.adelaide.edu.au/psychology/ccs/docs/lsr/lsr-0.4.pdf}{Navarro, Daniel. \textit{Learning statistics with R: A tutorial for psychology students and other beginners (Version 0.4)}}.
+	\vskip.25in
+	Both of these books are available on the authors' websites free of charge (see links).
+	\\
+	
+	Optional reading:
+	\\
+	
+	3. Field, Andy, Miles, Jeremy and Field, Zo\"{e} (2012) \textit{Discovering Statistics Using R}. Sage Publications, London. ISBN 978-1446200469\\
+	
+	4. Field, Andy (2013) \textit{Discovering statistics using IBM SPSS Statistics: and sex and drugs and rock ‘n’ roll (4th edition).} Sage Publications, London. ISBN 9781446249178
+	
+
+	\section{Course website and homework} Course materials as well as assignments will be posted on MyBU. Homework will be assigned at the end of each class and will be due at the beginning of the next class. Homework assignments will be submitted via MyBU.
+
+	\vspace*{.15in}
+
+%\newpage
+
+\section{Marking policy}
+Your mark will consist of three components: One short assignment (40\%), one longer assignment (50\%), and the homework (10\%). Homework assignments will not be marked in detail; all you have to do is turn something in by the beginning of the next class in order to get a point. If you abuse this policy (e.g. by turning in an empty file), you will lose all homework points.
+Homework points translate into marks as follows: 
+ \vskip.25in
+
+\begin{minipage}{\textwidth}
+	
+\centering
+\begin{tabular}{|c|c|}
+	\hline
+	Mark & Number of homework assignments turned in \\ \hline
+	80 & 8 \\ \hline
+	70 & 7  \\ \hline
+	60 & 6 \\ \hline
+	50	& 5 \\ \hline
+	40	& 4 \\ \hline
+	30	& 3 \\ \hline
+	20	& 2 \\ \hline
+	10	& 1 \\ \hline
+	0	& 0 \\ \hline
+\end{tabular}
+\end{minipage}
+
+\pagebreak
+\section{Course Outline:}
+\begin{center}
+	\begin{calendar}{09/29/2014}{9} % Semester starts on 1/11/2010 and last for 16
+		% weeks, including finals week
+		\setlength{\calboxdepth}{1in}
+
+		\TClass
+		% schedule
+		\caltexton{1}{\textit{Double class session: 10--12 am and 1--3 pm}\\
+		Introduction to Advanced Statistics
+		\\
+		Introduction to the R software
+		\\
+		Introduction to the simulation approach
+		\\
+		Descriptive statistics
+		\\\textit{Readings:}
+		\\\textit{Vasishth, Chapter 1}
+		\\\textit{Navarro, Chapters 1, 3 -- 5}
+		}
+	
+		\caltextnext{\textit{Double class session: 10--12 am and 1--3 pm}\\
+		Probability and inferential statistics
+		\\
+		Why is the normal distribution so important?
+		\\
+		Estimating population parameters from a sample
+		\\
+		Some more R basics: Plotting, reading data files, basic programming 
+		\\\textit{Readings:}
+		\\\textit{Vasishth, Chapter 2}
+		\\\textit{Navarro, Chapters 6--11}
+		}
+		
+		\caltextnext{
+			Hypothesis testing:
+			\\
+			\textit{z}-test
+			\\
+			\textit{t}-test: one-sample, two sample, unequal variances, repeated measures
+			\\
+			\(\chi^2\)-test
+			\\
+			Power
+			\\\textit{Readings:}
+			\\\textit{Navarro, Chapters 12--13}
+			\\\textit{Vasishth, Chapter 3}
+			}
+		
+		\caltextnext{Analysis of Variance
+		\\
+		One-way ANOVA
+		\\
+		Comparison with SPSS
+		\\
+		Simulating violations of assumptions
+		\\
+		Multiway ANOVA
+		\\
+		Planned comparisons
+		\\
+		Linear regression
+		\\
+		Reporting statistical analyses with Knitr
+		\\\textit{Readings:}
+		\\\textit{Navarro, Chapters 14--16}
+		\\\textit{Vasishth, Chapter 4.1}
+			}
+		
+		\caltextnext{
+		Power in ANOVAs
+		\\
+		Generalised linear model
+		\\
+		Contrast coding
+		\\
+		Repeated measures ANOVA
+		\\ 
+		Nonparametric tests
+		\\
+		ANCOVA
+		\\\textit{Readings:}
+		\\\textit{TBD}}
+		
+		\caltextnext{
+		Logistic regression
+		\\
+		Linear mixed models
+		\\
+		MANOVA
+		\\
+		Comparison between R and SPSS
+
+%		\\\textit{Readings:}
+%		\\\textit{Navarro, Chapters 14--16}
+%		\\\textit{Vasishth, Chapter 4.1}
+		}
+	
+		\caltextnext{Class might be moved, TBD}
+		
+		% ... and so on
+		
+		% Holidays
+		\Holiday{11/6/2014}{\textit{Reading Week, no class}}
+		\Holiday{11/20/2014}{\textit{Coursework Week, no class}}
+		\Holiday{12/04/2014}{\textit{Coursework Week, no class}}
+		% ... and so on
+
+		% Exams
+		\caltext{10/30/2014}{\textbf{Assignment 1 set}}
+		\caltext{11/27/2014}{\textbf{Assignment 1 due; Assignment 2 set}}	
+		   
+	\end{calendar}
+\end{center}
+
+The \textbf{second assignment} will be due on \textbf{Friday, January 30th at 12 pm}. 
+
+
+\end{document}
