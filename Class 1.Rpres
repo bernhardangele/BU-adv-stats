@@ -1,0 +1,178 @@
+Advanced Statistics
+========================================================
+author: Bernhard Angele 
+date: October 2nd, 2014
+
+Advanced?
+========================================================
+
+For more details on authoring R presentations click the
+**Help** button on the toolbar.
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+R basics
+========================================================
+Addition
+```{r}
+1+1
+```
+Subtraction
+```{r}
+1-1
+```
+
+R basics
+========================================================
+Multiplication and division
+```{r}
+4*3
+12/4
+```
+
+R basics
+========================================================
+Powers
+```{r}
+5^2
+2^3
+```
+
+Variables
+========================================================
+```{r}
+x <- 5
+x + 1
+```
+
+
+Commands
+========================================================
+```{r}
+x <- 5
+x + 1
+x
+```
+Is anyone surprised by this?
+
+Functions
+========================================================
+```{r}
+addOne <- function(x) {
+  x+1
+}
+addOne(5)
+addOne(-3)
+```
+
+Types of data
+========================================================
+```{r}
+x <- 1
+y <- "test"
+z <- c(1,2)
+z
+```
+z is a **vector**
+```{r}
+z + 1
+```
+
+Vector operations
+========================================================
+```{r}
+z <- c(1,2,3,4,5)
+z + 2
+z - 1
+z * 2
+```
+
+More vector operations
+========================================================
+```{r}
+z <- c(1,2,3,4,5)
+sum(z)
+length(z)
+sum(z)/length(z)
+```
+
+Descriptive statistics
+========================================================
+We could define a new function that calculates the mean.
+But maybe it's defined for us already?
+```{r}
+z <- c(1,2,3,4,5)
+mean(z)
+```
+
+What about other descriptive statistics?
+========================================================
+```{r}
+median(z)
+sd(z)
+var(z)
+```
+
+What about other descriptive statistics?
+========================================================
+```{r}
+summary(z)
+```
+
+
+Simulate data
+========================================================
+
+```{r}
+x<-rnorm(100)
+head(x)
+```
+
+Simulated data (histogram)
+========================================================
+
+```{r, echo=T}
+## plot density histogram:
+hist(x,freq=F)
+```
+
+
+Other distributions: Uniform
+========================================================
+
+```{r, echo=T}
+## plot density histogram:
+x<-runif(100)
+hist(x,freq=F)
+```
+
+
+Other distributions: Gamma
+========================================================
+
+```{r, echo=T}
+## plot density histogram:
+x<-rgamma(100, 2)
+hist(x,freq=F)
+```
+
+
+Other distributions: Gamma
+========================================================
+
+```{r, echo=T}
+## plot density histogram:
+x<-rgamma(100, shape = 2)
+hist(x,freq=F)
+```
+
+Other distributions: t
+========================================================
+
+```{r, echo=T}
+## plot density histogram:
+x<-rt(100, df = 5)
+hist(x,freq=F)
+```
