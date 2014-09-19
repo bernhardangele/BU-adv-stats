@@ -47,6 +47,8 @@
 \chead{\textbf{Advanced Statistics}}
 \lhead{Instructor: Bernhard Angele}
 \rhead{Thursdays 1 PM -- 4 PM\\ Location TBD}
+
+\lfoot{Last revised: \today}
 \rfoot{\thepage}
 
 
@@ -60,7 +62,7 @@
 	\skipday % Monday (no class)
 	\skipday % Tuesday (no class)
 	\skipday % Wednesday (no class)
-	\calday [Topic] {\classday}
+	\calday [Date and Topic] {\classday}
 	\skipday % Friday (no class) 
 	\skipday\skipday % weekend (no class)
 }
@@ -108,7 +110,7 @@
 	Vasishth, S., \& Broe, M. (2010). \textit{The Foundations of Statistics: A Simulation-based Approach: A Simulation-Based Approach.} Springer.
 	\\
 
-	2. \href{http://health.adelaide.edu.au/psychology/ccs/docs/lsr/lsr-0.4.pdf}{Navarro, Daniel. \textit{Learning statistics with R: A tutorial for psychology students and other beginners (Version 0.4)}}.
+	2. \href{http://health.adelaide.edu.au/psychology/ccs/docs/lsr/lsr-0.4.pdf}{Navarro, D. \textit{Learning statistics with R: A tutorial for psychology students and other beginners (Version 0.4)}}.
 	\vskip.25in
 	Both of these books are available on the authors' websites free of charge (see links).
 	\\
@@ -123,14 +125,16 @@
 
 	\section{Lectures} Lectures will take place every Thursday from October 2nd to November 13. Note that, on some Thursdays, there will be two lectures, one from  10 am to 12 pm and one from 1 pm to 4 pm. The last hour of every class day (3--4 pm) will be in independent study period: students will be asked to work on a homework assignment independently. I will be available for questions and help during these independent study periods. 
 	
-	\section{Course website and homework} Course materials as well as assignments will be posted on MyBU. Homework will be assigned at the end of each class and will be due at the beginning of the next class. Homework assignments will be submitted via MyBU.
+	\section{Course website and homework} Course materials as well as assignments will be posted on MyBU. Homework will be assigned at the end of each class and will be due at the beginning of the next class. Homework and coursework assignments will be submitted via Turnitin on MyBU.
 
 	\vspace*{.15in}
 
 %\newpage
 
 \section{Marking policy}
-Your mark will consist of three components: One short assignment (40\%), one longer assignment (50\%), and the homework (10\%). Homework assignments will not be marked in detail; all you have to do is turn something in by the beginning of the next class in order to get a point. If you abuse this policy (e.g. by turning in an empty file), you will lose all homework points.
+Your mark will consist of three components: One short coursework assignment (40\%), one longer coursework assignment (50\%), and the homework (10\%). 
+
+\subsection{Homework}Homework assignments will not be marked in detail; all you have to do is turn something in by the beginning of the next class in order to get a point. If you abuse this policy (e.g. by turning in an empty file or turning in the same file twice), you will lose all homework points.
 Homework points translate into marks as follows: 
  \vskip.25in
 
@@ -140,19 +144,23 @@ Homework points translate into marks as follows:
 \begin{tabular}{|c|c|}
 	\hline
 	Mark & Number of homework assignments turned in \\ \hline
-	80 & 8 \\ \hline
-	70 & 7  \\ \hline
-	60 & 6 \\ \hline
-	50	& 5 \\ \hline
-	40	& 4 \\ \hline
-	30	& 3 \\ \hline
-	20	& 2 \\ \hline
-	10	& 1 \\ \hline
+	100 & 5+ \\ \hline
+	70 & 4  \\ \hline
+	60 & 3 \\ \hline
+	50	& 2 \\ \hline
+	40	& 1 \\ \hline
 	0	& 0 \\ \hline
 \end{tabular}
 \end{minipage}
 
-\pagebreak
+\subsection{Coursework} Coursework assignments will involve analysing one or two data sets. Each data set will require data screening, data aggregation, performing hypothesis tests, and reporting the results in essay form. The assignments will be marked as follows: Each assignment will receive three marks:
+	\begin{itemize}
+			\item{\textbf{Statistical methods (70\%)}. Does the assignment use the correct statistical methods? Are appropriate statistics reported? Is the conclusion warranted given the hypothesis test results? Are potential issues discussed properly?}
+			\item{\textbf{Writing (20\%)}. Are the hypothesis tests and statistics presented in an understandable way? Are the data in question introduced and described properly? Are conclusions and interpretations described clearly and concisely (so that a non-psychologist could understand them)?}
+			\item{\textbf{Formatting and style (10\%)}. Is the document formatted properly? Are conventions such as APA citation style, number and table formatting followed? (If students use Markdown and Knitr as suggested, there should be no major problems here.)}
+	\end{itemize}
+
+
 \section{Course Outline:}
 \begin{center}
 	\begin{calendar}{09/29/2014}{8} % Semester starts on 1/11/2010 and last for 16
@@ -162,90 +170,89 @@ Homework points translate into marks as follows:
 		\TClass
 		% schedule
 		\caltexton{1}{\textit{Double class session: 10--12 am and 1--3 pm}\\
-		Introduction to Advanced Statistics
-		\\
-		Introduction to the R software
-		\\
-		Introduction to the simulation approach
-		\\
+		Introduction to Advanced Statistics\\
+		Introduction to the R software\\
+		Introduction to the simulation approach\\
+		
 		Descriptive statistics
-		\\\textit{Readings:}
-		\\\textit{Vasishth, Chapter 1}
-		\\\textit{Navarro, Chapters 1, 3 -- 5}
+		
+		\textit{Readings:}\\
+		\textit{Vasishth, Chapter 1}\\
+		\textit{Navarro, Chapters 1, 3 -- 5}
 		}
 	
 		\caltextnext{\textit{Double class session: 10--12 am and 1--3 pm}\\
-		Probability and inferential statistics
-		\\
-		Why is the normal distribution so important?
-		\\
-		Estimating population parameters from a sample
-		\\
-		Some more R basics: Plotting, reading data files, basic programming 
-		\\\textit{Readings:}
-		\\\textit{Vasishth, Chapter 2}
-		\\\textit{Navarro, Chapters 6--11}
+		Probability and inferential statistics\\
+		Why is the normal distribution so important?\\
+		Estimating population parameters from a sample\\
+		Some more R basics: Plotting, reading data files, basic programming \\
+		Data screening and aggregation\\
+		\textit{Readings:}\\
+		\textit{Vasishth, Chapter 2}\\
+		\textit{Navarro, Chapters 6--11}
 		}
 		
 		\caltextnext{
-			Hypothesis testing:
-			\\
-			\textit{z}-test
-			\\
-			\textit{t}-test: one-sample, two sample, unequal variances, repeated measures
-			\\
-			\(\chi^2\)-test
-			\\
-			Power
-			\\\textit{Readings:}
-			\\\textit{Navarro, Chapters 12--13}
-			\\\textit{Vasishth, Chapter 3}
+			Hypothesis testing:\\
+			
+			\textit{z}-test\\
+			
+			\textit{t}-test: one-sample, two sample, unequal variances, repeated measures\\
+			
+			\(\chi^2\)-test\\
+			
+			Power\\
+
+			Writing reports using Markdown and Knitr\\
+			\textit{Readings:}\\
+			\textit{Navarro, Chapters 12--13}\\
+			\textit{Vasishth, Chapter 3}
 			}
 		
-		\caltextnext{Analysis of Variance
-		\\
-		One-way ANOVA
-		\\
-		Comparison with SPSS
-		\\
-		Simulating violations of assumptions
-		\\
-		Multiway ANOVA
-		\\
-		Planned comparisons
-		\\
-		Linear regression
-		\\
-		Reporting statistical analyses with Knitr
-		\\\textit{Readings:}
-		\\\textit{Navarro, Chapters 14--16}
-		\\\textit{Vasishth, Chapter 4.1}
+		\caltextnext{Analysis of Variance\\
+		One-way ANOVA\\
+		
+		Comparison with SPSS\\
+		
+		Simulating violations of assumptions\\
+		
+		Multiway ANOVA\\
+		
+		Planned comparisons\\
+		
+		Linear regression\\
+		\textit{Readings:}
+		\textit{Navarro, Chapters 14--16}
+		\textit{Vasishth, Chapter 4.1}
 			}
 		
 		\caltextnext{
-		Power in ANOVAs
-		\\
-		Generalised linear model
-		\\
-		Contrast coding
-		\\
-		Repeated measures ANOVA
-		\\ 
-		Nonparametric tests
-		\\
-		ANCOVA
-		\\\textit{Readings:}
-		\\\textit{TBD}}
+		Power in ANOVAs\\
+		
+		Generalised linear model\\
+		
+		Contrast coding\\
+		
+		Repeated measures ANOVA\\
+		 
+		Nonparametric tests\\
+		
+		ANCOVA\\
+
+		Reporting ANOVA-type experiments\\
+		
+		\textit{Readings:}\\
+		\textit{TBD}}
 		
 		\caltextnext{
 		\textit{Double class session: 10--12 am and 1--3 pm}\\
-		Logistic regression
-		\\
-		Linear mixed models
-		\\
-		MANOVA
-		\\
-		Comparison between R and SPSS
+		Logistic regression\\
+		
+		Linear mixed models\\
+
+		MANOVA\\
+
+		Comparison between R and SPSS\\
 
 		\textit{Readings:}\\
 		\textit{Navarro, Chapters 14--16}\\
@@ -263,14 +270,12 @@ Homework points translate into marks as follows:
 		% Exams
 		%\caltext{10/30/2014}{\textbf{Assignment 1 set}}
 		%\caltext{11/27/2014}{\textbf{Assignment 1 due; Assignment 2 set}}	
-		   
 	\end{calendar}
 \end{center}
 
-The The \textbf{first coursework assignment} will be set on \textbf{Thurday, October 23rds} and will be due on \textbf{Thursday, November 13th at 12 pm}. 
-\\
+The \textbf{first coursework assignment} will be set on \textbf{Thurday, October 23rd} and will be due on \textbf{Thursday, November 13th at 12 pm}. \\
 
 The \textbf{second coursework assignment} will be set on \textbf{Thurday, November 13th} and will be due on \textbf{Thursday, January 29th at 12 pm}. 
 
-
+Important: This document (including the calendar) is subject to change. Please always get the newest version on myBU.
 \end{document}
