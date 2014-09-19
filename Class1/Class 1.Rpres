@@ -3,7 +3,7 @@ Advanced Statistics
 author: Bernhard Angele 
 date: October 2nd, 2014
 
-Advanced?
+What is advanced about these statistics?
 ========================================================
 
 For more details on authoring R presentations click the
@@ -115,10 +115,12 @@ sd(z)
 var(z)
 ```
 
-What about other descriptive statistics?
+Summary: lots of interesting descriptive statistics at once
 ========================================================
 ```{r}
 summary(z)
+x <- rnorm(n = 10000, mean = 0, sd = 1)
+summary(x)
 ```
 
 
@@ -144,7 +146,7 @@ Other distributions: Uniform
 
 ```{r, echo=T}
 ## plot density histogram:
-x<-runif(100)
+x <- runif(n = 100)
 hist(x,freq=F)
 ```
 
@@ -154,25 +156,6 @@ Other distributions: Gamma
 
 ```{r, echo=T}
 ## plot density histogram:
-x<-rgamma(100, 2)
-hist(x,freq=F)
-```
-
-
-Other distributions: Gamma
-========================================================
-
-```{r, echo=T}
-## plot density histogram:
-x<-rgamma(100, shape = 2)
-hist(x,freq=F)
-```
-
-Other distributions: t
-========================================================
-
-```{r, echo=T}
-## plot density histogram:
-x<-rt(100, df = 5)
+x<-rgamma(n = 100, shape = 2)
 hist(x,freq=F)
 ```
