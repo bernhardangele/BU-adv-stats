@@ -7,7 +7,20 @@ What is advanced about these statistics?
 ========================================================
 
 - Goal is for you to understand the principles, not just the steps.
-- 
+- Simulation approach:
+  - If you don't know how something about a statistical test, simulate it!
+  - Example questions you might ask:
+    - What is the power of this test?
+    - What happens if I violate the normality assumption for an ANOVA?
+    - What happens if I don't correct for multiple comparisons?
+  
+
+How do I run simulations?
+========================================================
+
+- Not very easy in SPSS
+- Very easy in R
+
 
 R basics
 ========================================================
@@ -258,40 +271,74 @@ summary(z)
       1       2       3       3       4       5 
 ```
 
-```r
-x <- rnorm(n = 10000, mean = 0, sd = 1)
-summary(x)
-```
 
-```
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- -3.580  -0.671   0.021   0.011   0.683   3.650 
-```
-
-
-Simulate data
+Let's simulate some data
 ========================================================
 
 
 ```r
-x<-rnorm(100)
+x<-rnorm(1000)
 head(x)
 ```
 
 ```
-[1]  1.5671 -0.6655 -0.3277 -0.5891 -0.3669 -0.4316
+[1] -0.4866  1.0756 -0.2712 -0.5775  0.8977  0.4816
 ```
 
-Simulated data (histogram)
+```r
+plot(x)
+```
+
+![plot of chunk unnamed-chunk-15](Class 1-figure/unnamed-chunk-15.png) 
+
+Distribution of the simulated data (histogram)
 ========================================================
 
 
 ```r
 ## plot density histogram:
+par(mfrow=c(1,2)) # (little trick: two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
 
 ![plot of chunk unnamed-chunk-16](Class 1-figure/unnamed-chunk-16.png) 
+
+Probability density?
+========================================================
+![plot of chunk unnamed-chunk-17](Class 1-figure/unnamed-chunk-17.png) 
+
+Normal probability density function (PDF)
+========================================================
+$$
+\begin{equation}
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+\end{equation}
+$$
+With $x$ = value, 
+$\mu$ = population mean, 
+and $\sigma$ = population standard deviation
+![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
+
+Defining the normal PDF by hand (just in case you wanted to make sure)
+========================================================
+$$
+\begin{equation}
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+\end{equation}
+$$
+
+```r
+dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
+plot(function(x) dnorm_manual(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
+
+Why do we use the normal distribution?
+========================================================
 
 
 Other distributions: Uniform
@@ -300,11 +347,13 @@ Other distributions: Uniform
 
 ```r
 ## plot density histogram:
-x <- runif(n = 100)
+x <- runif(n = 1000)
+par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
 
-![plot of chunk unnamed-chunk-17](Class 1-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
 
 
 Other distributions: Gamma
@@ -313,8 +362,10 @@ Other distributions: Gamma
 
 ```r
 ## plot density histogram:
-x<-rgamma(n = 100, shape = 2)
+x<-rgamma(n = 1000, shape = 2)
+par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
 
-![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-21](Class 1-figure/unnamed-chunk-21.png) 

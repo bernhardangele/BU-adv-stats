@@ -7,7 +7,20 @@ What is advanced about these statistics?
 ========================================================
 
 - Goal is for you to understand the principles, not just the steps.
-- 
+- Simulation approach:
+  - If you don't know how something about a statistical test, simulate it!
+  - Example questions you might ask:
+    - What is the power of this test?
+    - What happens if I violate the normality assumption for an ANOVA?
+    - What happens if I don't correct for multiple comparisons?
+  
+
+How do I run simulations?
+========================================================
+
+- Not very easy in SPSS
+- Very easy in R
+
 
 R basics
 ========================================================
@@ -115,43 +128,89 @@ Summary: lots of interesting descriptive statistics at once
 ========================================================
 ```{r}
 summary(z)
-x <- rnorm(n = 10000, mean = 0, sd = 1)
-summary(x)
 ```
 
 
-Simulate data
+Let's simulate some data
 ========================================================
 
 ```{r}
-x<-rnorm(100)
+x<-rnorm(1000)
 head(x)
+plot(x)
 ```
 
-Simulated data (histogram)
+Distribution of the simulated data (histogram)
 ========================================================
 
-```{r, echo=T}
+```{r, echo=T, fig.width = 14, fig.height = 6}
 ## plot density histogram:
+par(mfrow=c(1,2)) # (little trick: two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
+
+Probability density?
+========================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot(function(x) dnorm(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Normal probability density function (PDF)
+========================================================
+$$
+\begin{equation}
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+\end{equation}
+$$
+With $x$ = value, 
+$\mu$ = population mean, 
+and $\sigma$ = population standard deviation
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot(function(x) dnorm(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Defining the normal PDF by hand (just in case you wanted to make sure)
+========================================================
+$$
+\begin{equation}
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+\end{equation}
+$$
+```{rfig.width = 10, fig.height = 6}
+dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
+plot(function(x) dnorm_manual(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Why do we use the normal distribution?
+========================================================
 
 
 Other distributions: Uniform
 ========================================================
 
-```{r, echo=T}
+```{r, echo=T, fig.width = 14, fig.height = 6}
 ## plot density histogram:
-x <- runif(n = 100)
+x <- runif(n = 1000)
+par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
 
 
 Other distributions: Gamma
 ========================================================
 
-```{r, echo=T}
+```{r, echo=T, fig.width = 14, fig.height = 6}
 ## plot density histogram:
-x<-rgamma(n = 100, shape = 2)
+x<-rgamma(n = 1000, shape = 2)
+par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
+plot(density(x))
 ```
