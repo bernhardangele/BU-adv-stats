@@ -49,7 +49,7 @@ Assignment
 
 Your homework assignments will usually have some code already in place. You will just have to make the required changes, fill in your name and date, and upload the updated Rmd file (that is, **this** file) to myBU.
 
-For today's first assignment, change the code block below so that the histogram will be of a normal distribution with mean=100 and sd=15 (instead of mean=0 and sd=1 ). That's all! (Hint: it takes 3 keystrokes) Feel free to play around with Markdown and R Markdown as much as you like beyond that.
+For today's first assignment, change the code block below so that the histogram will be of a normal distribution with mean=100 and sd=15 (instead of mean=0 and sd=1 ). That's all! Hint: The necessary changes can be done in as little as 3 keystrokes (and maybe 2 mouse clicks to move around). Feel free to play around with Markdown and R Markdown as much as you like beyond that.
 
 ```{r, echo=T}
 number_of_samples <- 1000
