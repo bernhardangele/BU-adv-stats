@@ -3,15 +3,11 @@ Advanced Statistics
 author: Bernhard Angele 
 date: October 2nd, 2014
 
-Advanced?
+What is advanced about these statistics?
 ========================================================
 
-For more details on authoring R presentations click the
-**Help** button on the toolbar.
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
+- Goal is for you to understand the principles, not just the steps.
+- 
 
 R basics
 ========================================================
@@ -250,7 +246,7 @@ var(z)
 [1] 2.5
 ```
 
-What about other descriptive statistics?
+Summary: lots of interesting descriptive statistics at once
 ========================================================
 
 ```r
@@ -260,6 +256,16 @@ summary(z)
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
       1       2       3       3       4       5 
+```
+
+```r
+x <- rnorm(n = 10000, mean = 0, sd = 1)
+summary(x)
+```
+
+```
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ -3.580  -0.671   0.021   0.011   0.683   3.650 
 ```
 
 
@@ -273,7 +279,7 @@ head(x)
 ```
 
 ```
-[1] -1.0117  0.7298 -0.8888  0.2415 -0.1542  0.7267
+[1]  1.5671 -0.6655 -0.3277 -0.5891 -0.3669 -0.4316
 ```
 
 Simulated data (histogram)
@@ -294,7 +300,7 @@ Other distributions: Uniform
 
 ```r
 ## plot density histogram:
-x<-runif(100)
+x <- runif(n = 100)
 hist(x,freq=F)
 ```
 
@@ -307,33 +313,8 @@ Other distributions: Gamma
 
 ```r
 ## plot density histogram:
-x<-rgamma(100, 2)
+x<-rgamma(n = 100, shape = 2)
 hist(x,freq=F)
 ```
 
 ![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
-
-
-Other distributions: Gamma
-========================================================
-
-
-```r
-## plot density histogram:
-x<-rgamma(100, shape = 2)
-hist(x,freq=F)
-```
-
-![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
-
-Other distributions: t
-========================================================
-
-
-```r
-## plot density histogram:
-x<-rt(100, df = 5)
-hist(x,freq=F)
-```
-
-![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
