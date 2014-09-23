@@ -282,7 +282,7 @@ head(x)
 ```
 
 ```
-[1] -1.0719 -0.5881 -0.5784  0.3313  0.7588  0.3234
+[1]  0.33507 -0.39084  0.49794  0.40108  1.05474  0.01755
 ```
 
 ```r
@@ -376,19 +376,16 @@ Sampling from a gamma distribution (1)
 
 
 ```r
-number_of_simulations <- 100
+sample_size <- 100
+number_of_simulations <- 1000
 
-sample_mean_from_gamma <- function(number_of_samples){
-  samples <- rgamma(number_of_samples, shape = 3)
-  mean(samples)
-}
+sample_means <- replicate(number_of_simulations, mean(rgamma(n = sample_size, shape = 3)))
 
-sample_means <- sapply(1:number_of_simulations, sample_mean_from_gamma)
 mean(sample_means)
 ```
 
 ```
-[1] 2.995
+[1] 3.008
 ```
 
 ```r
@@ -396,17 +393,20 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.3515
+[1] 0.1739
 ```
 
 Sampling from a gamma distribution (2)
 ========================================================
-
+Make a function to combine histogram and plot:
 
 ```r
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(sample_means,freq=F, breaks = 20)
-plot(density(sample_means))
+make_hist_and_plot <- function(sample_means){
+  par(mfrow=c(1,2)) # (two plots side-by-side)
+  hist(sample_means,freq=F, breaks = 30)
+  plot(density(sample_means), main = paste("Mean = ", round(mean(sample_means),2) , "SD = ", round(sd(sample_means),2)))
+} # label the plot with mean and sd
+make_hist_and_plot(sample_means)
 ```
 
 ![plot of chunk unnamed-chunk-22](Class 1-figure/unnamed-chunk-22.png) 
@@ -433,20 +433,24 @@ Sampling from a uniform distribution (1)
 
 
 ```r
-number_of_simulations <- 100
+sample_size <- 100
+number_of_simulations <- 1000
 
-sample_mean_from_unif<- function(number_of_samples){
-  samples <- runif(number_of_samples)
-  mean(samples)
-}
+sample_means <- replicate(number_of_simulations, mean(runif(n = sample_size)))
 
-sample_means <- sapply(1:number_of_simulations, sample_mean_from_unif)
-summary(sample_means)
+mean(sample_means)
 ```
 
 ```
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.349   0.477   0.501   0.502   0.518   0.978 
+[1] 0.4986
+```
+
+```r
+sd(sample_means)
+```
+
+```
+[1] 0.02839
 ```
 
 Sampling from a uniform distribution (2)
@@ -454,9 +458,7 @@ Sampling from a uniform distribution (2)
 
 
 ```r
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(sample_means,freq=F, breaks = 20)
-plot(density(sample_means))
+make_hist_and_plot(sample_means)
 ```
 
 ![plot of chunk unnamed-chunk-25](Class 1-figure/unnamed-chunk-25.png) 
@@ -495,7 +497,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.169   0.858   0.999   0.972   1.070   1.760 
+  0.447   0.893   0.990   1.000   1.100   1.880 
 ```
 
 Sampling from an exponential distribution (2)
@@ -503,10 +505,113 @@ Sampling from an exponential distribution (2)
 
 
 ```r
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(sample_means,freq=F, breaks = 40)
-plot(density(sample_means))
+make_hist_and_plot(sample_means)
 ```
 
 ![plot of chunk unnamed-chunk-28](Class 1-figure/unnamed-chunk-28.png) 
+```
 
+
+
+The sampling distribution of the mean (1)
+========================================================
+- Notice something about the means of the samples?
+  - They seem to cluster around the population mean
+  - Let's play with this some more.
+  - First, make a function for running the simulations so that we don't have to type all the code from the previous slides again and again
+    - We're going to sample from the normal distribution again since it's easy to specify mean and sd for it.
+  
+The sampling distribution of the mean (2)
+========================================================
+This is our convenience function for running the simulations.
+Don't worry if you don't understand everything yet!
+
+```r
+run_simulation <- function(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
+  {
+
+sample_means <- replicate(number_of_simulations, mean(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
+
+make_hist_and_plot(sample_means)
+}
+```
+
+The sampling distribution of the mean (2)
+========================================================
+It works:
+
+```r
+run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
+```
+
+![plot of chunk unnamed-chunk-30](Class 1-figure/unnamed-chunk-30.png) 
+
+
+The sampling distribution of the mean (3)
+========================================================
+Now, let's try different parameters. What happens if we change the mean of the population?
+
+```r
+run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 100, population_sd = 1)
+```
+
+![plot of chunk unnamed-chunk-31](Class 1-figure/unnamed-chunk-31.png) 
+
+The sampling distribution of the mean (3)
+========================================================
+The sampling distribution of the mean has the same mean as the population!
+You can (hopefully) see how this might be useful.
+
+```r
+run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 50000, population_sd = 1)
+```
+
+![plot of chunk unnamed-chunk-32](Class 1-figure/unnamed-chunk-32.png) 
+
+Sample mean and population mean (1)
+========================================================
+- OK, *why* is it useful?
+  - Well, usually, we don't know the population mean.
+  - We have to estimate it somehow.
+  - Solution: just use the sample mean as an estimator for the population mean.
+    - Can this go wrong?
+      - Yes, definitely.
+      
+Sample mean and population mean (2)
+========================================================
+- Remember the plots we just made:
+![plot of chunk unnamed-chunk-33](Class 1-figure/unnamed-chunk-33.png) 
+- Notice that the sample mean is not **not always** the same as the population mean (0 in this case).
+  - This is due to the random nature of drawing a sample from the population.
+  
+Sample mean and population mean (3)
+========================================================
+- Let's try reducing the sample size
+
+```r
+run_simulation(sample_size = 10, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
+```
+
+![plot of chunk unnamed-chunk-34](Class 1-figure/unnamed-chunk-34.png) 
+- Things got a bit noisier (note that the x-axis is scaled automatically)
+- The sd of the distribution of the sample means went up.
+
+Sample mean and population mean (4)
+========================================================
+- Let's try increasing the sample size
+
+```r
+run_simulation(sample_size = 1000, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
+```
+
+![plot of chunk unnamed-chunk-35](Class 1-figure/unnamed-chunk-35.png) 
+- Things got a lot less noisy (note that the x-axis is scaled automatically)
+- The sd of the distribution of the sample means went down.
+
+Sample mean and population mean (5)
+========================================================
+- Note that when we changed the sample size, the sd of the distribution of sample means changed.
+- The mean stayed the same though!
+- The larger your sample is, the closer your sample mean is going to be to the true population mean.
+- Formally speaking, the sample mean is an **unbiased estimator** of the population mean.
+- I could show you the mathematical proof for that, but I won't.
