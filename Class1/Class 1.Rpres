@@ -303,12 +303,12 @@ sample_means <- sapply(1:number_of_simulations, sample_mean_from_exp)
 summary(sample_means)
 ```
 
-Sampling from a uniform distribution (2)
+Sampling from an exponential distribution (2)
 ========================================================
 
 ```{r, echo=T, fig.width = 14, fig.height = 6}
 par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(sample_means,freq=F, breaks = 20)
+hist(sample_means,freq=F, breaks = 40)
 plot(density(sample_means))
 ```
 

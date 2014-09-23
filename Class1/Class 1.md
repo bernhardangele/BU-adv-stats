@@ -282,7 +282,7 @@ head(x)
 ```
 
 ```
-[1] -1.8148 -1.5262 -0.7176  0.1405  0.7109 -0.4269
+[1] -1.0719 -0.5881 -0.5784  0.3313  0.7588  0.3234
 ```
 
 ```r
@@ -388,7 +388,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 2.929
+[1] 2.995
 ```
 
 ```r
@@ -396,7 +396,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.3798
+[1] 0.3515
 ```
 
 Sampling from a gamma distribution (2)
@@ -446,7 +446,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.325   0.471   0.503   0.510   0.534   0.804 
+  0.349   0.477   0.501   0.502   0.518   0.978 
 ```
 
 Sampling from a uniform distribution (2)
@@ -495,16 +495,16 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.446   0.892   1.010   1.030   1.110   3.010 
+  0.169   0.858   0.999   0.972   1.070   1.760 
 ```
 
-Sampling from a uniform distribution (2)
+Sampling from an exponential distribution (2)
 ========================================================
 
 
 ```r
 par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(sample_means,freq=F, breaks = 20)
+hist(sample_means,freq=F, breaks = 40)
 plot(density(sample_means))
 ```
 
