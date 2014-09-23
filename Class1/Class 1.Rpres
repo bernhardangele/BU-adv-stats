@@ -152,7 +152,7 @@ plot(density(x))
 
 Probability density?
 ========================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=T, fig.width = 10, fig.height = 6}
 plot(function(x) dnorm(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
@@ -166,8 +166,8 @@ $$
 \end{equation}
 $$
 With $x$ = value, 
-$\mu$ = population mean, 
-and $\sigma$ = population standard deviation
+$\mu$ = mean, 
+and $\sigma$ = standard deviation
 ```{r, echo=F, fig.width = 10, fig.height = 6}
 plot(function(x) dnorm(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
@@ -188,11 +188,57 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-Why do we use the normal distribution?
+Why do we care about the normal distribution?
+========================================================
+- Central limit theorem (CLT)
+
+> When sampling from a population that has a mean, provided the sample size is large
+> enough, the sampling distribution of the sample mean will be close to normal regardless
+> of the shape of the population distribution
+
+Let's see if that's actually true by running some simulations!
+
+Non-normal distributions: Gamma
 ========================================================
 
+```{r, echo=T, fig.width = 14, fig.height = 6}
+## plot density histogram:
+x<-rgamma(n = 1000, shape = 3)
+par(mfrow=c(1,2)) # (two plots side-by-side)
+hist(x,freq=F, breaks = 20)
+plot(function(x) dgamma(x, shape = 3), 0, 6,
+main = "Gamma density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
 
-Other distributions: Uniform
+
+Sampling from a gamma distribution (1)
+========================================================
+
+```{r, echo=T, fig.width = 14, fig.height = 6}
+number_of_simulations <- 100
+
+sample_mean_from_gamma <- function(number_of_samples){
+  samples <- rgamma(number_of_samples, shape = 3)
+  mean(samples)
+}
+
+sample_means <- sapply(1:number_of_simulations, sample_mean_from_gamma)
+mean(sample_means)
+sd(sample_means)
+```
+
+Sampling from a gamma distribution (2)
+========================================================
+
+```{r, echo=T, fig.width = 14, fig.height = 6}
+par(mfrow=c(1,2)) # (two plots side-by-side)
+hist(sample_means,freq=F, breaks = 20)
+plot(density(sample_means))
+```
+
+
+Non-normal distributions: Uniform
 ========================================================
 
 ```{r, echo=T, fig.width = 14, fig.height = 6}
@@ -200,17 +246,69 @@ Other distributions: Uniform
 x <- runif(n = 1000)
 par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
-plot(density(x))
+plot(function(x) dunif(x), -3, 3,
+main = "Uniform density",ylim=c(0,1),
+ylab="density",xlab="X")
 ```
 
+Sampling from a uniform distribution (1)
+========================================================
 
-Other distributions: Gamma
+```{r, echo=T, fig.width = 14, fig.height = 6}
+number_of_simulations <- 100
+
+sample_mean_from_unif<- function(number_of_samples){
+  samples <- runif(number_of_samples)
+  mean(samples)
+}
+
+sample_means <- sapply(1:number_of_simulations, sample_mean_from_unif)
+summary(sample_means)
+```
+
+Sampling from a uniform distribution (2)
+========================================================
+
+```{r, echo=T, fig.width = 14, fig.height = 6}
+par(mfrow=c(1,2)) # (two plots side-by-side)
+hist(sample_means,freq=F, breaks = 20)
+plot(density(sample_means))
+```
+
+Non-normal distributions: Exponential
 ========================================================
 
 ```{r, echo=T, fig.width = 14, fig.height = 6}
 ## plot density histogram:
-x<-rgamma(n = 1000, shape = 2)
+x <- rexp(n = 1000)
 par(mfrow=c(1,2)) # (two plots side-by-side)
 hist(x,freq=F)
-plot(density(x))
+plot(function(x) dexp(x), 0, 6,
+main = "Exponential distribution density",ylim=c(0,1),
+ylab="density",xlab="X")
 ```
+
+Sampling from an exponential distribution (1)
+========================================================
+
+```{r, echo=T, fig.width = 14, fig.height = 6}
+number_of_simulations <- 100
+
+sample_mean_from_exp<- function(number_of_samples){
+  samples <- rexp(number_of_samples)
+  mean(samples)
+}
+
+sample_means <- sapply(1:number_of_simulations, sample_mean_from_exp)
+summary(sample_means)
+```
+
+Sampling from a uniform distribution (2)
+========================================================
+
+```{r, echo=T, fig.width = 14, fig.height = 6}
+par(mfrow=c(1,2)) # (two plots side-by-side)
+hist(sample_means,freq=F, breaks = 20)
+plot(density(sample_means))
+```
+
