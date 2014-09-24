@@ -20,7 +20,59 @@ How do I run simulations?
 
 - Not very easy in SPSS
 - Very easy in R
+- You do have to learn how to communicate with R, though
+  - Don't worry, it's not as hard as you may think
+- R is a programming language with a command line interface
+- You write the commands, R does the work
+- The R language is not horribly difficult, but there are some quirks.
 
+Interacting with R (1)
+========================================================
+- Easiest way: use RStudio
+- But there are still some common issues that people get confused about:
+  - The command prompt: 
+  
+  >`>`
+  >
+- This is where you type your commands.
+  - What if the prompt looks like this?
+  
+  >`+`
+  >
+  
+- R thinks that the previous command isn't finished yet. (Maybe you forgot a closing parenthesis?)
+  - If you don't want to finish it, press ESC
+  
+Interacting with R (2)
+========================================================
+- When working with R, you create and interact with **objects**
+- All **objects** live in the **workspace**
+- You can get a list of all the objects in the workspace by typing `ls()`
+- You can delete an object (e.g. an object named `example_object`) by typing `rm(example_object)` (replace `example_object` with the name of the object you want to delete)
+- You can combine these two commands in order to delete everything in the workspace: `rm(list = ls())`
+- This is useful when you want to start over from scratch.
+- It also demonstrates how you can nest commands: You're telling `rm` to use the output of `ls()` as the list of all the objects that should be deleted.
+
+Interacting with R (3)
+========================================================
+- The R interpreter makes some basic assumptionss.
+  - For example, if you tell it the name of an object, it will print its contents.
+```{r}
+pi
+```
+
+
+What went wrong here?
+========================================================
+```{r}
+rm
+```
+
+What went wrong on the last slide?
+========================================================
+- Answer: if you type the name of a command (or rather, a **function**) R prints its contents.
+  - In the case of a **function**, it will give you its definition
+- If you want te
 
 R basics
 ========================================================

@@ -20,7 +20,83 @@ How do I run simulations?
 
 - Not very easy in SPSS
 - Very easy in R
+- You do have to learn how to communicate with R, though
+  - Don't worry, it's not as hard as you may think
+- R is a programming language with a command line interface
+- You write the commands, R does the work
+- The R language is not horribly difficult, but there are some quirks.
 
+Interacting with R (1)
+========================================================
+- Easiest way: use RStudio
+- But there are still some common issues that people get confused about:
+  - The command prompt: 
+  
+  >`>`
+  >
+- This is where you type your commands.
+  - What if the prompt looks like this?
+  
+  >`+`
+  >
+  
+- R thinks that the previous command isn't finished yet. (Maybe you forgot a closing parenthesis?)
+  - If you don't want to finish it, press ESC
+  
+Interacting with R (2)
+========================================================
+- When working with R, you create and interact with **objects**
+- All **objects** live in the **workspace**
+- You can get a list of all the objects in the workspace by typing `ls()`
+- You can delete an object (e.g. an object named `example_object`) by typing `rm(example_object)` (replace `example_object` with the name of the object you want to delete)
+- You can combine these two commands in order to delete everything in the workspace: `rm(list = ls())`
+- This is useful when you want to start over from scratch.
+- It also demonstrates how you can nest commands: You're telling `rm` to use the output of `ls()` as the list of all the objects that should be deleted.
+
+Interacting with R (3)
+========================================================
+- The R interpreter makes some basic assumptionss.
+  - For example, if you tell it the name of an object, it will print its contents.
+
+```r
+pi
+```
+
+```
+[1] 3.142
+```
+
+
+What went wrong here?
+========================================================
+
+```r
+rm
+```
+
+```
+function (..., list = character(), pos = -1, envir = as.environment(pos), 
+    inherits = FALSE) 
+{
+    dots <- match.call(expand.dots = FALSE)$...
+    if (length(dots) && !all(sapply(dots, function(x) is.symbol(x) || 
+        is.character(x)))) 
+        stop("... must contain names or character strings")
+    names <- sapply(dots, as.character)
+    if (length(names) == 0L) 
+        names <- character()
+    list <- .Primitive("c")(list, names)
+    .Internal(remove(list, envir, inherits))
+}
+<bytecode: 0x2655eb8>
+<environment: namespace:base>
+```
+
+What went wrong on the last slide?
+========================================================
+- Answer: if you type the name of a command (or rather, a **function**) R prints its contents.
+  - In the case of a **function**, it will give you its definition
+- If you want te
 
 R basics
 ========================================================
@@ -282,14 +358,14 @@ head(x)
 ```
 
 ```
-[1]  0.33507 -0.39084  0.49794  0.40108  1.05474  0.01755
+[1] -0.5744  2.7795 -0.5349 -0.1061  0.6245 -0.5966
 ```
 
 ```r
 plot(x)
 ```
 
-![plot of chunk unnamed-chunk-15](Class 1-figure/unnamed-chunk-15.png) 
+![plot of chunk unnamed-chunk-17](Class 1-figure/unnamed-chunk-17.png) 
 
 Distribution of the simulated data (histogram)
 ========================================================
@@ -302,7 +378,7 @@ hist(x,freq=F)
 plot(density(x))
 ```
 
-![plot of chunk unnamed-chunk-16](Class 1-figure/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
 
 Probability density?
 ========================================================
@@ -313,7 +389,7 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-17](Class 1-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
 
 Normal probability density function (PDF)
 ========================================================
@@ -325,7 +401,7 @@ $$
 With $x$ = value, 
 $\mu$ = mean, 
 and $\sigma$ = standard deviation
-![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
 
 Defining the normal PDF by hand (just in case you wanted to make sure)
 ========================================================
@@ -342,7 +418,7 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-21](Class 1-figure/unnamed-chunk-21.png) 
 
 Why do we care about the normal distribution?
 ========================================================
@@ -368,7 +444,7 @@ main = "Gamma density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-22](Class 1-figure/unnamed-chunk-22.png) 
 
 
 Sampling from a gamma distribution (1)
@@ -385,7 +461,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 3.008
+[1] 3.006
 ```
 
 ```r
@@ -393,7 +469,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.1739
+[1] 0.1749
 ```
 
 Sampling from a gamma distribution (2)
@@ -409,7 +485,7 @@ make_hist_and_plot <- function(sample_means){
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-22](Class 1-figure/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-24](Class 1-figure/unnamed-chunk-24.png) 
 
 
 Non-normal distributions: Uniform
@@ -426,7 +502,7 @@ main = "Uniform density",ylim=c(0,1),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-23](Class 1-figure/unnamed-chunk-23.png) 
+![plot of chunk unnamed-chunk-25](Class 1-figure/unnamed-chunk-25.png) 
 
 Sampling from a uniform distribution (1)
 ========================================================
@@ -442,7 +518,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 0.4986
+[1] 0.4999
 ```
 
 ```r
@@ -450,7 +526,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.02839
+[1] 0.02993
 ```
 
 Sampling from a uniform distribution (2)
@@ -461,7 +537,7 @@ Sampling from a uniform distribution (2)
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-25](Class 1-figure/unnamed-chunk-25.png) 
+![plot of chunk unnamed-chunk-27](Class 1-figure/unnamed-chunk-27.png) 
 
 Non-normal distributions: Exponential
 ========================================================
@@ -477,7 +553,7 @@ main = "Exponential distribution density",ylim=c(0,1),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-26](Class 1-figure/unnamed-chunk-26.png) 
+![plot of chunk unnamed-chunk-28](Class 1-figure/unnamed-chunk-28.png) 
 
 Sampling from an exponential distribution (1)
 ========================================================
@@ -497,7 +573,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.447   0.893   0.990   1.000   1.100   1.880 
+  0.350   0.894   1.010   1.020   1.090   2.850 
 ```
 
 Sampling from an exponential distribution (2)
@@ -508,7 +584,7 @@ Sampling from an exponential distribution (2)
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-28](Class 1-figure/unnamed-chunk-28.png) 
+![plot of chunk unnamed-chunk-30](Class 1-figure/unnamed-chunk-30.png) 
 ```
 
 
@@ -544,7 +620,7 @@ It works:
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-30](Class 1-figure/unnamed-chunk-30.png) 
+![plot of chunk unnamed-chunk-32](Class 1-figure/unnamed-chunk-32.png) 
 
 
 The sampling distribution of the mean (3)
@@ -555,7 +631,7 @@ Now, let's try different parameters. What happens if we change the mean of the p
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 100, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-31](Class 1-figure/unnamed-chunk-31.png) 
+![plot of chunk unnamed-chunk-33](Class 1-figure/unnamed-chunk-33.png) 
 
 The sampling distribution of the mean (3)
 ========================================================
@@ -566,7 +642,7 @@ You can (hopefully) see how this might be useful.
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 50000, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-32](Class 1-figure/unnamed-chunk-32.png) 
+![plot of chunk unnamed-chunk-34](Class 1-figure/unnamed-chunk-34.png) 
 
 Sample mean and population mean (1)
 ========================================================
@@ -580,7 +656,7 @@ Sample mean and population mean (1)
 Sample mean and population mean (2)
 ========================================================
 - Remember the plots we just made:
-![plot of chunk unnamed-chunk-33](Class 1-figure/unnamed-chunk-33.png) 
+![plot of chunk unnamed-chunk-35](Class 1-figure/unnamed-chunk-35.png) 
 - Notice that the sample mean is not **not always** the same as the population mean (0 in this case).
   - This is due to the random nature of drawing a sample from the population.
   
@@ -592,7 +668,7 @@ Sample mean and population mean (3)
 run_simulation(sample_size = 10, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-34](Class 1-figure/unnamed-chunk-34.png) 
+![plot of chunk unnamed-chunk-36](Class 1-figure/unnamed-chunk-36.png) 
 - Things got a bit noisier (note that the x-axis is scaled automatically)
 - The sd of the distribution of the sample means went up.
 
@@ -604,7 +680,7 @@ Sample mean and population mean (4)
 run_simulation(sample_size = 1000, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-35](Class 1-figure/unnamed-chunk-35.png) 
+![plot of chunk unnamed-chunk-37](Class 1-figure/unnamed-chunk-37.png) 
 - Things got a lot less noisy (note that the x-axis is scaled automatically)
 - The sd of the distribution of the sample means went down.
 
