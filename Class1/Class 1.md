@@ -88,7 +88,7 @@ function (..., list = character(), pos = -1, envir = as.environment(pos),
     list <- .Primitive("c")(list, names)
     .Internal(remove(list, envir, inherits))
 }
-<bytecode: 0x2655eb8>
+<bytecode: 0x280e058>
 <environment: namespace:base>
 ```
 
@@ -96,9 +96,63 @@ What went wrong on the last slide?
 ========================================================
 - Answer: if you type the name of a command (or rather, a **function**) R prints its contents.
   - In the case of a **function**, it will give you its definition
-- If you want te
+- If you want the function to do something (i.e. you want to **execute** it), you need to call it like this:
 
-R basics
+```r
+rm(this_object_does_not_exist)
+```
+
+```
+Warning: object 'this_object_does_not_exist' not found
+```
+- What went wrong now?
+  - `rm` is telling me that the object I wanted to delete doesn't exist (duh).
+
+Errors and warnings
+========================================================
+- Errors:
+  - mean that something critical went wrong and the command was not executed
+- Warnings:
+  - mean that there was a less critical issue
+  - the command was still executed (but maybe didn't do what you thought it would do)
+- What's the worst kind of problem?
+  - Error?
+  - Warning?
+  - No, it's when R does something you didn't intend to do but doesn't warn you!
+
+
+Assignment
+========================================================
+- You can create new objects from existing ones:
+
+```r
+x <- 1
+y <- "meow"
+z <- ls
+x
+```
+
+```
+[1] 1
+```
+
+```r
+y
+```
+
+```
+[1] "meow"
+```
+
+```r
+z()
+```
+
+```
+[1] "x" "y" "z"
+```
+
+Let's do some maths
 ========================================================
 Addition
 
@@ -119,7 +173,7 @@ Subtraction
 [1] 0
 ```
 
-R basics
+More maths
 ========================================================
 Multiplication and division
 
@@ -139,7 +193,7 @@ Multiplication and division
 [1] 3
 ```
 
-R basics
+Even more maths
 ========================================================
 Powers
 
@@ -358,14 +412,14 @@ head(x)
 ```
 
 ```
-[1] -0.5744  2.7795 -0.5349 -0.1061  0.6245 -0.5966
+[1]  0.7767 -0.5243  0.2088  0.3703 -1.0421  0.2362
 ```
 
 ```r
 plot(x)
 ```
 
-![plot of chunk unnamed-chunk-17](Class 1-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
 
 Distribution of the simulated data (histogram)
 ========================================================
@@ -378,7 +432,7 @@ hist(x,freq=F)
 plot(density(x))
 ```
 
-![plot of chunk unnamed-chunk-18](Class 1-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
 
 Probability density?
 ========================================================
@@ -389,7 +443,34 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-19](Class 1-figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-21](Class 1-figure/unnamed-chunk-21.png) 
+
+What is a probability distribution?
+========================================================
+From Wikipedia:
+> In probability and statistics, a probability distribution assigns a probability to each measurable subset of the possible outcomes of a random experiment, survey, or procedure of statistical inference.
+
+Here's an example of a discrete probability distribution:
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Discrete probability distribution
+========================================================
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Every possible outcome (sum of the numbers rolled on two dice) is assigned a corresponding probability. This is called a *probability mass function*.
+
+Important: all values sum to 1.
+
+Continuous probability distribution
+=======================================================
+![plot of chunk unnamed-chunk-22](Class 1-figure/unnamed-chunk-22.png) 
+
+Here, the outcomes are continuous, so it doesn't make sense to ask about the probability of any point on the x-axis.
+
+- What is the probability of x = 1? 
+ - What do you mean by "1"? Does 1.00001 still qualify as 1?
+- It makes more sense to ask these questions about intervals.
+- Important: the total area under the curve is 1.
 
 Normal probability density function (PDF)
 ========================================================
@@ -401,7 +482,7 @@ $$
 With $x$ = value, 
 $\mu$ = mean, 
 and $\sigma$ = standard deviation
-![plot of chunk unnamed-chunk-20](Class 1-figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-23](Class 1-figure/unnamed-chunk-23.png) 
 
 Defining the normal PDF by hand (just in case you wanted to make sure)
 ========================================================
@@ -418,7 +499,96 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-21](Class 1-figure/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-24](Class 1-figure/unnamed-chunk-24.png) 
+
+Asking reasonable questions about continuous distributions
+=======================================================
+- What's the probability of x being between 0 and 1?
+![plot of chunk unnamed-chunk-25](Class 1-figure/unnamed-chunk-25.png) 
+- How do we do this?
+- We could integrate!
+  - But there's a more convenient way in R.
+  
+Using `pnorm`
+=======================================================
+- `pnorm(q)` gives you the probability of `x < q` (in the standard normal distribution)
+
+```r
+pnorm(1)
+```
+
+```
+[1] 0.8413
+```
+![plot of chunk unnamed-chunk-27](Class 1-figure/unnamed-chunk-27.png) 
+- `pnorm(1)` is not quite what we wanted yet.
+
+Using `pnorm` (2)
+=======================================================
+- What about `pnorm(0)`?
+
+```r
+pnorm(0)
+```
+
+```
+[1] 0.5
+```
+![plot of chunk unnamed-chunk-29](Class 1-figure/unnamed-chunk-29.png) 
+Well, look at that!
+
+Finally getting our area under the curve
+========================================================
+- I hope you can guess how to do it now:
+
+```r
+pnorm(1)-pnorm(0)
+```
+
+```
+[1] 0.3413
+```
+![plot of chunk unnamed-chunk-31](Class 1-figure/unnamed-chunk-31.png) 
+- Success!
+
+Things you can do with this knowledge
+========================================================
+- Say I'm looking at random numbers from a standard normal distribution:
+
+```r
+rnorm(5)
+```
+
+```
+[1]  1.42672 -0.92177  0.54005 -0.28949 -0.01103
+```
+- and I see that one of them is 4.
+  - That seems very unusual
+  - Just how unusual?
+    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?    
+
+Just how unusual is a value of 4?
+========================================================
+- Remember, when you have a continuous distribution, you can't think about point values (e.g. 5). Rather, what you want to know is:
+    - What is the probability of getting a value of 4 *or greater*?
+
+```r
+print(pnorm(4), digits = 5)
+```
+
+```
+[1] 0.99997
+```
+- Is that the probability? No, that's the probability of getting a value of 4 *or less*
+- Just get the inverse probability:
+
+```r
+1 - pnorm(4)
+```
+
+```
+[1] 3.167e-05
+```
 
 Why do we care about the normal distribution?
 ========================================================
@@ -444,7 +614,7 @@ main = "Gamma density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-22](Class 1-figure/unnamed-chunk-22.png) 
+![plot of chunk unnamed-chunk-35](Class 1-figure/unnamed-chunk-35.png) 
 
 
 Sampling from a gamma distribution (1)
@@ -461,7 +631,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 3.006
+[1] 3.008
 ```
 
 ```r
@@ -469,7 +639,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.1749
+[1] 0.1684
 ```
 
 Sampling from a gamma distribution (2)
@@ -485,7 +655,7 @@ make_hist_and_plot <- function(sample_means){
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-24](Class 1-figure/unnamed-chunk-24.png) 
+![plot of chunk unnamed-chunk-37](Class 1-figure/unnamed-chunk-37.png) 
 
 
 Non-normal distributions: Uniform
@@ -502,7 +672,7 @@ main = "Uniform density",ylim=c(0,1),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-25](Class 1-figure/unnamed-chunk-25.png) 
+![plot of chunk unnamed-chunk-38](Class 1-figure/unnamed-chunk-38.png) 
 
 Sampling from a uniform distribution (1)
 ========================================================
@@ -518,7 +688,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 0.4999
+[1] 0.4984
 ```
 
 ```r
@@ -526,7 +696,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.02993
+[1] 0.02977
 ```
 
 Sampling from a uniform distribution (2)
@@ -537,7 +707,7 @@ Sampling from a uniform distribution (2)
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-27](Class 1-figure/unnamed-chunk-27.png) 
+![plot of chunk unnamed-chunk-40](Class 1-figure/unnamed-chunk-40.png) 
 
 Non-normal distributions: Exponential
 ========================================================
@@ -553,7 +723,7 @@ main = "Exponential distribution density",ylim=c(0,1),
 ylab="density",xlab="X")
 ```
 
-![plot of chunk unnamed-chunk-28](Class 1-figure/unnamed-chunk-28.png) 
+![plot of chunk unnamed-chunk-41](Class 1-figure/unnamed-chunk-41.png) 
 
 Sampling from an exponential distribution (1)
 ========================================================
@@ -573,7 +743,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.350   0.894   1.010   1.020   1.090   2.850 
+  0.249   0.909   0.999   0.974   1.070   1.290 
 ```
 
 Sampling from an exponential distribution (2)
@@ -584,10 +754,8 @@ Sampling from an exponential distribution (2)
 make_hist_and_plot(sample_means)
 ```
 
-![plot of chunk unnamed-chunk-30](Class 1-figure/unnamed-chunk-30.png) 
+![plot of chunk unnamed-chunk-43](Class 1-figure/unnamed-chunk-43.png) 
 ```
-
-
 
 The sampling distribution of the mean (1)
 ========================================================
@@ -620,7 +788,7 @@ It works:
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-32](Class 1-figure/unnamed-chunk-32.png) 
+![plot of chunk unnamed-chunk-45](Class 1-figure/unnamed-chunk-45.png) 
 
 
 The sampling distribution of the mean (3)
@@ -631,7 +799,7 @@ Now, let's try different parameters. What happens if we change the mean of the p
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 100, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-33](Class 1-figure/unnamed-chunk-33.png) 
+![plot of chunk unnamed-chunk-46](Class 1-figure/unnamed-chunk-46.png) 
 
 The sampling distribution of the mean (3)
 ========================================================
@@ -642,7 +810,7 @@ You can (hopefully) see how this might be useful.
 run_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 50000, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-34](Class 1-figure/unnamed-chunk-34.png) 
+![plot of chunk unnamed-chunk-47](Class 1-figure/unnamed-chunk-47.png) 
 
 Sample mean and population mean (1)
 ========================================================
@@ -656,7 +824,7 @@ Sample mean and population mean (1)
 Sample mean and population mean (2)
 ========================================================
 - Remember the plots we just made:
-![plot of chunk unnamed-chunk-35](Class 1-figure/unnamed-chunk-35.png) 
+![plot of chunk unnamed-chunk-48](Class 1-figure/unnamed-chunk-48.png) 
 - Notice that the sample mean is not **not always** the same as the population mean (0 in this case).
   - This is due to the random nature of drawing a sample from the population.
   
@@ -668,7 +836,7 @@ Sample mean and population mean (3)
 run_simulation(sample_size = 10, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-36](Class 1-figure/unnamed-chunk-36.png) 
+![plot of chunk unnamed-chunk-49](Class 1-figure/unnamed-chunk-49.png) 
 - Things got a bit noisier (note that the x-axis is scaled automatically)
 - The sd of the distribution of the sample means went up.
 
@@ -680,7 +848,7 @@ Sample mean and population mean (4)
 run_simulation(sample_size = 1000, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
 ```
 
-![plot of chunk unnamed-chunk-37](Class 1-figure/unnamed-chunk-37.png) 
+![plot of chunk unnamed-chunk-50](Class 1-figure/unnamed-chunk-50.png) 
 - Things got a lot less noisy (note that the x-axis is scaled automatically)
 - The sd of the distribution of the sample means went down.
 
@@ -688,6 +856,38 @@ Sample mean and population mean (5)
 ========================================================
 - Note that when we changed the sample size, the sd of the distribution of sample means changed.
 - The mean stayed the same though!
-- The larger your sample is, the closer your sample mean is going to be to the true population mean.
+- The larger your sample is, the closer your average sample mean is going to be to the true population mean.
 - Formally speaking, the sample mean is an **unbiased estimator** of the population mean.
 - I could show you the mathematical proof for that, but I won't.
+
+Standard error of the mean (SE) (1)
+========================================================
+
+Population SD = 1
+
+|Sample size|  SD of the sample mean|
+|----------:|----------------------:|
+|         10|                    .31|
+|        100|                     .1|
+|       1000|                    .03|
+
+See a pattern?
+
+This relationship holds in general:
+$$
+\begin{equation} \label{sigmabar}
+\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
+\end{equation}
+$$
+where $\sigma_{\bar{x}}$ is the standard deviation of the sample means, $\sigma$ is the population standard deviation, and $n$ is the sample size
+
+
+Standard error of the mean (SE) (2)
+========================================================
+- Usually, we don't know what $\sigma$ is, but we can still can estimate $\sigma_{\bar{x}}$ from our sample:
+
+\begin{equation}
+SE_{\bar{x}} = \frac{s}{\sqrt{n}}
+\end{equation}
+
+where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.

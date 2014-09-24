@@ -72,9 +72,39 @@ What went wrong on the last slide?
 ========================================================
 - Answer: if you type the name of a command (or rather, a **function**) R prints its contents.
   - In the case of a **function**, it will give you its definition
-- If you want te
+- If you want the function to do something (i.e. you want to **execute** it), you need to call it like this:
+```{r, print=TRUE, warning = TRUE}
+rm(this_object_does_not_exist)
+```
+- What went wrong now?
+  - `rm` is telling me that the object I wanted to delete doesn't exist (duh).
 
-R basics
+Errors and warnings
+========================================================
+- Errors:
+  - mean that something critical went wrong and the command was not executed
+- Warnings:
+  - mean that there was a less critical issue
+  - the command was still executed (but maybe didn't do what you thought it would do)
+- What's the worst kind of problem?
+  - Error?
+  - Warning?
+  - No, it's when R does something you didn't intend to do but doesn't warn you!
+
+
+Assignment
+========================================================
+- You can create new objects from existing ones:
+```{r}
+x <- 1
+y <- "meow"
+z <- ls
+x
+y
+z()
+```
+
+Let's do some maths
 ========================================================
 Addition
 ```{r}
@@ -85,7 +115,7 @@ Subtraction
 1-1
 ```
 
-R basics
+More maths
 ========================================================
 Multiplication and division
 ```{r}
@@ -93,7 +123,7 @@ Multiplication and division
 12/4
 ```
 
-R basics
+Even more maths
 ========================================================
 Powers
 ```{r}
@@ -210,6 +240,37 @@ main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
+What is a probability distribution?
+========================================================
+From Wikipedia:
+> In probability and statistics, a probability distribution assigns a probability to each measurable subset of the possible outcomes of a random experiment, survey, or procedure of statistical inference.
+
+Here's an example of a discrete probability distribution:
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Discrete probability distribution
+========================================================
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Every possible outcome (sum of the numbers rolled on two dice) is assigned a corresponding probability. This is called a *probability mass function*.
+
+Important: all values sum to 1.
+
+Continuous probability distribution
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot(function(x) dnorm(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Here, the outcomes are continuous, so it doesn't make sense to ask about the probability of any point on the x-axis.
+
+- What is the probability of x = 1? 
+ - What do you mean by "1"? Does 1.00001 still qualify as 1?
+- It makes more sense to ask these questions about intervals.
+- Important: the total area under the curve is 1.
+
 Normal probability density function (PDF)
 ========================================================
 $$
@@ -238,6 +299,84 @@ dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-
 plot(function(x) dnorm_manual(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
+```
+
+Asking reasonable questions about continuous distributions
+=======================================================
+- What's the probability of x being between 0 and 1?
+```{r, echo = F}
+cord.x <- c(0,seq(0,1,0.01),1)
+cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+- How do we do this?
+- We could integrate!
+  - But there's a more convenient way in R.
+  
+Using `pnorm`
+=======================================================
+- `pnorm(q)` gives you the probability of `x < q` (in the standard normal distribution)
+```{r}
+pnorm(1)
+```
+```{r, echo = F}
+cord.x <- c(-3,seq(-3,1,0.01),1)
+cord.y <- c(-3,dnorm(seq(-3,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+- `pnorm(1)` is not quite what we wanted yet.
+
+Using `pnorm` (2)
+=======================================================
+- What about `pnorm(0)`?
+```{r}
+pnorm(0)
+```
+```{r, echo = F}
+cord.x <- c(-3,seq(-3,0,0.01),0)
+cord.y <- c(-3,dnorm(seq(-3,0,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+Well, look at that!
+
+Finally getting our area under the curve
+========================================================
+- I hope you can guess how to do it now:
+```{r}
+pnorm(1)-pnorm(0)
+```{r, echo = F}
+cord.x <- c(0,seq(0,1,0.01),1)
+cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+- Success!
+
+Things you can do with this knowledge
+========================================================
+- Say I'm looking at random numbers from a standard normal distribution:
+```{r}
+rnorm(5)
+```
+- and I see that one of them is 4.
+  - That seems very unusual
+  - Just how unusual?
+    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?    
+
+Just how unusual is a value of 4?
+========================================================
+- Remember, when you have a continuous distribution, you can't think about point values (e.g. 5). Rather, what you want to know is:
+    - What is the probability of getting a value of 4 *or greater*?
+```{r, }
+print(pnorm(4), digits = 5)
+```
+- Is that the probability? No, that's the probability of getting a value of 4 *or less*
+- Just get the inverse probability:
+```{r}
+1 - pnorm(4)
 ```
 
 Why do we care about the normal distribution?
@@ -359,8 +498,6 @@ make_hist_and_plot(sample_means)
 ```
 ```
 
-
-
 The sampling distribution of the mean (1)
 ========================================================
 - Notice something about the means of the samples?
@@ -446,6 +583,38 @@ Sample mean and population mean (5)
 ========================================================
 - Note that when we changed the sample size, the sd of the distribution of sample means changed.
 - The mean stayed the same though!
-- The larger your sample is, the closer your sample mean is going to be to the true population mean.
+- The larger your sample is, the closer your average sample mean is going to be to the true population mean.
 - Formally speaking, the sample mean is an **unbiased estimator** of the population mean.
 - I could show you the mathematical proof for that, but I won't.
+
+Standard error of the mean (SE) (1)
+========================================================
+
+Population SD = 1
+
+|Sample size|  SD of the sample mean|
+|----------:|----------------------:|
+|         10|                    .31|
+|        100|                     .1|
+|       1000|                    .03|
+
+See a pattern?
+
+This relationship holds in general:
+$$
+\begin{equation} \label{sigmabar}
+\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
+\end{equation}
+$$
+where $\sigma_{\bar{x}}$ is the standard deviation of the sample means, $\sigma$ is the population standard deviation, and $n$ is the sample size
+
+
+Standard error of the mean (SE) (2)
+========================================================
+- Usually, we don't know what $\sigma$ is, but we can still can estimate $\sigma_{\bar{x}}$ from our sample:
+
+\begin{equation}
+SE_{\bar{x}} = \frac{s}{\sqrt{n}}
+\end{equation}
+
+where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
