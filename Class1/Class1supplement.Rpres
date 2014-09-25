@@ -61,30 +61,111 @@ Function arguments
   rnorm(n = 5, mean = 10, sd = 2)
   rnorm(5,10,2)
 ```
-- Specifying non-existent arguments will give you an error:
-```{r}
-  rnorm(cats = 3)
-```
+- Specifying non-existent arguments will give you an error.
 
 Default arguments
 =======================================================
 - Some arguments have default values
-  - You can find those out in the help file.
-  - For example, `rnorm` has `mean = 0` and `sd = 1` -- the standard normal distribution
-  - This can save you a lot of typing:
+  - You can find those out in the help file. For example, `rnorm` has `mean = 0` and `sd = 1` (the standard normal distribution). This can save you a lot of typing:
   ```{r}
   rnorm(n = 3, mean = 0, sd = 1)
   rnorm(3)
   ```
-  - Not all arguments have default values:
-  ```{r}
-  rnorm()
-  ```
+  - Not all arguments have default values. Not specifying arguments without default values will give you an error.
+  
 More R techniques used so far (2)
 =======================================================  
 - Nesting functions
   - You can run a function on the output of another function.
-  - Example: Get the mean of a random sample of 100 from the standard normal distribution
+  - Example: Get the mean of a random sample of 100 from the standard normal distribution.
   ```{r}
   mean(rnorm(100))
   ```
+
+Defining functions
+=======================================================
+- You can define as many new functions as you like
+- This capability is extremely powerful and can save you a lot of typing
+- Example: Make a function that prints "Hello World"
+  ```{r}
+  hello <- function() {
+    print("Hello World")
+    }
+  hello()
+  ```
+
+Defining functions (2)
+=======================================================
+- You can set your own arguments and default values
+- Example: Make a function that generates `n` numbers from a normal distribution, then gives you the mean.
+  ```{r}
+  rnorm_mean <- function(n, mean = 0, sd = 1) {
+    mean(rnorm(n, mean, sd))
+    }
+  rnorm_mean(n = 100, mean = 0, sd = 1)
+  rnorm_mean(5, 2, 1)
+  ```
+
+Defining functions (3)
+=======================================================
+- The value (output) of a function is the value of the expression last evaluated in the function.
+  ```{r}
+  my_function <- function() {
+    1
+    2
+    3
+    }
+  my_function()
+  ```
+  
+Defining functions (3)
+=======================================================
+- Or you can make the output explicit by using `return`
+  ```{r}
+  my_function <- function() {
+    return(3)
+    }
+  my_function()
+  ```
+  
+Repeating things (important for simulations!)
+=======================================================
+- Several different ways
+  - `for` loops:
+```{r}
+for(i in 1:5){
+  print("Meow")
+  }
+```
+
+Repeating things (2)
+=======================================================
+`replicate` function:
+```{r}
+replicate(5, print("Meow"))
+```
+
+A more realistic application of replicate
+=======================================================
+```{r}
+rnorm_mean <- function(n, mean = 0, sd = 1) {
+  mean(rnorm(n, mean, sd))
+  }
+replicate(5, rnorm_mean(20))
+replicate(5, rnorm_mean(2000))
+```
+
+Finally: plotting
+======================================================
+- For a quick overview of what's going on with your data, the standard `plot` command is quite good
+- Let's try to plot two samples from a normal distribution against each other
+```{r}
+    plot(x = rnorm(100), y = rnorm(100))
+```
+
+Plotting mathematical functions
+======================================================
+```{r}
+ plot(dnorm, from = -3, to = 3)
+```
+

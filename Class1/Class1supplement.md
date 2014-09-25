@@ -24,7 +24,7 @@ Using distribution functions
   ```
   
   ```
-  [1]  7.891  4.771 11.012 12.660
+  [1]  4.573  4.683  6.660 21.548
   ```
   - What's the probability of getting a value greater or equal to 22 from that distribution?
   
@@ -91,7 +91,7 @@ Function arguments
 ```
 
 ```
-[1] 10.552 10.150 11.316  7.338  8.916
+[1] 11.82 11.05 11.31 14.11  9.56
 ```
 
 ```r
@@ -99,17 +99,197 @@ Function arguments
 ```
 
 ```
-[1] 14.283  9.709 13.051  6.610  7.719
+[1] 13.186  8.274 10.553  8.897 11.630
 ```
-- Specifying non-existent arguments will give you an error:
+- Specifying non-existent arguments will give you an error.
 
+Default arguments
+=======================================================
+- Some arguments have default values
+  - You can find those out in the help file. For example, `rnorm` has `mean = 0` and `sd = 1` (the standard normal distribution). This can save you a lot of typing:
+  
+  ```r
+  rnorm(n = 3, mean = 0, sd = 1)
+  ```
+  
+  ```
+  [1] -1.7001  1.2141  0.5713
+  ```
+  
+  ```r
+  rnorm(3)
+  ```
+  
+  ```
+  [1] -0.4313  0.9840 -1.6748
+  ```
+  - Not all arguments have default values. Not specifying arguments without default values will give you an error.
+  
+More R techniques used so far (2)
+=======================================================  
+- Nesting functions
+  - You can run a function on the output of another function.
+  - Example: Get the mean of a random sample of 100 from the standard normal distribution.
+  
+  ```r
+  mean(rnorm(100))
+  ```
+  
+  ```
+  [1] -0.02917
+  ```
 
+Defining functions
+=======================================================
+- You can define as many new functions as you like
+- This capability is extremely powerful and can save you a lot of typing
+- Example: Make a function that prints "Hello World"
+  
+  ```r
+  hello <- function() {
+    print("Hello World")
+    }
+  hello()
+  ```
+  
+  ```
+  [1] "Hello World"
+  ```
 
+Defining functions (2)
+=======================================================
+- You can set your own arguments and default values
+- Example: Make a function that generates `n` numbers from a normal distribution, then gives you the mean.
+  
+  ```r
+  rnorm_mean <- function(n, mean = 0, sd = 1) {
+    mean(rnorm(n, mean, sd))
+    }
+  rnorm_mean(n = 100, mean = 0, sd = 1)
+  ```
+  
+  ```
+  [1] -0.2183
+  ```
+  
+  ```r
+  rnorm_mean(5, 2, 1)
+  ```
+  
+  ```
+  [1] 2.283
+  ```
 
+Defining functions (3)
+=======================================================
+- The value (output) of a function is the value of the expression last evaluated in the function.
+  
+  ```r
+  my_function <- function() {
+    1
+    2
+    3
+    }
+  my_function()
+  ```
+  
+  ```
+  [1] 3
+  ```
+  
+Defining functions (3)
+=======================================================
+- Or you can make the output explicit by using `return`
+  
+  ```r
+  my_function <- function() {
+    return(3)
+    }
+  my_function()
+  ```
+  
+  ```
+  [1] 3
+  ```
+  
+Repeating things (important for simulations!)
+=======================================================
+- Several different ways
+  - `for` loops:
 
-
-
+```r
+for(i in 1:5){
+  print("Meow")
+  }
+```
 
 ```
-Error in rnorm(cats = 3) : unused argument (cats = 3)
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
 ```
+
+Repeating things (2)
+=======================================================
+`replicate` function:
+
+```r
+replicate(5, print("Meow"))
+```
+
+```
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
+[1] "Meow"
+```
+
+```
+[1] "Meow" "Meow" "Meow" "Meow" "Meow"
+```
+
+A more realistic application of replicate
+=======================================================
+
+```r
+rnorm_mean <- function(n, mean = 0, sd = 1) {
+  mean(rnorm(n, mean, sd))
+  }
+replicate(5, rnorm_mean(20))
+```
+
+```
+[1] -0.03954 -0.36121 -0.29662 -0.19273  0.45627
+```
+
+```r
+replicate(5, rnorm_mean(2000))
+```
+
+```
+[1]  0.001606 -0.032420  0.013609  0.027143 -0.022351
+```
+
+Finally: plotting
+======================================================
+- For a quick overview of what's going on with your data, the standard `plot` command is quite good
+- Let's try to plot two samples from a normal distribution against each other
+
+```r
+    plot(x = rnorm(100), y = rnorm(100))
+```
+
+![plot of chunk unnamed-chunk-17](Class1supplement-figure/unnamed-chunk-17.png) 
+
+Plotting mathematical functions
+======================================================
+
+```r
+ plot(dnorm, from = -3, to = 3)
+```
+
+![plot of chunk unnamed-chunk-18](Class1supplement-figure/unnamed-chunk-18.png) 
+
