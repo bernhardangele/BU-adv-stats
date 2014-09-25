@@ -1,7 +1,7 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: October 2nd, 2014
+date: Class 1, October 2nd, 2014
 
 What is advanced about these statistics?
 ========================================================
@@ -88,7 +88,7 @@ function (..., list = character(), pos = -1, envir = as.environment(pos),
     list <- .Primitive("c")(list, names)
     .Internal(remove(list, envir, inherits))
 }
-<bytecode: 0x280e058>
+<bytecode: 0x1b7fca0>
 <environment: namespace:base>
 ```
 
@@ -412,7 +412,7 @@ head(x)
 ```
 
 ```
-[1]  0.7767 -0.5243  0.2088  0.3703 -1.0421  0.2362
+[1]  1.1599  0.3240 -0.3409  0.5629  2.3567  0.8886
 ```
 
 ```r
@@ -560,7 +560,7 @@ rnorm(5)
 ```
 
 ```
-[1]  1.42672 -0.92177  0.54005 -0.28949 -0.01103
+[1] -0.5055 -0.6726 -0.8051 -1.4701  0.5931
 ```
 - and I see that one of them is 4.
   - That seems very unusual
@@ -631,7 +631,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 3.008
+[1] 2.999
 ```
 
 ```r
@@ -639,7 +639,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.1684
+[1] 0.1742
 ```
 
 Sampling from a gamma distribution (2)
@@ -688,7 +688,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 0.4984
+[1] 0.5002
 ```
 
 ```r
@@ -696,7 +696,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.02977
+[1] 0.02919
 ```
 
 Sampling from a uniform distribution (2)
@@ -743,7 +743,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.249   0.909   0.999   0.974   1.070   1.290 
+  0.249   0.926   1.020   1.050   1.130   2.190 
 ```
 
 Sampling from an exponential distribution (2)
@@ -891,3 +891,4 @@ SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
 
 where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
+- More about that next week.

@@ -1,7 +1,7 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: October 2nd, 2014
+date: Class 1, October 2nd, 2014
 
 What is advanced about these statistics?
 ========================================================
@@ -618,3 +618,4 @@ SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
 
 where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
+- More about that next week.
