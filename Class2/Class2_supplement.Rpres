@@ -1,0 +1,56 @@
+Advanced Statistics
+========================================================
+author: Bernhard Angele 
+date: Class 2 supplement, October 9, 2014
+
+New stuff we did with R this week
+========================================================
+- Select a named entry of a list with `$`
+```{r}
+my_new_list <- list(animal = "cat", ears = "pointy", sound = "meow")
+my_new_list$animal
+my_new_list$sound
+```
+
+More practical example
+========================================================
+- Some functions output a list (although that may be cleverly hidden by the `print` command)
+- To find out the **structure** of an object, use `str(object_name)`:
+```{r}
+my_new_list <- list(animal = "cat", ears = "pointy", sound = "meow")
+str(my_new_list)
+```
+
+Structure of the t.test() output
+========================================================
+```{r}
+t_results <- t.test( rnorm(n = 10, mean = 3, sd = 1))
+str(t_results)
+```
+
+Getting the CI from the t.test() output
+========================================================
+```{r}
+t_results$conf.int
+```
+You can also extract elements by number (slicing):
+```{r}
+t_results$conf.int[1]
+t_results$conf.int[2]
+```
+
+Logical tests
+========================================================
+- You can use `>`, `<`, `==`, `>=`, `<=` to perform a test. The result of a test is either `true` or `false`
+Is 3 part of the CI?
+```{r}
+3 > t_results$conf.int[1] & 3 < t_results$conf.int[2]
+```
+
+Count table
+========================================================
+`table(variable)` will give you a table with the counts of each unique element in `variable`
+```{r}
+test_array <- c(1,1,1,1,1,2,3,3,3,3,3,3,4,4)
+table(test_array)
+```

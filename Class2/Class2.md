@@ -249,7 +249,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.839
+[1] 2.82
 ```
 
 ```r
@@ -257,7 +257,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.9059
+[1] 1.276
 ```
 
 ```r
@@ -265,7 +265,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.191
+[1] 1.907
 ```
 
 ```r
@@ -273,14 +273,13 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.487
+[1] 3.733
 ```
 
 There's a function for that
 ===========================================================
 
 ```r
-#sample_means <- rnorm(n = 10, mean = 3, sd = 1)
 t.test(sample_means)
 ```
 
@@ -289,23 +288,93 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 9.911, df = 9, p-value = 3.856e-06
+t = 6.988, df = 9, p-value = 6.407e-05
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.191 3.487
+ 1.907 3.733
 sample estimates:
 mean of x 
-    2.839 
+     2.82 
 ```
 How convenient is that?
 
 What does the CI of the sample mean mean? (sorry)
 ===========================================================
 - Remember, we are reversing the idea that the sample mean has a 95% probability to be within the 95% confidence interval around the population mean.
-- When we calculate a 95% CI from a *sample* his **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
+- When we calculate a 95% CI from a *sample* this **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
 - Rather, it means that if you take a lot of samples and compute the CI around the sample mean, 95% of those CIs will contain the true population mean.
 - In other words, the CI bounds are random variables, but the population mean isn't.
 - (In Bayesian statistics, you can actually get something equivalent to the first definition -- a 95% credible interval.)
+
+Let's test this
+==========================================================
+- Let's get 10 samples from a normal distribution, then get CIs from them and see how often they contain the true mean.
+- Write a function for that:
+
+```r
+test_cis <- function(n, mean = 60, sd = 4){
+  t_results <- t.test(rnorm(n, mean, sd))
+  mean > t_results$conf.int[1] & mean < t_results$conf.int[2]
+}
+```
+
+Let's test this (2)
+==========================================================
+- Now run the tests:
+
+```r
+mean_in_ci <- replicate(1000, test_cis(10, 60, 4))
+table(mean_in_ci)
+```
+
+```
+mean_in_ci
+FALSE  TRUE 
+   40   960 
+```
+- It's true! Almost exactly 5%
+
+What happens if we don't use the t distribution?
+==========================================================
+
+```r
+test_cis_norm <- function(n, mean = 60, sd = 4){
+  samples <- rnorm(n, mean, sd)
+  upper <- mean(samples) + 1.96*(sd(samples)/sqrt(n))
+  lower <- mean(samples) - 1.96*(sd(samples)/sqrt(n))
+  mean > lower & mean < upper
+}
+```
+What happens if we don't use the t distribution? (2)
+==========================================================
+
+```r
+mean_in_ci <- replicate(1000, test_cis_norm(10, 60, 4))
+table(mean_in_ci)
+```
+
+```
+mean_in_ci
+FALSE  TRUE 
+   90   910 
+```
+- Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
+
+What if we use a larger sample size?
+==========================================================
+
+```r
+mean_in_ci <- replicate(1000, test_cis_norm(100, 60, 4))
+table(mean_in_ci)
+```
+
+```
+mean_in_ci
+FALSE  TRUE 
+   47   953 
+```
+- Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
+- Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
 
 Random variables
 ==========================================================
@@ -325,7 +394,7 @@ $\omega \in S$ exactly one number $X(\omega) = x$.
   
 Random variables (2)
 ==========================================================
-Every discrete random variable X has associated with it a  **probability mass/denstiy function (PDF)**, also called *distribution function*.
+Every discrete random variable X has associated with it a  **probability mass/density function (PDF)**, also called *distribution function*.
 $$
 \begin{equation}
 p_X : S_X \rightarrow [0, 1] 
