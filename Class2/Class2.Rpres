@@ -207,6 +207,7 @@ Let's try this
 - Using the *t*-distribution can compute CIs from samples as follows: get the lower and upper bounds (depending on sample size, e.g. 10):
 ```{r}
   n <- 10
+sample_means <- rnorm(n, mean = 3, sd = 1)
   qt(.025, df = n - 1)
   qt(.975, df = n - 1)
 ```
@@ -218,26 +219,31 @@ Computing CIs
 $\bar{x} = \mu_{\bar{x}} \pm 2.262 \times \frac{s}{\sqrt{n}}$
 - Remember we estimated $\mu_{\bar{x}}$ using the sample mean
 
+Computing CIs (2)
+===========================================================
 ```{r}
-  sample_mean <- 3
-  sample_sd <- 1
-  (lower_bound <- sample_mean + qt(.025, df = n - 1)*sample_sd)
-  (upper_bound <- sample_mean + qt(.975, df = n - 1)*sample_sd)
+  (sample_mean <- mean(sample_means))
+  (sample_sd <- sd(sample_means))
+  (lower_bound <- sample_mean + qt(.025, df = n - 1)*(sample_sd/sqrt(n)))
+  (upper_bound <- sample_mean + qt(.975, df = n - 1)*(sample_sd/sqrt(n)))
 ```
-Why $n-1$? Don't worry about it unless you really love statistics.
 
 There's a function for that
 ===========================================================
 ```{r}
-sample_means <- rnorm(n = 10, mean = 3, sd = 1)
+#sample_means <- rnorm(n = 10, mean = 3, sd = 1)
 t.test(sample_means)
 ```
+How convenient is that?
 
 What does the CI of the sample mean mean? (sorry)
 ===========================================================
-- Remember, we are reversing the idea that the 95% confidence interval around the population mean will have a 95% chance of containing the sample mean.
-- This **DOES NOT MEAN** that we are 95% confident that the population mean is in within this 95% CI.
+- Remember, we are reversing the idea that the sample mean has a 95% probability to be within the 95% confidence interval around the population mean.
+- When we calculate a 95% CI from a *sample* his **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
 - Rather, it means that if you take a lot of samples and compute the CI around the sample mean, 95% of those CIs will contain the true population mean.
-- This is a subtle, but important distinction.
-- (In Bayesian statistics, you can actually get something equivalent to the first definition.)
+- In other words, the CI bounds are random variables, but the population mean isn't.
+- (In Bayesian statistics, you can actually get something equivalent to the first definition -- a 95% credible interval.)
 
+Random variables
+==========================================================
+Can we follow Shravan here? Warning: Some mathematical notation follows.
