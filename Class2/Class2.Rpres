@@ -211,7 +211,7 @@ sample_means <- rnorm(n, mean = 3, sd = 1)
   qt(.025, df = n - 1)
   qt(.975, df = n - 1)
 ```
-Why $n-1$? Don't worry about it unless you really love statistics.
+Why $n-1$? Unless you really love statistics and want to find out more, don't worry about it.
 
 Computing CIs
 ==========================================================
@@ -247,3 +247,50 @@ What does the CI of the sample mean mean? (sorry)
 Random variables
 ==========================================================
 Can we follow Shravan here? Warning: Some mathematical notation follows.
+
+- A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+  - Note: $\mathbb{R}$ = real numbers
+
+- $S_X$ is all the $x$'s (all the possible values of X, the support of X). i.e., $x \in S_X$.
+
+- Good example: number of coin tosses till H
+
+  - $X: \omega \rightarrow x$
+	- $\omega$: H, TH, TTH,$\dots$ (infinite)
+	- $x=0,1,2,\dots; x \in S_X$
+  
+Random variables (2)
+==========================================================
+Every discrete random variable X has associated with it a  **probability mass/denstiy function (PDF)**, also called *distribution function*.
+$$
+\begin{equation}
+p_X : S_X \rightarrow [0, 1] 
+\end{equation}
+$$
+defined by
+$$
+\begin{equation}
+p_X(x) = P(X(\omega) = x), x \in S_X
+ \end{equation}
+$$
+- Back to the example: number of coin tosses till H
+
+  - $X: \omega \rightarrow x$
+  - $\omega$: H, TH, TTH,$\dots$ (infinite)
+	- $x=0,1,2,\dots; x \in S_X$
+  - $p_X = .5, .25, .125,\dots$ 
+  
+Hypothesis tests
+=========================================================
+- In a way, by calculating the CI we already have a way to test hypotheses
+- Let's say we got a 95% CI from our sample with a lower bound of 2 and an upper bound of 3.
+- Let's use the simplest null hypothesis possible
+  - Null hypothesis: the mean of the population that the sample came from is 0
+  - $H_0: \mu = 0$
+  - Given the 95% CI above, can we reject the null hypothesis?
+    - And if so, what is the chance that we're wrong?
+  - Answer: Yes, we can, since 0 is not part of the CI.
+    - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
+    - This is called the $\alpha$-error, and its probability here is (at most) 5%.
+    

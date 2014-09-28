@@ -218,6 +218,7 @@ Let's try this
 
 ```r
   n <- 10
+sample_means <- rnorm(n, mean = 3, sd = 1)
   qt(.025, df = n - 1)
 ```
 
@@ -232,7 +233,7 @@ Let's try this
 ```
 [1] 2.262
 ```
-Why $n-1$? Don't worry about it unless you really love statistics.
+Why $n-1$? Unless you really love statistics and want to find out more, don't worry about it.
 
 Computing CIs
 ==========================================================
@@ -240,31 +241,46 @@ Computing CIs
 $\bar{x} = \mu_{\bar{x}} \pm 2.262 \times \frac{s}{\sqrt{n}}$
 - Remember we estimated $\mu_{\bar{x}}$ using the sample mean
 
+Computing CIs (2)
+===========================================================
 
 ```r
-  sample_mean <- 3
-  sample_sd <- 1
-  (lower_bound <- sample_mean + qt(.025, df = n - 1)*sample_sd)
+  (sample_mean <- mean(sample_means))
 ```
 
 ```
-[1] 0.7378
+[1] 2.839
 ```
 
 ```r
-  (upper_bound <- sample_mean + qt(.975, df = n - 1)*sample_sd)
+  (sample_sd <- sd(sample_means))
 ```
 
 ```
-[1] 5.262
+[1] 0.9059
 ```
-Why $n-1$? Don't worry about it unless you really love statistics.
+
+```r
+  (lower_bound <- sample_mean + qt(.025, df = n - 1)*(sample_sd/sqrt(n)))
+```
+
+```
+[1] 2.191
+```
+
+```r
+  (upper_bound <- sample_mean + qt(.975, df = n - 1)*(sample_sd/sqrt(n)))
+```
+
+```
+[1] 3.487
+```
 
 There's a function for that
 ===========================================================
 
 ```r
-sample_means <- rnorm(n = 10, mean = 3, sd = 1)
+#sample_means <- rnorm(n = 10, mean = 3, sd = 1)
 t.test(sample_means)
 ```
 
@@ -273,20 +289,71 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 10.43, df = 9, p-value = 2.514e-06
+t = 9.911, df = 9, p-value = 3.856e-06
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.325 3.612
+ 2.191 3.487
 sample estimates:
 mean of x 
-    2.968 
+    2.839 
 ```
+How convenient is that?
 
 What does the CI of the sample mean mean? (sorry)
 ===========================================================
-- Remember, we are reversing the idea that the 95% confidence interval around the population mean will have a 95% chance of containing the sample mean.
-- This **DOES NOT MEAN** that we are 95% confident that the population mean is in within this 95% CI.
+- Remember, we are reversing the idea that the sample mean has a 95% probability to be within the 95% confidence interval around the population mean.
+- When we calculate a 95% CI from a *sample* his **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
 - Rather, it means that if you take a lot of samples and compute the CI around the sample mean, 95% of those CIs will contain the true population mean.
-- This is a subtle, but important distinction.
-- (In Bayesian statistics, you can actually get something equivalent to the first definition.)
+- In other words, the CI bounds are random variables, but the population mean isn't.
+- (In Bayesian statistics, you can actually get something equivalent to the first definition -- a 95% credible interval.)
 
+Random variables
+==========================================================
+Can we follow Shravan here? Warning: Some mathematical notation follows.
+
+- A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
+$\omega \in S$ exactly one number $X(\omega) = x$.
+  - Note: $\mathbb{R}$ = real numbers
+
+- $S_X$ is all the $x$'s (all the possible values of X, the support of X). i.e., $x \in S_X$.
+
+- Good example: number of coin tosses till H
+
+  - $X: \omega \rightarrow x$
+	- $\omega$: H, TH, TTH,$\dots$ (infinite)
+	- $x=0,1,2,\dots; x \in S_X$
+  
+Random variables (2)
+==========================================================
+Every discrete random variable X has associated with it a  **probability mass/denstiy function (PDF)**, also called *distribution function*.
+$$
+\begin{equation}
+p_X : S_X \rightarrow [0, 1] 
+\end{equation}
+$$
+defined by
+$$
+\begin{equation}
+p_X(x) = P(X(\omega) = x), x \in S_X
+ \end{equation}
+$$
+- Back to the example: number of coin tosses till H
+
+  - $X: \omega \rightarrow x$
+  - $\omega$: H, TH, TTH,$\dots$ (infinite)
+	- $x=0,1,2,\dots; x \in S_X$
+  - $p_X = .5, .25, .125,\dots$ 
+  
+Hypothesis tests
+=========================================================
+- In a way, by calculating the CI we already have a way to test hypotheses
+- Let's say we got a 95% CI from our sample with a lower bound of 2 and an upper bound of 3.
+- Let's use the simplest null hypothesis possible
+  - Null hypothesis: the mean of the population that the sample came from is 0
+  - $H_0: \mu = 0$
+  - Given the 95% CI above, can we reject the null hypothesis?
+    - And if so, what is the chance that we're wrong?
+  - Answer: Yes, we can, since 0 is not part of the CI.
+    - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
+    - This is called the $\alpha$-error, and its probability here is (at most) 5%.
+    
