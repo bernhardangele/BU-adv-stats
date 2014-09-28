@@ -612,10 +612,11 @@ where $\sigma_{\bar{x}}$ is the standard deviation of the sample means, $\sigma$
 Standard error of the mean (SE) (2)
 ========================================================
 - Usually, we don't know what $\sigma$ is, but we can still can estimate $\sigma_{\bar{x}}$ from our sample:
-
+$$
 \begin{equation}
 SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
+$$
 
 where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
 - More about that next week.

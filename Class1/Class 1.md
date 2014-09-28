@@ -88,7 +88,7 @@ function (..., list = character(), pos = -1, envir = as.environment(pos),
     list <- .Primitive("c")(list, names)
     .Internal(remove(list, envir, inherits))
 }
-<bytecode: 0x1b7fca0>
+<bytecode: 0x0000000007193060>
 <environment: namespace:base>
 ```
 
@@ -412,7 +412,7 @@ head(x)
 ```
 
 ```
-[1]  1.1599  0.3240 -0.3409  0.5629  2.3567  0.8886
+[1] -0.6318 -0.1379  1.0179 -0.1949 -0.4128 -0.7351
 ```
 
 ```r
@@ -560,7 +560,7 @@ rnorm(5)
 ```
 
 ```
-[1] -0.5055 -0.6726 -0.8051 -1.4701  0.5931
+[1]  1.0246  1.7096  0.2458 -0.5190  0.8213
 ```
 - and I see that one of them is 4.
   - That seems very unusual
@@ -631,7 +631,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 2.999
+[1] 3.003
 ```
 
 ```r
@@ -639,7 +639,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.1742
+[1] 0.1743
 ```
 
 Sampling from a gamma distribution (2)
@@ -688,7 +688,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 0.5002
+[1] 0.5024
 ```
 
 ```r
@@ -696,7 +696,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.02919
+[1] 0.02958
 ```
 
 Sampling from a uniform distribution (2)
@@ -743,7 +743,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.249   0.926   1.020   1.050   1.130   2.190 
+  0.262   0.889   1.000   0.992   1.100   1.410 
 ```
 
 Sampling from an exponential distribution (2)
