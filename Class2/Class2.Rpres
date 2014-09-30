@@ -338,5 +338,34 @@ Hypothesis tests
     - And if so, what is the chance that we're wrong?
   - Answer: Yes, we can, since 0 is not part of the CI.
     - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
-    - This is called the $\alpha$-error, and its probability here is (at most) 5%.
+    - This is called the $\alpha$-error, and its probability here is 5%.
     
+Hypothesis tests (2)
+===========================================================
+Let's look at the `t.test` output again.
+```{r}
+t.test(rnorm(n = 10, mean = 1, sd = 1))
+```
+
+Two-tailed t-tests
+============================================================
+- Instead of computing the CI from the t-value, we can also just take the t-value itself and check how large it is.
+- We can determine a critical t-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is
+```{r}
+qt(.975, df = 9)
+```
+and $t_{crit}$ for the lower bound is
+```{r}
+qt(.025, df = 9) # note that the t-distribution is symmetrical
+```
+In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
+
+What about one-tailed t-tests?
+===========================================================
+- If we are absolutely sure of the direction of the effect, then we could use a t-test that only rejects the null hypothesis when the t-value is greater than $t_{crit}$ or if it is smaller than $t_{crit}$ (depending on what direction we want to test for).
+- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only.
+```{r}
+qt(.95, df = 9)
+```
+- But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
+- This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.

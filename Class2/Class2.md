@@ -249,7 +249,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.82
+[1] 2.526
 ```
 
 ```r
@@ -257,7 +257,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.276
+[1] 0.954
 ```
 
 ```r
@@ -265,7 +265,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.907
+[1] 1.843
 ```
 
 ```r
@@ -273,7 +273,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.733
+[1] 3.208
 ```
 
 There's a function for that
@@ -288,13 +288,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 6.988, df = 9, p-value = 6.407e-05
+t = 8.372, df = 9, p-value = 1.537e-05
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 1.907 3.733
+ 1.843 3.208
 sample estimates:
 mean of x 
-     2.82 
+    2.526 
 ```
 How convenient is that?
 
@@ -330,7 +330,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   40   960 
+   35   965 
 ```
 - It's true! Almost exactly 5%
 
@@ -356,7 +356,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   90   910 
+   74   926 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -371,7 +371,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   47   953 
+   45   955 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -424,5 +424,64 @@ Hypothesis tests
     - And if so, what is the chance that we're wrong?
   - Answer: Yes, we can, since 0 is not part of the CI.
     - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
-    - This is called the $\alpha$-error, and its probability here is (at most) 5%.
+    - This is called the $\alpha$-error, and its probability here is 5%.
     
+Hypothesis tests (2)
+===========================================================
+Let's look at the `t.test` output again.
+
+```r
+t.test(rnorm(n = 10, mean = 1, sd = 1))
+```
+
+```
+
+	One Sample t-test
+
+data:  rnorm(n = 10, mean = 1, sd = 1)
+t = 3.899, df = 9, p-value = 0.003623
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 0.5609 2.1109
+sample estimates:
+mean of x 
+    1.336 
+```
+
+Two-tailed t-tests
+============================================================
+- Instead of computing the CI from the t-value, we can also just take the t-value itself and check how large it is.
+- We can determine a critical t-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is
+
+```r
+qt(.975, df = 9)
+```
+
+```
+[1] 2.262
+```
+and $t_{crit}$ for the lower bound is
+
+```r
+qt(.025, df = 9) # note that the t-distribution is symmetrical
+```
+
+```
+[1] -2.262
+```
+In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
+
+What about one-tailed t-tests?
+===========================================================
+- If we are absolutely sure of the direction of the effect, then we could use a t-test that only rejects the null hypothesis when the t-value is greater than $t_{crit}$ or if it is smaller than $t_{crit}$ (depending on what direction we want to test for).
+- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only.
+
+```r
+qt(.95, df = 9)
+```
+
+```
+[1] 1.833
+```
+- But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
+- This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
