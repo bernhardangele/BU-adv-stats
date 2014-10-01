@@ -88,7 +88,7 @@ function (..., list = character(), pos = -1, envir = as.environment(pos),
     list <- .Primitive("c")(list, names)
     .Internal(remove(list, envir, inherits))
 }
-<bytecode: 0x0000000007193060>
+<bytecode: 0x32426e0>
 <environment: namespace:base>
 ```
 
@@ -412,7 +412,7 @@ head(x)
 ```
 
 ```
-[1] -0.6318 -0.1379  1.0179 -0.1949 -0.4128 -0.7351
+[1]  0.3067  0.4235 -0.4959  0.2631 -0.6041 -1.5722
 ```
 
 ```r
@@ -560,7 +560,7 @@ rnorm(5)
 ```
 
 ```
-[1]  1.0246  1.7096  0.2458 -0.5190  0.8213
+[1]  1.59353  0.08805 -1.33103 -0.34907 -0.07744
 ```
 - and I see that one of them is 4.
   - That seems very unusual
@@ -631,7 +631,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 3.003
+[1] 3.002
 ```
 
 ```r
@@ -639,7 +639,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.1743
+[1] 0.1778
 ```
 
 Sampling from a gamma distribution (2)
@@ -688,7 +688,7 @@ mean(sample_means)
 ```
 
 ```
-[1] 0.5024
+[1] 0.5003
 ```
 
 ```r
@@ -696,7 +696,7 @@ sd(sample_means)
 ```
 
 ```
-[1] 0.02958
+[1] 0.02886
 ```
 
 Sampling from a uniform distribution (2)
@@ -743,7 +743,7 @@ summary(sample_means)
 
 ```
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.262   0.889   1.000   0.992   1.100   1.410 
+  0.412   0.912   1.030   1.030   1.140   2.350 
 ```
 
 Sampling from an exponential distribution (2)
@@ -885,10 +885,11 @@ where $\sigma_{\bar{x}}$ is the standard deviation of the sample means, $\sigma$
 Standard error of the mean (SE) (2)
 ========================================================
 - Usually, we don't know what $\sigma$ is, but we can still can estimate $\sigma_{\bar{x}}$ from our sample:
-
+$$
 \begin{equation}
 SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
+$$
 
 where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
 - More about that next week.

@@ -249,7 +249,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.526
+[1] 3.061
 ```
 
 ```r
@@ -257,7 +257,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.954
+[1] 1.043
 ```
 
 ```r
@@ -265,7 +265,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.843
+[1] 2.314
 ```
 
 ```r
@@ -273,7 +273,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.208
+[1] 3.807
 ```
 
 There's a function for that
@@ -288,13 +288,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 8.372, df = 9, p-value = 1.537e-05
+t = 9.28, df = 9, p-value = 6.641e-06
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 1.843 3.208
+ 2.314 3.807
 sample estimates:
 mean of x 
-    2.526 
+    3.061 
 ```
 How convenient is that?
 
@@ -330,7 +330,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   35   965 
+   46   954 
 ```
 - It's true! Almost exactly 5%
 
@@ -356,7 +356,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   74   926 
+   77   923 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -371,7 +371,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   45   955 
+   68   932 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -439,13 +439,13 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
-t = 3.899, df = 9, p-value = 0.003623
+t = 3.137, df = 9, p-value = 0.01198
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.5609 2.1109
+ 0.4432 2.7345
 sample estimates:
 mean of x 
-    1.336 
+    1.589 
 ```
 
 Two-tailed t-tests
@@ -485,3 +485,298 @@ qt(.95, df = 9)
 ```
 - But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
 - This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
+
+Power
+===========================================================
+- We've talked about the $\alpha$ error (which we want to be no greater than 5%).
+- What about the opposite error, where there is an actual effect but we fail to reject the null hypothesis?
+
+| Test result       | No true effect         | True effect            |
+|:------------------|:-----------------------|:-----------------------|
+|$H_0$ rejected     | Type I error ($\alpha$)| correct  (Power)       |   
+|$H_0$ not rejected | correct                | Type II error ($\beta$)|
+
+- Power: The probability of correctly rejecting the $H_0$ given that there is an actual effect in the population.
+- By the way, you **never** accept the $H_0$ (the table in Shravan's statistics notes got that wrong).
+
+Plotting the situation
+=========================================================
+![plot of chunk unnamed-chunk-27](Class2-figure/unnamed-chunk-27.png) 
+
+Power simulations
+==========================================================
+- For simple (and even more complex) designs, you can compute power analytically.
+- But simulations are a lot easier!
+- Let's say we think that the true mean is not 0, but .5, the sd is 1, and we have a sample size of 10.
+
+```r
+t_test_sim <- function(n, mean = .5, sd = 1){
+  t_results <- t.test(rnorm(n, mean, sd))
+  t_results$p.value <= .05}
+table(replicate(1000, t_test_sim(10, .5, 1)))
+```
+
+```
+
+FALSE  TRUE 
+  710   290 
+```
+Not so great!
+
+How to increase power
+=======================================================
+Let's try some different scenarios:
+- The effect size in the population is larger
+
+```r
+table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
+```
+
+```
+
+FALSE  TRUE 
+  216   784 
+```
+- The standard deviation (i.e. the noise) in the population is lower
+
+```r
+table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
+```
+
+```
+
+FALSE  TRUE 
+  188   812 
+```
+
+How to increase power (realistically!)
+=======================================================
+You don't really have any direct control over population mean (i.e. effect size) or sd (i.e. noise). Let's focus on the one variable that you do have control over.
+- The sample size is larger
+
+```r
+table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
+```
+
+```
+
+FALSE  TRUE 
+  430   570 
+```
+
+```r
+table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talking!
+```
+
+```
+
+FALSE  TRUE 
+  143   857 
+```
+
+Double-checking our results
+=========================================================
+- Let's just check analytically that we have this correctly: If we want to show in the one-sample t-test that a mean of .5 is different from 0 (when sd = 1), we need about 40 subjects. R has a function for that!
+
+```r
+power.t.test(n = 40, delta = .5, sd = 1, type = "one.sample")
+```
+
+```
+
+     One-sample t test power calculation 
+
+              n = 40
+          delta = 0.5
+             sd = 1
+      sig.level = 0.05
+          power = 0.8694
+    alternative = two.sided
+```
+Remarkably similar to our simulation! (See Vasishth, Chapter 3 if you want to know how R calculates this!)
+
+Setting yourself up for success (or failure)
+=========================================================
+- You don't want to run an underpowered study. Most likely, you'll get a null result that tells you nothing about the true state of the world.
+- How can you avoid this? 
+  - Run a realistic number of participants so you reach acceptable power (the APA recomments .8):
+
+```r
+power.t.test(delta = .5, sd = 1, power = .8, type = "one.sample")
+```
+
+```
+
+     One-sample t test power calculation 
+
+              n = 33.37
+          delta = 0.5
+             sd = 1
+      sig.level = 0.05
+          power = 0.8
+    alternative = two.sided
+```
+
+Don't cheat!
+========================================================
+- How about the following strategy? 
+
+> Just run the hypothesis test on the data after every new sample and stop as soon as you get a significant result.
+
+  - Let's see just what happens to $\alpha$ if you do that.
+
+```r
+t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
+  samples <- NULL
+  significant <- FALSE
+  
+  while(length(samples) <= n_max & significant == FALSE){
+      samples <- c(samples, rnorm(n_increments, mean = 0, sd = sd))
+      significant <- t.test(samples)$p.value  <= .05
+    }
+  return(significant)
+  }
+```
+
+The consequences of cheating
+======================================================
+Let's run this simulation 1000 times and make a table with the results:
+
+```r
+table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1)))
+```
+
+```
+
+FALSE  TRUE 
+  751   249 
+```
+- Whoa! False positive alert!
+  - $\alpha$ is at 25%, instead of 5% where it should be.
+- Unfortunately, this strategy of using stopping rules ("data peeking") is quite common.
+  - Solution: do a power analysis, set your sample size beforehand, and stick to it!
+
+Testing more interesting hypotheses
+==========================================================
+- So far, we have been testing the null hypothesis that our sample mean is 0.
+- This is not what we usually do in Psychology.
+- Instead, we want to know if there is a significant difference between the means of two (or more) samples.
+  - For example, you might give only one group an intervention against anxiety, with the other one serving as the control.
+    - Does the intervention work? 
+      - Do people in the treatment group report lower anxiety? 
+      - Can we generalise this to the population?
+      - Should we use this intervention in clinical practice?
+  - A lot of effort and money may be wasted if you get these questions wrong.
+  
+The two-sample t-test
+==========================================================
+- Remember, we are comparing two samples now. We'll call the sample means $\mu_1$ and $\mu_2$.
+- Our null hypothesis is $H_0: \mu_1 = \mu_2$
+- We can rephrase this as $H_0: \mu_1 - \mu_2 = \delta = 0$
+- We already know the logic of this: we just want to find out if $\delta$ is extreme enough so we can reject the $H_0$.
+- Let's see how $\delta$ is distributed.
+
+```r
+simulate_d <- function(n1, n2, mean1, mean2, sd1, sd2){
+  mean(rnorm(n1, mean1, sd1)) - mean(rnorm(n2, mean2, sd2))
+}
+```
+
+The two-sample t-test (2)
+==========================================================
+Now run the simulation and make a histogram.
+
+```r
+d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 10, sd2 = 10))
+paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
+```
+
+```
+[1] "Mean = -10.21 SD =  4.36"
+```
+
+```r
+hist(d_samples)
+```
+
+![plot of chunk unnamed-chunk-37](Class2-figure/unnamed-chunk-37.png) 
+
+The two-sample t-test (3)
+=========================================================
+- OK, this looks normally distributed enough
+- The mean of this distribution seems to be centered on the difference between $\mu_1$ and $\mu_2$.
+- But what is the standard deviation? Let's try what happens if we change the sd of the two groups.
+
+```r
+d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
+sd(d_samples)
+```
+
+```
+[1] 6.903
+```
+
+```r
+d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 10, sd2 = 20))
+sd(d_samples)
+```
+
+```
+[1] 7.209
+```
+
+The two-sample t-test (3)
+=========================================================
+- Let's also change the sample size
+
+```r
+d_samples <- replicate(1000, simulate_d(n1 = 20, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
+sd(d_samples)
+```
+
+```
+[1] 5.418
+```
+
+```r
+d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 20, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
+sd(d_samples)
+```
+
+```
+[1] 6.723
+```
+- Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
+
+The two-sample t-test (4)
+=========================================================
+- We could play with the simulations until we've figured the relationship out, but as a shortcut, here it is:
+$$
+\sigma_{\bar{x}_1 - \bar{x}_2} = \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+$$
+- Based on this, we could calculate CIs or just a z-value (why not t? Hold your horses!)
+- Remember our $H_0: \mu_1 - \mu_2 = 0$ 
+- The z-value would then be:
+$z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1- \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}$
+
+- (since our null hypothesis is that $\mu_1 - \mu_2 = 0$)
+
+The two-sample t-test (5)
+==========================================================
+- Of course, in real life we don't know the population sd
+- So we have to estimate it using s^2
+- This would be a t-value, not a z-value
+
+$t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
+
+- Only problem: what is the df of that test?
+  - There are some shortcuts that we can take if the sample sizes and population variances are the same, but is there a general solution?
+- Shravan suggests we should just use the lower of the sample sizes, but this will cost us power
+- This was actually a big problem in statistics, but B. L. Welch found an approximate solution
+- You can look the details up on Wikipedia, but R knows them and applies them automatically when you use `t.test`.
+
+The dependent t-test for paired samples
+==========================================================
+- This is actually a lot easier. Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample t-test to check if they are 0.
+- Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.
+- We'll get back to that next week when we're talking about ANOVAs.
