@@ -249,7 +249,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.061
+[1] 2.79
 ```
 
 ```r
@@ -257,7 +257,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.043
+[1] 0.8948
 ```
 
 ```r
@@ -265,7 +265,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.314
+[1] 2.15
 ```
 
 ```r
@@ -273,7 +273,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.807
+[1] 3.43
 ```
 
 There's a function for that
@@ -288,13 +288,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 9.28, df = 9, p-value = 6.641e-06
+t = 9.861, df = 9, p-value = 4.021e-06
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.314 3.807
+ 2.15 3.43
 sample estimates:
 mean of x 
-    3.061 
+     2.79 
 ```
 How convenient is that?
 
@@ -330,7 +330,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   46   954 
+   45   955 
 ```
 - It's true! Almost exactly 5%
 
@@ -356,7 +356,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   77   923 
+   87   913 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -371,7 +371,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   68   932 
+   47   953 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -439,13 +439,13 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
-t = 3.137, df = 9, p-value = 0.01198
+t = 4.27, df = 9, p-value = 0.00208
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.4432 2.7345
+ 0.6854 2.2296
 sample estimates:
 mean of x 
-    1.589 
+    1.458 
 ```
 
 Two-tailed t-tests
@@ -519,7 +519,7 @@ table(replicate(1000, t_test_sim(10, .5, 1)))
 ```
 
 FALSE  TRUE 
-  710   290 
+  723   277 
 ```
 Not so great!
 
@@ -535,7 +535,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
 ```
 
 FALSE  TRUE 
-  216   784 
+  209   791 
 ```
 - The standard deviation (i.e. the noise) in the population is lower
 
@@ -546,7 +546,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
 ```
 
 FALSE  TRUE 
-  188   812 
+  184   816 
 ```
 
 How to increase power (realistically!)
@@ -561,7 +561,7 @@ table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  430   570 
+  419   581 
 ```
 
 ```r
@@ -571,7 +571,7 @@ table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talkin
 ```
 
 FALSE  TRUE 
-  143   857 
+  114   886 
 ```
 
 Double-checking our results
@@ -649,7 +649,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  751   249 
+  764   236 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -692,7 +692,7 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -10.21 SD =  4.36"
+[1] "Mean = -10.23 SD =  4.32"
 ```
 
 ```r
@@ -713,7 +713,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.903
+[1] 7.114
 ```
 
 ```r
@@ -722,7 +722,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.209
+[1] 6.601
 ```
 
 The two-sample t-test (3)
@@ -735,7 +735,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.418
+[1] 5.391
 ```
 
 ```r
@@ -744,7 +744,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.723
+[1] 6.789
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 

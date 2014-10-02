@@ -11,7 +11,7 @@ R commands and functions used so far
   - The function names follow a common pattern, where `xxx` stands for the abbreviated name of the distribution
     - Probability density function (PDF): `dxxx`, e.g. `dnorm`
     - Cumulative probability function (CDF) = area under the curve: `pxxx`, e.g. `pnorm`
-    - Quantile function (allows you to specify the area under the curve and gives you the corresponding x value) = area under the curve: `pxxx`, e.g. `rnorm`
+    - Quantile function (allows you to specify the area under the curve and gives you the corresponding x value) = area under the curve: `qxxx`, e.g. `qnorm`
     - Random generator (generates random samples from the distribution): `rxxx`, e.g. `rnorm`
 
 Using distribution functions
@@ -24,7 +24,7 @@ Using distribution functions
   ```
   
   ```
-  [1]  4.573  4.683  6.660 21.548
+  [1]  2.477  9.394 13.658  8.506
   ```
   - What's the probability of getting a value greater or equal to 22 from that distribution?
   
@@ -91,7 +91,7 @@ Function arguments
 ```
 
 ```
-[1] 11.82 11.05 11.31 14.11  9.56
+[1] 12.173 11.115 13.565  9.788  9.072
 ```
 
 ```r
@@ -99,7 +99,7 @@ Function arguments
 ```
 
 ```
-[1] 13.186  8.274 10.553  8.897 11.630
+[1]  6.461 11.857 13.107 12.163 10.264
 ```
 - Specifying non-existent arguments will give you an error.
 
@@ -113,7 +113,7 @@ Default arguments
   ```
   
   ```
-  [1] -1.7001  1.2141  0.5713
+  [1] -0.02979  2.07323 -0.75359
   ```
   
   ```r
@@ -121,7 +121,7 @@ Default arguments
   ```
   
   ```
-  [1] -0.4313  0.9840 -1.6748
+  [1]  0.2065 -0.1748  0.2368
   ```
   - Not all arguments have default values. Not specifying arguments without default values will give you an error.
   
@@ -136,7 +136,7 @@ More R techniques used so far (2)
   ```
   
   ```
-  [1] -0.02917
+  [1] -0.01807
   ```
 
 Defining functions
@@ -169,7 +169,7 @@ Defining functions (2)
   ```
   
   ```
-  [1] -0.2183
+  [1] 0.04231
   ```
   
   ```r
@@ -177,7 +177,7 @@ Defining functions (2)
   ```
   
   ```
-  [1] 2.283
+  [1] 1.945
   ```
 
 Defining functions (3)
@@ -262,7 +262,7 @@ replicate(5, rnorm_mean(20))
 ```
 
 ```
-[1] -0.03954 -0.36121 -0.29662 -0.19273  0.45627
+[1]  0.17211 -0.09781  0.32418 -0.26977  0.39892
 ```
 
 ```r
@@ -270,7 +270,7 @@ replicate(5, rnorm_mean(2000))
 ```
 
 ```
-[1]  0.001606 -0.032420  0.013609  0.027143 -0.022351
+[1]  0.0069352 -0.0008933  0.0360952  0.0213258 -0.0164749
 ```
 
 Finally: plotting

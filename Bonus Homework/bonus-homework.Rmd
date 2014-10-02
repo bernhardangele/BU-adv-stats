@@ -53,6 +53,6 @@ For today's first assignment, change the code block below so that the histogram 
 
 ```{r, echo=T}
 number_of_samples <- 1000
-my_random_data <- rnorm(n = number_of_samples, mean = 0, sd = 1)
+my_random_data <- rnorm(n = number_of_samples, mean = 100, sd = 15)
 hist(my_random_data)
 ```

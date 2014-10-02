@@ -11,7 +11,7 @@ R commands and functions used so far
   - The function names follow a common pattern, where `xxx` stands for the abbreviated name of the distribution
     - Probability density function (PDF): `dxxx`, e.g. `dnorm`
     - Cumulative probability function (CDF) = area under the curve: `pxxx`, e.g. `pnorm`
-    - Quantile function (allows you to specify the area under the curve and gives you the corresponding x value) = area under the curve: `pxxx`, e.g. `rnorm`
+    - Quantile function (allows you to specify the area under the curve and gives you the corresponding x value) = area under the curve: `qxxx`, e.g. `qnorm`
     - Random generator (generates random samples from the distribution): `rxxx`, e.g. `rnorm`
 
 Using distribution functions
