@@ -3,6 +3,8 @@ Advanced Statistics
 author: Bernhard Angele 
 date: Class 2, October 9, 2014
 
+Some general advice on working with 
+
 Recap
 ========================================================
 - Last week, we talked a lot about sampling from different probability distribution.
@@ -100,6 +102,10 @@ qnorm(.975)
 $\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
 - Replacing $\sigma_{\bar{x}}$ with the expression based on the population SD:
 $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
+
+Exercise
+=========================================================
+
 
 Now reverse the idea
 =========================================================

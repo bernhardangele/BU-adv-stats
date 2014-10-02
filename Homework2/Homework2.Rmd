@@ -2,7 +2,7 @@
 title: "Homework 2"
 author: "Your name here"
 date: "Your date here"
-output: html_document
+output: word_document
 ---
 
 Let's see how one would perform and report a t-test. We're going to use the sleep data again (see Class 2 supplement).

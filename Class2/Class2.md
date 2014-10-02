@@ -3,6 +3,8 @@ Advanced Statistics
 author: Bernhard Angele 
 date: Class 2, October 9, 2014
 
+Some general advice on working with 
+
 Recap
 ========================================================
 - Last week, we talked a lot about sampling from different probability distribution.
@@ -118,6 +120,10 @@ qnorm(.975)
 $\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
 - Replacing $\sigma_{\bar{x}}$ with the expression based on the population SD:
 $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
+
+Exercise
+=========================================================
+
 
 Now reverse the idea
 =========================================================
@@ -249,7 +255,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.061
+[1] 3.003
 ```
 
 ```r
@@ -257,7 +263,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.043
+[1] 1.149
 ```
 
 ```r
@@ -265,7 +271,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.314
+[1] 2.181
 ```
 
 ```r
@@ -273,7 +279,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.807
+[1] 3.826
 ```
 
 There's a function for that
@@ -288,13 +294,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 9.28, df = 9, p-value = 6.641e-06
+t = 8.262, df = 9, p-value = 1.709e-05
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.314 3.807
+ 2.181 3.826
 sample estimates:
 mean of x 
-    3.061 
+    3.003 
 ```
 How convenient is that?
 
@@ -330,7 +336,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   46   954 
+   54   946 
 ```
 - It's true! Almost exactly 5%
 
@@ -356,7 +362,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   77   923 
+   80   920 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -371,7 +377,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   68   932 
+   49   951 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -439,13 +445,13 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
-t = 3.137, df = 9, p-value = 0.01198
+t = 6.072, df = 9, p-value = 0.0001855
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.4432 2.7345
+ 0.7297 1.5964
 sample estimates:
 mean of x 
-    1.589 
+    1.163 
 ```
 
 Two-tailed t-tests
@@ -519,7 +525,7 @@ table(replicate(1000, t_test_sim(10, .5, 1)))
 ```
 
 FALSE  TRUE 
-  710   290 
+  707   293 
 ```
 Not so great!
 
@@ -535,7 +541,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
 ```
 
 FALSE  TRUE 
-  216   784 
+  174   826 
 ```
 - The standard deviation (i.e. the noise) in the population is lower
 
@@ -546,7 +552,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
 ```
 
 FALSE  TRUE 
-  188   812 
+  198   802 
 ```
 
 How to increase power (realistically!)
@@ -561,7 +567,7 @@ table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  430   570 
+  442   558 
 ```
 
 ```r
@@ -571,7 +577,7 @@ table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talkin
 ```
 
 FALSE  TRUE 
-  143   857 
+  125   875 
 ```
 
 Double-checking our results
@@ -649,7 +655,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  751   249 
+  740   260 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -692,7 +698,7 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -10.21 SD =  4.36"
+[1] "Mean = -9.94 SD =  4.4"
 ```
 
 ```r
@@ -713,7 +719,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.903
+[1] 6.991
 ```
 
 ```r
@@ -722,7 +728,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.209
+[1] 7.013
 ```
 
 The two-sample t-test (3)
@@ -735,7 +741,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.418
+[1] 5.538
 ```
 
 ```r
@@ -744,7 +750,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.723
+[1] 6.518
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
