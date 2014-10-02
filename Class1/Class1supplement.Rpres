@@ -168,4 +168,3 @@ Plotting mathematical functions
 ```{r}
  plot(dnorm, from = -3, to = 3)
 ```
-

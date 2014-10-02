@@ -24,7 +24,7 @@ Using distribution functions
   ```
   
   ```
-  [1]  4.573  4.683  6.660 21.548
+  [1]  8.78 16.94  8.83  9.68
   ```
   - What's the probability of getting a value greater or equal to 22 from that distribution?
   
@@ -91,7 +91,7 @@ Function arguments
 ```
 
 ```
-[1] 11.82 11.05 11.31 14.11  9.56
+[1] 11.675 10.105  8.583 13.149  7.862
 ```
 
 ```r
@@ -99,7 +99,7 @@ Function arguments
 ```
 
 ```
-[1] 13.186  8.274 10.553  8.897 11.630
+[1] 11.468 10.503 12.207  8.903  9.733
 ```
 - Specifying non-existent arguments will give you an error.
 
@@ -113,7 +113,7 @@ Default arguments
   ```
   
   ```
-  [1] -1.7001  1.2141  0.5713
+  [1] -0.3900  0.1366  0.5483
   ```
   
   ```r
@@ -121,7 +121,7 @@ Default arguments
   ```
   
   ```
-  [1] -0.4313  0.9840 -1.6748
+  [1]  0.81367  0.05892 -0.32461
   ```
   - Not all arguments have default values. Not specifying arguments without default values will give you an error.
   
@@ -136,7 +136,7 @@ More R techniques used so far (2)
   ```
   
   ```
-  [1] -0.02917
+  [1] -0.1973
   ```
 
 Defining functions
@@ -169,7 +169,7 @@ Defining functions (2)
   ```
   
   ```
-  [1] -0.2183
+  [1] -0.05342
   ```
   
   ```r
@@ -177,7 +177,7 @@ Defining functions (2)
   ```
   
   ```
-  [1] 2.283
+  [1] 2.261
   ```
 
 Defining functions (3)
@@ -262,7 +262,7 @@ replicate(5, rnorm_mean(20))
 ```
 
 ```
-[1] -0.03954 -0.36121 -0.29662 -0.19273  0.45627
+[1] -0.3596  0.2504  0.1505 -0.1677  0.4221
 ```
 
 ```r
@@ -270,7 +270,7 @@ replicate(5, rnorm_mean(2000))
 ```
 
 ```
-[1]  0.001606 -0.032420  0.013609  0.027143 -0.022351
+[1]  0.015135  0.020160 -0.029688  0.009442 -0.005174
 ```
 
 Finally: plotting
@@ -292,4 +292,3 @@ Plotting mathematical functions
 ```
 
 ![plot of chunk unnamed-chunk-18](Class1supplement-figure/unnamed-chunk-18.png) 
-

@@ -51,14 +51,14 @@ str(t_results)
 
 ```
 List of 9
- $ statistic  : Named num 14.9
+ $ statistic  : Named num 8.33
   ..- attr(*, "names")= chr "t"
  $ parameter  : Named num 9
   ..- attr(*, "names")= chr "df"
- $ p.value    : num 1.18e-07
- $ conf.int   : atomic [1:2] 2.49 3.38
+ $ p.value    : num 1.6e-05
+ $ conf.int   : atomic [1:2] 2 3.49
   ..- attr(*, "conf.level")= num 0.95
- $ estimate   : Named num 2.94
+ $ estimate   : Named num 2.74
   ..- attr(*, "names")= chr "mean of x"
  $ null.value : Named num 0
   ..- attr(*, "names")= chr "mean"
@@ -76,7 +76,7 @@ t_results$conf.int
 ```
 
 ```
-[1] 2.491 3.382
+[1] 1.999 3.490
 attr(,"conf.level")
 [1] 0.95
 ```
@@ -87,7 +87,7 @@ t_results$conf.int[1]
 ```
 
 ```
-[1] 2.491
+[1] 1.999
 ```
 
 ```r
@@ -95,7 +95,7 @@ t_results$conf.int[2]
 ```
 
 ```
-[1] 3.382
+[1] 3.49
 ```
 
 Logical tests
@@ -126,5 +126,145 @@ test_array
 5 1 6 2 
 ```
 
+
 While loops
+======================================================
+These loops will keep executing a certain expression until a condition is `FALSE`
+
+Example:
+
+```r
+my_number <- 1
+while(my_number < 4)
+  {
+  my_number <- my_number + 1
+  print(my_number)
+  }
+```
+
+```
+[1] 2
+[1] 3
+[1] 4
+```
+
+Something more practical: Running t-tests
 ========================================================
+- How do you actually run and report a t-test?
+- Let's use a data set that's built into R: Student's sleep data
+- Get some information on it by typing `?sleep`
+
+The sleep data set
+========================================================
+
+```r
+sleep
+```
+
+```
+   extra group ID
+1    0.7     1  1
+2   -1.6     1  2
+3   -0.2     1  3
+4   -1.2     1  4
+5   -0.1     1  5
+6    3.4     1  6
+7    3.7     1  7
+8    0.8     1  8
+9    0.0     1  9
+10   2.0     1 10
+11   1.9     2  1
+12   0.8     2  2
+13   1.1     2  3
+14   0.1     2  4
+15  -0.1     2  5
+16   4.4     2  6
+17   5.5     2  7
+18   1.6     2  8
+19   4.6     2  9
+20   3.4     2 10
+```
+
+What is this data type?
+========================================================
+
+```r
+str(sleep)
+```
+
+```
+'data.frame':	20 obs. of  3 variables:
+ $ extra: num  0.7 -1.6 -0.2 -1.2 -0.1 3.4 3.7 0.8 0 2 ...
+ $ group: Factor w/ 2 levels "1","2": 1 1 1 1 1 1 1 1 1 1 ...
+ $ ID   : Factor w/ 10 levels "1","2","3","4",..: 1 2 3 4 5 6 7 8 9 10 ...
+```
+- data.frames are fantastic!
+  - they combine properties of lists and vectors (or even matrices)
+  - closest equivalent to your Excel Spreadsheet
+  - every column has to have the same length (number of rows)
+  - but each column can be of a different type, e.g. numeric, character, or Factor (discrete variable)
+
+Let's do the two-sample t-test
+========================================================
+
+```r
+t.test(subset(sleep, group == 1)$extra, subset(sleep, group == 2)$extra)
+```
+
+```
+
+	Welch Two Sample t-test
+
+data:  subset(sleep, group == 1)$extra and subset(sleep, group == 2)$extra
+t = -1.861, df = 17.78, p-value = 0.07939
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -3.3655  0.2055
+sample estimates:
+mean of x mean of y 
+     0.75      2.33 
+```
+
+Let's assume the same patients tried both drugs
+========================================================
+Do a pairwise t-test! Note the increase in power.
+
+```r
+t.test(subset(sleep, group == 1)$extra, subset(sleep, group == 2)$extra, paired = TRUE)
+```
+
+```
+
+	Paired t-test
+
+data:  subset(sleep, group == 1)$extra and subset(sleep, group == 2)$extra
+t = -4.062, df = 9, p-value = 0.002833
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -2.4599 -0.7001
+sample estimates:
+mean of the differences 
+                  -1.58 
+```
+
+A very elegant way of specifying the t-test
+=========================================================
+
+```r
+t.test(formula = extra ~ group, data = sleep, paired = TRUE)
+```
+
+```
+
+	Paired t-test
+
+data:  extra by group
+t = -4.062, df = 9, p-value = 0.002833
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -2.4599 -0.7001
+sample estimates:
+mean of the differences 
+                  -1.58 
+```
+See your homework for instructions on how to get R to write your report for you!
