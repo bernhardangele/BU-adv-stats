@@ -3,6 +3,8 @@ Advanced Statistics
 author: Bernhard Angele 
 date: Class 2, October 9, 2014
 
+Some general advice on working with 
+
 Recap
 ========================================================
 - Last week, we talked a lot about sampling from different probability distribution.
@@ -118,6 +120,10 @@ qnorm(.975)
 $\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
 - Replacing $\sigma_{\bar{x}}$ with the expression based on the population SD:
 $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
+
+Exercise
+=========================================================
+
 
 Now reverse the idea
 =========================================================
@@ -249,7 +255,11 @@ Computing CIs (2)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 2.79
+=======
+[1] 3.003
+>>>>>>> origin/master
 ```
 
 ```r
@@ -257,7 +267,11 @@ Computing CIs (2)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 0.8948
+=======
+[1] 1.149
+>>>>>>> origin/master
 ```
 
 ```r
@@ -265,7 +279,11 @@ Computing CIs (2)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 2.15
+=======
+[1] 2.181
+>>>>>>> origin/master
 ```
 
 ```r
@@ -273,7 +291,11 @@ Computing CIs (2)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 3.43
+=======
+[1] 3.826
+>>>>>>> origin/master
 ```
 
 There's a function for that
@@ -288,6 +310,7 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
+<<<<<<< HEAD
 t = 9.861, df = 9, p-value = 4.021e-06
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
@@ -295,6 +318,15 @@ alternative hypothesis: true mean is not equal to 0
 sample estimates:
 mean of x 
      2.79 
+=======
+t = 8.262, df = 9, p-value = 1.709e-05
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 2.181 3.826
+sample estimates:
+mean of x 
+    3.003 
+>>>>>>> origin/master
 ```
 How convenient is that?
 
@@ -330,7 +362,11 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
+<<<<<<< HEAD
    45   955 
+=======
+   54   946 
+>>>>>>> origin/master
 ```
 - It's true! Almost exactly 5%
 
@@ -356,7 +392,11 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
+<<<<<<< HEAD
    87   913 
+=======
+   80   920 
+>>>>>>> origin/master
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -371,7 +411,11 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
+<<<<<<< HEAD
    47   953 
+=======
+   49   951 
+>>>>>>> origin/master
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -439,6 +483,7 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
+<<<<<<< HEAD
 t = 4.27, df = 9, p-value = 0.00208
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
@@ -446,6 +491,15 @@ alternative hypothesis: true mean is not equal to 0
 sample estimates:
 mean of x 
     1.458 
+=======
+t = 6.072, df = 9, p-value = 0.0001855
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 0.7297 1.5964
+sample estimates:
+mean of x 
+    1.163 
+>>>>>>> origin/master
 ```
 
 Two-tailed t-tests
@@ -519,7 +573,11 @@ table(replicate(1000, t_test_sim(10, .5, 1)))
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   723   277 
+=======
+  707   293 
+>>>>>>> origin/master
 ```
 Not so great!
 
@@ -535,7 +593,11 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   209   791 
+=======
+  174   826 
+>>>>>>> origin/master
 ```
 - The standard deviation (i.e. the noise) in the population is lower
 
@@ -546,7 +608,11 @@ table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   184   816 
+=======
+  198   802 
+>>>>>>> origin/master
 ```
 
 How to increase power (realistically!)
@@ -561,7 +627,11 @@ table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   419   581 
+=======
+  442   558 
+>>>>>>> origin/master
 ```
 
 ```r
@@ -571,7 +641,11 @@ table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talkin
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   114   886 
+=======
+  125   875 
+>>>>>>> origin/master
 ```
 
 Double-checking our results
@@ -649,7 +723,11 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
+<<<<<<< HEAD
   764   236 
+=======
+  740   260 
+>>>>>>> origin/master
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -692,7 +770,11 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
+<<<<<<< HEAD
 [1] "Mean = -10.23 SD =  4.32"
+=======
+[1] "Mean = -9.94 SD =  4.4"
+>>>>>>> origin/master
 ```
 
 ```r
@@ -713,7 +795,11 @@ sd(d_samples)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 7.114
+=======
+[1] 6.991
+>>>>>>> origin/master
 ```
 
 ```r
@@ -722,7 +808,11 @@ sd(d_samples)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 6.601
+=======
+[1] 7.013
+>>>>>>> origin/master
 ```
 
 The two-sample t-test (3)
@@ -735,7 +825,11 @@ sd(d_samples)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 5.391
+=======
+[1] 5.538
+>>>>>>> origin/master
 ```
 
 ```r
@@ -744,7 +838,11 @@ sd(d_samples)
 ```
 
 ```
+<<<<<<< HEAD
 [1] 6.789
+=======
+[1] 6.518
+>>>>>>> origin/master
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
