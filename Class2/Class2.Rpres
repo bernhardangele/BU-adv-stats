@@ -188,10 +188,25 @@ Solution (5)
 Now reverse the idea
 =========================================================
 - Usually, we have no other information about a population but the sample we just collected.
-- For example, let's say the sample mean is `r (sample.mean <- 3)` and the sample SD is `r (sample.sd <- 1)`. Apart from this, we know nothing about the population.
+- For example, let's say the sample mean is `r (sample.mean <- 0)` and the sample SD is `r (sample.sd <- 1)`. Apart from this, we know nothing about the population.
 - Can we compute a CI for the sample mean?
 - Sure enough we can, but it gets a little more complicated.
   - (who would have thought?)
+
+
+What do these numbers mean?
+===========================================================
+- Anything, really.
+- But let's imagine that these numbers are from a survey of student's attitudes towards their Advanced Statistics class.
+  - Imagine that they could give a rating from -3 ("This is the worst class ever and I want the instructor fired!") to 3 ("This is the best class I've ever taken! I'm going to make so much money with my new R skills!"), with 0 representing a neutral feeling ("It's alright. At least it will be over soon").
+  - In this case, most students are pretty neutral about the class, but some really love it and some really hate it. 
+
+Computing a CI from the sample mean (story time)
+==========================================================
+- Consider the following scenario:
+
+> I have collected 10 responses to my class evaluation (the other students never turned their forms back in). The mean of the responses is 0 (apathy) and the sd is 1. Given that these 10 responses are just a small sample of the population, and that the population I'm really interested in is the population of all current and future Adv Stats students, is there anything I can say about the true population mean? Can I at least conclude that students didn't absolutely hate this class?
+
 
 Computing a CI from the sample mean
 ==========================================================
@@ -202,12 +217,6 @@ Computing a CI from the sample mean
 - This sounds like really tricky maths problem.
   - But we can take it easy and just simulate!
 
-What do these numbers mean?
-===========================================================
-- Anything, really.
-- But let's imagine that these numbers are from an experiment where people were asked how they feel about hungry cats.
-  - Imagine that they could give a rating from -4 (hate) to 4 (parental love).
-
 
 Set up a function to simulate sampling and calculate sample variances
 ===========================================================
@@ -217,11 +226,8 @@ run_variance_simulation <- function(sample_size = 100, number_of_simulations = 1
 
 sample_variances <- replicate(number_of_simulations, var(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
 }
-```
 
-Define a new plot function so that the plot titles are correct
-===========================================================
-```{r}
+#Define a new plot function so that the plot titles are correct
 make_variance_hist_and_plot <- function(sample_variance){
   par(mfrow=c(1,2)) # 
   hist(sample_variance,freq=F, breaks = 30)
@@ -231,19 +237,19 @@ make_variance_hist_and_plot <- function(sample_variance){
 Population variance and sample variance: plots
 ===========================================================
 ```{r}
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
 ```
 
 Population variance and sample variance: plots
 ===========================================================
 ```{r}
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
 ```
 
 Population variance and sample variance: plots
 ===========================================================
 ```{r}
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
 ```
 
 Sample variance as an estimator of population variance

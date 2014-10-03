@@ -238,10 +238,25 @@ Solution (5)
 Now reverse the idea
 =========================================================
 - Usually, we have no other information about a population but the sample we just collected.
-- For example, let's say the sample mean is 3 and the sample SD is 1. Apart from this, we know nothing about the population.
+- For example, let's say the sample mean is 0 and the sample SD is 1. Apart from this, we know nothing about the population.
 - Can we compute a CI for the sample mean?
 - Sure enough we can, but it gets a little more complicated.
   - (who would have thought?)
+
+
+What do these numbers mean?
+===========================================================
+- Anything, really.
+- But let's imagine that these numbers are from a survey of student's attitudes towards their Advanced Statistics class.
+  - Imagine that they could give a rating from -3 ("This is the worst class ever and I want the instructor fired!") to 3 ("This is the best class I've ever taken! I'm going to make so much money with my new R skills!"), with 0 representing a neutral feeling ("It's alright. At least it will be over soon").
+  - In this case, most students are pretty neutral about the class, but some really love it and some really hate it. 
+
+Computing a CI from the sample mean (story time)
+==========================================================
+- Consider the following scenario:
+
+> I have collected 10 responses to my class evaluation (the other students never turned their forms back in). The mean of the responses is 0 (apathy) and the sd is 1. Given that these 10 responses are just a small sample of the population, and that the population I'm really interested in is the population of all current and future Adv Stats students, is there anything I can say about the true population mean? Can I at least conclude that students didn't absolutely hate this class?
+
 
 Computing a CI from the sample mean
 ==========================================================
@@ -251,12 +266,6 @@ Computing a CI from the sample mean
 - Or the equivalent question: is sample variance ($s^2$) a good estimator of population variance ($\sigma^2$)?
 - This sounds like really tricky maths problem.
   - But we can take it easy and just simulate!
-
-What do these numbers mean?
-===========================================================
-- Anything, really.
-- But let's imagine that these numbers are from an experiment where people were asked how they feel about hungry cats.
-  - Imagine that they could give a rating from -4 (hate) to 4 (parental love).
 
 
 Set up a function to simulate sampling and calculate sample variances
@@ -268,12 +277,8 @@ run_variance_simulation <- function(sample_size = 100, number_of_simulations = 1
 
 sample_variances <- replicate(number_of_simulations, var(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
 }
-```
 
-Define a new plot function so that the plot titles are correct
-===========================================================
-
-```r
+#Define a new plot function so that the plot titles are correct
 make_variance_hist_and_plot <- function(sample_variance){
   par(mfrow=c(1,2)) # 
   hist(sample_variance,freq=F, breaks = 30)
@@ -284,7 +289,16 @@ Population variance and sample variance: plots
 ===========================================================
 
 ```r
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
+```
+
+![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
+
+Population variance and sample variance: plots
+===========================================================
+
+```r
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
 ```
 
 ![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
@@ -293,19 +307,10 @@ Population variance and sample variance: plots
 ===========================================================
 
 ```r
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
 ```
 
 ![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
-
-Population variance and sample variance: plots
-===========================================================
-
-```r
-make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
-```
-
-![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -333,7 +338,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-21](Class2-figure/unnamed-chunk-21.png) 
+![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
 
 Let's try this
 ==========================================================
@@ -372,7 +377,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.147
+[1] 2.828
 ```
 
 ```r
@@ -380,7 +385,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.8624
+[1] 1.304
 ```
 
 ```r
@@ -388,7 +393,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.53
+[1] 1.896
 ```
 
 ```r
@@ -396,7 +401,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.764
+[1] 3.761
 ```
 
 There's a function for that
@@ -411,13 +416,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 11.54, df = 9, p-value = 1.073e-06
+t = 6.861, df = 9, p-value = 7.383e-05
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.530 3.764
+ 1.896 3.761
 sample estimates:
 mean of x 
-    3.147 
+    2.828 
 ```
 How convenient is that?
 
@@ -453,7 +458,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   55   945 
+   60   940 
 ```
 - It's true! Almost exactly 5%
 
@@ -479,7 +484,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   76   924 
+   74   926 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -494,7 +499,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   43   957 
+   47   953 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -562,13 +567,13 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
-t = 3.611, df = 9, p-value = 0.005649
+t = 3.416, df = 9, p-value = 0.00768
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.3683 1.6034
+ 0.3307 1.6278
 sample estimates:
 mean of x 
-   0.9858 
+   0.9793 
 ```
 
 Two-tailed t-tests
@@ -624,7 +629,7 @@ Power
 
 Plotting the situation
 =========================================================
-![plot of chunk unnamed-chunk-34](Class2-figure/unnamed-chunk-34.png) 
+![plot of chunk unnamed-chunk-33](Class2-figure/unnamed-chunk-33.png) 
 
 Power simulations
 ==========================================================
@@ -642,7 +647,7 @@ table(replicate(1000, t_test_sim(10, .5, 1)))
 ```
 
 FALSE  TRUE 
-  725   275 
+  720   280 
 ```
 Not so great!
 
@@ -658,7 +663,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
 ```
 
 FALSE  TRUE 
-  210   790 
+  207   793 
 ```
 - The standard deviation (i.e. the noise) in the population is lower
 
@@ -669,7 +674,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
 ```
 
 FALSE  TRUE 
-  199   801 
+  219   781 
 ```
 
 How to increase power (realistically!)
@@ -684,7 +689,7 @@ table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  438   562 
+  449   551 
 ```
 
 ```r
@@ -694,7 +699,7 @@ table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talkin
 ```
 
 FALSE  TRUE 
-  137   863 
+  118   882 
 ```
 
 Double-checking our results
@@ -772,7 +777,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  719   281 
+  734   266 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -815,14 +820,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -9.93 SD =  4.51"
+[1] "Mean = -10.06 SD =  4.65"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-44](Class2-figure/unnamed-chunk-44.png) 
+![plot of chunk unnamed-chunk-43](Class2-figure/unnamed-chunk-43.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -836,7 +841,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.969
+[1] 6.916
 ```
 
 ```r
@@ -845,7 +850,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.247
+[1] 7.22
 ```
 
 The two-sample t-test (3)
@@ -858,7 +863,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.406
+[1] 5.434
 ```
 
 ```r
@@ -867,7 +872,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.794
+[1] 6.484
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
