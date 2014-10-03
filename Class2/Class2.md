@@ -106,7 +106,8 @@ qnorm(.025)
 
 Confidence intervals (4)
 =========================================================
-- For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values
+- For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values.
+- Get the corresponding **z-score**:
 
 ```r
 qnorm(.975)
@@ -123,6 +124,115 @@ $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
 
 Exercise
 =========================================================
+- It is (for some reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
+- What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
+- This estimate should only have a 10% chance of being wrong.
+- Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
+- Suppose I'm adopting 3 cats instead of 2 -- does that change anything?
+
+Solution
+=========================================================
+- I'm drawing a random sample of hungry cats (sample size 2) from the population of hungry cats
+  - How hungry? Mean = 2 cans/day, sd = .05 cans/day
+  - I want a 90% CI for the mean of that sample
+- Get the z-scores for the lower and the upper bound:
+
+```r
+qnorm(.05)
+```
+
+```
+[1] -1.645
+```
+
+```r
+qnorm(.95)
+```
+
+```
+[1] 1.645
+```
+
+Solution (2)
+=========================================================
+- Calculate the CI:
+
+```r
+2 + .5 * qnorm(.05) # lower limit
+```
+
+```
+[1] 1.178
+```
+
+```r
+2 + .5 * qnorm(.95) # upper limit
+```
+
+```
+[1] 2.822
+```
+- Those are some hungry cats!
+- I need to plan on buying between 1.178 and 2.822 cans of cat food per day (per cat).
+
+Solution (3)
+=========================================================
+- Calculate the CI:
+
+```r
+2 + qnorm(.05) * .5/sqrt(2) # lower limit
+```
+
+```
+[1] 1.418
+```
+
+```r
+2 + qnorm(.95) * .5/sqrt(2) # upper limit
+```
+
+```
+[1] 2.582
+```
+- Those are some hungry cats!
+- I need to plan on buying between 1.4185 and 2.5815 cans of cat food per day (per cat).
+
+Plot it!
+=========================================================
+![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12.png) 
+
+Solution (4)
+=========================================================
+- If I only care about the maximum, I don't need the lower limit.
+- I can use a different upper limit to get an interval that delimits 90% of the area under the curve.
+
+```r
+2 + qnorm(.90) * .5/sqrt(2) # upper limit
+```
+
+```
+[1] 2.453
+```
+- Those are still some hungry cats!
+- I need to plan on buying at most 2.4531 cans of cat food per day (per cat).
+
+Plot it again!
+=========================================================
+![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14.png) 
+
+Solution (5)
+=========================================================
+- What if I'm getting 3 cats?
+
+```r
+2 + qnorm(.90) * .5/sqrt(3) # upper limit
+```
+
+```
+[1] 2.37
+```
+- Why is it less?
+- The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats.
 
 
 Now reverse the idea
@@ -141,7 +251,14 @@ Computing a CI from the sample mean
 - Or the equivalent question: is sample variance ($s^2$) a good estimator of population variance ($\sigma^2$)?
 - This sounds like really tricky maths problem.
   - But we can take it easy and just simulate!
-  
+
+What do these numbers mean?
+===========================================================
+- Anything, really.
+- But let's imagine that these numbers are from an experiment where people were asked how they feel about hungry cats.
+  - Imagine that they could give a rating from -4 (hate) to 4 (parental love).
+
+
 Set up a function to simulate sampling and calculate sample variances
 ===========================================================
 
@@ -170,7 +287,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
 ```
 
-![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -179,7 +296,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
 ```
 
-![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -188,7 +305,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(100,1000,20,5))
 ```
 
-![plot of chunk unnamed-chunk-13](Class2-figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -216,7 +333,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-21](Class2-figure/unnamed-chunk-21.png) 
 
 Let's try this
 ==========================================================
@@ -255,11 +372,7 @@ Computing CIs (2)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 2.79
-=======
-[1] 3.003
->>>>>>> origin/master
+[1] 3.147
 ```
 
 ```r
@@ -267,11 +380,7 @@ Computing CIs (2)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 0.8948
-=======
-[1] 1.149
->>>>>>> origin/master
+[1] 0.8624
 ```
 
 ```r
@@ -279,11 +388,7 @@ Computing CIs (2)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 2.15
-=======
-[1] 2.181
->>>>>>> origin/master
+[1] 2.53
 ```
 
 ```r
@@ -291,11 +396,7 @@ Computing CIs (2)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 3.43
-=======
-[1] 3.826
->>>>>>> origin/master
+[1] 3.764
 ```
 
 There's a function for that
@@ -310,23 +411,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-<<<<<<< HEAD
-t = 9.861, df = 9, p-value = 4.021e-06
+t = 11.54, df = 9, p-value = 1.073e-06
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 2.15 3.43
+ 2.530 3.764
 sample estimates:
 mean of x 
-     2.79 
-=======
-t = 8.262, df = 9, p-value = 1.709e-05
-alternative hypothesis: true mean is not equal to 0
-95 percent confidence interval:
- 2.181 3.826
-sample estimates:
-mean of x 
-    3.003 
->>>>>>> origin/master
+    3.147 
 ```
 How convenient is that?
 
@@ -362,11 +453,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-<<<<<<< HEAD
-   45   955 
-=======
-   54   946 
->>>>>>> origin/master
+   55   945 
 ```
 - It's true! Almost exactly 5%
 
@@ -392,11 +479,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-<<<<<<< HEAD
-   87   913 
-=======
-   80   920 
->>>>>>> origin/master
+   76   924 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -411,11 +494,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-<<<<<<< HEAD
-   47   953 
-=======
-   49   951 
->>>>>>> origin/master
+   43   957 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -483,23 +562,13 @@ t.test(rnorm(n = 10, mean = 1, sd = 1))
 	One Sample t-test
 
 data:  rnorm(n = 10, mean = 1, sd = 1)
-<<<<<<< HEAD
-t = 4.27, df = 9, p-value = 0.00208
+t = 3.611, df = 9, p-value = 0.005649
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.6854 2.2296
+ 0.3683 1.6034
 sample estimates:
 mean of x 
-    1.458 
-=======
-t = 6.072, df = 9, p-value = 0.0001855
-alternative hypothesis: true mean is not equal to 0
-95 percent confidence interval:
- 0.7297 1.5964
-sample estimates:
-mean of x 
-    1.163 
->>>>>>> origin/master
+   0.9858 
 ```
 
 Two-tailed t-tests
@@ -555,7 +624,7 @@ Power
 
 Plotting the situation
 =========================================================
-![plot of chunk unnamed-chunk-27](Class2-figure/unnamed-chunk-27.png) 
+![plot of chunk unnamed-chunk-34](Class2-figure/unnamed-chunk-34.png) 
 
 Power simulations
 ==========================================================
@@ -573,11 +642,7 @@ table(replicate(1000, t_test_sim(10, .5, 1)))
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  723   277 
-=======
-  707   293 
->>>>>>> origin/master
+  725   275 
 ```
 Not so great!
 
@@ -593,11 +658,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  209   791 
-=======
-  174   826 
->>>>>>> origin/master
+  210   790 
 ```
 - The standard deviation (i.e. the noise) in the population is lower
 
@@ -608,11 +669,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  184   816 
-=======
-  198   802 
->>>>>>> origin/master
+  199   801 
 ```
 
 How to increase power (realistically!)
@@ -627,11 +684,7 @@ table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  419   581 
-=======
-  442   558 
->>>>>>> origin/master
+  438   562 
 ```
 
 ```r
@@ -641,11 +694,7 @@ table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talkin
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  114   886 
-=======
-  125   875 
->>>>>>> origin/master
+  137   863 
 ```
 
 Double-checking our results
@@ -723,11 +772,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-<<<<<<< HEAD
-  764   236 
-=======
-  740   260 
->>>>>>> origin/master
+  719   281 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -770,18 +815,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-<<<<<<< HEAD
-[1] "Mean = -10.23 SD =  4.32"
-=======
-[1] "Mean = -9.94 SD =  4.4"
->>>>>>> origin/master
+[1] "Mean = -9.93 SD =  4.51"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-37](Class2-figure/unnamed-chunk-37.png) 
+![plot of chunk unnamed-chunk-44](Class2-figure/unnamed-chunk-44.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -795,11 +836,7 @@ sd(d_samples)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 7.114
-=======
-[1] 6.991
->>>>>>> origin/master
+[1] 6.969
 ```
 
 ```r
@@ -808,11 +845,7 @@ sd(d_samples)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 6.601
-=======
-[1] 7.013
->>>>>>> origin/master
+[1] 7.247
 ```
 
 The two-sample t-test (3)
@@ -825,11 +858,7 @@ sd(d_samples)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 5.391
-=======
-[1] 5.538
->>>>>>> origin/master
+[1] 5.406
 ```
 
 ```r
@@ -838,11 +867,7 @@ sd(d_samples)
 ```
 
 ```
-<<<<<<< HEAD
-[1] 6.789
-=======
-[1] 6.518
->>>>>>> origin/master
+[1] 6.794
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 

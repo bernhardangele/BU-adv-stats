@@ -24,11 +24,7 @@ Using distribution functions
   ```
   
   ```
-<<<<<<< HEAD
-  [1]  2.477  9.394 13.658  8.506
-=======
-  [1]  8.78 16.94  8.83  9.68
->>>>>>> origin/master
+  [1] 12.563 20.280 13.486  6.268
   ```
   - What's the probability of getting a value greater or equal to 22 from that distribution?
   
@@ -95,11 +91,7 @@ Function arguments
 ```
 
 ```
-<<<<<<< HEAD
-[1] 12.173 11.115 13.565  9.788  9.072
-=======
-[1] 11.675 10.105  8.583 13.149  7.862
->>>>>>> origin/master
+[1] 10.39 10.64 13.17 11.28 11.13
 ```
 
 ```r
@@ -107,11 +99,7 @@ Function arguments
 ```
 
 ```
-<<<<<<< HEAD
-[1]  6.461 11.857 13.107 12.163 10.264
-=======
-[1] 11.468 10.503 12.207  8.903  9.733
->>>>>>> origin/master
+[1]  9.610  7.065 13.280  8.989 11.684
 ```
 - Specifying non-existent arguments will give you an error.
 
@@ -125,11 +113,7 @@ Default arguments
   ```
   
   ```
-<<<<<<< HEAD
-  [1] -0.02979  2.07323 -0.75359
-=======
-  [1] -0.3900  0.1366  0.5483
->>>>>>> origin/master
+  [1] -0.6055  0.2870 -1.1618
   ```
   
   ```r
@@ -137,11 +121,7 @@ Default arguments
   ```
   
   ```
-<<<<<<< HEAD
-  [1]  0.2065 -0.1748  0.2368
-=======
-  [1]  0.81367  0.05892 -0.32461
->>>>>>> origin/master
+  [1] -1.1111 -0.3966 -0.3260
   ```
   - Not all arguments have default values. Not specifying arguments without default values will give you an error.
   
@@ -156,11 +136,7 @@ More R techniques used so far (2)
   ```
   
   ```
-<<<<<<< HEAD
-  [1] -0.01807
-=======
-  [1] -0.1973
->>>>>>> origin/master
+  [1] 0.01364
   ```
 
 Defining functions
@@ -193,11 +169,7 @@ Defining functions (2)
   ```
   
   ```
-<<<<<<< HEAD
-  [1] 0.04231
-=======
-  [1] -0.05342
->>>>>>> origin/master
+  [1] 0.07875
   ```
   
   ```r
@@ -205,11 +177,7 @@ Defining functions (2)
   ```
   
   ```
-<<<<<<< HEAD
-  [1] 1.945
-=======
-  [1] 2.261
->>>>>>> origin/master
+  [1] 2.507
   ```
 
 Defining functions (3)
@@ -294,11 +262,7 @@ replicate(5, rnorm_mean(20))
 ```
 
 ```
-<<<<<<< HEAD
-[1]  0.17211 -0.09781  0.32418 -0.26977  0.39892
-=======
-[1] -0.3596  0.2504  0.1505 -0.1677  0.4221
->>>>>>> origin/master
+[1]  0.49308  0.29687 -0.08266  0.17787  0.42029
 ```
 
 ```r
@@ -306,11 +270,7 @@ replicate(5, rnorm_mean(2000))
 ```
 
 ```
-<<<<<<< HEAD
-[1]  0.0069352 -0.0008933  0.0360952  0.0213258 -0.0164749
-=======
-[1]  0.015135  0.020160 -0.029688  0.009442 -0.005174
->>>>>>> origin/master
+[1] -0.04093 -0.04048 -0.02415 -0.02020  0.01747
 ```
 
 Finally: plotting

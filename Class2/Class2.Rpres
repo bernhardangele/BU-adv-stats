@@ -93,7 +93,8 @@ qnorm(.025)
 
 Confidence intervals (4)
 =========================================================
-- For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values
+- For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values.
+- Get the corresponding **z-score**:
 ```{r}
 qnorm(.975)
 ```
@@ -105,6 +106,83 @@ $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
 
 Exercise
 =========================================================
+- It is (for some reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
+- What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
+- This estimate should only have a 10% chance of being wrong.
+- Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
+- Suppose I'm adopting 3 cats instead of 2 -- does that change anything?
+
+Solution
+=========================================================
+- I'm drawing a random sample of hungry cats (sample size 2) from the population of hungry cats
+  - How hungry? Mean = 2 cans/day, sd = .05 cans/day
+  - I want a 90% CI for the mean of that sample
+- Get the z-scores for the lower and the upper bound:
+```{r}
+qnorm(.05)
+qnorm(.95)
+```
+
+Solution (2)
+=========================================================
+- Calculate the CI:
+```{r}
+2 + .5 * qnorm(.05) # lower limit
+2 + .5 * qnorm(.95) # upper limit
+```
+- Those are some hungry cats!
+- I need to plan on buying between 1.178 and 2.822 cans of cat food per day (per cat).
+
+Solution (3)
+=========================================================
+- Calculate the CI:
+```{r}
+2 + qnorm(.05) * .5/sqrt(2) # lower limit
+2 + qnorm(.95) * .5/sqrt(2) # upper limit
+```
+- Those are some hungry cats!
+- I need to plan on buying between `r 2 + qnorm(.05) * .5/sqrt(2)` and `r 2 + qnorm(.95) * .5/sqrt(2)` cans of cat food per day (per cat).
+
+Plot it!
+=========================================================
+```{r, echo = F}
+plot_normal_shaded_interval <- function(mean = 0, sd = 1, shade_from = -2, shade_to = 2, x_lower = mean - 2*sd, x_upper = mean + 2*sd){
+  cord.x <- c(seq(shade_from, shade_to,0.01))
+  cord.y <- c(dnorm(cord.x, mean = mean, sd = sd))
+  cord.x[1] <- cord.x[2]
+  cord.x[length(cord.x)] <- cord.x[length(cord.x) - 1]
+  cord.y[1] <- 0
+  cord.y[length(cord.y)] <- 0
+  curve(dnorm(x, mean, sd),xlim=c(x_lower,x_upper),main='Standard Normal')
+  polygon(cord.x,cord.y,col='skyblue')
+  }
+plot_normal_shaded_interval(2, .5, 2 + qnorm(.05) * .5/sqrt(2), 2 + qnorm(.95) * .5/sqrt(2)) 
+```
+
+Solution (4)
+=========================================================
+- If I only care about the maximum, I don't need the lower limit.
+- I can use a different upper limit to get an interval that delimits 90% of the area under the curve.
+```{r}
+2 + qnorm(.90) * .5/sqrt(2) # upper limit
+```
+- Those are still some hungry cats!
+- I need to plan on buying at most `r 2 + qnorm(.90) * .5/sqrt(2)` cans of cat food per day (per cat).
+
+Plot it again!
+=========================================================
+```{r, echo = FALSE}
+plot_normal_shaded_interval(2, .5, 0, 2 + qnorm(.90) * .5/sqrt(2)) 
+```
+
+Solution (5)
+=========================================================
+- What if I'm getting 3 cats?
+```{r}
+2 + qnorm(.90) * .5/sqrt(3) # upper limit
+```
+- Why is it less?
+- The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats.
 
 
 Now reverse the idea
@@ -123,7 +201,14 @@ Computing a CI from the sample mean
 - Or the equivalent question: is sample variance ($s^2$) a good estimator of population variance ($\sigma^2$)?
 - This sounds like really tricky maths problem.
   - But we can take it easy and just simulate!
-  
+
+What do these numbers mean?
+===========================================================
+- Anything, really.
+- But let's imagine that these numbers are from an experiment where people were asked how they feel about hungry cats.
+  - Imagine that they could give a rating from -4 (hate) to 4 (parental love).
+
+
 Set up a function to simulate sampling and calculate sample variances
 ===========================================================
 ```{r}
