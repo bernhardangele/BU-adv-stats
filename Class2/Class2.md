@@ -3,10 +3,25 @@ Advanced Statistics
 author: Bernhard Angele 
 date: Class 2, October 9, 2014
 
-Some general advice on working with 
+
+Some general advice on working with R
+=========================================================
+- Write all important steps into a script file or into your Rmd file so that you have a record.
+  - That is the number 1 secret for working with R.
+  - It generalises to SPSS: always save the code you used so you can replicate your analyses.
+  - This will save you an incredible amount of work if you have to go back and double-check what you did.
+- You can send any line in the script file to the console by pressing Ctrl + Enter.
+- Use the console only for things you don't want to save, like printing a variable to see what it is, trying out a new command, etc.
+
+Commenting
+=========================================================
+- In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
+  - Invaluable when you go back years later
+  - Also, if you put these in your homeworks/assignments, it will help me understand what you were thinking, too!
+- XKCD on comments
 
 Recap
-========================================================
+=========================================================
 - Last week, we talked a lot about sampling from different probability distribution.
 - We also talked about the properties of the distribution of sample means (hint: it's always roughly normal).
 - Now what can we do with this knowledge? Remember the convenience function we wrote last time:
@@ -75,7 +90,7 @@ This means we can apply some of our knowledge about the normal distribution!
 Confidence intervals
 =========================================================
 - If the distribution of sample means is normal, that means we can say something about the relationship between sample mean and population mean.
-- Let's say the population mean $\mu$ is 3 and the population sd $\sigma$ is 1.
+- Let's say the population mean $\mu$ is 0 and the population sd $\sigma$ is 1.
 - What is the sample mean going to be?
 - Think: what is the answer to this going to look like?
   - $\mu_{\bar{x}}$ is a random variable, so it doesn't make sense to give a point estimate
@@ -91,7 +106,7 @@ Confidence intervals (2)
 
 Confidence intervals (3)
 =========================================================
-- Let's start with the standard normal distribution
+- Let's start with the standard normal distribution (**z-scores**)
 - We want to get an interval that includes 95% of the area under the curve
   - That means we need to take off 2.5% on every side
   - For the left interval boundary, we want the x value that is greater than or equal to 2.5% of x values
@@ -126,9 +141,9 @@ Exercise
 =========================================================
 - It is (for some reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
 - What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
-- This estimate should only have a 10% chance of being wrong.
+- This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
-- Suppose I'm adopting 3 cats instead of 2 -- does that change anything?
+- Suppose I'm adopting 3 cats instead of 2 -- does that change anything about my estimate?
 
 Solution
 =========================================================
@@ -158,28 +173,6 @@ Solution (2)
 - Calculate the CI:
 
 ```r
-2 + .5 * qnorm(.05) # lower limit
-```
-
-```
-[1] 1.178
-```
-
-```r
-2 + .5 * qnorm(.95) # upper limit
-```
-
-```
-[1] 2.822
-```
-- Those are some hungry cats!
-- I need to plan on buying between 1.178 and 2.822 cans of cat food per day (per cat).
-
-Solution (3)
-=========================================================
-- Calculate the CI:
-
-```r
 2 + qnorm(.05) * .5/sqrt(2) # lower limit
 ```
 
@@ -199,7 +192,7 @@ Solution (3)
 
 Plot it!
 =========================================================
-![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11.png) 
 
 Solution (4)
 =========================================================
@@ -218,7 +211,7 @@ Solution (4)
 
 Plot it again!
 =========================================================
-![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-13](Class2-figure/unnamed-chunk-13.png) 
 
 Solution (5)
 =========================================================
@@ -292,7 +285,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
 ```
 
-![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-16](Class2-figure/unnamed-chunk-16.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -301,7 +294,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
 ```
 
-![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -310,7 +303,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
 ```
 
-![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -321,7 +314,7 @@ $$
 SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
 $$
-(Note that we are ignoring the question if the relationship between $s$ and $s^2$ is the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that.)
+(Note that we are ignoring the question if the relationship between $s$ and $s^2$ is really the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that, if you are really curious.)
 - But this means that our SE is an estimate of an estimate (estimating $\sigma$ from $s$, then estimating $SE_{\bar{x}}$).
 - This means that our estimate for $\sigma$ is going to vary. Its accuracy will depend on the sample size.
 
@@ -330,7 +323,7 @@ Dealing with the uncertainty in s
 - We need a way to account for $s$ being less accurate at low sample sizes.
 - Solution: assume that the sample means aren't normally distributed, but rather *t*-distributed
 - Why *t*?
-  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about that yet).
+  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about the name yet).
   - The higher df, the closer the *t*-distribution is to the standard normal distribution
   - For lower df, the *t*-distribution has "heavy tails", meaning that it's wider
     - This reflects greater uncertainty.
@@ -338,7 +331,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
 
 Let's try this
 ==========================================================
@@ -346,7 +339,7 @@ Let's try this
 
 ```r
   n <- 10
-sample_means <- rnorm(n, mean = 3, sd = 1)
+sample_means <- rnorm(n, mean = 0, sd = 1)
   qt(.025, df = n - 1)
 ```
 
@@ -377,7 +370,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 2.828
+[1] -0.1785
 ```
 
 ```r
@@ -385,7 +378,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.304
+[1] 0.8566
 ```
 
 ```r
@@ -393,7 +386,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 1.896
+[1] -0.7913
 ```
 
 ```r
@@ -401,8 +394,16 @@ Computing CIs (2)
 ```
 
 ```
-[1] 3.761
+[1] 0.4343
 ```
+
+Back to our example
+===========================================================
+- Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
+  - The lowest mean in the CI is -0.7913, which maybe translates to "apathetic but slightly worried."
+- But they don't love me either:
+  - The highest mean in the CI is 0.4343, which maybe translates to "apathetic but slightly hopeful."
+- Of course, there is a 5% chance that the true mean is actually outside this interval.
 
 There's a function for that
 ===========================================================
@@ -416,13 +417,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 6.861, df = 9, p-value = 7.383e-05
+t = -0.659, df = 9, p-value = 0.5264
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 1.896 3.761
+ -0.7913  0.4343
 sample estimates:
 mean of x 
-    2.828 
+  -0.1785 
 ```
 How convenient is that?
 
@@ -430,6 +431,7 @@ What does the CI of the sample mean mean? (sorry)
 ===========================================================
 - Remember, we are reversing the idea that the sample mean has a 95% probability to be within the 95% confidence interval around the population mean.
 - When we calculate a 95% CI from a *sample* this **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
+- The true mean either is or is not in this particular CI.
 - Rather, it means that if you take a lot of samples and compute the CI around the sample mean, 95% of those CIs will contain the true population mean.
 - In other words, the CI bounds are random variables, but the population mean isn't.
 - (In Bayesian statistics, you can actually get something equivalent to the first definition -- a 95% credible interval.)
@@ -442,6 +444,7 @@ Let's test this
 ```r
 test_cis <- function(n, mean = 60, sd = 4){
   t_results <- t.test(rnorm(n, mean, sd))
+  # test that the mean is within the bounds of the CI. Returns TRUE or FALSE.
   mean > t_results$conf.int[1] & mean < t_results$conf.int[2]
 }
 ```
@@ -451,14 +454,14 @@ Let's test this (2)
 - Now run the tests:
 
 ```r
-mean_in_ci <- replicate(1000, test_cis(10, 60, 4))
+mean_in_ci <- replicate(1000, test_cis(n = 10, mean = 60, sd = 4))
 table(mean_in_ci)
 ```
 
 ```
 mean_in_ci
 FALSE  TRUE 
-   60   940 
+   49   951 
 ```
 - It's true! Almost exactly 5%
 
@@ -470,6 +473,7 @@ test_cis_norm <- function(n, mean = 60, sd = 4){
   samples <- rnorm(n, mean, sd)
   upper <- mean(samples) + 1.96*(sd(samples)/sqrt(n))
   lower <- mean(samples) - 1.96*(sd(samples)/sqrt(n))
+  # test that the mean is within the bounds of the CI. Returns TRUE if it is and FALSE if it isn't.
   mean > lower & mean < upper
 }
 ```
@@ -484,7 +488,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   74   926 
+   83   917 
 ```
 - Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
 
@@ -499,12 +503,20 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   47   953 
+   50   950 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
 
 Random variables
+==========================================================
+- One of the points that I was trying to make above was that the true population mean and sd are not random. They have an actual point value (at any given point in time), and we could calculate that value if we were to measure every individual in the population.
+- From the point of view of any individual, their value on whatever measurement we're taking is of course not random either.
+- But, if we grab individuals at random, we will notice that their measure values are not completely arbitrary.
+- Instead, depending on the probability density function, we will get some values more often than others.
+- That's all we mean by saying that something is a random variable.
+
+Random variables (bear with me)
 ==========================================================
 Can we follow Shravan here? Warning: Some mathematical notation follows.
 
@@ -552,33 +564,38 @@ Hypothesis tests
     - And if so, what is the chance that we're wrong?
   - Answer: Yes, we can, since 0 is not part of the CI.
     - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
-    - This is called the $\alpha$-error, and its probability here is 5%.
-    
+    - This is called the type I error, and its probability here (called $\alpha$)is 5%.
+
+Example
+===========================================================
+- Remember my survey? The CI did not contain -3, so I can conclude (with an $\alpha$ of 5%), that the average member of the population of current and future Adv Stats students attitude towards me is not intense hatred. Relief!
+
+
 Hypothesis tests (2)
 ===========================================================
 Let's look at the `t.test` output again.
 
 ```r
-t.test(rnorm(n = 10, mean = 1, sd = 1))
+t.test(sample_means)
 ```
 
 ```
 
 	One Sample t-test
 
-data:  rnorm(n = 10, mean = 1, sd = 1)
-t = 3.416, df = 9, p-value = 0.00768
+data:  sample_means
+t = -0.659, df = 9, p-value = 0.5264
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- 0.3307 1.6278
+ -0.7913  0.4343
 sample estimates:
 mean of x 
-   0.9793 
+  -0.1785 
 ```
 
 Two-tailed t-tests
 ============================================================
-- Instead of computing the CI from the t-value, we can also just take the t-value itself and check how large it is.
+- Instead of computing the CI from the t-value, we can also just take the t-value itself as a measure of how far the sample mean is away from the mean specified in the null hypothesis.
 - We can determine a critical t-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is
 
 ```r
@@ -614,67 +631,105 @@ qt(.95, df = 9)
 - But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
 - This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
 
+Example
+===========================================================
+> I'm trying a new type of medication to help insomniac patients sleep better. Each of my 5 patients reports how much longer (or shorter) they have been sleeping (in hours) after taking the medication compared to before. The numbers are below. Based on this, can I conclude that the medication has changed my patients' sleep? Or are the variations that the patients observed random and unrelated to the intervention?
+
+
+```
+[1]  0.42 -0.76  2.79  0.87  1.81
+```
+Your turn. What is the null hypothesis?
+
+Example solution
+===========================================================
+The $H_0$ is that the true mean of the population is 0.
+
+```r
+t.test(sleep_times)
+```
+
+```
+
+	One Sample t-test
+
+data:  sleep_times
+t = 1.697, df = 4, p-value = 0.1649
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ -0.6523  2.7043
+sample estimates:
+mean of x 
+    1.026 
+```
+If p $\le$ .05: reject the null hypothesis.
+
 Power
 ===========================================================
-- We've talked about the $\alpha$ error (which we want to be no greater than 5%).
+- We've talked about the probability of the type I error ($\alpha$, which we want to be no greater than 5%).
 - What about the opposite error, where there is an actual effect but we fail to reject the null hypothesis?
 
 | Test result       | No true effect         | True effect            |
 |:------------------|:-----------------------|:-----------------------|
 |$H_0$ rejected     | Type I error ($\alpha$)| correct  (Power)       |   
-|$H_0$ not rejected | correct                | Type II error ($\beta$)|
+|$H_0$ not rejected | correct ($1-\alpha$)   | Type II error ($\beta$)|
 
 - Power: The probability of correctly rejecting the $H_0$ given that there is an actual effect in the population.
-- By the way, you **never** accept the $H_0$ (the table in Shravan's statistics notes got that wrong).
+- By the way, you **never** accept the $H_0$, you just fail to reject it (the table in Shravan's statistics notes got that wrong).
 
 Plotting the situation
 =========================================================
-![plot of chunk unnamed-chunk-33](Class2-figure/unnamed-chunk-33.png) 
+![plot of chunk unnamed-chunk-34](Class2-figure/unnamed-chunk-34.png) 
+
+A much worse situation with severe power issues
+==========================================================
+Here, the true mean is -1.
+![plot of chunk unnamed-chunk-35](Class2-figure/unnamed-chunk-35.png) 
 
 Power simulations
 ==========================================================
 - For simple (and even more complex) designs, you can compute power analytically.
 - But simulations are a lot easier!
-- Let's say we think that the true mean is not 0, but .5, the sd is 1, and we have a sample size of 10.
+- Let's go back to the sleep example and assume that the true mean was 1 (that means that on average, people get one hour more sleep when using the medication) and the sd was 1.
 
 ```r
-t_test_sim <- function(n, mean = .5, sd = 1){
+t_test_sim <- function(n, mean = 1, sd = 1){
   t_results <- t.test(rnorm(n, mean, sd))
   t_results$p.value <= .05}
-table(replicate(1000, t_test_sim(10, .5, 1)))
+table(replicate(1000, t_test_sim(5, 1, 1)))
 ```
 
 ```
 
 FALSE  TRUE 
-  720   280 
+  579   421 
 ```
 Not so great!
 
 How to increase power
 =======================================================
 Let's try some different scenarios:
-- The effect size in the population is larger
+- The effect size in the population is larger (people sleep longer on the medication)
 
 ```r
-table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1)))
+table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
 ```
 
 ```
 
 FALSE  TRUE 
-  207   793 
+   90   910 
 ```
-- The standard deviation (i.e. the noise) in the population is lower
+- The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 
 ```r
-table(replicate(1000, t_test_sim(n = 10, mean = .5, sd = .5)))
+table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
 ```
 
 ```
 
 FALSE  TRUE 
-  219   781 
+   93   907 
 ```
 
 How to increase power (realistically!)
@@ -683,42 +738,42 @@ You don't really have any direct control over population mean (i.e. effect size)
 - The sample size is larger
 
 ```r
-table(replicate(1000, t_test_sim(n = 20, mean = .5, sd = 1))) # not quite enough
+table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
 ```
 
 ```
 
 FALSE  TRUE 
-  449   551 
+  408   592 
 ```
 
 ```r
-table(replicate(1000, t_test_sim(n = 40, mean = .5, sd = 1))) # now we're talking!
+table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking!
 ```
 
 ```
 
 FALSE  TRUE 
-  118   882 
+  195   805 
 ```
 
 Double-checking our results
 =========================================================
-- Let's just check analytically that we have this correctly: If we want to show in the one-sample t-test that a mean of .5 is different from 0 (when sd = 1), we need about 40 subjects. R has a function for that!
+- Let's just check analytically that we have this correctly: If we want to show in the one-sample t-test that a mean of 1 is different from 0 (when sd = 1), we need about 10 subjects. R has a function for that!
 
 ```r
-power.t.test(n = 40, delta = .5, sd = 1, type = "one.sample")
+power.t.test(n = 10, delta = 1, sd = 1, type = "one.sample")
 ```
 
 ```
 
      One-sample t test power calculation 
 
-              n = 40
-          delta = 0.5
+              n = 10
+          delta = 1
              sd = 1
       sig.level = 0.05
-          power = 0.8694
+          power = 0.8031
     alternative = two.sided
 ```
 Remarkably similar to our simulation! (See Vasishth, Chapter 3 if you want to know how R calculates this!)
@@ -730,20 +785,44 @@ Setting yourself up for success (or failure)
   - Run a realistic number of participants so you reach acceptable power (the APA recomments .8):
 
 ```r
-power.t.test(delta = .5, sd = 1, power = .8, type = "one.sample")
+power.t.test(delta = 1, sd = 1, power = .8, type = "one.sample")
 ```
 
 ```
 
      One-sample t test power calculation 
 
-              n = 33.37
-          delta = 0.5
+              n = 9.938
+          delta = 1
              sd = 1
       sig.level = 0.05
           power = 0.8
     alternative = two.sided
 ```
+
+Exercise
+========================================================
+>An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a list of 100 cat-posting people's friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
+
+Solution
+========================================================
+
+```r
+power.t.test(n = 100, sd = 10, power = .8, type = "one.sample")
+```
+
+```
+
+     One-sample t test power calculation 
+
+              n = 100
+          delta = 2.829
+             sd = 10
+      sig.level = 0.05
+          power = 0.8
+    alternative = two.sided
+```
+A difference in as little as 2.9 friends would be detectable.
 
 Don't cheat!
 ========================================================
@@ -777,7 +856,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  734   266 
+  745   255 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -820,14 +899,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -10.06 SD =  4.65"
+[1] "Mean = -10.12 SD =  4.51"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-43](Class2-figure/unnamed-chunk-43.png) 
+![plot of chunk unnamed-chunk-46](Class2-figure/unnamed-chunk-46.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -841,7 +920,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.916
+[1] 7.299
 ```
 
 ```r
@@ -850,7 +929,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.22
+[1] 6.991
 ```
 
 The two-sample t-test (3)
@@ -863,7 +942,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.434
+[1] 5.531
 ```
 
 ```r
@@ -872,7 +951,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.484
+[1] 6.5
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
