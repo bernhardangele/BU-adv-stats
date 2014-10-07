@@ -17,8 +17,8 @@ Commenting
 =========================================================
 - In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
   - Invaluable when you go back years later
-  - Also, if you put these in your homeworks/assignments, it will help me understand what you were thinking, too!
-- XKCD on comments
+  - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
+- [XKCD on comments][http://xkcd.com/1421/]
 
 Recap
 =========================================================
@@ -370,7 +370,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.1785
+[1] -0.1576
 ```
 
 ```r
@@ -378,7 +378,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.8566
+[1] 0.9029
 ```
 
 ```r
@@ -386,7 +386,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.7913
+[1] -0.8035
 ```
 
 ```r
@@ -394,15 +394,15 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.4343
+[1] 0.4882
 ```
 
 Back to our example
 ===========================================================
 - Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
-  - The lowest mean in the CI is -0.7913, which maybe translates to "apathetic but slightly worried."
+  - The lowest mean in the CI is -0.8035, which maybe translates to "apathetic but slightly worried."
 - But they don't love me either:
-  - The highest mean in the CI is 0.4343, which maybe translates to "apathetic but slightly hopeful."
+  - The highest mean in the CI is 0.4882, which maybe translates to "apathetic but slightly hopeful."
 - Of course, there is a 5% chance that the true mean is actually outside this interval.
 
 There's a function for that
@@ -417,13 +417,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -0.659, df = 9, p-value = 0.5264
+t = -0.5521, df = 9, p-value = 0.5943
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.7913  0.4343
+ -0.8035  0.4882
 sample estimates:
 mean of x 
-  -0.1785 
+  -0.1576 
 ```
 How convenient is that?
 
@@ -461,7 +461,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   49   951 
+   52   948 
 ```
 - It's true! Almost exactly 5%
 
@@ -488,9 +488,11 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   83   917 
+   99   901 
 ```
-- Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
+- The proportion of CIs that did not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
+- Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
+  - Horrible, money-wasting, science-distorting, extermely expensive errors!
 
 What if we use a larger sample size?
 ==========================================================
@@ -503,7 +505,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   50   950 
+   64   936 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -526,7 +528,7 @@ $\omega \in S$ exactly one number $X(\omega) = x$.
 
 - $S_X$ is all the $x$'s (all the possible values of X, the support of X). i.e., $x \in S_X$.
 
-- Good example: number of coin tosses till H
+- Good example: number of coin tosses till you get Heads (H) for the first time
 
   - $X: \omega \rightarrow x$
 	- $\omega$: H, TH, TTH,$\dots$ (infinite)
@@ -584,13 +586,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -0.659, df = 9, p-value = 0.5264
+t = -0.5521, df = 9, p-value = 0.5943
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.7913  0.4343
+ -0.8035  0.4882
 sample estimates:
 mean of x 
-  -0.1785 
+  -0.1576 
 ```
 
 Two-tailed t-tests
@@ -637,7 +639,7 @@ Example
 
 
 ```
-[1]  0.42 -0.76  2.79  0.87  1.81
+[1] -0.81 -0.76  0.49  0.45  0.19
 ```
 Your turn. What is the null hypothesis?
 
@@ -654,13 +656,13 @@ t.test(sleep_times)
 	One Sample t-test
 
 data:  sleep_times
-t = 1.697, df = 4, p-value = 0.1649
+t = -0.3042, df = 4, p-value = 0.7761
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.6523  2.7043
+ -0.8912  0.7152
 sample estimates:
 mean of x 
-    1.026 
+   -0.088 
 ```
 If p $\le$ .05: reject the null hypothesis.
 
@@ -702,7 +704,7 @@ table(replicate(1000, t_test_sim(5, 1, 1)))
 ```
 
 FALSE  TRUE 
-  579   421 
+  591   409 
 ```
 Not so great!
 
@@ -718,7 +720,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
 ```
 
 FALSE  TRUE 
-   90   910 
+   99   901 
 ```
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 
@@ -729,7 +731,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
 ```
 
 FALSE  TRUE 
-   93   907 
+   91   909 
 ```
 
 How to increase power (realistically!)
@@ -744,7 +746,7 @@ table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  408   592 
+  401   599 
 ```
 
 ```r
@@ -754,7 +756,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking
 ```
 
 FALSE  TRUE 
-  195   805 
+  184   816 
 ```
 
 Double-checking our results
@@ -802,7 +804,7 @@ power.t.test(delta = 1, sd = 1, power = .8, type = "one.sample")
 
 Exercise
 ========================================================
->An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a list of 100 cat-posting people's friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
+>An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a sample of 100 cat-posting people and find out their friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
 
 Solution
 ========================================================
@@ -830,7 +832,8 @@ Don't cheat!
 
 > Just run the hypothesis test on the data after every new sample and stop as soon as you get a significant result.
 
-  - Let's see just what happens to $\alpha$ if you do that.
+- Let's see just what happens to $\alpha$ if you do that.
+- Run a simulation where there is no effect (i.e. where we know the $H_0$ is true)
 
 ```r
 t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
@@ -856,7 +859,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  745   255 
+  739   261 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -899,7 +902,7 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -10.12 SD =  4.51"
+[1] "Mean = -9.9 SD =  4.38"
 ```
 
 ```r
@@ -920,7 +923,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.299
+[1] 6.813
 ```
 
 ```r
@@ -929,7 +932,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.991
+[1] 7.069
 ```
 
 The two-sample t-test (3)
@@ -942,7 +945,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.531
+[1] 5.538
 ```
 
 ```r
@@ -951,7 +954,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.5
+[1] 6.487
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
@@ -972,14 +975,14 @@ The two-sample t-test (5)
 ==========================================================
 - Of course, in real life we don't know the population sd
 - So we have to estimate it using s^2
-- This would be a t-value, not a z-value
+- This would be a *t*-value, not a z-value
 
 $t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
 
 - Only problem: what is the df of that test?
   - There are some shortcuts that we can take if the sample sizes and population variances are the same, but is there a general solution?
 - Shravan suggests we should just use the lower of the sample sizes, but this will cost us power
-- This was actually a big problem in statistics, but B. L. Welch found an approximate solution
+- This was actually a big problem in statistics, but B. L. Welch found an approximate solution (called *Welch's t-test*)
 - You can look the details up on Wikipedia, but R knows them and applies them automatically when you use `t.test`.
 
 The dependent t-test for paired samples
@@ -987,3 +990,4 @@ The dependent t-test for paired samples
 - This is actually a lot easier. Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample t-test to check if they are 0.
 - Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.
 - We'll get back to that next week when we're talking about ANOVAs.
+- In R, use `t.test(..., paired = TRUE)` to perform this test.

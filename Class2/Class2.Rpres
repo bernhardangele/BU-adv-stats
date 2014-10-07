@@ -17,8 +17,8 @@ Commenting
 =========================================================
 - In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
   - Invaluable when you go back years later
-  - Also, if you put these in your homeworks/assignments, it will help me understand what you were thinking, too!
-- XKCD on comments
+  - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
+- [XKCD on comments][http://xkcd.com/1421/]
 
 Recap
 =========================================================
@@ -392,7 +392,9 @@ What happens if we don't use the t distribution? (2)
 mean_in_ci <- replicate(1000, test_cis_norm(10, 60, 4))
 table(mean_in_ci)
 ```
-- Larger than 5%! This is because the normal distribution is narrower than the t-distribution at low dfs.
+- The proportion of CIs that did not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
+- Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
+  - Horrible, money-wasting, science-distorting, extermely expensive errors!
 
 What if we use a larger sample size?
 ==========================================================
@@ -421,7 +423,7 @@ $\omega \in S$ exactly one number $X(\omega) = x$.
 
 - $S_X$ is all the $x$'s (all the possible values of X, the support of X). i.e., $x \in S_X$.
 
-- Good example: number of coin tosses till H
+- Good example: number of coin tosses till you get Heads (H) for the first time
 
   - $X: \omega \rightarrow x$
 	- $\omega$: H, TH, TTH,$\dots$ (infinite)
@@ -695,7 +697,7 @@ power.t.test(delta = 1, sd = 1, power = .8, type = "one.sample")
 
 Exercise
 ========================================================
->An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a list of 100 cat-posting people's friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
+>An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a sample of 100 cat-posting people and find out their friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
 
 Solution
 ========================================================
@@ -710,7 +712,8 @@ Don't cheat!
 
 > Just run the hypothesis test on the data after every new sample and stop as soon as you get a significant result.
 
-  - Let's see just what happens to $\alpha$ if you do that.
+- Let's see just what happens to $\alpha$ if you do that.
+- Run a simulation where there is no effect (i.e. where we know the $H_0$ is true)
 ```{r}  
 t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
   samples <- NULL
@@ -809,14 +812,14 @@ The two-sample t-test (5)
 ==========================================================
 - Of course, in real life we don't know the population sd
 - So we have to estimate it using s^2
-- This would be a t-value, not a z-value
+- This would be a *t*-value, not a z-value
 
 $t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
 
 - Only problem: what is the df of that test?
   - There are some shortcuts that we can take if the sample sizes and population variances are the same, but is there a general solution?
 - Shravan suggests we should just use the lower of the sample sizes, but this will cost us power
-- This was actually a big problem in statistics, but B. L. Welch found an approximate solution
+- This was actually a big problem in statistics, but B. L. Welch found an approximate solution (called *Welch's t-test*)
 - You can look the details up on Wikipedia, but R knows them and applies them automatically when you use `t.test`.
 
 The dependent t-test for paired samples
@@ -824,3 +827,4 @@ The dependent t-test for paired samples
 - This is actually a lot easier. Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample t-test to check if they are 0.
 - Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.
 - We'll get back to that next week when we're talking about ANOVAs.
+- In R, use `t.test(..., paired = TRUE)` to perform this test.
