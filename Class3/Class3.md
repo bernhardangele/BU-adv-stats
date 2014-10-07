@@ -138,13 +138,13 @@ t.test(bu, soton)
 	Welch Two Sample t-test
 
 data:  bu and soton
-t = -1.286, df = 18, p-value = 0.2149
+t = 0.5075, df = 17.76, p-value = 0.6181
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -20.048   4.827
+ -10.59  17.33
 sample estimates:
 mean of x mean of y 
-    98.58    106.19 
+    104.7     101.3 
 ```
 
 BU vs Oxford
@@ -159,13 +159,13 @@ t.test(bu, oxford)
 	Welch Two Sample t-test
 
 data:  bu and oxford
-t = -0.6687, df = 16.83, p-value = 0.5127
+t = 0.8306, df = 16.21, p-value = 0.4182
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -14.721   7.639
+ -11.05  25.30
 sample estimates:
 mean of x mean of y 
-    98.58    102.13 
+   104.71     97.58 
 ```
 
 Soton vs Oxford
@@ -180,13 +180,13 @@ t.test(soton, oxford)
 	Welch Two Sample t-test
 
 data:  soton and oxford
-t = 0.7738, df = 16.91, p-value = 0.4497
+t = 0.4543, df = 15.17, p-value = 0.656
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -7.03 15.17
+ -13.86  21.39
 sample estimates:
 mean of x mean of y 
-    106.2     102.1 
+   101.34     97.58 
 ```
 
 Anything wrong with that?
@@ -198,7 +198,18 @@ Anything wrong with that?
   - $1 - .95*.95*.95 = .14$
   - We have a problem: our $\alpha$ is almost three times as high as it should be.
   - SPSS calls this LSD (least significant differences) - don't use it!
-  
+
+Exercise: Give it a try
+=========================================================
+- Instead of running the simulation on my computer, I'll run it on **you**
+- What I mean by that:
+  - Generate three data sets like I've just shown you
+  - Make sure that all three data sets are samples from the same normal distribution
+    - Same mean and sd, of course same n as well
+  - Run three two-sample t-tests comparing the means
+  - Afterwards, I will ask you and count how many of you found at least one significant result.
+  - If the $\alpha$ level isn't inflated, only one or two of you should find one
+
 Solutions
 =========================================================
 - We can adjust the $\alpha$ level of each t-test:
@@ -236,16 +247,16 @@ bu
 
 ```
        iq group
-1  116.93    BU
-2   98.04    BU
-3   78.76    BU
-4  106.98    BU
-5   95.30    BU
-6   89.13    BU
-7   82.11    BU
-8  109.04    BU
-9   93.90    BU
-10 115.65    BU
+1  107.44    BU
+2   85.50    BU
+3  112.31    BU
+4  117.39    BU
+5  115.18    BU
+6   96.68    BU
+7  102.95    BU
+8  106.33    BU
+9  128.33    BU
+10  75.01    BU
 ```
 
 Putting it all together
@@ -258,7 +269,7 @@ str(iqdata)
 
 ```
 'data.frame':	30 obs. of  2 variables:
- $ iq   : num  116.9 98 78.8 107 95.3 ...
+ $ iq   : num  107.4 85.5 112.3 117.4 115.2 ...
  $ group: Factor w/ 3 levels "BU","Soton","Oxford": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 - Data frames are smart: 
@@ -278,7 +289,7 @@ Running an ANOVA -- by hand!
 ```
 
 ```
-[1] 4373
+[1] 8635
 ```
 
 Running an ANOVA -- by hand! (2)
@@ -296,7 +307,7 @@ n <- 10
 ```
 
 ```
-[1] 290.1
+[1] 254.4
 ```
 
 Running an ANOVA -- by hand! (3)
@@ -310,7 +321,7 @@ Running an ANOVA -- by hand! (3)
 ```
 
 ```
-[1] 4083
+[1] 8381
 ```
 
 Running an ANOVA -- by hand! (4)
@@ -366,7 +377,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 145
+[1] 127.2
 ```
 
 ```r
@@ -374,7 +385,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 151.2
+[1] 310.4
 ```
 Running an ANOVA -- final steps!
 ========================================================
@@ -386,5 +397,25 @@ Running an ANOVA -- final steps!
 ```
 
 ```
-[1] 0.959
+[1] 0.4098
 ```
+
+What to do with this F-value
+========================================================
+- It turns out that the ratio between model and error variance follows a specific distribution
+  - If there is no actual effect (!) and
+  - As long as certain assumptions are valid (more on that later)
+- This distribution is called the F-distribution
+- Occasionally you will get a high $MS_{model}$ simply by chance, but such occurrences are quite rare
+- The F-distribution is the probability density function for different values of the variance ratio, i.e. the F-value.
+- We essentially want to test if the F-value we get is extreme enough that it could only have occurred by chance 5% of the time (our $\alpha$ level)
+
+The F-distribution
+=========================================================
+- Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
+- Remember that F is a *ratio* of two variances.
+  - Because of this, the F distribtion has *two* degrees of freedom parameters
+    - $df_{numerator}$
+    - $df_{denominator}$
+- Guess what the R functions for the F distribution are called
+  - That's right: `df`, `pf`, `qf`, `rf`

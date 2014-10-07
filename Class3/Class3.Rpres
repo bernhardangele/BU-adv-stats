@@ -149,7 +149,18 @@ Anything wrong with that?
   - $1 - .95*.95*.95 = .14$
   - We have a problem: our $\alpha$ is almost three times as high as it should be.
   - SPSS calls this LSD (least significant differences) - don't use it!
-  
+
+Exercise: Give it a try
+=========================================================
+- Instead of running the simulation on my computer, I'll run it on **you**
+- What I mean by that:
+  - Generate three data sets like I've just shown you
+  - Make sure that all three data sets are samples from the same normal distribution
+    - Same mean and sd, of course same n as well
+  - Run three two-sample t-tests comparing the means
+  - Afterwards, I will ask you and count how many of you found at least one significant result.
+  - If the $\alpha$ level isn't inflated, only one or two of you should find one
+
 Solutions
 =========================================================
 - We can adjust the $\alpha$ level of each t-test:
@@ -265,3 +276,23 @@ Running an ANOVA -- final steps!
 ```{r}
 (F_value <- MS_model/MS_error)
 ```
+
+What to do with this F-value
+========================================================
+- It turns out that the ratio between model and error variance follows a specific distribution
+  - If there is no actual effect (!) and
+  - As long as certain assumptions are valid (more on that later)
+- This distribution is called the F-distribution
+- Occasionally you will get a high $MS_{model}$ simply by chance, but such occurrences are quite rare
+- The F-distribution is the probability density function for different values of the variance ratio, i.e. the F-value.
+- We essentially want to test if the F-value we get is extreme enough that it could only have occurred by chance 5% of the time (our $\alpha$ level)
+
+The F-distribution
+=========================================================
+- Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
+- Remember that F is a *ratio* of two variances.
+  - Because of this, the F distribtion has *two* degrees of freedom parameters
+    - $df_{numerator}$
+    - $df_{denominator}$
+- Guess what the R functions for the F distribution are called
+  - That's right: `df`, `pf`, `qf`, `rf`
