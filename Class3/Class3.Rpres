@@ -76,7 +76,7 @@ Good practice when starting a script:
 
 rm(list = ls()) # clear the workspace to avoid problems caused by old objects
 library(ez) # load (only) those libraries that you need
-library(reshape)
+?library(reshape)
 library(ggplot2)
 # Set your working directory
 setwd("C:/I_know_my_working_directory_and_this_is_it/")
@@ -296,3 +296,79 @@ The F-distribution
     - $df_{denominator}$
 - Guess what the R functions for the F distribution are called
   - That's right: `df`, `pf`, `qf`, `rf`
+  
+Plotting it
+==========================================================
+- Let's take a look
+```{r}
+curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
+```
+- Looks like x can't be negative
+  - this makes sense: you can't have negative variance
+
+Plotting it (2)
+==========================================================
+- Adjusting the x-axis
+```{r}
+curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6)
+```
+
+The F distribution
+==========================================================
+```{r}
+curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6, main = "F(1,30)")
+```
+
+The F distribution (2)
+==========================================================
+```{r}
+curve(df(x, df1 = 3, df2 = 30), from = 0, to = 6, main = "F(3,30)")
+```
+
+
+The F distribution (3)
+==========================================================
+```{r}
+curve(df(x, df1 = 10, df2 = 30), from = 0, to = 6, main = "F(10,30)")
+```
+
+
+The F distribution (4)
+==========================================================
+```{r}
+curve(df(x, df1 = 10, df2 = 10), from = 0, to = 6, main = "F(10,10)")
+```
+
+Finally finishing that ANOVA
+=========================================================
+- Let's get the p-value for our F-value
+```{r}
+p_value <- 1 - pf(F_value, df1 = df_model, df2 = df_error)
+```
+It's 1 - pf since pf gives you the probability for an F value to be smaller than the value given. We want the opposite.
+If p <= .05, the effect of group is significant (spuriously in this case, since we know there was no effect).
+
+Can we just let R do it?
+==========================================================
+- Remember the formula format for the t-test command:
+```{r}
+summary(aov(formula = iq ~ group, data = iqdata))
+```
+- Summary is necessary here to get the p value
+
+A different way, using a package
+==========================================================
+```{r}
+library(ez)
+# ezANOVA wants a subject identifier, so let's generate one
+# every row is a different subject, so we just need to make a new variable that numbers the rows
+iqdata$subnum <- 1:30
+```
+
+ezANOVA
+===========================================================
+```{r}
+ezANOVA(iqdata, dv = iq, wid = subnum, between = group)
+```
+- Nice. What's `ges` and what is that second output?
+

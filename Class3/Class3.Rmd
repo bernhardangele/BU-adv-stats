@@ -1,3 +1,8 @@
+---
+title: "Untitled"
+output: word_document
+---
+
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
@@ -68,8 +73,7 @@ Loading packages
 Starting a script
 ==========================================================
 Good practice when starting a script:
-
-```r
+```{r,eval=FALSE}
 # My_testscript.R
 # Author: Bernhard Angele
 # Description: Demonstrates how to start a script
@@ -77,7 +81,7 @@ Good practice when starting a script:
 
 rm(list = ls()) # clear the workspace to avoid problems caused by old objects
 library(ez) # load (only) those libraries that you need
-?library(reshape)
+library(reshape)
 library(ggplot2)
 # Set your working directory
 setwd("C:/I_know_my_working_directory_and_this_is_it/")
@@ -87,8 +91,7 @@ setwd("C:/I_know_my_working_directory_and_this_is_it/")
 Starting an Rmd file
 ========================================================
 - Fill in the header:
-
-```r
+```{r, eval = FALSE}
 ---
 title: "My fantastic results section"
 output: word_document
@@ -96,8 +99,7 @@ output: word_document
 ```
 - Then do the same things as above in the first code chunk
   - Hint: you can tell R to hide this boring code by adding `hide = TRUE` to the header. It will still get evaluated
-
-```r
+```{r,eval =FALSE}
 Start your code chunk like this: ```{r, hide = TRUE}
 ```
     
@@ -113,8 +115,7 @@ Making fake data for our example
 - Let's assume that the true state of affairs is that there is no difference in intelligence
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
 - Let's generate 3 data sets according to this criterion:
-
-```r
+```{r}
 bu <- rnorm(n = 10, mean = 100, sd = 15)
 soton <- rnorm(n = 10, mean = 100, sd = 15)
 oxford <- rnorm(n = 10, mean = 100, sd = 15)
@@ -128,65 +129,20 @@ What if we use t-tests?
 
 BU vs Soton
 =========================================================
-
-```r
+```{r}
 t.test(bu, soton)
-```
-
-```
-
-	Welch Two Sample t-test
-
-data:  bu and soton
-t = -1.309, df = 17.56, p-value = 0.2074
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -26.349   6.142
-sample estimates:
-mean of x mean of y 
-     96.8     106.9 
 ```
 
 BU vs Oxford
 =========================================================
-
-```r
+```{r}
 t.test(bu, oxford)
-```
-
-```
-
-	Welch Two Sample t-test
-
-data:  bu and oxford
-t = 0.9855, df = 14.56, p-value = 0.3405
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -7.847 21.278
-sample estimates:
-mean of x mean of y 
-    96.80     90.08 
 ```
 
 Soton vs Oxford
 =========================================================
-
-```r
+```{r}
 t.test(soton, oxford)
-```
-
-```
-
-	Welch Two Sample t-test
-
-data:  soton and oxford
-t = 2.765, df = 15.98, p-value = 0.01382
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
-  3.921 29.717
-sample estimates:
-mean of x mean of y 
-   106.90     90.08 
 ```
 
 Anything wrong with that?
@@ -231,8 +187,7 @@ Putting our fake data in a different format
 - Instead, we'll have a big table with our data
 - If we are going to put our data in this format, we need a variable (or column) identifying the group
 - Let's add that to each of our data sets
-
-```r
+```{r}
 bu <- data.frame(iq = bu, group = "BU")
 soton <- data.frame(iq = soton, group = "Soton")
 oxford <- data.frame(iq = oxford, group = "Oxford")
@@ -240,37 +195,15 @@ oxford <- data.frame(iq = oxford, group = "Oxford")
 
 Looking at these data now
 =========================================================
-
-```r
+```{r}
 bu
-```
-
-```
-       iq group
-1   90.94    BU
-2   96.71    BU
-3  113.82    BU
-4   90.78    BU
-5   80.74    BU
-6   83.81    BU
-7   64.01    BU
-8  110.97    BU
-9  109.92    BU
-10 126.30    BU
 ```
 
 Putting it all together
 =========================================================
-
-```r
+```{r}
 iqdata <- rbind(bu, soton, oxford)
 str(iqdata)
-```
-
-```
-'data.frame':	30 obs. of  2 variables:
- $ iq   : num  90.9 96.7 113.8 90.8 80.7 ...
- $ group: Factor w/ 3 levels "BU","Soton","Oxford": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 - Data frames are smart: 
   - R has automatically converted `group` into a factor
@@ -283,21 +216,15 @@ Running an ANOVA -- by hand!
 - One-way ANOVAs are so simple, all you need is a calculator (or R, even better)
 - First, we need an estimate of the total variance in the data: calculate the total sum of squared deviations from the mean (or short, sum of squares, SS)
 - $SS_{total} = \sum{(x_i - \bar{x})^2}$, where $x_i$ is each individual value and $\bar{x}$ is the grand mean of the data.
-
-```r
+```{r}
 (SS_tot <- sum((iqdata$iq - mean(iqdata$iq))^2))
-```
-
-```
-[1] 7870
 ```
 
 Running an ANOVA -- by hand! (2)
 ========================================================
 - Now we need an estimate of the variance explained by `group`
 - $SS_{model} = n_k(\bar{x}_k - \bar{x})^2$, where $\bar{x}_k$ denotes the mean for each group, $n_k$ is the number of subjects in each group, and $\bar{x}$ is the grand mean of the data.
-
-```r
+```{r}
 bu_mean <- mean(subset(iqdata, group == "BU")$iq)
 soton_mean <- mean(subset(iqdata, group == "Soton")$iq)
 oxford_mean <- mean(subset(iqdata, group == "Oxford")$iq)
@@ -306,22 +233,13 @@ n <- 10
 (SS_model <- sum(n*(bu_mean - mean(iqdata$iq))^2, n*(soton_mean - mean(iqdata$iq))^2, n*(oxford_mean - mean(iqdata$iq))^2))
 ```
 
-```
-[1] 1434
-```
-
 Running an ANOVA -- by hand! (3)
 ========================================================
 - Now get an estimate of the variance that is *not* explained by `group`, i.e. the error.
 - Easy: Just subtract $SS_{model}$ from $SS_{total}$.
 - $SS_{error} = SS_{total} - SS_{model}$
-
-```r
+```{r}
 (SS_error <- SS_tot - SS_model)
-```
-
-```
-[1] 6436
 ```
 
 Running an ANOVA -- by hand! (4)
@@ -339,30 +257,11 @@ Running an ANOVA -- by hand! (5)
 - $df_{total} = n \cdot k-1$
 - $df_{model} = k-1$, where $k$ is the number of groups.
 - $df_{error} = df_{total} - df_{error} = n \cdot k - k$
-
-```r
+```{r}
 k <- 3
 (df_total <- n * k - 1)
-```
-
-```
-[1] 29
-```
-
-```r
 (df_model <- k - 1)
-```
-
-```
-[1] 2
-```
-
-```r
 (df_error <- n * k - k)
-```
-
-```
-[1] 27
 ```
 
 Running an ANOVA -- almost done!
@@ -371,33 +270,16 @@ Running an ANOVA -- almost done!
 - $MS_{model} = \frac{SS_{model}}{df_{model}}$
 - $MS_{error} = \frac{SS_{error}}{df_{error}}$
 
-
-```r
+```{r}
 (MS_model <- SS_model/df_model)
-```
-
-```
-[1] 716.8
-```
-
-```r
 (MS_error <- SS_error/df_error)
-```
-
-```
-[1] 238.4
 ```
 Running an ANOVA -- final steps!
 ========================================================
 - Finally, we take the ratio of the two.
 - $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
-
-```r
+```{r}
 (F_value <- MS_model/MS_error)
-```
-
-```
-[1] 3.007
 ```
 
 What to do with this F-value
@@ -423,115 +305,24 @@ The F-distribution
 Plotting it
 ==========================================================
 - Let's take a look
-
-```r
+```{r}
 curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 ```
-
-![plot of chunk unnamed-chunk-17](Class3-figure/unnamed-chunk-17.png) 
 - Looks like x can't be negative
   - this makes sense: you can't have negative variance
 
 Plotting it (2)
 ==========================================================
 - Adjusting the x-axis
-
-```r
+```{r}
 curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6)
 ```
 
-![plot of chunk unnamed-chunk-18](Class3-figure/unnamed-chunk-18.png) 
-
-The F distribution
+t and F
 ==========================================================
-
-```r
-curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6, main = "F(1,30)")
+- Now for something unexpected
+```{r}
+curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6)
+curve(dt(x, df = 30), from = 0, to = 6)
 ```
-
-![plot of chunk unnamed-chunk-19](Class3-figure/unnamed-chunk-19.png) 
-
-The F distribution (2)
-==========================================================
-
-```r
-curve(df(x, df1 = 3, df2 = 30), from = 0, to = 6, main = "F(3,30)")
-```
-
-![plot of chunk unnamed-chunk-20](Class3-figure/unnamed-chunk-20.png) 
-
-
-The F distribution (3)
-==========================================================
-
-```r
-curve(df(x, df1 = 10, df2 = 30), from = 0, to = 6, main = "F(10,30)")
-```
-
-![plot of chunk unnamed-chunk-21](Class3-figure/unnamed-chunk-21.png) 
-
-
-The F distribution (4)
-==========================================================
-
-```r
-curve(df(x, df1 = 10, df2 = 10), from = 0, to = 6, main = "F(10,10)")
-```
-
-![plot of chunk unnamed-chunk-22](Class3-figure/unnamed-chunk-22.png) 
-
-Finally finishing that ANOVA
-=========================================================
-- Let's get the p-value for our F-value
-
-```r
-p_value <- 1 - pf(F_value, df1 = df_model, df2 = df_error)
-```
-It's 1 - pf since pf gives you the probability for an F value to be smaller than the value given. We want the opposite.
-If p <= .05, the effect of group is significant (spuriously in this case, since we know there was no effect).
-
-Can we just let R do it?
-==========================================================
-- Remember the formula format for the t-test command:
-
-```r
-summary(aov(formula = iq ~ group, data = iqdata))
-```
-
-```
-            Df Sum Sq Mean Sq F value Pr(>F)  
-group        2   1434     717    3.01  0.066 .
-Residuals   27   6436     238                 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-```
-- Summary is necessary here to get the p value
-
-A different way, using a package
-==========================================================
-
-```r
-library(ez)
-# ezANOVA wants a subject identifier, so let's generate one
-# every row is a different subject, so we just need to make a new variable that numbers the rows
-iqdata$subnum <- 1:30
-```
-
-ezANOVA
-===========================================================
-
-```r
-ezANOVA(iqdata, dv = iq, wid = subnum, between = group)
-```
-
-```
-$ANOVA
-  Effect DFn DFd     F       p p<.05    ges
-1  group   2  27 3.007 0.06623       0.1822
-
-$`Levene's Test for Homogeneity of Variance`
-  DFn DFd   SSn  SSd     F      p p<.05
-1   2  27 221.3 2144 1.394 0.2655      
-```
-- Nice. What's `ges` and what is that second output?
 
