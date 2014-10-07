@@ -238,14 +238,30 @@ Running an ANOVA -- by hand! (4)
   
 Running an ANOVA -- by hand! (5)
 ========================================================
-- $df_{total} = n*k-1$
+- $df_{total} = n \cdot k-1$
 - $df_{model} = k-1$, where $k$ is the number of groups.
-- $df_{error} = df_{total} - df_{error} = n*k - k$
+- $df_{error} = df_{total} - df_{error} = n \cdot k - k$
 ```{r}
 k <- 3
 (df_total <- n * k - 1)
 (df_model <- k - 1)
-(df_error <- n*k - k)
+(df_error <- n * k - k)
+```
 
 Running an ANOVA -- almost done!
 ========================================================
+- Now we compute the mean squares (MS) as an estimate of the variance
+- $MS_{model} = \frac{SS_{model}}{df_{model}}$
+- $MS_{error} = \frac{SS_{error}}{df_{error}}$
+
+```{r}
+(MS_model <- SS_model/df_model)
+(MS_error <- SS_error/df_error)
+```
+Running an ANOVA -- final steps!
+========================================================
+- Finally, we take the ratio of the two.
+- $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
+```{r}
+(F_value <- MS_model/MS_error)
+```

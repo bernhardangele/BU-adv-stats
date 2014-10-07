@@ -138,13 +138,13 @@ t.test(bu, soton)
 	Welch Two Sample t-test
 
 data:  bu and soton
-t = 0.238, df = 13.15, p-value = 0.8155
+t = -1.286, df = 18, p-value = 0.2149
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -13.13  16.39
+ -20.048   4.827
 sample estimates:
 mean of x mean of y 
-    104.3     102.7 
+    98.58    106.19 
 ```
 
 BU vs Oxford
@@ -159,13 +159,13 @@ t.test(bu, oxford)
 	Welch Two Sample t-test
 
 data:  bu and oxford
-t = 1.204, df = 15.72, p-value = 0.2464
+t = -0.6687, df = 16.83, p-value = 0.5127
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -6.785 24.562
+ -14.721   7.639
 sample estimates:
 mean of x mean of y 
-   104.30     95.41 
+    98.58    102.13 
 ```
 
 Soton vs Oxford
@@ -180,13 +180,13 @@ t.test(soton, oxford)
 	Welch Two Sample t-test
 
 data:  soton and oxford
-t = 1.422, df = 16.56, p-value = 0.1737
+t = 0.7738, df = 16.91, p-value = 0.4497
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -3.536 18.056
+ -7.03 15.17
 sample estimates:
 mean of x mean of y 
-   102.67     95.41 
+    106.2     102.1 
 ```
 
 Anything wrong with that?
@@ -236,16 +236,16 @@ bu
 
 ```
        iq group
-1  104.32    BU
-2  113.80    BU
-3   70.85    BU
-4  101.82    BU
-5  130.75    BU
-6  106.50    BU
-7  129.40    BU
-8  111.70    BU
-9   96.31    BU
-10  77.51    BU
+1  116.93    BU
+2   98.04    BU
+3   78.76    BU
+4  106.98    BU
+5   95.30    BU
+6   89.13    BU
+7   82.11    BU
+8  109.04    BU
+9   93.90    BU
+10 115.65    BU
 ```
 
 Putting it all together
@@ -258,7 +258,7 @@ str(iqdata)
 
 ```
 'data.frame':	30 obs. of  2 variables:
- $ iq   : num  104.3 113.8 70.9 101.8 130.7 ...
+ $ iq   : num  116.9 98 78.8 107 95.3 ...
  $ group: Factor w/ 3 levels "BU","Soton","Oxford": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 - Data frames are smart: 
@@ -278,7 +278,7 @@ Running an ANOVA -- by hand!
 ```
 
 ```
-[1] 6181
+[1] 4373
 ```
 
 Running an ANOVA -- by hand! (2)
@@ -296,7 +296,7 @@ n <- 10
 ```
 
 ```
-[1] 447.9
+[1] 290.1
 ```
 
 Running an ANOVA -- by hand! (3)
@@ -310,7 +310,7 @@ Running an ANOVA -- by hand! (3)
 ```
 
 ```
-[1] 5733
+[1] 4083
 ```
 
 Running an ANOVA -- by hand! (4)
@@ -325,14 +325,66 @@ Running an ANOVA -- by hand! (4)
   
 Running an ANOVA -- by hand! (5)
 ========================================================
-- $df_{total} = n*k-1$
+- $df_{total} = n \cdot k-1$
 - $df_{model} = k-1$, where $k$ is the number of groups.
-- $df_{error} = df_{total} - df_{error} = n*k - k$
+- $df_{error} = df_{total} - df_{error} = n \cdot k - k$
 
+```r
+k <- 3
+(df_total <- n * k - 1)
+```
 
 ```
-Error in parse(text = x, srcfile = src) : <text>:6:9: unexpected symbol
-5: 
-6: Running an
-           ^
+[1] 29
+```
+
+```r
+(df_model <- k - 1)
+```
+
+```
+[1] 2
+```
+
+```r
+(df_error <- n * k - k)
+```
+
+```
+[1] 27
+```
+
+Running an ANOVA -- almost done!
+========================================================
+- Now we compute the mean squares (MS) as an estimate of the variance
+- $MS_{model} = \frac{SS_{model}}{df_{model}}$
+- $MS_{error} = \frac{SS_{error}}{df_{error}}$
+
+
+```r
+(MS_model <- SS_model/df_model)
+```
+
+```
+[1] 145
+```
+
+```r
+(MS_error <- SS_error/df_error)
+```
+
+```
+[1] 151.2
+```
+Running an ANOVA -- final steps!
+========================================================
+- Finally, we take the ratio of the two.
+- $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
+
+```r
+(F_value <- MS_model/MS_error)
+```
+
+```
+[1] 0.959
 ```
