@@ -114,6 +114,7 @@ Confidence intervals (2)
 =========================================================
 - So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
 - We want something like this:
+
 ```{r, echo = F}
 cord.x <- c(-3,seq(-1.96,1.96,0.01),1.96)
 cord.y <- c(-3,dnorm(seq(-1.96,1.96,0.01)),0)
@@ -329,6 +330,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
+
 ```{r, echo = F}
 ## plot multiple figures:
 ## replace ugly par... specification with 
@@ -440,7 +442,7 @@ table(mean_in_ci)
 ```
 - The proportion of CIs that did not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
 - Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
-  - Horrible, money-wasting, science-distorting, extermely expensive errors!
+  - Horrible, money-wasting, science-distorting, extremely expensive errors!
 
 What if we use a larger sample size?
 ==========================================================
