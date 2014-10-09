@@ -13,12 +13,19 @@ Some general advice on working with R
 - You can send any line in the script file to the console by pressing Ctrl + Enter.
 - Use the console only for things you don't want to save, like printing a variable to see what it is, trying out a new command, etc.
 
+How to print your reports
+=========================================================
+- Make sure the file name ends in `.Rmd`
+- Click on the little arrow next to the Knit button
+- Select "Knit Word"
+- Open the resulting file in Word and print it. Easy!
+
 Commenting
 =========================================================
 - In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
   - Invaluable when you go back years later
   - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
-- [XKCD on comments][http://xkcd.com/1421/]
+- [XKCD on comments](http://xkcd.com/1421/)
 
 Recap
 =========================================================
@@ -42,17 +49,17 @@ Recap (2)
 make_hist_and_plot <- function(sample_means){
   par(mfrow=c(1,2)) # 
   hist(sample_means,freq=F, breaks = 30)
-  plot(density(sample_means), main = paste("Mean = ", round(mean(sample_means),2) , "SD = ", round(sd(sample_means),2)))} 
-make_hist_and_plot(run_simulation(100,1000,0,1))
+  plot(density(sample_means), 
+       main = paste("Mean = ", round(mean(sample_means),2) , 
+                    "SD = ", round(sd(sample_means),2)))} 
 ```
 
-![plot of chunk unnamed-chunk-2](Class2-figure/unnamed-chunk-2.png) 
-
-What changes when we re-run the simulation?
+Recap (3)
 ========================================================
 
 ```r
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,0,1))
 ```
 
 ![plot of chunk unnamed-chunk-3](Class2-figure/unnamed-chunk-3.png) 
@@ -61,7 +68,8 @@ What changes when we re-run the simulation?
 ========================================================
 
 ```r
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
 ```
 
 ![plot of chunk unnamed-chunk-4](Class2-figure/unnamed-chunk-4.png) 
@@ -70,10 +78,21 @@ What changes when we re-run the simulation?
 ========================================================
 
 ```r
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
 ```
 
 ![plot of chunk unnamed-chunk-5](Class2-figure/unnamed-chunk-5.png) 
+
+What changes when we re-run the simulation?
+========================================================
+
+```r
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
+```
+
+![plot of chunk unnamed-chunk-6](Class2-figure/unnamed-chunk-6.png) 
 
 What changes when we re-run the simulation?
 ========================================================
@@ -102,7 +121,7 @@ Confidence intervals (2)
 =========================================================
 - So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
 - We want something like this:
-![plot of chunk unnamed-chunk-6](Class2-figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-7](Class2-figure/unnamed-chunk-7.png) 
 
 Confidence intervals (3)
 =========================================================
@@ -144,6 +163,7 @@ Exercise
 - This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
 - Suppose I'm adopting 3 cats instead of 2 -- does that change anything about my estimate?
+- Hint: The function you want to use starts with a `q`.
 
 Solution
 =========================================================
@@ -192,7 +212,7 @@ Solution (2)
 
 Plot it!
 =========================================================
-![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11.png) 
+![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12.png) 
 
 Solution (4)
 =========================================================
@@ -211,7 +231,7 @@ Solution (4)
 
 Plot it again!
 =========================================================
-![plot of chunk unnamed-chunk-13](Class2-figure/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14.png) 
 
 Solution (5)
 =========================================================
@@ -285,7 +305,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
 ```
 
-![plot of chunk unnamed-chunk-16](Class2-figure/unnamed-chunk-16.png) 
+![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -294,7 +314,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
 ```
 
-![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -303,7 +323,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
 ```
 
-![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -331,7 +351,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
 
 Let's try this
 ==========================================================
@@ -370,7 +390,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.1576
+[1] 0.05861
 ```
 
 ```r
@@ -378,7 +398,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.9029
+[1] 0.8464
 ```
 
 ```r
@@ -386,7 +406,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.8035
+[1] -0.5469
 ```
 
 ```r
@@ -394,15 +414,15 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.4882
+[1] 0.6641
 ```
 
 Back to our example
 ===========================================================
 - Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
-  - The lowest mean in the CI is -0.8035, which maybe translates to "apathetic but slightly worried."
+  - The lowest mean in the CI is -0.5469, which maybe translates to "apathetic but slightly worried."
 - But they don't love me either:
-  - The highest mean in the CI is 0.4882, which maybe translates to "apathetic but slightly hopeful."
+  - The highest mean in the CI is 0.6641, which maybe translates to "apathetic but slightly hopeful."
 - Of course, there is a 5% chance that the true mean is actually outside this interval.
 
 There's a function for that
@@ -417,13 +437,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -0.5521, df = 9, p-value = 0.5943
+t = 0.219, df = 9, p-value = 0.8316
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.8035  0.4882
+ -0.5469  0.6641
 sample estimates:
 mean of x 
-  -0.1576 
+  0.05861 
 ```
 How convenient is that?
 
@@ -461,7 +481,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   52   948 
+   35   965 
 ```
 - It's true! Almost exactly 5%
 
@@ -488,7 +508,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   99   901 
+   80   920 
 ```
 - The proportion of CIs that did not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
 - Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
@@ -505,7 +525,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   64   936 
+   48   952 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -586,13 +606,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -0.5521, df = 9, p-value = 0.5943
+t = 0.219, df = 9, p-value = 0.8316
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.8035  0.4882
+ -0.5469  0.6641
 sample estimates:
 mean of x 
-  -0.1576 
+  0.05861 
 ```
 
 Two-tailed t-tests
@@ -639,7 +659,7 @@ Example
 
 
 ```
-[1] -0.81 -0.76  0.49  0.45  0.19
+[1] 0.29 2.58 0.86 1.11 0.41
 ```
 Your turn. What is the null hypothesis?
 
@@ -656,13 +676,13 @@ t.test(sleep_times)
 	One Sample t-test
 
 data:  sleep_times
-t = -0.3042, df = 4, p-value = 0.7761
+t = 2.559, df = 4, p-value = 0.06272
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.8912  0.7152
+ -0.08932  2.18932
 sample estimates:
 mean of x 
-   -0.088 
+     1.05 
 ```
 If p $\le$ .05: reject the null hypothesis.
 
@@ -681,12 +701,12 @@ Power
 
 Plotting the situation
 =========================================================
-![plot of chunk unnamed-chunk-34](Class2-figure/unnamed-chunk-34.png) 
+![plot of chunk unnamed-chunk-35](Class2-figure/unnamed-chunk-35.png) 
 
 A much worse situation with severe power issues
 ==========================================================
 Here, the true mean is -1.
-![plot of chunk unnamed-chunk-35](Class2-figure/unnamed-chunk-35.png) 
+![plot of chunk unnamed-chunk-36](Class2-figure/unnamed-chunk-36.png) 
 
 Power simulations
 ==========================================================
@@ -704,7 +724,7 @@ table(replicate(1000, t_test_sim(5, 1, 1)))
 ```
 
 FALSE  TRUE 
-  591   409 
+  603   397 
 ```
 Not so great!
 
@@ -720,7 +740,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
 ```
 
 FALSE  TRUE 
-   99   901 
+   92   908 
 ```
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 
@@ -731,7 +751,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
 ```
 
 FALSE  TRUE 
-   91   909 
+   84   916 
 ```
 
 How to increase power (realistically!)
@@ -746,7 +766,7 @@ table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  401   599 
+  397   603 
 ```
 
 ```r
@@ -756,7 +776,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking
 ```
 
 FALSE  TRUE 
-  184   816 
+  205   795 
 ```
 
 Double-checking our results
@@ -859,7 +879,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  739   261 
+  771   229 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -902,14 +922,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -9.9 SD =  4.38"
+[1] "Mean = -9.94 SD =  4.67"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-46](Class2-figure/unnamed-chunk-46.png) 
+![plot of chunk unnamed-chunk-47](Class2-figure/unnamed-chunk-47.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -923,7 +943,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.813
+[1] 6.974
 ```
 
 ```r
@@ -932,7 +952,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.069
+[1] 7.355
 ```
 
 The two-sample t-test (3)
@@ -945,7 +965,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.538
+[1] 5.449
 ```
 
 ```r
@@ -954,7 +974,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.487
+[1] 6.778
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 

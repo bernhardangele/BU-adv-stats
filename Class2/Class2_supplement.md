@@ -51,14 +51,14 @@ str(t_results)
 
 ```
 List of 9
- $ statistic  : Named num 8.33
+ $ statistic  : Named num 10.6
   ..- attr(*, "names")= chr "t"
  $ parameter  : Named num 9
   ..- attr(*, "names")= chr "df"
- $ p.value    : num 1.6e-05
- $ conf.int   : atomic [1:2] 2 3.49
+ $ p.value    : num 2.18e-06
+ $ conf.int   : atomic [1:2] 2.58 3.97
   ..- attr(*, "conf.level")= num 0.95
- $ estimate   : Named num 2.74
+ $ estimate   : Named num 3.28
   ..- attr(*, "names")= chr "mean of x"
  $ null.value : Named num 0
   ..- attr(*, "names")= chr "mean"
@@ -76,7 +76,7 @@ t_results$conf.int
 ```
 
 ```
-[1] 1.999 3.490
+[1] 2.577 3.974
 attr(,"conf.level")
 [1] 0.95
 ```
@@ -87,7 +87,7 @@ t_results$conf.int[1]
 ```
 
 ```
-[1] 1.999
+[1] 2.577
 ```
 
 ```r
@@ -95,7 +95,7 @@ t_results$conf.int[2]
 ```
 
 ```
-[1] 3.49
+[1] 3.974
 ```
 
 Logical tests
