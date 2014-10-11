@@ -13,12 +13,19 @@ Some general advice on working with R
 - You can send any line in the script file to the console by pressing Ctrl + Enter.
 - Use the console only for things you don't want to save, like printing a variable to see what it is, trying out a new command, etc.
 
+How to print your reports
+=========================================================
+- Make sure the file name ends in `.Rmd`
+- Click on the little arrow next to the Knit button
+- Select "Knit Word"
+- Open the resulting file in Word and print it. Easy!
+
 Commenting
 =========================================================
 - In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
   - Invaluable when you go back years later
   - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
-- [XKCD on comments][http://xkcd.com/1421/]
+- [XKCD on comments](http://xkcd.com/1421/)
 
 Recap
 =========================================================
@@ -40,26 +47,37 @@ Recap (2)
 make_hist_and_plot <- function(sample_means){
   par(mfrow=c(1,2)) # 
   hist(sample_means,freq=F, breaks = 30)
-  plot(density(sample_means), main = paste("Mean = ", round(mean(sample_means),2) , "SD = ", round(sd(sample_means),2)))} 
-make_hist_and_plot(run_simulation(100,1000,0,1))
+  plot(density(sample_means), 
+       main = paste("Mean = ", round(mean(sample_means),2) , 
+                    "SD = ", round(sd(sample_means),2)))} 
+```
+
+Recap (3)
+========================================================
+```{r}
+make_hist_and_plot(
+  run_simulation(100,1000,0,1))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
 ```{r}
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
 ```{r}
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
 ```{r}
-make_hist_and_plot(run_simulation(100,1000,20,5))
+make_hist_and_plot(
+  run_simulation(100,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
@@ -126,6 +144,7 @@ Exercise
 - This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
 - Suppose I'm adopting 3 cats instead of 2 -- does that change anything about my estimate?
+- Hint: The function you want to use starts with a `q`.
 
 Solution
 =========================================================
