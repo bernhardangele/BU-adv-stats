@@ -13,6 +13,11 @@ Your last serving of R basics
   - You change it using `setwd("C:/My_example_R_directory")
   - No backslashes `\` allowed! Use forward slashes instead `/`
  
+Getting more practice with R
+==========================================================
+- Here's a free introduction to R which might be helpful to you. It repeats a lot of the things I have showed you only briefly.
+
+
 Setting your working directory
 ==========================================================
  - Don't know where your working directory should be?
@@ -138,13 +143,13 @@ t.test(bu, soton)
 	Welch Two Sample t-test
 
 data:  bu and soton
-t = -1.309, df = 17.56, p-value = 0.2074
+t = -0.9391, df = 17.49, p-value = 0.3605
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -26.349   6.142
+ -20.54   7.87
 sample estimates:
 mean of x mean of y 
-     96.8     106.9 
+    97.26    103.60 
 ```
 
 BU vs Oxford
@@ -159,13 +164,13 @@ t.test(bu, oxford)
 	Welch Two Sample t-test
 
 data:  bu and oxford
-t = 0.9855, df = 14.56, p-value = 0.3405
+t = -0.7646, df = 18, p-value = 0.4544
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -7.847 21.278
+ -20.86   9.73
 sample estimates:
 mean of x mean of y 
-    96.80     90.08 
+    97.26    102.83 
 ```
 
 Soton vs Oxford
@@ -180,13 +185,13 @@ t.test(soton, oxford)
 	Welch Two Sample t-test
 
 data:  soton and oxford
-t = 2.765, df = 15.98, p-value = 0.01382
+t = 0.1145, df = 17.52, p-value = 0.9102
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
-  3.921 29.717
+ -13.39  14.93
 sample estimates:
 mean of x mean of y 
-   106.90     90.08 
+    103.6     102.8 
 ```
 
 Anything wrong with that?
@@ -219,8 +224,8 @@ Solutions
   - Problem solved?
   - Yes, but the lower the $\alpha$ level, the lower the power.
 - Better ways (but still lowering power):
+  - Holm-Bonferroni (same principle as Bonferroni, but better power)
   - Tukey's HSD (honestly significant differences)
-  - Scheffe's test
 - Maybe we just want to know if there is a difference at all between these three means
   - One-way ANOVA
 
@@ -247,16 +252,16 @@ bu
 
 ```
        iq group
-1   90.94    BU
-2   96.71    BU
-3  113.82    BU
-4   90.78    BU
-5   80.74    BU
-6   83.81    BU
-7   64.01    BU
-8  110.97    BU
-9  109.92    BU
-10 126.30    BU
+1  115.50    BU
+2   85.51    BU
+3  101.90    BU
+4  108.76    BU
+5   93.00    BU
+6   89.45    BU
+7  116.98    BU
+8   85.59    BU
+9   65.63    BU
+10 110.30    BU
 ```
 
 Putting it all together
@@ -269,7 +274,7 @@ str(iqdata)
 
 ```
 'data.frame':	30 obs. of  2 variables:
- $ iq   : num  90.9 96.7 113.8 90.8 80.7 ...
+ $ iq   : num  115.5 85.5 101.9 108.8 93 ...
  $ group: Factor w/ 3 levels "BU","Soton","Oxford": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 - Data frames are smart: 
@@ -289,7 +294,7 @@ Running an ANOVA -- by hand!
 ```
 
 ```
-[1] 7870
+[1] 6710
 ```
 
 Running an ANOVA -- by hand! (2)
@@ -307,7 +312,7 @@ n <- 10
 ```
 
 ```
-[1] 1434
+[1] 239.1
 ```
 
 Running an ANOVA -- by hand! (3)
@@ -321,7 +326,7 @@ Running an ANOVA -- by hand! (3)
 ```
 
 ```
-[1] 6436
+[1] 6471
 ```
 
 Running an ANOVA -- by hand! (4)
@@ -377,7 +382,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 716.8
+[1] 119.6
 ```
 
 ```r
@@ -385,7 +390,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 238.4
+[1] 239.7
 ```
 Running an ANOVA -- final steps!
 ========================================================
@@ -397,7 +402,7 @@ Running an ANOVA -- final steps!
 ```
 
 ```
-[1] 3.007
+[1] 0.4989
 ```
 
 What to do with this F-value
@@ -482,13 +487,18 @@ curve(df(x, df1 = 10, df2 = 10), from = 0, to = 6, main = "F(10,10)")
 
 Finally finishing that ANOVA
 =========================================================
+- So, how extreme is our F-value given the $H_0$?
 - Let's get the p-value for our F-value
 
 ```r
-p_value <- 1 - pf(F_value, df1 = df_model, df2 = df_error)
+(p_value <- 1 - pf(F_value, df1 = df_model, df2 = df_error))
+```
+
+```
+[1] 0.6127
 ```
 It's 1 - pf since pf gives you the probability for an F value to be smaller than the value given. We want the opposite.
-If p <= .05, the effect of group is significant (spuriously in this case, since we know there was no effect).
+If $p \leq .05$, the effect of group is significant (spuriously in this case, since we know there was no effect).
 
 Can we just let R do it?
 ==========================================================
@@ -499,13 +509,12 @@ summary(aov(formula = iq ~ group, data = iqdata))
 ```
 
 ```
-            Df Sum Sq Mean Sq F value Pr(>F)  
-group        2   1434     717    3.01  0.066 .
-Residuals   27   6436     238                 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+            Df Sum Sq Mean Sq F value Pr(>F)
+group        2    239     120     0.5   0.61
+Residuals   27   6471     240               
 ```
-- Summary is necessary here to get the p value
+- `summary()` is necessary here to get the p-value
+- This is just a convention in r
 
 A different way, using a package
 ==========================================================
@@ -526,12 +535,392 @@ ezANOVA(iqdata, dv = iq, wid = subnum, between = group)
 
 ```
 $ANOVA
-  Effect DFn DFd     F       p p<.05    ges
-1  group   2  27 3.007 0.06623       0.1822
+  Effect DFn DFd      F      p p<.05     ges
+1  group   2  27 0.4989 0.6127       0.03564
 
 $`Levene's Test for Homogeneity of Variance`
-  DFn DFd   SSn  SSd     F      p p<.05
-1   2  27 221.3 2144 1.394 0.2655      
+  DFn DFd   SSn  SSd      F      p p<.05
+1   2  27 57.55 2677 0.2903 0.7504      
 ```
 - Nice. What's `ges` and what is that second output?
 
+Effect size
+===========================================================
+- `ges` = generalised eta squared
+- $\eta^2 = \frac{SS_{model}}{SS_{total}}$
+- $\eta_G^2$ is $\eta^2$ with a correction for repeated measures designs (if applicable; we'll talk about those later)
+- $\eta^2$ is an estimate of the relationship between variance explained by the ANOVA model and total variance in the data
+- Compare this to Cohen's $d$, another estimate of effect size:
+  - $d$ = $\frac{\bar{x_1} - \bar{x_2}}{s}$
+  - Cohen's $d$ is an estimate of how large a difference in means is (in standard deviations)
+  - What is $s$? The standard deviation of the difference in means (from your sample)
+  
+Levene's test for homogeneity of variance
+===========================================================
+
+```r
+ezANOVA(iqdata, dv = iq, wid = subnum, between = group)[2]
+```
+
+```
+$`Levene's Test for Homogeneity of Variance`
+  DFn DFd   SSn  SSd      F      p p<.05
+1   2  27 57.55 2677 0.2903 0.7504      
+```
+- When you perform an ANOVA, you make the assumption that the variances within each group are similar
+  - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
+  - Levene's test compares the group variances
+    - What's the test statistic for a test that compares variances? It's *F*!
+    - The p-value tells you if the variances are significantly different between groups.
+
+Levene's test for homogeneity of variance
+===========================================================
+- You do not need Levene's test if you only have two independent groups (and ezANOVA won't do it then)
+- If Levene's test is not significant, all is well
+- If Levene's test is significant, you're violating the homogeneity of variance assumption
+  - Not a big issue if the sample sizes are equal for all groups (balanced design)
+  - If sample sizes aren't equal (unbalanced design) and the larger groups have higher variance, your ANOVA loses power
+  - If sample sizes aren't equal and the larger groups have lower variance, your ANOVA becomes anti-conservative ($\alpha$ increases)!
+
+Alternative: Bartlett's test
+============================================================
+
+```r
+bartlett.test(formula = iq ~ group, data = iqdata)
+```
+
+```
+
+	Bartlett test of homogeneity of variances
+
+data:  iq by group
+Bartlett's K-squared = 0.3163, df = 2, p-value = 0.8537
+```
+- Bartlett's test is more sensitive to deviations from normality than Levene's test
+- It's up to you which one you want to use (with ezANOVA, Levene's test is more convenient)
+
+What to do if Levene's or Bartlett's tests are significant
+============================================================
+- If your group sizes are equal, nothing to worry about.
+- If not:
+  - Calculate the variance for each group and see if you're dealing with just a power issue or an $\alpha$ issue
+  - If the largest group variance is less than 4 times the smallest group variance, you're good.
+  - If you have huge variance differences and there might be an $\alpha$ issue:
+    - Easiest solution: Fix the sample size issue (e.g. run more participants)!
+    - Use linear mixed models (LMMs; more on that later)
+    - Use specialised tests (this is SPSS's approach):
+      - Welch's t-test (R has this test as `oneway.test()`)
+      - Brown-Forsythe instead of ANOVA (R has this test in the `lawstats` package)
+      - Post-hoc tests:
+          - Games-Howell for unequal variance
+          - Hochberg's GT2 for non-equal sample sizes
+
+The SPSS approach to statistics
+============================================================
+- Throw as many obscure tests at the problem as you can
+  - This is a sales strategy: "We need to buy SPSS since no other program has the Games-Howell test!"
+- In reality, the standard ANOVA is remarkably robust to all but the most extreme violations of its assumptions
+- Specialised tests often come at a huge cost in terms of power
+- This doesn't mean that you shouldn't test the assumptions
+  - But a simplistic strategy where you run one type of test if the assumption test is significant and another one if it isn't is not helpful
+  - Take a good look at your data
+    - Be aware of potential issues
+    - Interpret the data accordingly.
+    - Only use specialised and non-parametric tests as a last resort if your data massively violate the assumptions
+
+Just so we're clear
+============================================================
+- Inflated $\alpha$ is not harmless
+- But "researcher degrees of freedom" inflate $\alpha$ much more than all but the most extreme assumption violations
+  - Stopping rules (test after every X participants, then stop as soon as you have a significant result)
+  - Failing to report non-significant conditions
+  - Failing to correct for multiple comparisons
+- Don't let SPSS (or over-cautious textbooks) discourage you from running plain, simple ANOVAs
+- Be honest and transparent about your data and how you collected them and you'll be fine.
+
+Reporting a one-way ANOVA
+============================================================
+- Let's walk through it together
+- I stole this data set from Andy Johnson
+- We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
+- Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
+
+```r
+# open the data file (don't forget setwd)
+# setwd("C:/my_data/")
+pain <- read.csv("pain.csv")
+```
+
+Get an idea of what's in the file
+===========================================================
+
+```r
+head(pain)
+```
+
+```
+  X Swear.Condition Time.In.Cold.Water
+1 1      Swear Word                 55
+2 2      Swear Word                 64
+3 3      Swear Word                 70
+4 4      Swear Word                 60
+5 5      Swear Word                 54
+6 6      Swear Word                 66
+```
+
+```r
+str(pain)
+```
+
+```
+'data.frame':	60 obs. of  3 variables:
+ $ X                 : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ Swear.Condition   : Factor w/ 3 levels "Neutral Word",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ Time.In.Cold.Water: int  55 64 70 60 54 66 48 72 63 65 ...
+```
+
+Is the design balanced?
+===========================================================
+
+```r
+table(pain$Swear.Condition)
+```
+
+```
+
+Neutral Word        Quiet   Swear Word 
+          20           20           20 
+```
+
+How is the DV distributed?
+===========================================================
+
+```r
+hist(pain$Time.In.Cold.Water)
+```
+
+![plot of chunk unnamed-chunk-32](Class3-figure/unnamed-chunk-32.png) 
+
+Is the DV normal?
+===========================================================
+- Note: The raw DV does not have to be perfectly normal!
+ - In fact, your alternative hypothesis is that it's not, since it is influenced by the treatment effect!
+ - The error should be normal, though.
+  - That is, the residual data that you get when you take the treatment effect out should be normal.
+  - I'll show you how to test that in a second.
+
+Calculate means and SDs
+===========================================================
+
+```r
+library(ez)
+#for ez, we need a subject identifier so the function can tell if it's a between or within or mixed subject design
+pain$subject <- factor(1:nrow(pain)) # nrow(pain) = number of observations. Each observation is a subject
+(pain_stats <- ezStats(data = pain, dv = Time.In.Cold.Water, wid = subject, between =  Swear.Condition))
+```
+
+```
+  Swear.Condition  N  Mean    SD  FLSD
+1    Neutral Word 20 44.70 6.906 4.231
+2           Quiet 20 45.75 5.711 4.231
+3      Swear Word 20 60.45 7.323 4.231
+```
+
+Calculate means and SEs
+===========================================================
+
+```r
+pain_stats
+```
+
+```
+  Swear.Condition  N  Mean    SD  FLSD
+1    Neutral Word 20 44.70 6.906 4.231
+2           Quiet 20 45.75 5.711 4.231
+3      Swear Word 20 60.45 7.323 4.231
+```
+- This gives you a nice overview of the group sizes, group means, and group variance/
+- N is the group size. It's the same for each group, so your design is balanced.
+- The mean is almost the same for the neutral and the quiet conditions, but higher in the swear word condition.
+- SDs are quite similar, so it doesn't seem like the homogeneity of variance assumption is an issue
+- Fisher's Least Significant Difference (FLSD): gives you an idea of the minimum effect size that would be significant in a t-test between any of these groups. This is just an estimate, not a replacement for the ANOVA and a post-hoc test. 
+  - Still useful to see which differences might be significant and which definitely aren't.
+  
+Plot means
+==========================================================
+
+```r
+ezPlot(data = pain, dv = Time.In.Cold.Water, wid = subject, between = Swear.Condition, x = Swear.Condition)
+```
+
+![plot of chunk unnamed-chunk-35](Class3-figure/unnamed-chunk-35.png) 
+
+Notes about the plot
+==========================================================
+- This plot is pretty good (better than anything SPSS gives you), but it is not perfect
+- Discrete factors should be plotted as bars, not lines
+- The error bars are Fisher's LSD, which is helpful in interpreting the differences, but unusual
+- In a plot for publication, you would also want to change the axis labels
+- I will give you a better function to use later
+- For now, this is perfectly fine
+
+Perform the ANOVA
+==========================================================
+
+```r
+pain_anova <- ezANOVA(data = pain, dv = Time.In.Cold.Water, wid = subject, between = Swear.Condition, return_aov = TRUE)
+```
+- Note the `return_aov = TRUE`.
+- We need that because we want to look at the residuals later.
+
+Look at the results
+==========================================================
+
+```r
+pain_anova$ANOVA
+```
+
+```
+           Effect DFn DFd     F         p p<.05    ges
+1 Swear.Condition   2  57 34.74 1.367e-10     * 0.5493
+```
+- Looks like there is a significant effect of swear condition.
+
+```r
+pain_anova$"Levene's Test for Homogeneity of Variance"
+```
+
+```
+  DFn DFd   SSn   SSd     F      p p<.05
+1   2  57 33.23 817.7 1.158 0.3213      
+```
+- No issues with homogeneity of variance.
+
+Visually examine residuals
+========================================================
+
+```r
+pain_residuals <- resid(pain_anova$aov)
+hist(pain_residuals)
+```
+
+![plot of chunk unnamed-chunk-39](Class3-figure/unnamed-chunk-39.png) 
+- Looks quite normal.
+
+Quantile-Quantile Plot
+========================================================
+
+```r
+qqnorm(pain_residuals)
+qqline(pain_residuals)
+```
+
+![plot of chunk unnamed-chunk-40](Class3-figure/unnamed-chunk-40.png) 
+- Plots the distribution of the variable in question against a hypothetical perfect normal distribution
+- Deviations from the line are deviations from normality
+- Our residuals are very slightly deviated. Is this an issue? Probably not.
+
+Formally test normality of residuals
+=========================================================
+- Shapiro-Wilk normality test
+
+```r
+shapiro.test(pain_residuals)
+```
+
+```
+
+	Shapiro-Wilk normality test
+
+data:  pain_residuals
+W = 0.9918, p-value = 0.9596
+```
+- Not significant at all. No issues with non-normality.
+
+Perform post-hoc pairwise comparisons
+=========================================================
+
+```r
+(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water, g = Swear.Condition, pool.sd = FALSE, p.adj = "bonferroni")))
+```
+
+```
+
+	Pairwise comparisons using t tests with non-pooled SD 
+
+data:  Time.In.Cold.Water and Swear.Condition 
+
+           Neutral Word Quiet  
+Quiet      1            -      
+Swear Word 7.6e-08      7.9e-08
+
+P value adjustment method: bonferroni 
+```
+- These are the p-values for all the possible t-tests (Bonferroni correction applied)
+
+Perform post-hoc pairwise comparisons
+=========================================================
+- Better: Use Holm's correction instead of Bonferroni's correction for higher power
+
+```r
+(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water, g = Swear.Condition, pool.sd = FALSE, p.adj = "holm")))
+```
+
+```
+
+	Pairwise comparisons using t tests with non-pooled SD 
+
+data:  Time.In.Cold.Water and Swear.Condition 
+
+           Neutral Word Quiet  
+Quiet      0.6          -      
+Swear Word 7.6e-08      7.6e-08
+
+P value adjustment method: holm 
+```
+
+Perform post-hoc pairwise comparisons
+=========================================================
+- If you have no issues with homogeneity of variance, you can use the same pooled sd for all the tests:
+
+
+```r
+(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water, g = Swear.Condition, pool.sd = FALSE, p.adj = "holm")))
+```
+
+```
+
+	Pairwise comparisons using t tests with non-pooled SD 
+
+data:  Time.In.Cold.Water and Swear.Condition 
+
+           Neutral Word Quiet  
+Quiet      0.6          -      
+Swear Word 7.6e-08      7.6e-08
+
+P value adjustment method: holm 
+```
+
+Alternative: Tukey's HSD
+==========================================================
+
+```r
+TukeyHSD(x = pain_anova$aov)
+```
+
+```
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = formula(aov_formula), data = data)
+
+$Swear.Condition
+                         diff    lwr    upr  p adj
+Quiet-Neutral Word       1.05 -4.035  6.135 0.8731
+Swear Word-Neutral Word 15.75 10.665 20.835 0.0000
+Swear Word-Quiet        14.70  9.615 19.785 0.0000
+```
+
+Now: report it
+==========================================================
+I'll show you how in Homework 3.
