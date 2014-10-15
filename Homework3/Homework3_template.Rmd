@@ -1,0 +1,81 @@
+---
+title: 'Homework 3 example: The effect of swear word use on pain tolerance'
+author: "Bernhard Angele"
+date: "16/10/2014"
+output: word_document
+---
+
+# Results
+
+
+
+```{r, echo = FALSE}
+# echo = FALSE will keep the code and its output from appearing in the final document.
+# don't forget to replace the \ backslashes with forward slashes / if you're on Windows
+library(ez)
+library(knitr)
+
+#setwd("C:/replace_this_with_your_actual_working_directory/")
+
+pain <- read.csv("pain.csv")
+
+# add a subject column for ezANOVA
+# very simple: each observation is a different person
+# "subject" is a discrete variable, so make it a factor()
+pain$subject <- factor(1:nrow(pain))
+
+pain_stats <- ezStats(data = pain, 
+                       dv = Time.In.Cold.Water, 
+                       wid = subject, 
+                       between =  Swear.Condition)
+```
+
+In order to evaluate the effect of swear word usage on pain tolerance, we performed a one-way between-subjects ANOVA with time until hand withdrawal as the dependent variable and swear word usage (quiet vs. neutral word vs. swear word) as the independent variable. Table 1 and Figure 1 show the condition means.
+
+*Table 1. Means, sample sizes (N), standard deviations (SD), and standard errors (SE) for the swear word usage conditions.*
+```{r, results='asis', echo=FALSE}
+# need results = "asis" so that the table is drawn properly
+# get rid of the last column of pain_stats (you don't need Fisher's LSD in a results section)
+pain_stats <- pain_stats[,1:4]
+# Rename the first column to make the table look more professional
+colnames(pain_stats)[1] <- "Condition"
+# instead, add a standard error column
+pain_stats$SE <- pain_stats$SD/sqrt(pain_stats$N)
+# make a nice-looking table  
+kable(pain_stats)
+```
+
+*Figure 1. Condition means. Error bars denote 95% confidence intervals.*
+```{r, echo=FALSE}
+# We could use ezPlot to make the figure, but we'd rather have a barplot
+# use ggplot2 to plot pain_stats
+library(ggplot2)
+# calculate upper and lower bounds of 95% CIs around the condition means for error bars
+pain_stats$upper <- pain_stats$Mean + 1.96 * pain_stats$SE
+pain_stats$lower <- pain_stats$Mean - 1.96 * pain_stats$SE
+
+pain_plot <- qplot(data =  pain_stats, x = Condition, y = Mean, fill = Condition, geom = "bar", stat = "identity", ymax = upper, ymin = lower)
+# geom = "bar": draw a barplot
+# stat = "identity": don't aggregate the data (they are already aggregated by ezStats)
+# fill = colours of the bars
+# ymin and ymax: lower and upper limits of the error bars
+
+pain_plot + 
+  geom_errorbar(width = .25)+ # add error bars
+  ylab("Mean time until hand withdrawal in seconds") # change y axis label to something more informative
+
+```
+
+```{r, echo=FALSE}
+# perform the actual ANOVA so we can use the results when writing our report
+pain_anova <- ezANOVA(data = pain, 
+                      dv = Time.In.Cold.Water,
+                      wid = subject, 
+                      between = Swear.Condition, 
+                      return_aov = TRUE)
+
+# get the residuals for normality check
+pain_anova_resid <- resid(pain_anova$aov)
+
+# Perform the Shapiro-Wilk test
+pain_anova_shapiro <- shapiro.test(pain_anova_resid)

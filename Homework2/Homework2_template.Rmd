@@ -33,3 +33,5 @@ a <- c(12.9, 13.5, 12.8, 15.6, 17.2, 19.2, 12.6, 15.3, 14.4, 11.3)
 b <- c(12.0, 12.2, 11.2, 13.0, 15.0, 15.8, 12.2, 13.4, 12.9, 11.0)
 (athletes_t_test <- t.test(x = a, y = b, paired = TRUE))
 ```
+
+In order to test whether there was a significant effect of the training, a two-tailed t-test for paired samples was performed. We found a significant effect of the training (*t*(`r athletes_t_test$parameter`) = `r athletes_t_test$statistic`, p = `r athletes_t_test$p.value`), suggesting that training was effective (mean running time before training: `r mean(a)` s; mean running time after training: `r mean(b)` s).
