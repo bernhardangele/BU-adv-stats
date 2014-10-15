@@ -120,6 +120,9 @@ Making fake data for our example
 - Let's generate 3 data sets according to this criterion:
 
 ```r
+# The following line sets the random number generator to a specific state
+# and ensures that you get the same numbers that I did.
+set.seed("16102014")
 bu <- rnorm(n = 10, mean = 100, sd = 15)
 soton <- rnorm(n = 10, mean = 100, sd = 15)
 oxford <- rnorm(n = 10, mean = 100, sd = 15)
@@ -143,13 +146,13 @@ t.test(bu, soton)
 	Welch Two Sample t-test
 
 data:  bu and soton
-t = -0.9391, df = 17.49, p-value = 0.3605
+t = -0.7242, df = 17.09, p-value = 0.4787
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -20.54   7.87
+ -19.924   9.738
 sample estimates:
 mean of x mean of y 
-    97.26    103.60 
+    94.61     99.70 
 ```
 
 BU vs Oxford
@@ -164,13 +167,13 @@ t.test(bu, oxford)
 	Welch Two Sample t-test
 
 data:  bu and oxford
-t = -0.7646, df = 18, p-value = 0.4544
+t = 0.5039, df = 17.34, p-value = 0.6207
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -20.86   9.73
+ -11.44  18.63
 sample estimates:
 mean of x mean of y 
-    97.26    102.83 
+    94.61     91.01 
 ```
 
 Soton vs Oxford
@@ -185,13 +188,13 @@ t.test(soton, oxford)
 	Welch Two Sample t-test
 
 data:  soton and oxford
-t = 0.1145, df = 17.52, p-value = 0.9102
+t = 1.383, df = 17.98, p-value = 0.1837
 alternative hypothesis: true difference in means is not equal to 0
 95 percent confidence interval:
- -13.39  14.93
+ -4.514 21.890
 sample estimates:
 mean of x mean of y 
-    103.6     102.8 
+    99.70     91.01 
 ```
 
 Anything wrong with that?
@@ -209,6 +212,7 @@ Exercise: Give it a try
 - Instead of running the simulation on my computer, I'll run it on **you**
 - What I mean by that:
   - Generate three data sets like I've just shown you
+  - **Don't** use `set.seed()` now, or we'll all get the exact same data
   - Make sure that all three data sets are samples from the same normal distribution
     - Same mean and sd, of course same n as well
   - Run three two-sample t-tests comparing the means
@@ -226,7 +230,7 @@ Solutions
 - Better ways (but still lowering power):
   - Holm-Bonferroni (same principle as Bonferroni, but better power)
   - Tukey's HSD (honestly significant differences)
-- Maybe we just want to know if there is a difference at all between these three means
+- Maybe we just want to know if there is a difference at all between any of these three means
   - One-way ANOVA
 
 
@@ -252,16 +256,16 @@ bu
 
 ```
        iq group
-1  115.50    BU
-2   85.51    BU
-3  101.90    BU
-4  108.76    BU
-5   93.00    BU
-6   89.45    BU
-7  116.98    BU
-8   85.59    BU
-9   65.63    BU
-10 110.30    BU
+1  123.53    BU
+2  107.44    BU
+3  102.43    BU
+4   88.58    BU
+5   76.41    BU
+6   80.20    BU
+7  113.23    BU
+8   96.15    BU
+9   90.62    BU
+10  67.46    BU
 ```
 
 Putting it all together
@@ -274,7 +278,7 @@ str(iqdata)
 
 ```
 'data.frame':	30 obs. of  2 variables:
- $ iq   : num  115.5 85.5 101.9 108.8 93 ...
+ $ iq   : num  123.5 107.4 102.4 88.6 76.4 ...
  $ group: Factor w/ 3 levels "BU","Soton","Oxford": 1 1 1 1 1 1 1 1 1 1 ...
 ```
 - Data frames are smart: 
@@ -294,7 +298,7 @@ Running an ANOVA -- by hand!
 ```
 
 ```
-[1] 6710
+[1] 6674
 ```
 
 Running an ANOVA -- by hand! (2)
@@ -312,7 +316,7 @@ n <- 10
 ```
 
 ```
-[1] 239.1
+[1] 381.1
 ```
 
 Running an ANOVA -- by hand! (3)
@@ -326,7 +330,7 @@ Running an ANOVA -- by hand! (3)
 ```
 
 ```
-[1] 6471
+[1] 6293
 ```
 
 Running an ANOVA -- by hand! (4)
@@ -382,7 +386,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 119.6
+[1] 190.6
 ```
 
 ```r
@@ -390,7 +394,7 @@ Running an ANOVA -- almost done!
 ```
 
 ```
-[1] 239.7
+[1] 233.1
 ```
 Running an ANOVA -- final steps!
 ========================================================
@@ -402,7 +406,7 @@ Running an ANOVA -- final steps!
 ```
 
 ```
-[1] 0.4989
+[1] 0.8177
 ```
 
 What to do with this F-value
@@ -495,7 +499,7 @@ Finally finishing that ANOVA
 ```
 
 ```
-[1] 0.6127
+[1] 0.4521
 ```
 It's 1 - pf since pf gives you the probability for an F value to be smaller than the value given. We want the opposite.
 If $p \leq .05$, the effect of group is significant (spuriously in this case, since we know there was no effect).
@@ -510,8 +514,8 @@ summary(aov(formula = iq ~ group, data = iqdata))
 
 ```
             Df Sum Sq Mean Sq F value Pr(>F)
-group        2    239     120     0.5   0.61
-Residuals   27   6471     240               
+group        2    381     191    0.82   0.45
+Residuals   27   6293     233               
 ```
 - `summary()` is necessary here to get the p-value
 - This is just a convention in r
@@ -530,17 +534,17 @@ ezANOVA
 ===========================================================
 
 ```r
-ezANOVA(iqdata, dv = iq, wid = subnum, between = group)
+(iq_anova <- ezANOVA(iqdata, dv = iq, wid = subnum, between = group))
 ```
 
 ```
 $ANOVA
   Effect DFn DFd      F      p p<.05     ges
-1  group   2  27 0.4989 0.6127       0.03564
+1  group   2  27 0.8177 0.4521       0.05711
 
 $`Levene's Test for Homogeneity of Variance`
   DFn DFd   SSn  SSd      F      p p<.05
-1   2  27 57.55 2677 0.2903 0.7504      
+1   2  27 52.68 1887 0.3769 0.6895      
 ```
 - Nice. What's `ges` and what is that second output?
 
@@ -559,13 +563,13 @@ Levene's test for homogeneity of variance
 ===========================================================
 
 ```r
-ezANOVA(iqdata, dv = iq, wid = subnum, between = group)[2]
+iq_anova[2] # get the second element of the list iq_anova
 ```
 
 ```
 $`Levene's Test for Homogeneity of Variance`
   DFn DFd   SSn  SSd      F      p p<.05
-1   2  27 57.55 2677 0.2903 0.7504      
+1   2  27 52.68 1887 0.3769 0.6895      
 ```
 - When you perform an ANOVA, you make the assumption that the variances within each group are similar
   - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
@@ -594,7 +598,7 @@ bartlett.test(formula = iq ~ group, data = iqdata)
 	Bartlett test of homogeneity of variances
 
 data:  iq by group
-Bartlett's K-squared = 0.3163, df = 2, p-value = 0.8537
+Bartlett's K-squared = 0.5702, df = 2, p-value = 0.7519
 ```
 - Bartlett's test is more sensitive to deviations from normality than Levene's test
 - It's up to you which one you want to use (with ezANOVA, Levene's test is more convenient)
@@ -646,7 +650,7 @@ Reporting a one-way ANOVA
 - Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
 
 ```r
-# open the data file (don't forget setwd)
+# open the data file (available on GitHub; don't forget to use setwd to set the working directory to where you put the file)
 # setwd("C:/my_data/")
 pain <- read.csv("pain.csv")
 ```
@@ -920,6 +924,7 @@ Quiet-Neutral Word       1.05 -4.035  6.135 0.8731
 Swear Word-Neutral Word 15.75 10.665 20.835 0.0000
 Swear Word-Quiet        14.70  9.615 19.785 0.0000
 ```
+- Another way of correcting for multiple comparisons. Assumes equal variance.
 
 Now: report it
 ==========================================================

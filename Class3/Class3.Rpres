@@ -116,6 +116,9 @@ Making fake data for our example
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
 - Let's generate 3 data sets according to this criterion:
 ```{r}
+# The following line sets the random number generator to a specific state
+# and ensures that you get the same numbers that I did.
+set.seed("16102014")
 bu <- rnorm(n = 10, mean = 100, sd = 15)
 soton <- rnorm(n = 10, mean = 100, sd = 15)
 oxford <- rnorm(n = 10, mean = 100, sd = 15)
@@ -160,6 +163,7 @@ Exercise: Give it a try
 - Instead of running the simulation on my computer, I'll run it on **you**
 - What I mean by that:
   - Generate three data sets like I've just shown you
+  - **Don't** use `set.seed()` now, or we'll all get the exact same data
   - Make sure that all three data sets are samples from the same normal distribution
     - Same mean and sd, of course same n as well
   - Run three two-sample t-tests comparing the means
@@ -177,7 +181,7 @@ Solutions
 - Better ways (but still lowering power):
   - Holm-Bonferroni (same principle as Bonferroni, but better power)
   - Tukey's HSD (honestly significant differences)
-- Maybe we just want to know if there is a difference at all between these three means
+- Maybe we just want to know if there is a difference at all between any of these three means
   - One-way ANOVA
 
 
@@ -375,7 +379,7 @@ iqdata$subnum <- 1:30
 ezANOVA
 ===========================================================
 ```{r}
-ezANOVA(iqdata, dv = iq, wid = subnum, between = group)
+(iq_anova <- ezANOVA(iqdata, dv = iq, wid = subnum, between = group))
 ```
 - Nice. What's `ges` and what is that second output?
 
@@ -393,7 +397,7 @@ Effect size
 Levene's test for homogeneity of variance
 ===========================================================
 ```{r}
-ezANOVA(iqdata, dv = iq, wid = subnum, between = group)[2]
+iq_anova[2] # get the second element of the list iq_anova
 ```
 - When you perform an ANOVA, you make the assumption that the variances within each group are similar
   - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
@@ -464,7 +468,7 @@ Reporting a one-way ANOVA
 - We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
 - Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
 ```{r}
-# open the data file (don't forget setwd)
+# open the data file (available on GitHub; don't forget to use setwd to set the working directory to where you put the file)
 # setwd("C:/my_data/")
 pain <- read.csv("pain.csv")
 ```
@@ -604,6 +608,7 @@ Alternative: Tukey's HSD
 ```{r}
 TukeyHSD(x = pain_anova$aov)
 ```
+- Another way of correcting for multiple comparisons. Assumes equal variance.
 
 Now: report it
 ==========================================================

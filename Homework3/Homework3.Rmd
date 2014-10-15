@@ -1,0 +1,29 @@
+---
+title: "Homework 3"
+author: "Your name here"
+date: "Your date here"
+output: word_document
+---
+
+# Assignment
+
+Here is another data set stolen from Andy Johnson. This one is about the relationship between alcohol and driving performance. Participants received either a drink with actual alcohol, a placebo drink that they thought contained alcohol, but actually didn't, or no drink at all.
+Run the ANOVA and perform the appropriate assumption checks. Report the results as shown in the file `Homework3_template.Rmd`.
+I've already started you off with opening the file below and adding a subject column -- you just have to make sure the working directory is correct.
+
+```{r, echo = FALSE}
+# echo = FALSE 
+# don't forget to replace the \ backslashes with forward slashes / if you're on Windows
+library(ez)
+
+setwd("C:/replace_this_with_your_actual_working_directory/")
+
+drive <- read.csv("Alcohol and driving performance.csv")
+
+# add a subject column for ezANOVA
+# very simple: each observation is a different person
+# "subject" is a discrete variable, so make it a factor()
+drive$subject <- factor(1:nrow(drive))
+```
+
+
