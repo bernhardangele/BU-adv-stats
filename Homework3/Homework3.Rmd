@@ -15,6 +15,7 @@ I've already started you off with opening the file below and adding a subject co
 # echo = FALSE 
 # don't forget to replace the \ backslashes with forward slashes / if you're on Windows
 library(ez)
+library(knitr)
 
 setwd("C:/replace_this_with_your_actual_working_directory/")
 

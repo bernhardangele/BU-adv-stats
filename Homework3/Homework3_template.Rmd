@@ -2,7 +2,7 @@
 title: 'Homework 3 example: The effect of swear word use on pain tolerance'
 author: "Bernhard Angele"
 date: "16/10/2014"
-output: word_document
+output: pdf_document
 ---
 
 ### Results
