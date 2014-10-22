@@ -216,7 +216,7 @@ shapiro.test(resid(attract_anova$aov))
 
 Writing it up
 ============================================================
-A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). While the Shapiro-Wilk test showed that there was a slight deviation from normality (*p* = .02), there was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_G^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_G^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* =.11). 
+A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). While the Shapiro-Wilk test showed that there was a slight deviation from normality (*p* = .02), there was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_G^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_G^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
 
 Writing it up (2)
 =============================================================
@@ -228,7 +228,7 @@ Repeated measures
 - This is bad, because we violate the independence assumption in the standard ANOVA.
 - This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
 - $SS_{Total} = SS_{BetweenParticipants} + SS_{WithinParticipants}$
-- $SS_{Within_Participants} = SS_{Model} + SS_{Error}$
+- $SS_{WithinParticipants} = SS_{Model} + SS_{Error}$
 - Result: Less error variance and higher power!
 - In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
 - In the repeated measures ANOVA, we can separate them!
@@ -309,7 +309,7 @@ Dealing with sphericity violations
 - Good news: It's easy. 
 - Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
     - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
-- You do this by multiplying the $df_{Model}$ and $df_{Error}$ with a correction factor $\epsilon$
+- You do this by multiplying the $df_{Model}$ and $df_{Error}$ by a correction factor $\epsilon$
 - Two ways to calculate $\epsilon$:
     - Greenhouse-Geisser
     - Huynh-Feldt
