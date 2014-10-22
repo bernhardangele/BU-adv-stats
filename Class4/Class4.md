@@ -3,48 +3,6 @@ Advanced Statistics
 author: Bernhard Angele
 date: Class 4, 23/10/2014
 
-Power in ANOVA
-========================================================
-- For the pain example last week:
-  - 3 groups
-  - 2 subjects per group
-  - $\eta^2$ = .55
-- Remember, $\eta^2 = \frac{SS_{Model}}{SS_{Total}}$
-- R can calculate the power for a simple oneway ANOVA, but for anything more complex use G*Power (http://www.gpower.hhu.de/)
-  - The same is true for SPSS
-
-Using G*Power
-========================================================
-
-- Pick `F-Tests` as the `Test family`
-- Pick the appropriate `Statistical test`
-  - In this case, it's `ANOVA: Fixed effects, omnibus, one-way`
-- Choose the `Type of power analysis`
-  - That is, tell G*Power what information you have and what you want to know
-  - Most commonly used:
-    - `A priori`: You give G*Power your estimate of the effect size and the desired power, and it gives you the necessary sample size to achieve that power
-    - `Post-hoc`: You give G*Power your effect size and the sample size from the analysis you have already done, and it gives you the power that your analysis had
-
-
-Using G*Power (2)
-========================================================
-- How to get the effect size:
-  - Click `Determine =>` next to the `Effect size f` field
-  - Make sure `Select procedure` in the sidebar that opened is set to `Effect size from variance`
-  - If you've already run your analysis and have your $\eta_G^2$ (`ges` in ezANOVA) or $\eta_P^2$ (partial eta-squared in SPSS) estimate, click on `Direct` and enter the value in the Partial $\eta^2$ field
-  - Click on `Calculate and transfer to main window`
-- If you are doing an a priori analysis or for some reason you don't have an $\eta^2$ estimate, you can get your effect size by setting `Select procedure` to `Effect size from means` and then entering your group means, your within-group standard deviation ($\sigma$), and group sizes in the table
-
-
-Using G*Power (3)
-========================================================
-- Now fill in the rest of the input parameters
-- Leave $\alpha$ `err prob` at .05 unless for some reason you're not testing at a 5% $\alpha$ level
-- Click `Calculate`
-- G*Power will come up with a nice plot of F distribution based on the $H_0$ (red line), the distribution if the true effect has the entered effect size (dashed blue line), the critical F value, and your $\alpha$ and $\beta$ error regions 
-- If you are running a post-hoc analysis: The `Power` (1-$\beta$ err prob) field will contain your power estimate
-- If you are running an a priori analysis: `The total sample size` field will contain your necessary sample size
-
 Multiway ANOVA
 =========================================================
 - What if we have two independent variables, $A$ and $B$?
@@ -336,7 +294,200 @@ A 2-factor (2x3) independent samples ANOVA was conducted where the first factor 
 
 Writing it up (2)
 =============================================================
-The music by alcohol interaction was also significant, F(2,54) = 3.24, p=.047, $\eta_G^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M=49.30, SD=5.50) and no music (M=47.90, SD=4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M=52.20, SD=5.88) and no music (M=52.30,SD=5.77). However, following 4-pints attractiveness ratings were higher with music (M=70.40, SD=5.04) than without music (M=62.30, SD=5.36). This effect was significant (*p* =.018).
+The music by alcohol interaction was also significant, F(2,54) = 3.24, p=.047, $\eta_G^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M=49.30, SD=5.50) and no music (M=47.90, SD=4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M=52.20, SD=5.88) and no music (M=52.30, SD=5.77). However, following 4-pints attractiveness ratings were higher with music (M=70.40, SD=5.04) than without music (M=62.30, SD=5.36). This effect was significant (*p* =.018).
 
 Repeated measures
 =============================================================
+- Remember the paired t-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
+- This is bad, because we violate the independence assumption in the standard ANOVA.
+- This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
+- $SS_{Total} = SS_{Between Participants} + SS_{Within Participants}$
+- $SS_{Within_Participants} = SS_{Model} + SS_{Error}$
+- Result: Less error variance and higher power!
+- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
+- In the repeated measures ANOVA, we can separate them!
+
+Oneway repeated measures ANOVA
+==============================================================
+- Do you feel happier after certain life experiences?
+- 20 subjects were asked to rate their happiness after certain typical life experiences
+  - Doing nothing for a day
+  - Climbing Mount Everest (!)
+  - Going shopping
+- Each subject had all three experiences and gave three ratings
+
+```r
+library(ez)
+library(knitr)
+# load the data
+life <- read.csv("life.csv")
+```
+
+Life experiences and happiness
+=============================================================
+Make a table
+
+```r
+# add subject column
+#
+life_stats <- ezStats(data = life, dv = Happiness, wid = Subject, within = Experience)
+kable(life_stats)
+```
+
+
+
+|Experience |  N| Mean|   SD| FLSD|
+|:----------|--:|----:|----:|----:|
+|Everest    | 20| 52.0| 10.4| 2.13|
+|Nothing    | 20| 51.0| 11.0| 2.13|
+|Shopping   | 20| 50.2| 10.2| 2.13|
+
+Life experiences and happiness (2)
+=============================================================
+- Let's have ezANOVA do the ANOVA for us (just use `within` instead of `between` to tell it that you have a within-subjects effect)
+
+```r
+(life_anova <- ezANOVA(data = life, dv = Happiness, wid = Subject, within = Experience))
+```
+
+```
+$ANOVA
+      Effect DFn DFd   F     p p<.05     ges
+2 Experience   2  38 1.4 0.259       0.00488
+
+$`Mauchly's Test for Sphericity`
+      Effect     W     p p<.05
+2 Experience 0.993 0.938      
+
+$`Sphericity Corrections`
+      Effect   GGe p[GG] p[GG]<.05  HFe p[HF] p[HF]<.05
+2 Experience 0.993 0.259           1.11 0.259          
+```
+What are these values?
+=============================================================
+- This one you know already: it's the ANOVA output:
+
+|   |Effect     | DFn| DFd|   F|     p|p<.05 |   ges|
+|:--|:----------|---:|---:|---:|-----:|:-----|-----:|
+|2  |Experience |   2|  38| 1.4| 0.259|      | 0.005|
+- This one is new: Mauchly's test for Sphericity
+
+|   |Effect     |     W|     p|p<.05 |
+|:--|:----------|-----:|-----:|:-----|
+|2  |Experience | 0.993| 0.938|      |
+- This one is, too: Sphericity corrections
+
+|   |Effect     |   GGe| p[GG]|p[GG]<.05 |  HFe| p[HF]|p[HF]<.05 |
+|:--|:----------|-----:|-----:|:---------|----:|-----:|:---------|
+|2  |Experience | 0.993| 0.259|          | 1.11| 0.259|          |
+
+What is sphericity?
+==============================================================
+- The variances of the differences between treatment levels should be roughly equal ("spherical")
+- For example, it could be that everyone reacts similarly to doing nothing and going shopping
+  - But an Everest climb might make some people very happy and some people very unhappy
+- In that case, the difference between "Nothing" and "Shopping" would have a very low variance
+  - But the difference between "Nothing" or "Shopping" and "Everest" would be huge
+- This could make the ANOVA anticonservative ($\alpha$ is inflated)
+
+Testing for sphericity violations
+=================================================================
+- Mauchly's Test for Sphericity
+
+|   |Effect     |     W|     p|p<.05 |
+|:--|:----------|-----:|-----:|:-----|
+|2  |Experience | 0.993| 0.938|      |
+- If it's significant, sphericity is violated.
+- In this case, we're OK
+- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
+- If you only have two levels, there is only one difference, so differences can't be unequal
+
+Dealing with sphericity violations
+==================================================================
+- Good news: It's easy. 
+- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
+  - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
+- You do this by multiplying the $df_{Model}$ and $df_{Error}$ with a correction factor $\epsilon$
+- Two ways to calculate $\epsilon$:
+  - Greenhouse-Geisser
+  - Huynh-Feldt
+- Recommendation: If Greenhouse-Geisser $\epsilon < .75$, use it. Otherwise, use Huynh-Feldt.
+  - Of course, if Mauchly's test is not significant, use neither!
+  
+Dealing with sphericity violations (2)
+==================================================================
+- SPSS computes the dfs for you and you just have to pick the correct entry in the table
+- ezANOVA makes it a *tiny* bit more difficult:
+
+|   |Effect     |   GGe| p[GG]|p[GG]<.05 |  HFe| p[HF]|p[HF]<.05 |
+|:--|:----------|-----:|-----:|:---------|----:|-----:|:---------|
+|2  |Experience | 0.993| 0.259|          | 1.11| 0.259|          |
+- It gives you the correction factors (`GGe` for Greenhouse-Geisser $\epsilon$ and `HFe` for Huynh-Feldt $\epsilon$) and the corresponding *p*-values, but not the corrected dfs themselves
+- So you just have to do the multiplication yourself if you want to report the corrected dfs
+- Important: If you use a correction method, report which one you used!
+
+Testing for normality
+===================================================================
+- Computing residuals for repeated-measures ANOVAs is tricky
+  - No residuals means we can't do the Shapiro-Wilk test on them
+- SPSS gets around this by doing the Shapiro-Wilk test inside each factor level
+  - This is problematic, too: small sample sizes reduce the power of the test
+    - Normality violations might not be detected
+
+Testing for normality (2)
+===================================================================
+- Other option: Simply test normality for the raw data
+
+```r
+  shapiro.test(life$Happiness)
+```
+
+```
+
+	Shapiro-Wilk normality test
+
+data:  life$Happiness
+W = 0.985, p-value = 0.6886
+```
+- No issues here.
+- This is not great, since we know the data aren't going to be perfectly normal if we think there is a systematic effect
+  - Both ways are really equally bad...
+
+Testing for normality (3)
+===================================================================
+- I'm fine if you do either normality test for the assignment.
+- Normality isn't usually *much* of an issue, especially if your group sizes are equal
+  - The **ANOVA is robust**
+- There is actually a better way for doing all of this, but you have to wait until our last class to find out!
+
+
+Post-hoc tests
+===================================================================
+- You can use `pairwise.t.test` to compare each condition
+  - In this case, there is no signficant effect, but I'll do them anyway to demonstrate
+  - Remember: in a repeated measures design, we have to use paired *t*-tests
+    - use `paired = TRUE`
+
+```r
+pairwise.t.test(x = life$Happiness, g = life$Experience, paired = TRUE)
+```
+
+```
+
+	Pairwise comparisons using paired t tests 
+
+data:  life$Happiness and life$Experience 
+
+         Everest Nothing
+Nothing  0.63    -      
+Shopping 0.34    0.63   
+
+P value adjustment method: holm 
+```
+
+Mixed designs
+===================================================================
+- You can combine between-subject and within-subject factors in one ANOVA
+- This is called a mixed ANOVA
+- Hint: Your assignment will consist of doing and reporting a mixed ANOVA
+- To practice this, let's do Homework 4 together.
