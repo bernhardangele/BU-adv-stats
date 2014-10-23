@@ -13,7 +13,7 @@ rm(list = ls())
 # the following path will NOT work on your computer. Change it to the actual source file location
 # You can get this from RStudio by selecting Session --> Set Working Directory --> To Source File Location
 # copy and paste the resulting setwd command over the command below.
-setwd("C:/Bernhard/Documents/Teaching/Winter 2014/Advanced Statistics/Coursework/Assignment 1/Homework 4")
+setwd("C:/Bernhard/Documents/Teaching/Winter 2014/Advanced Statistics/BU-adv-stats/Homework 4")
 
 # loading necessary libraries
 library(ez)
@@ -82,7 +82,6 @@ library(ggplot2)
 ggsave(filename = "food_plot.png", plot = food_plot)
 # now you can import it in Word -- don't forget the caption!
 
-```{r, echo=FALSE}
 # perform the actual ANOVA so we can use the results when writing our report
 (food_anova <- ezANOVA(data = food, 
                       dv = eaten,
