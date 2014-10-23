@@ -3,45 +3,139 @@ Advanced Statistics
 author: Bernhard Angele
 date: Class 5, 30/10/2014
 
-Power in ANOVA
+Linear regression
 ========================================================
-- For the pain example last week:
-  - 3 groups
-  - 2 subjects per group
-  - $\eta^2$ = .55
-- Remember, $\eta^2 = \frac{SS_{Model}}{SS_{Total}}$
-- R can calculate the power for a simple oneway ANOVA, but for anything more complex use G*Power (http://www.gpower.hhu.de/)
-  - The same is true for SPSS
+- So far, we've figured out how to test if a *discrete* predictor (e.g. treatment group) can explain the variance in a *continuous* variable.
+- What if our predictor is also *continuous*?
 
-Using G*Power
-========================================================
+- Example:
+    - More exciting data about cats and cat food!
+    - Is the amount of cat food a cat eats related to its weight?
+    
+Cat food and weight
+=========================================================
+```{r, echo=FALSE}
+library(knitr)
+n <- 30
+intercept <- 100
 
-- Pick `F-Tests` as the `Test family`
-- Pick the appropriate `Statistical test`
-  - In this case, it's `ANOVA: Fixed effects, omnibus, one-way`
-- Choose the `Type of power analysis`
-  - That is, tell G*Power what information you have and what you want to know
-  - Most commonly used:
-    - `A priori`: You give G*Power your estimate of the effect size and the desired power, and it gives you the necessary sample size to achieve that power
-    - `Post-hoc`: You give G*Power your effect size and the sample size from the analysis you have already done, and it gives you the power that your analysis had
+set.seed("1268")
+cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
+cat_age <- rnorm(n, mean = 48, sd = 24) # cat age in months
 
+food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
+catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
+catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+```
 
-Using G*Power (2)
-========================================================
-- How to get the effect size:
-  - Click `Determine =>` next to the `Effect size f` field
-  - Make sure `Select procedure` in the sidebar that opened is set to `Effect size from variance`
-  - If you've already run your analysis and have your $\eta_G^2$ (`ges` in ezANOVA) or $\eta_P^2$ (partial eta-squared in SPSS) estimate, click on `Direct` and enter the value in the Partial $\eta^2$ field
-  - Click on `Calculate and transfer to main window`
-- If you are doing an a priori analysis or for some reason you don't have an $\eta^2$ estimate, you can get your effect size by setting `Select procedure` to `Effect size from means` and then entering your group means, your within-group standard deviation ($\sigma$), and group sizes in the table
+- This table actually has 30 rows, but I'm using the `head` command to just show you the first 6.
+- You have cat weight in kg and cat food eaten in g.
+- Looks like there might be a positive relationship here.
 
+```{r, results='asis'}
+kable(head(catfood))
+```
 
-Using G*Power (3)
-========================================================
-- Now fill in the rest of the input parameters
-- Leave $\alpha$ `err prob` at .05 unless for some reason you're not testing at a 5% $\alpha$ level
-- Click `Calculate`
-- G*Power will come up with a nice plot of F distribution based on the $H_0$ (red line), the distribution if the true effect has the entered effect size (dashed blue line), the critical F value, and your $\alpha$ and $\beta$ error regions 
-- If you are running a post-hoc analysis: The `Power` (1-$\beta$ err prob) field will contain your power estimate
-- If you are running an a priori analysis: `The total sample size` field will contain your necessary sample size
+Let's plot it
+==========================================================
+```{r}
+plot(x = catfood$CatWeight, y = catfood$FoodEaten)
+```
 
+Looks quite linear
+==========================================================
+- Let's put a line through it
+```{r}
+plot(x = catfood$CatWeight, y = catfood$FoodEaten)
+abline(lm(catfood$FoodEaten ~ catfood$CatWeight))
+```
+
+Correlation
+==========================================================
+- Looks like we have a strong positive relationship:
+    - The heavier the cat (variable $X$), the more food eaten (variable $Y$).
+- We can compute the correlation coefficient
+  - The correlation is the covariance ($\sigma{(X_i - \bar{X})\cdot(Y_i - \bar{Y})}$, where $X_i$ and $Y_i$ are each individual value in the two variables and $\bar{X}$ and $\bar{Y}$ are the means) which we standardise by dividing it by the product of the standard deviations ($s_X \cdot s_Y$).
+  - Or we can just have R do it for us:
+```{r}
+cor(catfood$CatWeight, catfood$FoodEaten)
+```
+
+Testing correlations
+==========================================================
+- Important: correlations calculated from a sample are **random variables**
+- That means they will be different each time we repeat the experiment and whether they reflect the true correlation in the population depends on our luck of the draw.
+- Luckily, Pearson figured out that if you randomly take *uncorrelated* samples from a normal distribution and compute the correlation coefficient, it will be *t*-distributed.
+    - Tthis is exactly what you are doing if the null hypothesis that there is no relationship between the two variables you are studying is true.
+    - So all we have to do is to see if the correlation coefficient is extreme enough that it would only occur 5% of the time or less if the $H_0$ (no correlation in the population) were true.
+
+Testing correlations (2)
+==========================================================
+- R can do this *t*-test very easily using the `cor.test` function:
+```{r}
+cor.test(catfood$CatWeight, catfood$FoodEaten)
+```
+
+Moving beyond correlations
+============================================================
+- So far, so good. But what if we have multiple continuous predictors?
+- Let's look at the function we used to draw the line again:
+```{r, eval=FALSE}
+abline(lm(catfood$FoodEaten ~ catfood$CatWeight))
+```
+- The `abline` part just does the drawing. The real work is done by `lm`.
+- `lm` stands for "Linear Models"
+- Let's see what `lm` does if we don't use `abline` on it
+
+Linear models
+===========================================================
+- Remember the formula interface? It's `Dependent variable ~ Independent variable(s)`
+- Also, I can use `data = catfood` to avoid having to write `catfood$` every time.
+```{r}
+lm(formula = FoodEaten ~ CatWeight, data = catfood)
+```
+
+What do these values mean?
+============================================================
+- `lm` tries to fit a *least squares* line through the data
+- That means that it fits a line that minimises the square of each data point's deviation from the line
+- *Least squares* means that large errors are penalised much more than small errors
+- If you remember algebra from school, the function that draws a line has the following format:
+    - $y = a + b \cdot x$
+    - $a$ is called the *intercept*, since it gives the $y$-value where the line intersects the $y$-axis
+    - $b$ is called the *slope*. For each unit of $x, $y$ changes this many units
+    
+What do these values mean (2)?
+============================================================
+- So, in our case, the best fitting line for the cat food data intersects the $y$-axis at the point (0, `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]`).
+  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` g of food makes no sense, since a cat with 0 kg weight is not a cat anymore.
+  - The linear function doesn't care, of course. It knows nothing about our data and just specifies a line.
+- The slope might be more useful: It says that for each kg of extra weight, a cat will eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` more grammes of food.
+    - Using this information, we can predict that a giant 8 kg cat would eat $`r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` + `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` \cdot 8 = `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8`$ g of food.
+    
+Predictions and residual errors
+===============================================================
+- Of course, our prediction is likely to be at least a little off.
+- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of `r 170 - (lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8)`.
+  - This is called the residual error.
+- More formally, the regression equation looks like this (where $x_i$ are the individual values for the $x$ variable, and $y_i$ are the corresponding values for the $Y$ variable):
+    - $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$
+    - Here, we've simply renamed the intercept to $\beta_0$ and the slope to $\beta_1$.
+    - $\epsilon_i$ is the residual error for each data point.
+    - Important: $\epsilon_i$ is assumed to be normally distributed
+      - This doesn't matter for the line fitting, but it does for the hypothesis tests!
+      
+Back to hypothesis testing
+=================================================================
+- Important: Note that the $\beta$ variables are greek letters, which means they are the *population parameters*
+- For each $\beta$ in the regression formula, we can propose the $H_0$ that its true value is 0
+- The $\beta$ that are estimated from our sample are simply called $b$
+- We can once again test if our $b$ values are extreme enough so they would only occur 5% of the time or less given the $H_0$.
+- We test this separately for each $b$ value. Guess what, it's a *t*-test!
+
+Hypothesis testing using lm
+=================================================================
+- In R, the `summary` function will usually give us the hypothesis tests corresponding to a linear model:
+```{r}
+summary(lm(formula = FoodEaten ~ CatWeight, data = catfood))
+```
