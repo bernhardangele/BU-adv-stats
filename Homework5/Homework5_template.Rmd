@@ -102,6 +102,8 @@ pain$Swear.Condition <- relevel(pain$Swear.Condition, ref = "Quiet")
 
 pain_lm <- lm(data = pain, formula = Time.In.Cold.Water ~ Swear.Condition + Aggression)
 
+pain_lm_summary_coef <- coef(summary(pain_lm))
+
 # use Anova for testing the overall effects of Swear.Condition and Aggression
 # note that it doesn't matter if we use Type II or Type III sums of squares here, since we don't have an interaction
 pain_ancova <- Anova(pain_lm)
@@ -121,9 +123,24 @@ pain_lm_durbin <- durbinWatsonTest(pain_lm_resid)
 # Perform Levene's test
 pain_lm_levene <- leveneTest(y = Time.In.Cold.Water ~ Swear.Condition, data = pain)
 
-# Test for the homogeneity of regression slopes
+# Multicollinearity (note that we are getting generalised variance inflation factors instead of the usual ones here, but that's perfectly fine -- they are interpretable just like the ordinary ones)
+pain_lm_vif <- vif(pain_lm)
 
-# do pairwise t-tests
+# Look at influential cases
+pain_lm_influence <- influence.measures(pain_lm)
+
+# Test for the homogeneity of regression slopes
+# We fit a model that includes the interaction:
+pain_lm_interaction <- lm(data = pain, formula = Time.In.Cold.Water ~ Swear.Condition * Aggression)
+# And then we compare it to the model without the interaction:
+pain_lm_interaction_anova <- anova(pain_lm, pain_lm_interaction)
+
+# We don't need to do pairwise t-tests now since we have our planned contrasts in the lm summary
+
+# To avoid flooding you with output, this code doesn't actually print any of the results to the Console when you first run it
+# Instead, you have to ask R to print each element by typing its name in the Console, e.g. pain_lm_summary_coef
+
+# Look at all this output very carefully before you start writing it up, especially if you are using R Markdown!
 
 # here's a little helper function to get the p-values printed right
 print_p <- function(p){
@@ -133,10 +150,10 @@ print_p <- function(p){
 }
 ```
 
-The ANOVA showed that overall, there was a significant effect of the swear condition, *F*(`r pain_anova$ANOVA$DFn`, `r pain_anova$ANOVA$DFd`) = `r pain_anova$ANOVA$F`, $\eta^2$ = `r pain_anova$ANOVA$ges`, `r print_p(pain_anova$ANOVA$p)`. There was no evidence for unequality of variances from Levene's test (`r print_p(pain_anova$"Levene's Test for Homogeneity of Variance"$p)`). Also, the Shapiro-Wilk test revealed no deviations from normality in the residuals (`r print_p(pain_anova_shapiro$p.value)`).
+The ANOVA showed that overall, there was a significant effect of the swear condition, *F*(`r pain_ancova["Swear.Condition","Df"]`, `r pain_ancova["Residuals","Df"]`) = `r pain_ancova["Swear.Condition","F value"]`, $\eta_P^2$ = `r pain_ancova_eta["Swear.Condition","Partial eta^2"]`, `r print_p(pain_ancova["Swear.Condition","Pr(>F)"])`. The covariate, state aggression, was significantly related to time submerged in the cold water, *F*(`r pain_ancova["Swear.Condition","Df"]`, `r pain_ancova["Residuals","Df"]`) = `r pain_ancova["Aggression","F value"]`, $\eta_P^2$ = `r pain_ancova_eta["Aggression","Partial eta^2"]`, `r print_p(pain_ancova["Aggression","Pr(>F)"])`. There was no evidence for unequality of variances from Levene's test (`r print_p(pain_lm_levene$"Pr(>F)"[1])`). Also, the Shapiro-Wilk test revealed no deviations from normality in the residuals (`r print_p(pain_lm_shapiro$p.value)`). There was no evidence for an interaction between swear condition and the covariate, *F*(`r pain_lm_interaction_anova[2, "Df"]`, `r pain_lm_interaction_anova[2, "Res.Df"]`) = `r pain_lm_interaction_anova[2, "F"]`, `r print_p(pain_lm_interaction_anova[2, "Pr(>F)"])`).
 
-Post-hoc comparisons performed using Holm-Bonferroni corrected *t*-tests showed that the quiet condition (mean time until hand withdrawal: `r pain_stats[pain_stats$Condition == "Quiet",]$Mean` s) and the neutral word condition (mean: `r pain_stats[pain_stats$Condition == "Neutral Word",]$Mean` s) were significantly different from the swear word condition (mean: `r pain_stats[pain_stats$Condition == "Swear Word",]$Mean` s; quiet vs. swear word: `r print_p(pain_anova_pairwise$p.value["Swear Word", "Quiet"])`; neutral vs. swear word: `r print_p(pain_anova_pairwise$p.value["Swear Word", "Neutral Word"])`), but the neutral word condition did not differ significantly from the quiet condition (`r print_p(pain_anova_pairwise$p.value["Quiet","Neutral Word"])`).
+Planned contrasts showed that participants repeating a swear word (mean time until hand withdrawal: `r pain_stats[pain_stats$Condition == "Swear Word",]$Mean` s) held their hands in the cold water for significantly longer than participants in the quiet condition (mean time until hand withdrawal: `r pain_stats[pain_stats$Condition == "Quiet",]$Mean`; *b* = `r pain_lm_summary_coef["Swear.ConditionSwear Word", "Estimate"]`, SE = `r pain_lm_summary_coef["Swear.ConditionSwear Word", "Std. Error"]`, *t* = `r pain_lm_summary_coef["Swear.ConditionSwear Word", "t value"]`, `r print_p(pain_lm_summary_coef["Swear.ConditionSwear Word", "Pr(>|t|)"])`).  The times until hand withdrawal for those participants who were repeating neutral words (mean time until hand withdrawal: `r pain_stats[pain_stats$Condition == "Neutral Word",]$Mean` s) did not differ significantly from those in the quiet condition (*b* = `r pain_lm_summary_coef["Swear.ConditionNeutral Word", "Estimate"]`, SE = `r pain_lm_summary_coef["Swear.ConditionNeutral Word", "Std. Error"]`, *t* = `r pain_lm_summary_coef["Swear.ConditionNeutral Word", "t value"]`, `r print_p(pain_lm_summary_coef["Swear.ConditionNeutral Word", "Pr(>|t|)"])`)).
 
 ### Summary
 
-Based on the results of our analyses, we can conclude that repeating swear words seemed to increase participants' pain tolerance compared to repeating neutral words or remaining quiet. Repeating neutral words did not seem to increase participants' pain tolerance compared to remaining quiet. It seems that using swear words in painful situations may be an effective strategy.
+Based on the results of our analyses, we can conclude that repeating swear words seemed to increase participants' pain tolerance compared to repeating neutral words or remaining quiet. Repeating neutral words did not seem to increase participants' pain tolerance compared to remaining quiet. It seems that using swear words in painful situations may be an effective strategy. Currently aggressive participants also tended to leave their hands in the water for longer time periods, but there was no evidence that state aggression affected the swear condition.
