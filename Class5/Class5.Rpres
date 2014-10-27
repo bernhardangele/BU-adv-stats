@@ -20,13 +20,16 @@ n <- 30
 intercept <- 100
 options(digits = 3)
 
-set.seed("1268")
+set.seed("126810")
 cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
 cat_age <- rnorm(n, mean = 48, sd = 24) # cat age in months
+cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
 
 food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
 catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
 catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+catfood_breed <- data.frame(CatWeight = cat_weight, CatAge = cat_age, CatBreed = cat_breed, FoodEaten = food_eaten)
+
 ```
 
 - This table actually has 30 rows, but I'm using the `head` command to just show you the first 6.
@@ -530,13 +533,6 @@ shapiro.test(resid(lm_catfood_interaction))
 
 More assumption tests (2)
 ===========================================================================
-- Normality of the residuals (we already know that one)
-```{r}
-shapiro.test(resid(lm_catfood_interaction))
-```
-
-More assumption tests (2)
-===========================================================================
 - Durbin-Watson test for autocorrelated errors (in `car` package)
 - Are adjacent residuals correlated?
 ```{r}
@@ -565,4 +561,195 @@ kable(lm_catfood_interaction_table)
 
 Reporting the regression results
 ===================================================================
-Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight","t value"]`, p = `r lm_catfood_interaction_table["CatWeight","Pr(>|t|)"]`) and cat age (b = `r lm_catfood_interaction_table["CatAge","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge","t value"]`, p = `r lm_catfood_interaction_table["CatAge","Pr(>|t|)"]`)) had a significant effect on the food eaten.
+Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight","t value"]`, p = `r lm_catfood_interaction_table["CatWeight","Pr(>|t|)"]`) and cat age (b = `r lm_catfood_interaction_table["CatAge","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge","t value"]`, p = `r lm_catfood_interaction_table["CatAge","Pr(>|t|)"]`)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of `r lm_catfood_interaction_table["CatWeight","Estimate"]` g. Similarly, an increase in age by one month went along with an increase in food eaten of `r lm_catfood_interaction_table["CatAge","Estimate"]` g.
+
+There was no significant interaction between cat weight and cat age (p > .05), suggesting that the effects of cat weight and cat age were additive. Assumption tests and visual inspection of residual plots showed that there was no evidence of violations of normality (p > .05), independence, or homoscedasticity. [If you removed influential cases, say this here.]
+
+Discrete variables
+==================================================================
+- Is it possible to perform a regression analysis with discrete (instead of continuous) variables?
+  - **Yes!**
+  - In fact, when you ask SPSS or R to perform an ANOVA, what it does behind the scenes is run a linear model and then do model comparisons using the F-Test
+      - Minds blown (maybe)!
+  - How can we put discrete (that is, non-numerical) variables into the regression model?
+      - We make up numbers, of course.
+      - This is called *dummy coding*.
+      
+Example
+=================================================================
+```{r, echo=FALSE}
+catfood_breed$FoodEaten <- catfood_breed$FoodEaten + ifelse(cat_breed == "Manx", 15, -15)
+```
+- Let's just stay with the cat data for a little bit longer
+- Let's say our cats came from two breeds, shorthair and manx.
+    - Does breed have an influence on food eaten?
+```{r, results='asis'}
+kable(head(catfood_breed))
+```
+
+We could do a t-test
+=================================================================
+```{r}
+t.test(formula = FoodEaten ~ CatBreed, data = catfood_breed)
+```
+
+Or an ANOVA
+==================================================================
+```{r}
+summary(aov(formula = FoodEaten ~ CatBreed, data = catfood_breed))
+```
+
+Or we could assign dummy values and do a regression
+==================================================================
+```{r}
+# assign 0 to all shorthairs and 1 to all manxs
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
+summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
+```
+
+Let's plot the situation
+=================================================================
+```{r}
+plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten)
+abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
+```
+
+Interpreting dummy variables
+=================================================================
+- Now, the intercept is the mean for group "shorthair" and the slope gives the difference between group "shorthair" and group "manx"
+- Remember the regression equation: $y_i = \beta_0 + \beta_1 x_{i} + \epsilon_i$
+- If $x_i$ is 0 (shorthair group), the predicted value y is the intercept ($\beta_0$)
+- If $x_i$ is 1 (manx group), the predicted value is the sum of the intercept ($\beta_0$) and the slope ($\beta_1$). 
+
+Different dummy values
+================================================================
+- Nobody forces us to set the values to 0 and 1
+- We could use any values we want, e.g. 99 and 23419 (although have fun interpreting *that* equation)
+- -1 and 1 might be more reasonable:
+```{r}
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
+```
+
+Re-run the analysis
+================================================================
+```{r, results='asis'}
+kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
+```
+- Note that the numbers are different: now the intercept represents the grand mean.
+- The slope tells you how far the means of shorthair and manx are from the grand mean.
+  - The prediction for shorthair is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` - `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] - coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
+  - The prediction for manx is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` + `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] + coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
+- The *t* and *p* values are exactly the same.
+
+Contrasts
+================================================================
+- Coming up with these dummy contrasts gets quite involved, especially when you have many factor levels
+    - More details on that next week
+- Fortunately, R is ready to help!
+- When you define a variable as a factor (i.e. tell R that it is discrete), R automatically assigns a type of factor dummy coding to it.
+    - The default contrast is treatment coding (for 2 levels, that's 0 vs. 1). SPSS call this a *simple* contrast.
+      - Which level will be 0 (that is, the baseline)?
+      - By default, the alphabetically first factor (in this case, "Manx")
+
+Contrasts (2)
+================================================================
+- Take a look at the contrasts for a factor using `contrasts`:
+```{r}
+contrasts(catfood_breed$CatBreed)
+```
+- We want shorthair as the baseline. You can use `relevel` to change the baseline (or reference level):
+```{r}
+catfood_breed$CatBreed <- relevel(x = catfood_breed$CatBreed, ref = "Shorthair")
+contrasts(catfood_breed$CatBreed)
+```
+
+Contrasts (3)
+================================================================
+- You can also assign other contrasts. For example, for 2 levels, *sum* or *effect* coding is (-1 vs. 1).
+- To assign a different contrast type, you use `contrasts` together with a function to generate the contrast matrix (e.g. `contr.sum`)
+```{r}
+contr.sum(2)
+contrasts(catfood_breed$CatBreed) <- contr.sum(2)
+contrasts(catfood_breed$CatBreed)
+```
+
+Analysis of Covariance (ANCOVA)
+=================================================================
+- Now we have all the elements in place to perform a simple ANCOVA
+- The idea behind the ANCOVA is that sometimes our dependent variable in the ANOVA is influenced by non-discrete covariates
+- For example, someone's IQ might influence their performance in a memory experiment
+- By including the covariate in the model, we can explain more variance (and take it out of the error variance)
+
+Analysis of Covariance (ANCOVA)
+=================================================================
+- Again with the cats! Sorry, I'm just too lazy to make up a new data set...
+- Let's see if there is an effect of cat breed if we enter cat age and cat weight into the analysis as covariates.
+- In theory, we could use ezANOVA for this, but 
+
+Use lm to perform the ANCOVA (1)
+================================================================
+```{r}
+catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + CatBreed)
+summary(catfood_breed_lm)
+```
+
+Use lm to perform the ANCOVA (2)
+================================================================
+- Get F values using `Anova` from the `car` package (Type II or III SS doesn't matter since we have no interactions):
+```{r}
+Anova(catfood_breed_lm, type = "III")
+```
+
+Assumption tests: Homogeneity of regression slopes
+===============================================================
+- This is an ANCOVA-specific assumption: is there an interaction between the covariate(s) and the discrete factor(s)?
+- If there is, you can still use the linear model, but you can't call it an "ANCOVA" anymore
+    - Also, the interpretation of the results will be much more complicated
+- How to check this? Fit a new model that allows the covariate(s) and factor(s) to interact, then test it against the old model
+
+Assumption tests: Homogeneity of regression slopes (2)
+===============================================================
+- We need to use the lower-case `anova` function to compare the two models:
+```{r}
+catfood_breed_interact_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight * CatAge * CatBreed)
+anova(catfood_breed_lm, catfood_breed_interact_lm)
+```
+- No evidence for any interaction.
+
+Assumption checks: Multicollinearity
+==============================================================
+```{r}
+vif(catfood_breed_lm)
+```
+- All good.
+
+Assumption checks: Normality
+===============================================================
+Again, check for normality violations:
+```{r}
+shapiro.test(resid(catfood_breed_lm))
+```
+
+Assumption checks: Homogeneity of variance
+===============================================================
+- Just like in the between-subjects ANOVA, we have to check homogeneity of variances for the factor.
+- Unlike `ezANOVA`, `lm` doesn't do this for us automatically.
+    - We can use the function `leveneTest` from the `car` package (that's what `ezANOVA` does internally, anyway):
+```{r}
+leveneTest(y = FoodEaten ~ CatBreed, data = catfood_breed)
+```
+
+Assumption checks: Influential cases
+==============================================================
+- We've already done those above, but if this were a new data set, you'd have to do them again!
+
+Assumption checks: Homoscedasticity
+==============================================================
+No evidence for autocorrelation:
+```{r}
+durbinWatsonTest(catfood_breed_lm)
+```
+
+Now write it up!
+=============================================================
+- I'll give you an example in the homework assignment.

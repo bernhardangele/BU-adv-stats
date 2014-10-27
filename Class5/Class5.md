@@ -29,12 +29,12 @@ kable(head(catfood))
 
 | CatWeight| FoodEaten|
 |---------:|---------:|
-|      4.38|      79.6|
-|      6.82|     149.4|
-|      5.55|     109.9|
-|      5.72|      99.2|
-|      4.39|      84.0|
-|      4.49|      92.4|
+|      5.06|      86.6|
+|      4.70|     104.5|
+|      2.88|      80.6|
+|      4.19|      81.0|
+|      4.68|     109.0|
+|      4.97|     116.4|
 
 Let's plot it
 ==========================================================
@@ -69,7 +69,7 @@ cor(catfood$CatWeight, catfood$FoodEaten)
 ```
 
 ```
-[1] 0.841
+[1] 0.663
 ```
 
 Correlation (2)
@@ -81,7 +81,7 @@ cor(catfood$CatWeight, catfood$FoodEaten)^2
 ```
 
 ```
-[1] 0.707
+[1] 0.439
 ```
 
 
@@ -106,13 +106,13 @@ cor.test(catfood$CatWeight, catfood$FoodEaten)
 	Pearson's product-moment correlation
 
 data:  catfood$CatWeight and catfood$FoodEaten
-t = 8.21, df = 28, p-value = 6.119e-09
+t = 4.68, df = 28, p-value = 6.596e-05
 alternative hypothesis: true correlation is not equal to 0
 95 percent confidence interval:
- 0.689 0.922
+ 0.397 0.826
 sample estimates:
   cor 
-0.841 
+0.663 
 ```
 
 Moving beyond correlations
@@ -143,7 +143,7 @@ lm(formula = FoodEaten ~ CatWeight, data = catfood)
 
 Coefficients:
 (Intercept)    CatWeight  
-       7.72        19.54  
+       22.4         16.3  
 ```
 
 What do these values mean?
@@ -159,16 +159,16 @@ What do these values mean?
     
 What do these values mean (2)?
 ============================================================
-- So, in our case, the best fitting line for the cat food data intersects the $y$-axis at the point (0, 7.718).
-  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat 7.718 g of food makes no sense, since a cat with 0 kg weight is not a cat anymore.
+- So, in our case, the best fitting line for the cat food data intersects the $y$-axis at the point (0, 22.384).
+  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat 22.384 g of food makes no sense, since a cat with 0 kg weight is not a cat anymore.
   - The linear function doesn't care, of course. It knows nothing about our data and just specifies a line.
-- The slope might be more useful: It says that for each kg of extra weight, a cat will eat 19.536 more grammes of food.
-    - Using this information, we can predict that a giant 8 kg cat would eat $7.718 + 19.536 \cdot 8 = 164.005$ g of food.
+- The slope might be more useful: It says that for each kg of extra weight, a cat will eat 16.253 more grammes of food.
+    - Using this information, we can predict that a giant 8 kg cat would eat $22.384 + 16.253 \cdot 8 = 152.412$ g of food.
     
 Predictions and residual errors
 ===============================================================
 - Of course, our prediction is likely to be at least a little off.
-- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of 5.995.
+- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of 17.588.
   - This is called the residual error.
 - More formally, the regression equation looks like this (where $x_i$ are the individual values for the $x$ variable, and $y_i$ are the corresponding values for the $Y$ variable):
     - $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$
@@ -199,19 +199,19 @@ Call:
 lm(formula = FoodEaten ~ CatWeight, data = catfood)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--26.294  -9.010   0.698   9.634  17.570 
+   Min     1Q Median     3Q    Max 
+-39.06 -10.43   0.41  12.82  30.08 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)     7.72      12.06    0.64     0.53    
-CatWeight      19.54       2.38    8.21  6.1e-09 ***
+(Intercept)    22.38      16.84    1.33     0.19    
+CatWeight      16.25       3.47    4.68  6.6e-05 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 13 on 28 degrees of freedom
-Multiple R-squared:  0.707,	Adjusted R-squared:  0.696 
-F-statistic: 67.5 on 1 and 28 DF,  p-value: 6.12e-09
+Residual standard error: 17.7 on 28 degrees of freedom
+Multiple R-squared:  0.439,	Adjusted R-squared:  0.419 
+F-statistic: 21.9 on 1 and 28 DF,  p-value: 6.6e-05
 ```
 
 Hypothesis testing using lm (2)
@@ -244,12 +244,12 @@ kable(head(catfood_age))
 
 | CatWeight| CatAge| FoodEaten|
 |---------:|------:|---------:|
-|      4.38|   35.6|      79.6|
-|      6.82|   55.1|     149.4|
-|      5.55|   25.5|     109.9|
-|      5.72|   60.0|      99.2|
-|      4.39|   39.1|      84.0|
-|      4.49|   55.9|      92.4|
+|      5.06|   4.53|      86.6|
+|      4.70|  51.04|     104.5|
+|      2.88|  77.29|      80.6|
+|      4.19|  13.37|      81.0|
+|      4.68|  46.26|     109.0|
+|      4.97|  59.88|     116.4|
 - Does adding age (and the interaction between age and weight) to the model improve it?
 
 
@@ -269,20 +269,20 @@ lm(formula = FoodEaten ~ CatWeight + CatAge + CatWeight:CatAge,
 
 Residuals:
    Min     1Q Median     3Q    Max 
--25.05  -6.39   1.72   7.27  14.78 
+-26.37  -7.10   2.97   5.19  17.26 
 
 Coefficients:
-                 Estimate Std. Error t value Pr(>|t|)   
-(Intercept)      -26.7797    33.2888   -0.80   0.4284   
-CatWeight         22.9673     6.3651    3.61   0.0013 **
-CatAge             0.7513     0.6140    1.22   0.2321   
-CatWeight:CatAge  -0.0742     0.1149   -0.65   0.5238   
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        1.3852    23.0272    0.06  0.95249    
+CatWeight         15.8583     4.2083    3.77  0.00085 ***
+CatAge            -0.0918     0.4403   -0.21  0.83639    
+CatWeight:CatAge   0.1247     0.0834    1.50  0.14683    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 11.1 on 26 degrees of freedom
-Multiple R-squared:  0.799,	Adjusted R-squared:  0.776 
-F-statistic: 34.5 on 3 and 26 DF,  p-value: 3.22e-09
+Residual standard error: 10.4 on 26 degrees of freedom
+Multiple R-squared:  0.82,	Adjusted R-squared:  0.799 
+F-statistic: 39.5 on 3 and 26 DF,  p-value: 7.91e-10
 ```
 
 Example (3)
@@ -302,20 +302,20 @@ lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)
 
 Residuals:
    Min     1Q Median     3Q    Max 
--25.05  -6.39   1.72   7.27  14.78 
+-26.37  -7.10   2.97   5.19  17.26 
 
 Coefficients:
-                 Estimate Std. Error t value Pr(>|t|)   
-(Intercept)      -26.7797    33.2888   -0.80   0.4284   
-CatWeight         22.9673     6.3651    3.61   0.0013 **
-CatAge             0.7513     0.6140    1.22   0.2321   
-CatWeight:CatAge  -0.0742     0.1149   -0.65   0.5238   
+                 Estimate Std. Error t value Pr(>|t|)    
+(Intercept)        1.3852    23.0272    0.06  0.95249    
+CatWeight         15.8583     4.2083    3.77  0.00085 ***
+CatAge            -0.0918     0.4403   -0.21  0.83639    
+CatWeight:CatAge   0.1247     0.0834    1.50  0.14683    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 11.1 on 26 degrees of freedom
-Multiple R-squared:  0.799,	Adjusted R-squared:  0.776 
-F-statistic: 34.5 on 3 and 26 DF,  p-value: 3.22e-09
+Residual standard error: 10.4 on 26 degrees of freedom
+Multiple R-squared:  0.82,	Adjusted R-squared:  0.799 
+F-statistic: 39.5 on 3 and 26 DF,  p-value: 7.91e-10
 ```
 
 Interpreting the coefficients
@@ -330,10 +330,10 @@ kable(summary(lm_catfood_interaction)$coefficients)
 
 |                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
 |:----------------|--------:|----------:|-------:|------------------:|
-|(Intercept)      |  -26.780|     33.289|  -0.804|              0.428|
-|CatWeight        |   22.967|      6.365|   3.608|              0.001|
-|CatAge           |    0.751|      0.614|   1.224|              0.232|
-|CatWeight:CatAge |   -0.074|      0.115|  -0.646|              0.524|
+|(Intercept)      |    1.385|     23.027|   0.060|              0.952|
+|CatWeight        |   15.858|      4.208|   3.768|              0.001|
+|CatAge           |   -0.092|      0.440|  -0.209|              0.836|
+|CatWeight:CatAge |    0.125|      0.083|   1.495|              0.147|
 - Looks like only the coefficient for CatWeight is significantly different from 0, while the coefficients for CatAge and the interaction aren't.
 - Important: these *t*-tests measure how much of the variance each predictor explains **given that all the other predictors are in the model as well**.
 
@@ -381,8 +381,8 @@ Analysis of Variance Table
 Model 1: FoodEaten ~ CatWeight * CatAge
 Model 2: FoodEaten ~ CatWeight + CatAge
   Res.Df  RSS Df Sum of Sq    F Pr(>F)
-1     26 3221                         
-2     27 3273 -1     -51.7 0.42   0.52
+1     26 2810                         
+2     27 3052 -1      -242 2.24   0.15
 ```
 
 Regression and F-Tests (2)
@@ -398,10 +398,10 @@ Analysis of Variance Table
 
 Response: FoodEaten
                  Df Sum Sq Mean Sq F value  Pr(>F)    
-CatWeight         1  11346   11346   91.59 5.3e-10 ***
-CatAge            1   1437    1437   11.60  0.0022 ** 
-CatWeight:CatAge  1     52      52    0.42  0.5238    
-Residuals        26   3221     124                    
+CatWeight         1   6860    6860   63.47 1.9e-08 ***
+CatAge            1   5707    5707   52.80 1.0e-07 ***
+CatWeight:CatAge  1    242     242    2.24    0.15    
+Residuals        26   2810     108                    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -416,12 +416,12 @@ kable(anova(lm_catfood_interaction))
 
 
 
-|                 | Df|  Sum Sq| Mean Sq| F value| Pr(>F)|
-|:----------------|--:|-------:|-------:|-------:|------:|
-|CatWeight        |  1| 11345.9| 11345.9|  91.588|  0.000|
-|CatAge           |  1|  1436.6|  1436.6|  11.596|  0.002|
-|CatWeight:CatAge |  1|    51.7|    51.7|   0.418|  0.524|
-|Residuals        | 26|  3220.9|   123.9|      NA|     NA|
+|                 | Df| Sum Sq| Mean Sq| F value| Pr(>F)|
+|:----------------|--:|------:|-------:|-------:|------:|
+|CatWeight        |  1|   6860|    6860|   63.47|  0.000|
+|CatAge           |  1|   5707|    5707|   52.80|  0.000|
+|CatWeight:CatAge |  1|    242|     242|    2.24|  0.147|
+|Residuals        | 26|   2810|     108|      NA|     NA|
 - The answer lies in **what each test compares**. This may sound nitpicky, but it's really important!
 
 Model comparisons
@@ -453,12 +453,12 @@ kable(anova(lm_catfood_interaction))
 
 
 
-|                 | Df|  Sum Sq| Mean Sq| F value| Pr(>F)|
-|:----------------|--:|-------:|-------:|-------:|------:|
-|CatWeight        |  1| 11345.9| 11345.9|  91.588|  0.000|
-|CatAge           |  1|  1436.6|  1436.6|  11.596|  0.002|
-|CatWeight:CatAge |  1|    51.7|    51.7|   0.418|  0.524|
-|Residuals        | 26|  3220.9|   123.9|      NA|     NA|
+|                 | Df| Sum Sq| Mean Sq| F value| Pr(>F)|
+|:----------------|--:|------:|-------:|-------:|------:|
+|CatWeight        |  1|   6860|    6860|   63.47|  0.000|
+|CatAge           |  1|   5707|    5707|   52.80|  0.000|
+|CatWeight:CatAge |  1|    242|     242|    2.24|  0.147|
+|Residuals        | 26|   2810|     108|      NA|     NA|
 
 Example: Type II sum of squares
 =================================================================
@@ -470,12 +470,12 @@ kable(Anova(lm_catfood_interaction,type = "II"))
 
 
 
-|                 |  Sum Sq| Df| F value| Pr(>F)|
-|:----------------|-------:|--:|-------:|------:|
-|CatWeight        | 10766.2|  1|  86.908|  0.000|
-|CatAge           |  1436.6|  1|  11.596|  0.002|
-|CatWeight:CatAge |    51.7|  1|   0.418|  0.524|
-|Residuals        |  3220.9| 26|      NA|     NA|
+|                 | Sum Sq| Df| F value| Pr(>F)|
+|:----------------|------:|--:|-------:|------:|
+|CatWeight        |  10539|  1|   97.50|  0.000|
+|CatAge           |   5707|  1|   52.80|  0.000|
+|CatWeight:CatAge |    242|  1|    2.24|  0.147|
+|Residuals        |   2810| 26|      NA|     NA|
 
 Example: Type III sum of squares
 =================================================================
@@ -487,13 +487,13 @@ kable(Anova(lm_catfood_interaction,type = "III"))
 
 
 
-|                 | Sum Sq| Df| F value| Pr(>F)|
-|:----------------|------:|--:|-------:|------:|
-|(Intercept)      |   80.2|  1|   0.647|  0.428|
-|CatWeight        | 1612.9|  1|  13.020|  0.001|
-|CatAge           |  185.5|  1|   1.497|  0.232|
-|CatWeight:CatAge |   51.7|  1|   0.418|  0.524|
-|Residuals        | 3220.9| 26|      NA|     NA|
+|                 |   Sum Sq| Df| F value| Pr(>F)|
+|:----------------|--------:|--:|-------:|------:|
+|(Intercept)      |    0.391|  1|   0.004|  0.952|
+|CatWeight        | 1534.828|  1|  14.200|  0.001|
+|CatAge           |    4.703|  1|   0.044|  0.836|
+|CatWeight:CatAge |  241.721|  1|   2.236|  0.147|
+|Residuals        | 2810.186| 26|      NA|     NA|
 
 Summary: Sums of square types
 ==================================================================
@@ -522,7 +522,7 @@ cor(catfood_age$CatWeight, catfood_age$CatAge)
 ```
 
 ```
-[1] 0.0665
+[1] -0.32
 ```
 - In this case, they aren't. So where is the problem?
 
@@ -562,18 +562,18 @@ Call:
 lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bizarre)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--23.462  -9.629  -0.404  10.424  20.680 
+   Min     1Q Median     3Q    Max 
+-42.68  -9.83  -0.34  13.07  31.64 
 
 Coefficients:
-             Estimate Std. Error t value Pr(>|t|)
-(Intercept)      7.96      11.71    0.68     0.50
-CatWeight     3621.38    2191.86    1.65     0.11
-CatAge      -36019.22   21919.05   -1.64     0.11
+            Estimate Std. Error t value Pr(>|t|)
+(Intercept)     23.4       17.0    1.38     0.18
+CatWeight     2262.6     2877.8    0.79     0.44
+CatAge      -22465.0    28780.7   -0.78     0.44
 
-Residual standard error: 12.6 on 27 degrees of freedom
-Multiple R-squared:  0.733,	Adjusted R-squared:  0.714 
-F-statistic: 37.1 on 2 and 27 DF,  p-value: 1.78e-08
+Residual standard error: 17.8 on 27 degrees of freedom
+Multiple R-squared:  0.452,	Adjusted R-squared:  0.411 
+F-statistic: 11.1 on 2 and 27 DF,  p-value: 3e-04
 ```
 
 What a mess!
@@ -587,9 +587,9 @@ kable(summary(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bi
 
 |            |  Estimate| Std. Error|   t value| Pr(>&#124;t&#124;)|
 |:-----------|---------:|----------:|---------:|------------------:|
-|(Intercept) |  7.96e+00|   1.17e+01|  6.80e-01|           5.02e-01|
-|CatWeight   |  3.62e+03|   2.19e+03|  1.65e+00|           1.10e-01|
-|CatAge      | -3.60e+04|   2.19e+04| -1.64e+00|           1.12e-01|
+|(Intercept) |  2.34e+01|   1.70e+01|  1.38e+00|           1.80e-01|
+|CatWeight   |  2.26e+03|   2.88e+03|  7.86e-01|           4.39e-01|
+|CatAge      | -2.25e+04|   2.88e+04| -7.81e-01|           4.42e-01|
 - Neither CatWeight nor CatAge are significant  -- nothing is!
 - If you compare the standard errors of the estimates to the "sane" model, they are huge.
     - That is because the model has a hard time determining the estimates
@@ -617,7 +617,7 @@ vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age))
 
 ```
 CatWeight    CatAge 
-        1         1 
+     1.11      1.11 
 ```
 
 Diagnosing Multicollinearity
@@ -631,7 +631,7 @@ vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bizarre))
 
 ```
 CatWeight    CatAge 
-   900765    900765 
+   677936    677936 
 ```
 
 Interpreting the VIF
@@ -653,7 +653,7 @@ vif(lm_catfood_interaction)
 
 ```
        CatWeight           CatAge CatWeight:CatAge 
-            9.72            33.79            44.75 
+            4.26            36.82            33.06 
 ```
 - Those are some seriously high VIFs!
 - What is going on?
@@ -668,7 +668,7 @@ with(catfood_age, cor(CatWeight, CatWeight*CatAge))
 ```
 
 ```
-[1] 0.498
+[1] -0.0246
 ```
 
 ```r
@@ -676,7 +676,7 @@ with(catfood_age, cor(CatAge, CatWeight*CatAge))
 ```
 
 ```
-[1] 0.885
+[1] 0.94
 ```
 
 What to do?
@@ -699,7 +699,7 @@ with(catfood_age, cor(CatWeight, CatWeight*CatAge))
 ```
 
 ```
-[1] 0.351
+[1] -0.287
 ```
 
 ```r
@@ -707,7 +707,7 @@ with(catfood_age, cor(CatAge, CatWeight*CatAge))
 ```
 
 ```
-[1] 0.308
+[1] 0.483
 ```
 
 ```r
@@ -718,7 +718,7 @@ vif(lm_catfood_interaction)
 
 ```
        CatWeight           CatAge CatWeight:CatAge 
-            1.14             1.11             1.26 
+            1.14             1.37             1.34 
 ```
 
 Let's look at the coefficients again
@@ -732,10 +732,10 @@ kable(summary(lm_catfood_interaction)$coefficients)
 
 |                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
 |:----------------|--------:|----------:|-------:|------------------:|
-|(Intercept)      |  104.899|      2.037|  51.488|              0.000|
-|CatWeight        |   19.563|      2.182|   8.965|              0.000|
-|CatAge           |    0.382|      0.111|   3.440|              0.002|
-|CatWeight:CatAge |   -0.074|      0.115|  -0.646|              0.524|
+|(Intercept)      |  100.744|      2.006|  50.214|              0.000|
+|CatWeight        |   21.785|      2.181|   9.987|              0.000|
+|CatAge           |    0.502|      0.085|   5.911|              0.000|
+|CatWeight:CatAge |    0.125|      0.083|   1.495|              0.147|
 - Look at that: Now CatAge is significant, too!
 - We would have made a Type II error if we hadn't centered the variables.
 - Lesson of this story: When testing for interactions with continuous variables, **always center the continuous variables**.
@@ -782,10 +782,10 @@ kable(coef(summary(lm_goliath)))
 
 |                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
 |:----------------|--------:|----------:|-------:|------------------:|
-|(Intercept)      |  104.388|      4.106|  25.423|              0.000|
-|CatWeight        |    0.792|      1.419|   0.558|              0.581|
-|CatAge           |    0.440|      0.226|   1.943|              0.063|
-|CatWeight:CatAge |    0.079|      0.228|   0.345|              0.733|
+|(Intercept)      |   99.219|      3.993|  24.846|              0.000|
+|CatWeight        |    1.634|      1.233|   1.325|              0.196|
+|CatAge           |    0.310|      0.153|   2.026|              0.053|
+|CatWeight:CatAge |   -0.118|      0.166|  -0.707|              0.485|
 - That doesn't look too good!
 
 Let's plot it
@@ -812,14 +812,14 @@ kable(tail(influence.measures(lm_goliath)$infmat))
 
 
 
-|   | dfb.1_| dfb.CtWg| dfb.CtAg| dfb.CW:C|   dffit| cov.r| cook.d|   hat|
-|:--|------:|--------:|--------:|--------:|-------:|-----:|------:|-----:|
-|26 | -0.020|    0.051|    0.028|   -0.067|  -0.094| 1.527|  0.002| 0.242|
-|27 | -0.116|    0.067|   -0.011|   -0.029|  -0.143| 1.132|  0.005| 0.042|
-|28 |  0.312|    0.162|   -0.319|   -0.221|   0.436| 0.930|  0.046| 0.083|
-|29 | -0.238|    0.090|    0.050|   -0.061|  -0.283| 0.907|  0.019| 0.039|
-|30 | -0.238|    0.111|   -0.044|    0.054|  -0.308| 0.975|  0.023| 0.057|
-|31 | -6.447|  -26.570|    0.934|    1.346| -33.904| 0.056| 71.180| 0.933|
+|   | dfb.1_| dfb.CtWg| dfb.CtAg| dfb.CW:C|   dffit| cov.r|  cook.d|   hat|
+|:--|------:|--------:|--------:|--------:|-------:|-----:|-------:|-----:|
+|26 | -0.084|    0.009|   -0.050|    0.010|  -0.104| 1.177|   0.003| 0.046|
+|27 | -0.071|    0.019|   -0.022|   -0.004|  -0.078| 1.181|   0.002| 0.038|
+|28 |  0.042|   -0.031|   -0.010|    0.037|   0.055| 1.256|   0.001| 0.079|
+|29 |  0.294|    0.036|   -0.096|   -0.016|   0.321| 0.805|   0.024| 0.036|
+|30 |  0.105|   -0.015|    0.051|    0.007|   0.119| 1.152|   0.004| 0.040|
+|31 | -8.197|  -34.200|   -3.718|   -3.049| -41.953| 0.055| 100.641| 0.950|
 
 Diagnosing influential cases (3)
 ======================================================================
@@ -864,23 +864,7 @@ shapiro.test(resid(lm_catfood_interaction))
 	Shapiro-Wilk normality test
 
 data:  resid(lm_catfood_interaction)
-W = 0.945, p-value = 0.1215
-```
-
-More assumption tests (2)
-===========================================================================
-- Normality of the residuals (we already know that one)
-
-```r
-shapiro.test(resid(lm_catfood_interaction))
-```
-
-```
-
-	Shapiro-Wilk normality test
-
-data:  resid(lm_catfood_interaction)
-W = 0.945, p-value = 0.1215
+W = 0.935, p-value = 0.06524
 ```
 
 More assumption tests (2)
@@ -894,7 +878,7 @@ durbinWatsonTest(lm_catfood_interaction)
 
 ```
  lag Autocorrelation D-W Statistic p-value
-   1          -0.216          2.35    0.31
+   1          0.0612          1.86   0.844
  Alternative hypothesis: rho != 0
 ```
 - Not in this case.
@@ -909,7 +893,7 @@ More assumption tests (3)
 plot(x = predict(lm_catfood_interaction), y = resid(lm_catfood_interaction))
 ```
 
-![plot of chunk unnamed-chunk-41](Class5-figure/unnamed-chunk-41.png) 
+![plot of chunk unnamed-chunk-40](Class5-figure/unnamed-chunk-40.png) 
 
 Reporting the regression results
 ===================================================================
@@ -924,13 +908,382 @@ kable(lm_catfood_interaction_table)
 
 |                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
 |:----------------|--------:|----------:|-------:|------------------:|
-|(Intercept)      |  104.899|      2.037|  51.488|              0.000|
-|CatWeight        |   19.563|      2.182|   8.965|              0.000|
-|CatAge           |    0.382|      0.111|   3.440|              0.002|
-|CatWeight:CatAge |   -0.074|      0.115|  -0.646|              0.524|
-- Introductory paragraph: In order to test the hypothesis that cat weight and cat age can predict how much food a cat eats, we performed a multiple regression analysis  with food eaten (in g) as the dependent variable and cat weight and cat age as well aas their interactions as continuous independent variables. The model explained a very high amount of the variance in the dependent variable, with an adjusted $R^2$ of 0.776.
+|(Intercept)      |  100.744|      2.006|  50.214|              0.000|
+|CatWeight        |   21.785|      2.181|   9.987|              0.000|
+|CatAge           |    0.502|      0.085|   5.911|              0.000|
+|CatWeight:CatAge |    0.125|      0.083|   1.495|              0.147|
+- Introductory paragraph: In order to test the hypothesis that cat weight and cat age can predict how much food a cat eats, we performed a multiple regression analysis  with food eaten (in g) as the dependent variable and cat weight and cat age as well aas their interactions as continuous independent variables. The model explained a very high amount of the variance in the dependent variable, with an adjusted $R^2$ of 0.799.
 
 
 Reporting the regression results
 ===================================================================
-Our results show that both cat weight (b = 19.563, SE = 2.182, t = 8.965, p = 1.958 &times; 10<sup>-9</sup>) and cat age (b = 0.382, SE = 0.111, t = 3.44, p = 0.002)) had a significant effect on the food eaten.
+Our results show that both cat weight (b = 21.785, SE = 2.181, t = 9.987, p = 2.18 &times; 10<sup>-10</sup>) and cat age (b = 0.502, SE = 0.085, t = 5.911, p = 3.097 &times; 10<sup>-6</sup>)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of 21.785 g. Similarly, an increase in age by one month went along with an increase in food eaten of 0.502 g.
+
+There was no significant interaction between cat weight and cat age (p > .05), suggesting that the effects of cat weight and cat age were additive. Assumption tests and visual inspection of residual plots showed that there was no evidence of violations of normality (p > .05), independence, or homoscedasticity. [If you removed influential cases, say this here.]
+
+Discrete variables
+==================================================================
+- Is it possible to perform a regression analysis with discrete (instead of continuous) variables?
+  - **Yes!**
+  - In fact, when you ask SPSS or R to perform an ANOVA, what it does behind the scenes is run a linear model and then do model comparisons using the F-Test
+      - Minds blown (maybe)!
+  - How can we put discrete (that is, non-numerical) variables into the regression model?
+      - We make up numbers, of course.
+      - This is called *dummy coding*.
+      
+Example
+=================================================================
+
+- Let's just stay with the cat data for a little bit longer
+- Let's say our cats came from two breeds, shorthair and manx.
+    - Does breed have an influence on food eaten?
+
+```r
+kable(head(catfood_breed))
+```
+
+
+
+| CatWeight| CatAge|CatBreed  | FoodEaten|
+|---------:|------:|:---------|---------:|
+|      5.06|   4.53|Shorthair |      71.6|
+|      4.70|  51.04|Shorthair |      89.5|
+|      2.88|  77.29|Shorthair |      65.6|
+|      4.19|  13.37|Shorthair |      66.0|
+|      4.68|  46.26|Shorthair |      94.0|
+|      4.97|  59.88|Shorthair |     101.4|
+
+We could do a t-test
+=================================================================
+
+```r
+t.test(formula = FoodEaten ~ CatBreed, data = catfood_breed)
+```
+
+```
+
+	Welch Two Sample t-test
+
+data:  FoodEaten by CatBreed
+t = 3.71, df = 27, p-value = 0.0009375
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 14.3 49.7
+sample estimates:
+     mean in group Manx mean in group Shorthair 
+                  115.8                    83.8 
+```
+
+Or an ANOVA
+==================================================================
+
+```r
+summary(aov(formula = FoodEaten ~ CatBreed, data = catfood_breed))
+```
+
+```
+            Df Sum Sq Mean Sq F value Pr(>F)    
+CatBreed     1   7678    7678    13.8  9e-04 ***
+Residuals   28  15589     557                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Or we could assign dummy values and do a regression
+==================================================================
+
+```r
+# assign 0 to all shorthairs and 1 to all manxs
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
+summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
+```
+
+```
+
+Call:
+lm(formula = FoodEaten ~ dummy, data = catfood_breed)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-44.20 -13.14  -3.01  14.49  49.26 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    83.77       6.09   13.75  5.6e-14 ***
+dummy          32.00       8.62    3.71    9e-04 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 23.6 on 28 degrees of freedom
+Multiple R-squared:  0.33,	Adjusted R-squared:  0.306 
+F-statistic: 13.8 on 1 and 28 DF,  p-value: 0.000901
+```
+
+Let's plot the situation
+=================================================================
+
+```r
+plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten)
+abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
+```
+
+![plot of chunk unnamed-chunk-47](Class5-figure/unnamed-chunk-47.png) 
+
+Interpreting dummy variables
+=================================================================
+- Now, the intercept is the mean for group "shorthair" and the slope gives the difference between group "shorthair" and group "manx"
+- Remember the regression equation: $y_i = \beta_0 + \beta_1 x_{i} + \epsilon_i$
+- If $x_i$ is 0 (shorthair group), the predicted value y is the intercept ($\beta_0$)
+- If $x_i$ is 1 (manx group), the predicted value is the sum of the intercept ($\beta_0$) and the slope ($\beta_1$). 
+
+Different dummy values
+================================================================
+- Nobody forces us to set the values to 0 and 1
+- We could use any values we want, e.g. 99 and 23419 (although have fun interpreting *that* equation)
+- -1 and 1 might be more reasonable:
+
+```r
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
+```
+
+Re-run the analysis
+================================================================
+
+```r
+kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
+```
+
+
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |   99.772|      4.308|  23.160|              0.000|
+|dummy       |   15.998|      4.308|   3.714|              0.001|
+- Note that the numbers are different: now the intercept represents the grand mean.
+- The slope tells you how far the means of shorthair and manx are from the grand mean.
+  - The prediction for shorthair is $99.772 - 15.998 = 83.774$
+  - The prediction for manx is $99.772 + 15.998 = 115.77$
+- The *t* and *p* values are exactly the same.
+
+Contrasts
+================================================================
+- Coming up with these dummy contrasts gets quite involved, especially when you have many factor levels
+    - More details on that next week
+- Fortunately, R is ready to help!
+- When you define a variable as a factor (i.e. tell R that it is discrete), R automatically assigns a type of factor dummy coding to it.
+    - The default contrast is treatment coding (for 2 levels, that's 0 vs. 1). SPSS call this a *simple* contrast.
+      - Which level will be 0 (that is, the baseline)?
+      - By default, the alphabetically first factor (in this case, "Manx")
+
+Contrasts (2)
+================================================================
+- Take a look at the contrasts for a factor using `contrasts`:
+
+```r
+contrasts(catfood_breed$CatBreed)
+```
+
+```
+          Shorthair
+Manx              0
+Shorthair         1
+```
+- We want shorthair as the baseline. You can use `relevel` to change the baseline (or reference level):
+
+```r
+catfood_breed$CatBreed <- relevel(x = catfood_breed$CatBreed, ref = "Shorthair")
+contrasts(catfood_breed$CatBreed)
+```
+
+```
+          Manx
+Shorthair    0
+Manx         1
+```
+
+Contrasts (3)
+================================================================
+- You can also assign other contrasts. For example, for 2 levels, *sum* or *effect* coding is (-1 vs. 1).
+- To assign a different contrast type, you use `contrasts` together with a function to generate the contrast matrix (e.g. `contr.sum`)
+
+```r
+contr.sum(2)
+```
+
+```
+  [,1]
+1    1
+2   -1
+```
+
+```r
+contrasts(catfood_breed$CatBreed) <- contr.sum(2)
+contrasts(catfood_breed$CatBreed)
+```
+
+```
+          [,1]
+Shorthair    1
+Manx        -1
+```
+
+Analysis of Covariance (ANCOVA)
+=================================================================
+- Now we have all the elements in place to perform a simple ANCOVA
+- The idea behind the ANCOVA is that sometimes our dependent variable in the ANOVA is influenced by non-discrete covariates
+- For example, someone's IQ might influence their performance in a memory experiment
+- By including the covariate in the model, we can explain more variance (and take it out of the error variance)
+
+Analysis of Covariance (ANCOVA)
+=================================================================
+- Again with the cats! Sorry, I'm just too lazy to make up a new data set...
+- Let's see if there is an effect of cat breed if we enter cat age and cat weight into the analysis as covariates.
+- In theory, we could use ezANOVA for this, but 
+
+Use lm to perform the ANCOVA (1)
+================================================================
+
+```r
+catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + CatBreed)
+summary(catfood_breed_lm)
+```
+
+```
+
+Call:
+lm(formula = FoodEaten ~ CatWeight + CatAge + CatBreed, data = catfood_breed)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-25.10  -8.40   3.59   6.04  19.01 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -27.8275    12.5893   -2.21    0.036 *  
+CatWeight    21.2336     2.2480    9.45  6.9e-10 ***
+CatAge        0.5575     0.0799    6.98  2.1e-07 ***
+CatBreed1   -15.3996     1.9886   -7.74  3.2e-08 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 10.8 on 26 degrees of freedom
+Multiple R-squared:  0.869,	Adjusted R-squared:  0.854 
+F-statistic: 57.5 on 3 and 26 DF,  p-value: 1.31e-11
+```
+
+Use lm to perform the ANCOVA (2)
+================================================================
+- Get F values using `Anova` from the `car` package (Type II or III SS doesn't matter since we have no interactions):
+
+```r
+Anova(catfood_breed_lm, type = "III")
+```
+
+```
+Anova Table (Type III tests)
+
+Response: FoodEaten
+            Sum Sq Df F value  Pr(>F)    
+(Intercept)    573  1    4.89   0.036 *  
+CatWeight    10456  1   89.22 6.9e-10 ***
+CatAge        5706  1   48.69 2.1e-07 ***
+CatBreed      7028  1   59.97 3.2e-08 ***
+Residuals     3047 26                    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+Assumption tests: Homogeneity of regression slopes
+===============================================================
+- This is an ANCOVA-specific assumption: is there an interaction between the covariate(s) and the discrete factor(s)?
+- If there is, you can still use the linear model, but you can't call it an "ANCOVA" anymore
+    - Also, the interpretation of the results will be much more complicated
+- How to check this? Fit a new model that allows the covariate(s) and factor(s) to interact, then test it against the old model
+
+Assumption tests: Homogeneity of regression slopes (2)
+===============================================================
+- We need to use the lower-case `anova` function to compare the two models:
+
+```r
+catfood_breed_interact_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight * CatAge * CatBreed)
+anova(catfood_breed_lm, catfood_breed_interact_lm)
+```
+
+```
+Analysis of Variance Table
+
+Model 1: FoodEaten ~ CatWeight + CatAge + CatBreed
+Model 2: FoodEaten ~ CatWeight * CatAge * CatBreed
+  Res.Df  RSS Df Sum of Sq   F Pr(>F)
+1     26 3047                        
+2     22 2704  4       343 0.7    0.6
+```
+- No evidence for any interaction.
+
+Assumption checks: Multicollinearity
+==============================================================
+
+```r
+vif(catfood_breed_lm)
+```
+
+```
+CatWeight    CatAge  CatBreed 
+     1.12      1.12      1.01 
+```
+- All good.
+
+Assumption checks: Normality
+===============================================================
+Again, check for normality violations:
+
+```r
+shapiro.test(resid(catfood_breed_lm))
+```
+
+```
+
+	Shapiro-Wilk normality test
+
+data:  resid(catfood_breed_lm)
+W = 0.951, p-value = 0.1823
+```
+
+Assumption checks: Homogeneity of variance
+===============================================================
+- Just like in the between-subjects ANOVA, we have to check homogeneity of variances for the factor.
+- Unlike `ezANOVA`, `lm` doesn't do this for us automatically.
+    - We can use the function `leveneTest` from the `car` package (that's what `ezANOVA` does internally, anyway):
+
+```r
+leveneTest(y = FoodEaten ~ CatBreed, data = catfood_breed)
+```
+
+```
+Levene's Test for Homogeneity of Variance (center = median)
+      Df F value Pr(>F)
+group  1     1.2   0.28
+      28               
+```
+
+Assumption checks: Influential cases
+==============================================================
+- We've already done those above, but if this were a new data set, you'd have to do them again!
+
+Assumption checks: Homoscedasticity
+==============================================================
+No evidence for autocorrelation:
+
+```r
+durbinWatsonTest(catfood_breed_lm)
+```
+
+```
+ lag Autocorrelation D-W Statistic p-value
+   1          0.0791          1.82    0.53
+ Alternative hypothesis: rho != 0
+```
+
+Now write it up!
+=============================================================
+- I'll give you an example in the homework assignment.
