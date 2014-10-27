@@ -1,0 +1,142 @@
+---
+title: 'Homework 5 example: The effect of swear word use on pain tolerance'
+author: "Bernhard Angele"
+date: "30/10/2014"
+output: word_document
+---
+
+### Results
+
+
+
+```{r, echo = FALSE}
+# echo = FALSE will keep the code and its output from appearing in the final document.
+# don't forget to replace the \ backslashes with forward slashes / if you're on Windows
+
+# For this example, we'll need the following packages: ez, knitr, car, and heplots
+# if you are still missing one or more of them, run the following line (without the #):
+# install.packages(c("ez", "knitr", "car", "heplots"))
+library(ez)
+library(knitr)
+library(car)
+library(heplots)
+
+# round all numbers to the 2nd digit
+options(digits = 2)
+
+#setwd("C:/replace_this_with_your_actual_working_directory/")
+
+pain <- read.csv("pain_aggression.csv")
+
+# This is the same data we had for Homework 3, just with an added covariate.
+
+# add a subject column for ezANOVA
+# very simple: each observation is a different person
+# "subject" is a discrete variable, so make it a factor()
+pain$subject <- factor(1:nrow(pain))
+
+# we can still use ez for some shortcuts, such as computing means and plotting them
+
+pain_stats <- ezStats(data = pain, 
+                       dv = Time.In.Cold.Water, 
+                       wid = subject, 
+                       between =  Swear.Condition)
+
+# if you add Aggression as a between-subjects covariate, ezStats will give you the 
+# partial effects of the swear condition when controlling for Aggression
+# In theory, we could to the ANCOVA like this, too, but it produces estimates that are slightly off
+# (if you want to know why, ask me!)
+
+# People's opinions vary as to whether you should report the raw means or the partial effect means. I would always report the raw means unless the partial means are radically different.
+
+pain_stats_controlling_for_aggression <- ezStats(data = pain, 
+                                         dv = Time.In.Cold.Water, 
+                                         wid = subject, 
+                                         between =  Swear.Condition,
+                                         between_covariate = Aggression)
+```
+
+In order to evaluate the effect of swear word usage on pain tolerance and to take into account the current aggression levels of each participant, we performed an ANCOVA with time until hand withdrawal as the dependent variable, swear word usage (quiet vs. neutral word vs. swear word) as the independent variable, and state aggression (mean = `r mean(pain$Aggression)`, sd = `r sd(pain$Aggression)`). Table 1 and Figure 1 show the raw condition means.
+
+*Table 1. Means, sample sizes (N), standard deviations (SD), and standard errors (SE) for the swear word usage conditions.*
+```{r, results='asis', echo=FALSE}
+# need results = "asis" so that the table is drawn properly
+# get rid of the last column of pain_stats (you don't need Fisher's LSD in a results section)
+pain_stats <- pain_stats[,1:4]
+# Rename the first column to make the table look more professional
+colnames(pain_stats)[1] <- "Condition"
+# instead, add a standard error column
+pain_stats$SE <- pain_stats$SD/sqrt(pain_stats$N)
+# make a nice-looking table  
+kable(pain_stats)
+```
+
+*Figure 1. Condition means. Error bars denote Fisher's LSD.*
+
+```{r, echo=FALSE}
+# Again, it is mostly up to you whether you want to report the raw means or the partial effects in this plot.
+# In this case, it doesn't matter much because they are nearly the same.
+
+ezPlot(data = pain, 
+  dv = Time.In.Cold.Water, 
+  wid = subject, 
+  between =  Swear.Condition,
+  x = Swear.Condition)
+```
+
+```{r, echo=FALSE}
+# Here we perform the actual ANCOVA using lm
+
+# Before you start, think about what you want the contrasts to be and which conditions you want to compare. Note that the number of comparisons you can make is limited (more about that in Class 6)
+
+# Since we are mostly interested in whether swearing or saying neutral words is better than remaining quiet, we can use treatment (simple) contrasts here, comparing each factor level to our chosen baseline (i.e. the quiet condition)
+# Treatment contrasts are the default, so we don't need to specify them, but we do need to make sure that "Quiet" is the baseline level for Swear.Condition
+
+pain$Swear.Condition <- relevel(pain$Swear.Condition, ref = "Quiet")
+
+# If we had more than one covariate and were interested in their interaction, we would need to center them here using scale(x, scale = FALSE)
+# Since we only have one covariate, we are fine.
+
+# this gives you the individual t-tests. Note that Swear.Condition is now split into two contrasts,
+# one comparing the quiet and the neutral word conditions and one comparing the quiet and the swear word conditions
+
+pain_lm <- lm(data = pain, formula = Time.In.Cold.Water ~ Swear.Condition + Aggression)
+
+# use Anova for testing the overall effects of Swear.Condition and Aggression
+# note that it doesn't matter if we use Type II or Type III sums of squares here, since we don't have an interaction
+pain_ancova <- Anova(pain_lm)
+
+# etasq from the heplots package will give you the same table, but with effect size estimates
+pain_ancova_eta <- etasq(pain_lm, anova = TRUE)
+
+# get the residuals for normality check
+pain_lm_resid <- resid(pain_lm)
+
+# Perform the Shapiro-Wilk test
+pain_lm_shapiro <- shapiro.test(pain_lm_resid)
+
+# Perform the Durbin-Watson test
+pain_lm_durbin <- durbinWatsonTest(pain_lm_resid)
+
+# Perform Levene's test
+pain_lm_levene <- leveneTest(y = Time.In.Cold.Water ~ Swear.Condition, data = pain)
+
+# Test for the homogeneity of regression slopes
+
+# do pairwise t-tests
+
+# here's a little helper function to get the p-values printed right
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", p))
+  if(p > .05) return("*p* > .05")
+}
+```
+
+The ANOVA showed that overall, there was a significant effect of the swear condition, *F*(`r pain_anova$ANOVA$DFn`, `r pain_anova$ANOVA$DFd`) = `r pain_anova$ANOVA$F`, $\eta^2$ = `r pain_anova$ANOVA$ges`, `r print_p(pain_anova$ANOVA$p)`. There was no evidence for unequality of variances from Levene's test (`r print_p(pain_anova$"Levene's Test for Homogeneity of Variance"$p)`). Also, the Shapiro-Wilk test revealed no deviations from normality in the residuals (`r print_p(pain_anova_shapiro$p.value)`).
+
+Post-hoc comparisons performed using Holm-Bonferroni corrected *t*-tests showed that the quiet condition (mean time until hand withdrawal: `r pain_stats[pain_stats$Condition == "Quiet",]$Mean` s) and the neutral word condition (mean: `r pain_stats[pain_stats$Condition == "Neutral Word",]$Mean` s) were significantly different from the swear word condition (mean: `r pain_stats[pain_stats$Condition == "Swear Word",]$Mean` s; quiet vs. swear word: `r print_p(pain_anova_pairwise$p.value["Swear Word", "Quiet"])`; neutral vs. swear word: `r print_p(pain_anova_pairwise$p.value["Swear Word", "Neutral Word"])`), but the neutral word condition did not differ significantly from the quiet condition (`r print_p(pain_anova_pairwise$p.value["Quiet","Neutral Word"])`).
+
+### Summary
+
+Based on the results of our analyses, we can conclude that repeating swear words seemed to increase participants' pain tolerance compared to repeating neutral words or remaining quiet. Repeating neutral words did not seem to increase participants' pain tolerance compared to remaining quiet. It seems that using swear words in painful situations may be an effective strategy.
