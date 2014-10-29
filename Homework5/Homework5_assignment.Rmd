@@ -1,0 +1,25 @@
+---
+title: "Advanced Statistics Homework 5: Alcohol, driving performance, and alertness"
+author: "Bernhard Angele"
+date: "23/10/2014"
+output: pdf_document
+---
+
+### Scenario
+These are the same alcohol and driving performance data from Homework 3. As before, our researchers are trying to test how having drunk alcohol, being under the impression of having drunk alcohol (but actually being sober), and not having drunk any alcohol (and not being under the impression of having drunk any) affect driving score (measured on a scale from 80 = perfect to 0 = catastrophic). Now our researchers also have measured baseline alertness for each participant (i.e. how alert the person was while sober, measured on a scale from 100 = perfectly alert to 0 = essentially unconscious). Does including alertness in the analysis change our findings about the alcohol effect?
+
+
+
+### Assignment
+Conduct and report the appropriate statistics as one would for an academic journal. Be sure to report the means, group sizes, and standard deviations in a table and to show all the significant effects in figures (Hint: you do not need to show non-significant effects). In addition, you should state whether there are any issues with the results (this may refer to assumption violations but other issues could also be mentioned) and how such problems might be overcome. Finally, in layperson (non-academic) language provide advice in terms of what you should be aware of in terms of alcohol and driving given the present results.
+
+Important hint: you have a factor with three levels, so you need to use a contrast that makes sense. I suggest using the following command to set *Helmert* contrasts. This command is already included in your homework file and will produce two contrasts. The first contrast compares the alcohol to the alcohol placebo condition. The second contrast compares the mean of the alcohol and the alcohol placebo conditions to the no drink control condition. Make sure to interpret those contrasts accordingly!
+```{r, eval=FALSE}
+contrasts(alcohol$Alcohol.Condition) <- contr.helmert(3)
+```
+
+### Due date
+This homework will be due on **Thursday, October 13th at 1 pm** and should be submitted via myBU.
+
+### Data
+The data are available in the file `alcohol_alertness.csv`.
