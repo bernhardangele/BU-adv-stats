@@ -44,7 +44,7 @@ pain_stats <- ezStats(data = pain,
 
 # if you add Aggression as a between-subjects covariate, ezStats will give you the 
 # partial effects of the swear condition when controlling for Aggression
-# In theory, we could to the ANCOVA like this, too, but it produces estimates that are slightly off
+# In theory, we could do the ANCOVA like this, too, but it produces estimates that are slightly off
 # (if you want to know why, ask me!)
 
 # People's opinions vary as to whether you should report the raw means or the partial effect means. I would always report the raw means unless the partial means are radically different.
