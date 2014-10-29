@@ -12,8 +12,9 @@ library(car)
 library(heplots)
 library(ggplot2)
 
-# round all numbers to the 2nd digit
-options(digits = 2)
+# round all numbers to the 2nd digit; prefer normal notation unless it is more than 4 digits longer than the scientific (e.g. 2.4e-02) notation
+options(digits = 2, scipen = 4)
+
 
 # IMPORTANT: if you get a "cannot change working directory" error, this line is to blame
 # You MUST set it to the correct working directory (i.e. a directory that contains the file "pain_aggression.csv")
@@ -68,7 +69,9 @@ pain_plot <- ezPlot(data = pain,
                 dv = Time.In.Cold.Water, 
                 wid = subject, 
                 between =  Swear.Condition,
-                x = Swear.Condition)
+                x = Swear.Condition,
+                x_lab = "Swear Condition",
+                y_lab = "Time until hand retraction in s")
 
 
 ggsave(pain_plot, file = "pain_plot.png")
@@ -104,9 +107,14 @@ pain_ancova_eta <- etasq(pain_lm, anova = TRUE)
 pain_lm_resid <- resid(pain_lm)
 
 # Perform the Shapiro-Wilk test
+pain_lm_shapiro <- shapiro.test(resid(pain_lm))
 
 # Perform the Durbin-Watson test
-pain_lm_durbin <- durbinWatsonTest(pain_lm_resid)
+# Warning: the Durbin-Watson test is only relevant if your data have a natural order 
+# (i.e. if it matters that Subject 1 was measured before Subject 2 etc. 
+# If the order doesn't matter, the test is MEANINGLESS and you can ignore these results. 
+# I'm including the D-W test for completeness and so you can get the exact equivalent of the SPSS output.)
+pain_lm_durbin <- durbinWatsonTest(pain_lm)
 
 # Perform Levene's test
 pain_lm_levene <- leveneTest(y = Time.In.Cold.Water ~ Swear.Condition, data = pain)
