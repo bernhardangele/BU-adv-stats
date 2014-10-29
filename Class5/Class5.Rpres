@@ -11,6 +11,7 @@ Linear regression
 - Example:
     - More exciting data about cats and cat food!
     - Is the amount of cat food a cat eats related to its weight?
+    - In other words, do fat cats eat more?
     
 Cat food and weight
 =========================================================
@@ -30,6 +31,11 @@ catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
 catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
 catfood_breed <- data.frame(CatWeight = cat_weight, CatAge = cat_age, CatBreed = cat_breed, FoodEaten = food_eaten)
 
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", p))
+  if(p > .05) return("*p* > .05")
+}
 ```
 
 - This table actually has 30 rows, but I'm using the `head` command to just show you the first 6.
@@ -57,9 +63,9 @@ abline(lm(catfood$FoodEaten ~ catfood$CatWeight))
 Correlation
 ==========================================================
 - Looks like we have a strong positive relationship:
-    - The heavier the cat (variable $X$), the more food eaten (variable $Y$).
+    - The heavier the cat (variable $x$), the more food eaten (variable $y$).
 - We can compute the correlation coefficient
-  - The correlation is the covariance ($\sigma{(X_i - \bar{X})\cdot(Y_i - \bar{Y})}$, where $X_i$ and $Y_i$ are each individual value in the two variables and $\bar{X}$ and $\bar{Y}$ are the means) which we standardise by dividing it by the product of the standard deviations ($s_X \cdot s_Y$).
+  - The correlation $r$ is the covariance $s_{xy} = \frac{1}{n-1}\sum\limits_{i = 1}^n {(x_i - \bar{x})\cdot(y_i - \bar{y})}$, where $x_i$ and $y_i$ are each pair of individual values in the two variables and $\bar{x}$ and $\bar{y}$ are the means) which we standardise by dividing it by the product of the standard deviations ($s_x \cdot s_y$). In short, $r = \frac{s_{xy}}{s_x \cdot s_y}$.
   - Or we can just have R do it for us:
 ```{r}
 cor(catfood$CatWeight, catfood$FoodEaten)
@@ -67,7 +73,7 @@ cor(catfood$CatWeight, catfood$FoodEaten)
 
 Correlation (2)
 ===========================================================
-- If we square the correlation, we get $R^2$, the proportion of variance in variable $X$ explained by variable $Y$ (and vice-versa, of course)
+- If we square the correlation $r$, we get $R^2$, the proportion of variance in variable $X$ explained by variable $Y$ (and vice-versa, of course)
 ```{r}
 cor(catfood$CatWeight, catfood$FoodEaten)^2
 ```
@@ -115,7 +121,7 @@ What do these values mean?
 - If you remember algebra from school, the function that draws a line has the following format:
     - $y = m \cdot x + c$
     - $c$ is called the *intercept*, since it gives the $y$-value where the line intersects the $y$-axis
-    - $m$ is called the *slope*. For each unit of $x, $y$ changes this many units
+    - $m$ is called the *slope*. For each unit of $x$, $y$ changes this many units
     - In regression, we usually write the intercept first ($c + m \cdot x$), but that's just a convention.
     
 What do these values mean (2)?
@@ -141,7 +147,7 @@ Predictions and residual errors
 Back to hypothesis testing
 =================================================================
 - Important: Note that the $\beta$ variables are greek letters, which means they are the *population parameters*
-- For each $\beta$ in the regression formula, we can propose the $H_0$ that its true value is 0
+- For each $\beta$ coefficient in the regression formula, we can propose the $H_0$ that the true value of that $\beta$ coefficient is 0
 - The $\beta$ that are estimated from our sample are simply called $b$
 - We can once again test if our $b$ values are extreme enough so they would only occur 5% of the time or less given the $H_0$.
 - We test this separately for each $b$ value. Guess what, it's a *t*-test!
@@ -164,10 +170,10 @@ Hypothesis testing using lm (2)
 Hypothesis testing using lm (2)
 =================================================================
 - Unlike simply running a hypothesis test on a correlation, we can easily add another predictor to a linear model, making it a multiple regression model, where $x_{1i}$ is observation *i* on the first predictor and $x_{2i}$ is observation *i* on the second predictor:
-    - $y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1,i} x_{2,i} + \epsilon_i$
-    - Note the interaction term  $\beta_3 x_{1,i} x_{2,i}$
+    - $y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1,i} \cdot x_{2,i} + \epsilon_i$
+    - Note that we have an interaction term in this equation: $\beta_3 x_{1,i} \cdot x_{2,i}$
       - We could also specify the model without the interaction if we think there might be a possibility that the effects are just additive:
-          - $y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1,i} x_{2,i} + \epsilon_i$
+          - $y_i = \beta_0 + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i$
     - Which of the models is better?
       - That's exactly what the significance test tells us!
       
@@ -221,7 +227,7 @@ The rest of the results (2)
     - What is the percentage of the total variance that can be explained by the model?
     - This is a meaasure of effect size (exactly the same as $\eta^2$)
 - Adjusted R-squared:
-    - This is an adjustment to $R_2$ that takes into account the number of predictors used
+    - This is an adjustment to $R^22$ that takes into account the number of predictors used
     - With enough predictors, you can fit anything
     - We want a model that explains as much of the variance as possible with as few predictors as possible
 
@@ -235,7 +241,7 @@ The rest of the results (2)
 
 Regression and F-Tests
 =================================================================
-- You can use F-Tests to compare any regression models that you want
+- You can use *F*-Tests to compare any regression models that you want
   - Although the comparison only makes sense if they share predictors
 - For example, is a model containing the CatWeight by CatAge interaction better than a model without it?
 ```{r}
@@ -244,7 +250,7 @@ anova(lm_catfood_interaction, lm(formula = FoodEaten ~ CatWeight + CatAge, data 
 
 Regression and F-Tests (2)
 =================================================================
-- You can use the `anova` command for this. If you only give one linear model to the ANOVA command, it will run an F-Test for each predictor
+- You can use the `anova` command for this. If you only give one linear model to the ANOVA command, it will run an *F*-Test for each predictor
 ```{r}
 anova(lm_catfood_interaction)
 ```
@@ -325,7 +331,7 @@ cor(catfood_age$CatWeight, catfood_age$CatAge)
 
 Multicollinearity (2)
 =================================================================
-- Imagine what would happen if CatWeight and CatAge were somehow (almost)perfectly correlated
+- Imagine what would happen if CatWeight and CatAge were somehow (almost) perfectly correlated
 - Actually, let's just try it
 ```{r}
 # make a copy of catfood_age
@@ -379,7 +385,7 @@ vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age))
 
 Diagnosing Multicollinearity
 ================================================================
-- Now the insane data, where all cats gain 100 grammes per month for some bizarre reason.
+- Now the insane data, where all cats gain almost exactly 100 grammes per month for some bizarre reason.
 ```{r}
 library(car)
 vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bizarre))
@@ -406,7 +412,7 @@ vif(lm_catfood_interaction)
 Where does the multicollinearity come from?
 ==================================================================
 - Here's the problem: The interaction effect is equivalent to CatWeight x CatAge
-- Unfortunately, the product of the two variables is highly correlated with both variables:
+- Unfortunately, the product of the two variables is highly correlated with at least one of the two variables:
 ```{r}
 with(catfood_age, cor(CatWeight, CatWeight*CatAge))
 with(catfood_age, cor(CatAge, CatWeight*CatAge))
@@ -498,7 +504,7 @@ Diagnosing influential cases (3)
 ======================================================================
 - One row per observation/case
 - Columns:
-- DFBetas (one for each predictor) 
+- DFBetas (one for each predictor, including the intercept) 
     - Difference between the parameter when this case is excluded and when it is included
     - Should not be much larger than that of the other cases
 - DFFit
@@ -561,7 +567,7 @@ kable(lm_catfood_interaction_table)
 
 Reporting the regression results
 ===================================================================
-Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight","t value"]`, p = `r lm_catfood_interaction_table["CatWeight","Pr(>|t|)"]`) and cat age (b = `r lm_catfood_interaction_table["CatAge","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge","t value"]`, p = `r lm_catfood_interaction_table["CatAge","Pr(>|t|)"]`)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of `r lm_catfood_interaction_table["CatWeight","Estimate"]` g. Similarly, an increase in age by one month went along with an increase in food eaten of `r lm_catfood_interaction_table["CatAge","Estimate"]` g.
+Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight","t value"]`, `r print_p(lm_catfood_interaction_table["CatWeight","Pr(>|t|)"])`) and cat age (b = `r lm_catfood_interaction_table["CatAge","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge","t value"]`, `r print_p(lm_catfood_interaction_table["CatAge","Pr(>|t|)"])`)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of `r lm_catfood_interaction_table["CatWeight","Estimate"]` g. Similarly, an increase in age by one month went along with an increase in food eaten of `r lm_catfood_interaction_table["CatAge","Estimate"]` g.
 
 There was no significant interaction between cat weight and cat age (p > .05), suggesting that the effects of cat weight and cat age were additive. Assumption tests and visual inspection of residual plots showed that there was no evidence of violations of normality (p > .05), independence, or homoscedasticity. [If you removed influential cases, say this here.]
 
@@ -684,7 +690,9 @@ Analysis of Covariance (ANCOVA)
 =================================================================
 - Again with the cats! Sorry, I'm just too lazy to make up a new data set...
 - Let's see if there is an effect of cat breed if we enter cat age and cat weight into the analysis as covariates.
-- In theory, we could use ezANOVA for this, but 
+- In theory, we could use `ezANOVA` for this, but it does the ANCOVA slightly differently from how most statistics programs do it.
+- Better to use `lm` for this, which will give us exactly the same results as SPSS and other statistics programmes.
+
 
 Use lm to perform the ANCOVA (1)
 ================================================================
