@@ -120,7 +120,7 @@ food_anova_pairwise <- pairwise.t.test(x = food.c$eaten, g = food.c$breed)
 # here's a little helper function to get the p-values printed right
 print_p <- function(p){
   if(p < .01) return("*p* < .01")
-  if(p <= .05) return(paste("*p* =", p))
+  if(p <= .05) return(paste("*p* =", round(p,2)))
   if(p > .05) return("*p* > .05")
 }
 
