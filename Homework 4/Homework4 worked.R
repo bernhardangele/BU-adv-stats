@@ -13,7 +13,7 @@ rm(list = ls())
 # the following path will NOT work on your computer. Change it to the actual source file location
 # You can get this from RStudio by selecting Session --> Set Working Directory --> To Source File Location
 # copy and paste the resulting setwd command over the command below.
-setwd("C:/Bernhard/Documents/Teaching/Winter 2014/Advanced Statistics/BU-adv-stats/Homework 4")
+setwd("~/Documents/Teaching/Winter 2014/Advanced Statistics/BU-adv-stats/Homework 4")
 
 # loading necessary libraries
 library(ez)
@@ -76,6 +76,18 @@ food_plot <- (ezPlot(data = food,
   x_lab = "Fish",
   y_lab = "Mean cat food eaten (in g)",
   split_lab = "Beef"))
+
+food_plot <- (ezPlot(data = food, 
+                     dv = eaten, 
+                     wid = subject, 
+                     between =  breed,
+                     within = .(fish, beef),
+                     x = breed,
+                     split = fish,
+                     row = beef,
+                     x_lab = "Breed",
+                     y_lab = "Mean cat food eaten (in g)",
+                     split_lab = "Fish"))
 
 library(ggplot2)
 # saving the plot as food_plot.png in your working directory
