@@ -188,7 +188,7 @@ How contrasts work
 |Beagle        |  0|  0|
 |Border Collie |  1|  0|
 |Terrier       |  0|  1|
-- $\hat{y_{i}} = \beta_0 + \beta_1 \cdot 0 + \beta_2 \cdot 0 = \beta_0$
+- $\hat{y_{i}} = \beta_0 + \beta_1 \times 0 + \beta_2 \times 0 = \beta_0$
 - The predicted value for the Beagle group is $\beta_0$, the intercept
 - That means that in this analysis, the intercept will reflect the mean for the Beagle group (10)
 
@@ -202,7 +202,7 @@ How contrasts work (2)
 |Beagle        |  0|  0|
 |Border Collie |  1|  0|
 |Terrier       |  0|  1|
-- $\hat{y_{i}} = \beta_0 + \beta_1 \cdot 1 + \beta_2 \cdot 0 = \beta_0 + \beta_1$
+- $\hat{y_{i}} = \beta_0 + \beta_1 \times 1 + \beta_2 \times 0 = \beta_0 + \beta_1$
 - The predicted value for the Border Collie group is $\beta_0 + \beta_1$, i.e. the sum of the intercept and the first slope $\beta_1$
 - That means that in this analysis, the slope $\beta_1$ will reflect the difference between the mean for the Border Collie group and the mean for the Beagle group ($60 - 10 = 50$)
 
@@ -216,7 +216,7 @@ How contrasts work (2)
 |Beagle        |  0|  0|
 |Border Collie |  1|  0|
 |Terrier       |  0|  1|
-- $\hat{y_{i}} = \beta_0 + \beta_1 \cdot 0 + \beta_2 \cdot 1 = \beta_0 + \beta_2$
+- $\hat{y_{i}} = \beta_0 + \beta_1 \times 0 + \beta_2 \times 1 = \beta_0 + \beta_2$
 - The predicted value for the Border Collie group is $\beta_0 + \beta_2$, i.e. the sum of the intercept and the second slope $\beta_2$
 - That means that in this analysis, the slope $\beta_1$ will reflect the difference between the mean for the Terrier group and the mean for the Beagle group ($15 - 10 = 5$)
 
@@ -606,17 +606,17 @@ W = 0.9823, p-value = 0.5325
 How to interpret a log model
 ========================================================
 - Formula: $ln(y_{i}) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
-- Let's rewrite that: $y_{i} = e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i} = e^{\beta_0} \cdot e^{\beta_1x_{i1}} \cdot e^{\beta_2x_{i2}}$
+- Let's rewrite that: $y_{i} = e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i} = e^{\beta_0} \times e^{\beta_1x_{i1}} \times e^{\beta_2x_{i2}}$
     - If this confuses you: we are using the natural logarithm ($ln$; R somewhat confusingly calls it `log`) here. This is a logarithm to the base $e ~ 2.718$. Maybe you'll remember that $e^{ln(x)} = x$
 - Log models are *multiplicative* rather than *additive*
 
 How to interpret a log model (2)
 ========================================================
 - Example: Our swear word fixation time study
-    - Fitted model: $ln(y_{i}) = 5.683 - .195 \cdot x_i$
+    - Fitted model: $ln(y_{i}) = 5.683 - .195 \times x_i$
     - Remember: We're using treatment contrasts. $x_i$ is 0 for non swear words and 1 for swear words
-    - Predicted value for non swear words: $e^{5.683} \cdot e^{-.195 \cdot 0} = e^{5.683} =  293.82$
-    - Predicted value for swear words: $e^{5.683} \cdot e^{-.195 \cdot 1} = 293.82 \cdot e^{-.195} = 293.82 * .823 = 241.81$
+    - Predicted value for non swear words: $e^{5.683} \times e^{-.195 \times 0} = e^{5.683} =  293.82$
+    - Predicted value for swear words: $e^{5.683} \times e^{-.195 \times 1} = 293.82 \times e^{-.195} = 293.82 * .823 = 241.81$
 - Conclusion: Fixation times on swear words were 17.7% lower than fixation times on non swear words (*b* = -.195, *SE* = .074, *t* = -2.63, *p* = .011).
 
 Logistic regression
@@ -659,6 +659,130 @@ Log odds (logits)
 - Our new logistic regression model is $ln(\frac{P}{1-P}) = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
 - If we want to get back to probabilities, we can exponentiate both sides of the equation: $\frac{P}{1-P} = e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}$
 - Solving this for $P$: $P = \frac{e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}}{1 + e^{\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}} = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$
+
+How do you fit a logistic regression line?
+=========================================================
+- Least squares won't work
+- We can evaluate the **likelihood** of the parameters instead
+- Probability: observations given parameters
+- Likelihood: parameters given observations
+
+Calculating likelihood
+========================================================
+- Very simple example: Let's assume we have the following data from flipping a coin: $Y = (H H H T H T H H)$
+- Likelihood is the product of all the probabilities given a certain parameter value. In this case, we are trying different parameter values for the probability: 
+    - We usually call the observed probability $p$, but since we are trying different population parameters, we'll give it a greek letter and call our population probability of observing "heads" (ignoring order) $\pi$ (that is, pi)
+- $\pi = .5$: $L(Y|\pi = .5) = .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 = .5^8 = .00039$
+- $\pi = .25$: $L(Y|\pi = .35) = .25 \times .25 \times .25 \times .75 \times .25 \times .75 \times .25 \times .25 = .25^6 \times .75^2 = .00014$
+    - $\pi = .25$ has a lower likelihood than $\pi = .5$.
+- Let's try $\pi = .75$: $L(Y|\pi = .75) = .75 \times .75 \times .75 \times .25 \times .75 \times .25 \times .75 \times .75 = .75^6 \times .25^2 = .00111$
+    - This is the highest one yet.
+
+The likelihood function for logistic regression
+========================================================
+- Do you see a pattern here? For each element $Y_i$ in $Y$, the likelihood of $\pi$ is either
+    - $L(Y_i|\pi) = \pi$ if $Y_i = H$, (e.g. $.75$ for $\pi = .75$), or
+    - $L(Y_i|\pi) = 1 - \pi$ if $Y_i = T$, (e.g. $.25$ for $\pi = .75$)
+- Then you get the likelihood for the full data set $Y$ by multiplying all the individual likelihoods
+    - $L(Y|\pi) = \prod_{i = 1}^N{L(Y_i|\pi)}$
+- You can simplify this a bit if you replace H with 1 and T with 0:
+    -  $L(Y_i|\pi) = \pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+    - And combining the two equations above:
+        - $L(Y|\pi) = \prod_{i = 1}^N\pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+
+Maximum likelihood
+========================================================
+- Likelihood gets a little unwieldy -- lots of very small numbers
+    - Solution: take the log (who would have thought?)
+        - Added bonus: Now our multiplication becomes a sum (remember that from calculus?)
+        $log\;likelihood = \sum_{i = 1}^N Y_i\pi + (1-Y_i)(1-\pi)$
+- Now we can simply try different values of $\pi$ until we find the one with the maximum likelihood
+    - Remember that in logistic regression, $\pi$ is defined by our regression equation: $\pi = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$ 
+    - Instead of simply trying different values of $\pi$, we have to try different values for $\beta_0$, $\beta_1$, etc. and compute $\pi$. This gets to be quite a lot of work.
+    - Trying different values might not seem particularly elegant, but this is essentially what R or SPSS do -- no simple solution like with least-squares regression or ANOVA exists
+      - This is (relatively) processing-intensive. One reason why psychologists didn't use logistic regression in the statistics-by-hand era.
+      
+Log likelihood as an indicator of model fit
+=======================================================
+- The log likelihood (LL) of the final model is an indicator of how well the model fit the data, just like $R^2$.
+    - In fact, there are several ways to estimate $R^2$ from the log likelihood
+- Log likelihood also enables us to make model comparisons
+    - The test statistic in that case is $\chi^2$ -- more about that later
+- Another measure is *deviance*, which is simply $-2$*LL
+    - Conceptually, deviance is like the residual variance.
+        - In the case of deviance, lower is better, of course.
+- Closely related to this is Akaike's Information Criterion (AIC), which is -2LL+2*number of parameters (lower is better, so adding parameters makes the AIC worse)
+
+Enough maths, let's just run this model
+=======================================================
+- These are our data (first 6 rows):
+
+```r
+driving_tests <- read.csv("driving_tests.csv")
+kable(head(driving_tests))
+```
+
+
+
+|Driving.Test | Practice| Emergency.Stop| Examiner| Cold.Remedy|
+|:------------|--------:|--------------:|--------:|-----------:|
+|Yes          |       45|              1|       23|           0|
+|No           |       18|              0|       88|           0|
+|Yes          |       25|              0|       15|           0|
+|Yes          |       30|              1|        4|           0|
+|No           |       20|              1|       82|           5|
+|No           |       25|              0|       75|           0|
+
+Fitting the model
+========================================================
+- We use `glm` instead of `lm` (short for generalised linear model)
+- We tell `glm` that our data are binomial and we want to use the logit function as the link
+- Note that, for simplicity, we're not investigating interactions here (let's assume that in this example we simply aren't interested in them)
+
+```r
+driving_glm <- glm(data = driving_tests, formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + Cold.Remedy, family = binomial(link = "logit"))
+```
+
+Model summary
+========================================================
+
+```r
+summary(driving_glm)
+```
+
+```
+
+Call:
+glm(formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + 
+    Cold.Remedy, family = binomial(link = "logit"), data = driving_tests)
+
+Deviance Residuals: 
+   Min      1Q  Median      3Q     Max  
+-2.266  -0.732  -0.301   0.663   2.021  
+
+Coefficients:
+               Estimate Std. Error z value Pr(>|z|)    
+(Intercept)     -2.4057     1.1867   -2.03   0.0426 *  
+Practice         0.1296     0.0303    4.28  1.9e-05 ***
+Emergency.Stop   0.0494     0.5912    0.08   0.9334    
+Examiner        -0.0348     0.0130   -2.68   0.0074 ** 
+Cold.Remedy     -0.0765     0.1685   -0.45   0.6501    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 124.366  on 89  degrees of freedom
+Residual deviance:  82.572  on 85  degrees of freedom
+AIC: 92.57
+
+Number of Fisher Scoring iterations: 5
+```
+
+Model summary explained
+========================================================
+- Deviance residuals:
+    - Calculating the raw residuals like in a linear regression model doesn't make a lot of sense (they would just consist of 0, 1, and -1)
 
 Power in ANOVA
 ========================================================
