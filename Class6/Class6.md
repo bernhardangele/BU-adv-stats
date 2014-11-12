@@ -1012,219 +1012,586 @@ towards an underlying distribution of subject effects
     
 Example
 ==============================================================
-- To start with, let's install two packages: `lme4`, which is the package that enables R to fit linear mixed models, and `languageR`, which contains the data set we will use. To install these, enter `install.packages(c("lme4","languageR"))` at the console.
+A PhD student wants to investigate whether our mood affects how we react to visual scenes. In order to do this, she showed 40 subjects a total of 40 scenes. There are two version of each scene: one contains people, the other one doesn't -- everything else is identical. The PhD student spent a considerable amount of time taking photos to ensure this (until her supervisor got a bit impatient). Before the experiment, all subjects were asked to rate their current mood on a scale from 0 (very sad) to 100 (very happy). They then looked at each scene and rated how much they liked it on a scale from 0 (hate it) to 20 (love it). The student's hypothesis is that if you are happy, you should want to see scenes with people. If you are unhappy, you should prefer scenes without people. The data are given below. Will the student find what she is looking for? Or will she have to start from scratch and be in even more trouble with her supervisor?
 
-- We'll use the data set `lexdec` from `languageR` (Baayen, 2011)
-    - This data set contains lexical decision latencies from 21 subjects for 79 English nouns.
-    - In a lexical decision task, the subject has to decide whether the letters displayed on a screen form a word or not (the non-word data are usually discarded). The dependent variable is `RT` = ln(reaction time) (already transformed for your convenience)
-
-Example: Predictors
-========================================================
-- We're going to use a number of interesting predictors
-- Random effects:
-    - Subject
-    - Word (since we want to generalise our results for all words, not just the 79 in the data set)
-- Fixed effects:
-    - NativeLanguage: Whether the subject's native language was English
-    - Correct: Whether subjects incorrectly classified the word as a non-word
-    - Frequency: ln(Word frequency per million)
-    - Class: Does the word refer to an animal or a plant?
-    
-    
-Data cleanup
-=========================================================
-- These are real-world data, so they are bound to be messy
-- Let's start with some general data exclusion
-    - Extremely long reaction times are suspect -- maybe the subject fell asleep or just forgot to press the button
-        - Exclude all reaction times > 1100 ms (7 in log-transformed RTs)
+Example Data
+==============================================================
+- Subject: Subject ID (1-40)
+- Item: Item ID (1-40)
+- Scene Type: within-item factor ("no people" vs. "people")
+- Mood: between-subject factor (scale from 0--100)
+- Rating: Dependent variable (scale from 0 to 20)
 
 ```r
-library(languageR) # get the data from the package
-lexdec2 <- subset(lexdec, RT < 7)
-# This excludes 41 data points.
-nrow(lexdec) - nrow(lexdec2)
+# Start by loading the data
+scene_liking <- read.csv("Class 6 exercise data.csv")
 ```
 
-```
-[1] 41
-```
-
-Data cleanup
+Looking at the data
 =========================================================
-- We also only want to consider correct responses
-    - Incorrect responses might not even tap into the linguistic processes that we are interested in.
 
 ```r
-lexdec3 <- subset(lexdec2, Correct == "correct")
-# This excludes only 61 further data points -- people are pretty good at this task.
-nrow(lexdec2) - nrow(lexdec3)
+kable(head(scene_liking))
+```
+
+
+
+| subject| item|scene     | mood| rating|
+|-------:|----:|:---------|----:|------:|
+|       1|    1|people    |   55|   12.2|
+|       1|    2|no people |   55|    8.5|
+|       1|    3|people    |   55|   10.7|
+|       1|    4|no people |   55|   12.0|
+|       1|    5|people    |   55|   12.3|
+|       1|    6|no people |   55|   16.0|
+
+Looking at the data (2)
+=========================================================
+
+```r
+str(scene_liking)
 ```
 
 ```
-[1] 61
+'data.frame':	1600 obs. of  5 variables:
+ $ subject: int  1 1 1 1 1 1 1 1 1 1 ...
+ $ item   : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ scene  : Factor w/ 2 levels "no people","people": 2 1 2 1 2 1 2 1 2 1 ...
+ $ mood   : int  55 55 55 55 55 55 55 55 55 55 ...
+ $ rating : num  12.2 8.5 10.7 12 12.3 16 8.2 13.2 6.7 6.9 ...
 ```
+
+```r
+# We should set subject and item to be factors
+scene_liking$subject <- factor(scene_liking$subject)
+scene_liking$item <- factor(scene_liking$item)
+```
+
+Calculating means
+=========================================================
+- Let's get condition means for scene type
+- We can't really use `ez` for this, since we have two random variables
+- In theory, we could report means by subject or means by item
+- Either one would be fine, but usually people report subject means.
+    - We use `melt` and `cast` from the `reshape` package to calculate the means
+
+```r
+library(reshape)
+# set rating as the dependent (measure) variable
+scene_liking.m <- melt(scene_liking, measure = "rating")
+# collapse over item; calculate means
+scene_liking.c <- cast(scene_liking.m, subject + mood + scene ~ variable, mean)
+```
+
+Calculating means (2)
+=========================================================
+
+```r
+head(scene_liking.c)
+```
+
+```
+  subject mood     scene rating
+1       1   55 no people  10.87
+2       1   55    people  10.36
+3       2   56 no people  10.91
+4       2   56    people  10.79
+5       3   16 no people  12.33
+6       3   16    people  11.54
+```
+
+Calculating means (2)
+=========================================================
+- Now we can use this to calculate our means for the scene condition
+
+```r
+(mean_people <- mean(subset(scene_liking.c, scene == "people")$rating))
+```
+
+```
+[1] 11.12
+```
+
+```r
+(mean_no_people <- mean(subset(scene_liking.c, scene == "no people")$rating))
+```
+
+```
+[1] 11.33
+```
+
+Calculating means (3)
+=========================================================
+- Let's also get sd, N, and SE
+
+```r
+(sd_people <- sd(subset(scene_liking.c, scene == "people")$rating))
+```
+
+```
+[1] 0.6142
+```
+
+```r
+(sd_no_people <- sd(subset(scene_liking.c, scene == "no people")$rating))
+```
+
+```
+[1] 0.6162
+```
+
+```r
+(N_people <- length(subset(scene_liking.c, scene == "people")$rating))
+```
+
+```
+[1] 40
+```
+
+```r
+(N_no_people <- length(subset(scene_liking.c, scene == "no people")$rating))
+```
+
+```
+[1] 40
+```
+
+```r
+(SE_people <- sd_people/sqrt(N_people))
+```
+
+```
+[1] 0.09711
+```
+
+```r
+(SE_no_people <- sd_no_people/sqrt(N_no_people))
+```
+
+```
+[1] 0.09743
+```
+
+Plotting the interaction
+==========================================================
+- We're really interested in the interaction between `scene` and `mood`.
+    - Unfortunately, mood is a continuous variable
+    - How to plot this?
+- Use `qplot` from `ggplot2` with `geom = "smooth"`
+    - This will give you a plot showing a smoothed conditional mean for each value of mood
+
+Plotting the interaction (2)
+=========================================================
+
+```r
+library(ggplot2)
+qplot(data = scene_liking, y = rating, x = mood, colour = scene, geom = "smooth")
+```
+
+![plot of chunk unnamed-chunk-42](Class6-figure/unnamed-chunk-42.png) 
+
+Plotting the interaction (2)
+=========================================================
+- Looks like the student was right!
+- Also looks like the effect is not really completely linear
+    - Maybe this is due to the subject and item effects in the data?
+    - Let's find out!
 
 Start with linear regression
 =========================================================
-
+- Let's check our contrasts for `scene`
 
 ```r
-ld_lm <- lm(data = lexdec3, RT ~ NativeLanguage + Frequency + Class)
-kable(coef(summary(ld_lm)))
+contrasts(scene_liking$scene)
+```
+
+```
+          people
+no people      0
+people         1
+```
+- Are we happy with this?
+    - Sure -- we just have to be aware of the coding when we interpret the coefficients
+
+Run the model
+=========================================================
+
+```r
+scene_lm <- lm(data = scene_liking, rating ~ mood * scene)
+kable(coef(summary(scene_lm)))
 ```
 
 
 
-|                    | Estimate| Std. Error|  t value| Pr(>&#124;t&#124;)|
-|:-------------------|--------:|----------:|--------:|------------------:|
-|(Intercept)         |   6.5229|     0.0226| 288.8136|             0.0000|
-|NativeLanguageOther |   0.1238|     0.0099|  12.5003|             0.0000|
-|Frequency           |  -0.0400|     0.0041|  -9.7193|             0.0000|
-|Classplant          |  -0.0347|     0.0104|  -3.3317|             0.0009|
-- Unfortunately, we are massively violating the independence assumption: observations from the same subject (and word) are definitely correlated
+|                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:----------------|--------:|----------:|-------:|------------------:|
+|(Intercept)      |  11.7066|     0.2475| 47.2936|             0.0000|
+|mood             |  -0.0073|     0.0044| -1.6505|             0.0990|
+|scenepeople      |  -0.7583|     0.3501| -2.1663|             0.0304|
+|mood:scenepeople |   0.0107|     0.0063|  1.6959|             0.0901|
+- Where did the interaction go?
+- Let's do some quick diagnostics
 
-Adding random effects
-===========================================================
-- Allow intercepts to vary by subject and word (random intercepts)
-    - `1` stands for the intercept. It is implicit, *except* when there is no other predictor
+Regression diagnostics
+=========================================================
+- Multicollinearity?
 
 ```r
-library(lme4)
-ld_lmm <- lmer(data = lexdec, RT ~ NativeLanguage + Correct + Frequency + Class + (1|Subject) + (1|Word))
-shapiro.test(resid(ld_lmm))
+vif(scene_lm)
+```
+
+```
+      mood      scene mood:scene 
+      2.00       7.03       8.03 
+```
+- Aha! Those VIFs are quite  a bit larger than 1. That spells trouble.
+- What is wrong?
+
+Addressing multicollinearity
+=========================================================
+- What is wrong?
+- We forgot to center the continuous predictor `mood`
+- Let's fix this:
+
+```r
+scene_liking$mood <- scale(scene_liking$mood, scale = FALSE) # See Class 5
+```
+
+Run the model again
+=========================================================
+
+```r
+scene_lm <- lm(data = scene_liking, rating ~ mood * scene)
+kable(coef(summary(scene_lm)))
+```
+
+
+
+|                 | Estimate| Std. Error|  t value| Pr(>&#124;t&#124;)|
+|:----------------|--------:|----------:|--------:|------------------:|
+|(Intercept)      |  11.3283|     0.0934| 121.3420|             0.0000|
+|mood             |  -0.0073|     0.0044|  -1.6505|             0.0990|
+|scenepeople      |  -0.2085|     0.1320|  -1.5792|             0.1145|
+|mood:scenepeople |   0.0107|     0.0063|   1.6959|             0.0901|
+- Still not quite there...
+- Let's do more diagnostics
+
+Regression diagnostics -- again
+=========================================================
+- Multicollinearity?
+
+```r
+vif(scene_lm)
+```
+
+```
+      mood      scene mood:scene 
+         2          1          2 
+```
+- The VIFs are fine now.
+
+Influential cases
+=========================================================
+
+```r
+kable(head(influence.measures(scene_lm)$infmat))
+```
+
+
+
+|  dfb.1_| dfb.mood| dfb.scnp| dfb.md:s|   dffit|  cov.r| cook.d|    hat|
+|-------:|--------:|--------:|--------:|-------:|------:|------:|------:|
+|  0.0000|   0.0000|   0.0101|   0.0017|  0.0145| 1.0034| 0.0001| 0.0013|
+| -0.0376|  -0.0062|   0.0266|   0.0044| -0.0381| 1.0010| 0.0004| 0.0013|
+|  0.0000|   0.0000|  -0.0041|  -0.0007| -0.0059| 1.0037| 0.0000| 0.0013|
+|  0.0093|   0.0015|  -0.0066|  -0.0011|  0.0095| 1.0036| 0.0000| 0.0013|
+|  0.0000|   0.0000|   0.0111|   0.0018|  0.0159| 1.0033| 0.0001| 0.0013|
+|  0.0630|   0.0104|  -0.0446|  -0.0073|  0.0639| 0.9959| 0.0010| 0.0013|
+- Any Cook's d greater than 1?
+
+```r
+sum(cooks.distance(scene_lm) > 1 )
+```
+
+```
+[1] 0
+```
+- Doesn't look like it, so we should be fine here.
+
+Normality
+=========================================================
+
+```r
+shapiro.test(resid(scene_lm))
 ```
 
 ```
 
 	Shapiro-Wilk normality test
 
-data:  resid(ld_lmm)
-W = 0.9328, p-value < 2.2e-16
+data:  resid(scene_lm)
+W = 0.9949, p-value = 2.632e-05
 ```
-- Still significant? Time for some model diagnostics
+- Whoa! But we saw this in the plot already
 
 Q-Q Plots
 ===========================================================
+- Here's a visual way to assess normality
 - Quantile-Quantile Plot: Split data into a number of quantiles and plot them against the quantiles of a hypothetical normal distribution
 
 
 ```r
-qqnorm(resid(ld_lmm))
+qqnorm(resid(scene_lm))
 # if the distribution is normal, the points should be on this line
-qqline(resid(ld_lmm))
+qqline(resid(scene_lm))
 ```
 
-![plot of chunk unnamed-chunk-39](Class6-figure/unnamed-chunk-39.png) 
+![plot of chunk unnamed-chunk-52](Class6-figure/unnamed-chunk-52.png) 
 
-Outlier removal
+How to fix this?
 ===========================================================
-- The Q-Q plots of the residuals show a clear problem due to outliers on the right
-- Let's deal with that by removing values that are more than 2 SDs away from the mean of the raw data
-    - Careful with this kind of removal: you might remove your effect!
-        - In this case, few enough cases are affected that this should not be a problem
+- As a first step, remember that there are subject and item effects in these data
+- `lm` can't account for them, so we need something more powerful
+- Linear Mixed Models!
+- We use the function `lmer` ("Linear mixed effects regression") from the `lme4` package
+- If you don't have `lme4` yet, install it by typing `install.packages("lme4")` in the Console
 
-```r
-ld_clean <- subset(lexdec, abs(scale(resid(ld_lmm))) < 2.5)
-# This is how many cases we remove. 79 out of 1659 seems OK.
-nrow(lexdec) - nrow(ld_clean)
-```
-
-```
-[1] 38
-```
-
-Re-do the linear regression model with the clean data
-========================================================
-
-```r
-ld_lm <- lm(data = ld_clean, RT ~ NativeLanguage + Correct + Frequency + Class)
-kable(coef(summary(ld_lm)))
-```
-
-
-
-|                    | Estimate| Std. Error|  t value| Pr(>&#124;t&#124;)|
-|:-------------------|--------:|----------:|--------:|------------------:|
-|(Intercept)         |   6.5439|     0.0232| 282.3508|             0.0000|
-|NativeLanguageOther |   0.1530|     0.0101|  15.1545|             0.0000|
-|Correctincorrect    |  -0.0539|     0.0263|  -2.0462|             0.0409|
-|Frequency           |  -0.0457|     0.0042| -10.8543|             0.0000|
-|Classplant          |  -0.0440|     0.0107|  -4.1176|             0.0000|
-- So far so good
-
-```r
-ks.test(resid(ld_lm), pnorm)
-```
-
-```
-
-	One-sample Kolmogorov-Smirnov test
-
-data:  resid(ld_lm)
-D = 0.3387, p-value < 2.2e-16
-alternative hypothesis: two-sided
-```
-- Unfortunately, we are massively violating the independence assumption: observations from the same subject (and word) are definitely correlated
-
-Adding random effects
+Adding random subject and item effects
 ===========================================================
-- Allow intercepts to vary by subject and word (random intercepts)
-    - `1` stands for the intercept. It is implicit, *except* when there is no other predictor
+- As a first step, we want our model to allow subjects and items to have different intercepts
+    - For example, Subject 1 might just really dislike the whole experiment and rate all scenes lower
+    - Or Item 33 might be particularly ugly and be disliked by all subjects
+- Formally, our model will look like this: $y_{ij} = \beta_0 + \beta_1 x_{1} + \beta_2 x_{2} + \gamma_{0i} + \gamma_{0j} + \epsilon_{ij}$, where $y_{ij}$ is the response of subject $i$ to item $j$, $\gamma_{0i}$ is the intercept for subject $i$ and $\gamma_{0j}$ is the intercept for item $j$
+
+Running the model
+============================================================
+- In `lmer`, we specify the model in a formula just like in `lm`, but we add random effects terms, e.g. `(1|subject)`
+    - The left side of the pipe stands for the random effect, the right side stands for the group for which we want to define the random effect
+    - `1` stands for the intercept. It is implicitly added, *except* when there is no other predictor
 
 ```r
 library(lme4)
-ld_lmm <- lmer(data = ld_clean, RT ~ NativeLanguage + Correct + Frequency + Class + (1|Subject) + (1|Word))
-ks.test(resid(ld_lmm), pnorm)
+scene_lmm <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (1|item))
+```
+
+Examining the model
+============================================================
+
+```r
+summary(scene_lmm)
+```
+
+```
+Linear mixed model fit by REML ['lmerMod']
+Formula: rating ~ scene * mood + (1 | subject) + (1 | item)
+   Data: scene_liking
+
+REML criterion at convergence: 7657
+
+Scaled residuals: 
+   Min     1Q Median     3Q    Max 
+-4.378 -0.617 -0.029  0.638  3.541 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ subject  (Intercept) 0.0872   0.295   
+ item     (Intercept) 0.1310   0.362   
+ Residual             6.7615   2.600   
+Number of obs: 1600, groups:  subject, 40; item, 40
+
+Fixed effects:
+                 Estimate Std. Error t value
+(Intercept)      11.32825    0.11793    96.1
+scenepeople      -0.20850    0.13001    -1.6
+mood             -0.00755    0.00492    -1.5
+scenepeople:mood  0.01108    0.00623     1.8
+
+Correlation of Fixed Effects:
+            (Intr) scnppl mood  
+scenepeople -0.551              
+mood         0.000  0.000       
+sceneppl:md  0.000  0.000 -0.632
+```
+
+Understanding the model output
+===========================================================
+- Just like in logistic regression, LMMs are fitted in an iterative procedure using Maximum Likelihood (ML)
+    - Actually, `lmer` uses a slightly modified criterion called Restricted Maximum Likelihood (REML)
+- Residuals can be interpreted just like in a regular linear model
+- Random effects: Here we get an estimate of the variance (and standard deviation) explained by the random intercepts
+    - We also get an estimate of the residual variance
+- Check the number of observations to see if there are any missing that shouldn't be missing
+
+Coefficients
+===========================================================
+
+```r
+kable(coef(summary(scene_lmm)))
+```
+
+
+
+|                 | Estimate| Std. Error| t value|
+|:----------------|--------:|----------:|-------:|
+|(Intercept)      |  11.3283|     0.1179| 96.0573|
+|scenepeople      |  -0.2085|     0.1300| -1.6037|
+|mood             |  -0.0075|     0.0049| -1.5336|
+|scenepeople:mood |   0.0111|     0.0062|  1.7801|
+- First thing you notice: There's no p value!
+- That's because, due to the shrinkage procedure, it isn't clear what the df of that *t*-value should be
+- In general, if the number of subjects is > 30, we should be able to interpret the *t* value like a *z* value, meaning that any *t* > 2 or < -2 should be significant
+
+Correlation of fixed effects
+==========================================================
+- These are the estimated correlations of the fixed effects
+    - If any of these is > .8, you're in multicollinearity trouble!
+    
+Model comparisons
+==========================================================
+- Unfortunately, F-tests won't work, because we don't know what the $df_{Error}$ would be
+- But we can do the likelihood ratio test (LRT)
+- As always, we use `Anova` from `car`. This one gives us *p* values!
+
+```r
+library(car)
+Anova(scene_lmm)
+```
+
+```
+Analysis of Deviance Table (Type II Wald chisquare tests)
+
+Response: rating
+           Chisq Df Pr(>Chisq)  
+scene       2.57  1      0.109  
+mood        0.28  1      0.599  
+scene:mood  3.17  1      0.075 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+More model diagnostics
+=========================================================
+- Something still seems to be wrong with this model. How about testing the normality assumption again?
+
+```r
+shapiro.test(resid(scene_lmm))
 ```
 
 ```
 
-	One-sample Kolmogorov-Smirnov test
+	Shapiro-Wilk normality test
 
-data:  resid(ld_lmm)
-D = 0.3828, p-value < 2.2e-16
-alternative hypothesis: two-sided
+data:  resid(scene_lmm)
+W = 0.9939, p-value = 3.583e-06
+```
+- Still significant? Maybe there still is a random effect that we haven't accounted for.
+
+Random slopes
+=========================================================
+- We can also allow the regression slopes to vary by subject or item.
+- What are possible random slopes that we could consider?
+    - Important: in theory, you could add random slopes for all fixed effects, but in practice, your data might not have enough information to fit these
+    - In this case, there simply isn't enough data to fit random slopes for the interaction
+        - How do you know this?
+            - Well, your model will simply fail to converge if there is not enough data for a solution!
+            - Even if there *is* enough data, multicollinearity can cause convergence failures, too.
+    - In our case, some reasonable random slopes would be `scene` for subjects (do some people react more strongly to scenes with people than others) and `mood` for items (are some items really hated by people in a bad mood?)
+    
+Random slopes (2)
+=========================================================
+- If we include a random slope for subjects for $beta_1$, our model looks like this:
+$y_{ij} = \beta_0 + \beta_1 x_{1} + \beta_2 x_{2} + \gamma_{0i} + \gamma_{1i} x_{1} + \gamma_{0j} + \epsilon_{ij}$
+- We can tell `lmer` to fit such models like this (note that the intercept is implicit again in `(mood|item)` and `(scene|subject).
+    - Note that we don't have enough data to include both random effects in one model.
+
+```r
+scene_lmm_mood <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (mood|item))
+scene_lmm_scene <- lmer(data = scene_liking, rating ~ scene * mood + (scene|subject) + (1|item))
 ```
 
-Power in ANOVA
-========================================================
-- For the pain example last week:
-  - 3 groups
-  - 2 subjects per group
-  - $\eta^2$ = .55
-- Remember, $\eta^2 = \frac{SS_{Model}}{SS_{Total}}$
-- R can calculate the power for a simple oneway ANOVA, but for anything more complex use G*Power (http://www.gpower.hhu.de/)
-  - The same is true for SPSS
+Testing the effect of random slopes
+===========================================================
+- We can use the LRT to test whether the slopes actually improve the models.
+    - We use the `anova` command (lower case `a`) to compare each random slope model with the random intercept model we fitted earlier
 
-Using G*Power
-========================================================
+```r
+anova(scene_lmm, scene_lmm_mood)
+```
 
-- Pick `F-Tests` as the `Test family`
-- Pick the appropriate `Statistical test`
-  - In this case, it's `ANOVA: Fixed effects, omnibus, one-way`
-- Choose the `Type of power analysis`
-  - That is, tell G*Power what information you have and what you want to know
-  - Most commonly used:
-    - `A priori`: You give G*Power your estimate of the effect size and the desired power, and it gives you the necessary sample size to achieve that power
-    - `Post-hoc`: You give G*Power your effect size and the sample size from the analysis you have already done, and it gives you the power that your analysis had
+```
+Data: scene_liking
+Models:
+scene_lmm: rating ~ scene * mood + (1 | subject) + (1 | item)
+scene_lmm_mood: rating ~ scene * mood + (1 | subject) + (mood | item)
+               Df  AIC  BIC logLik deviance Chisq Chi Df Pr(>Chisq)    
+scene_lmm       7 7648 7686  -3817     7634                            
+scene_lmm_mood  9 6891 6939  -3436     6873   761      2     <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+- Seems to improve the model! (Note that R automatically uses ML instead of REML for model comparison)
+
+Testing the effect of random slopes
+===========================================================
+
+```r
+anova(scene_lmm, scene_lmm_scene)
+```
+
+```
+Data: scene_liking
+Models:
+scene_lmm: rating ~ scene * mood + (1 | subject) + (1 | item)
+scene_lmm_scene: rating ~ scene * mood + (scene | subject) + (1 | item)
+                Df  AIC  BIC logLik deviance Chisq Chi Df Pr(>Chisq)
+scene_lmm        7 7648 7686  -3817     7634                        
+scene_lmm_scene  9 7652 7700  -3817     7634     0      2          1
+```
+- No improvement here.
+
+Diagnostics -- yet again!
+==========================================================
+
+```r
+shapiro.test(resid(scene_lmm_mood))
+```
+
+```
+
+	Shapiro-Wilk normality test
+
+data:  resid(scene_lmm_mood)
+W = 0.9982, p-value = 0.07537
+```
+- Looks like adding a random slope for `mood` also (mostly) fixed our normality problem
+
+Interpreting the coefficients
+==========================================================
+
+```r
+kable(coef(summary(scene_lmm_mood)))
+```
 
 
-Using G*Power (2)
-========================================================
-- How to get the effect size:
-  - Click `Determine =>` next to the `Effect size f` field
-  - Make sure `Select procedure` in the sidebar that opened is set to `Effect size from variance`
-  - If you've already run your analysis and have your $\eta_G^2$ (`ges` in ezANOVA) or $\eta_P^2$ (partial eta-squared in SPSS) estimate, click on `Direct` and enter the value in the Partial $\eta^2$ field
-  - Click on `Calculate and transfer to main window`
-- If you are doing an a priori analysis or for some reason you don't have an $\eta^2$ estimate, you can get your effect size by setting `Select procedure` to `Effect size from means` and then entering your group means, your within-group standard deviation ($\sigma$), and group sizes in the table
 
+|                 | Estimate| Std. Error| t value|
+|:----------------|--------:|----------:|-------:|
+|(Intercept)      |  11.3554|     0.1181| 96.1116|
+|scenepeople      |  -0.2628|     0.0979| -2.6836|
+|mood             |  -0.0070|     0.0137| -0.5148|
+|scenepeople:mood |   0.0101|     0.0047|  2.1568|
+- Now we have significant effects!
+- Remember that scene was coded as 0 = no people, 1 = people
+    - Looks like, on average, subjects gave the scene a rating that was -.26 lower when it contained people than when it didn't.
+- The interaction is also significant. When the scene contained no people, there was a very weak, non-significant negative effect of mood. 
+    - When the scene did contain people, there was a significant change in the effect of mood (with each point on the mood scale increasing the picture rating by -.007 + .0101 = .0031). Not a huge effect, but significant.
 
-Using G*Power (3)
-========================================================
-- Now fill in the rest of the input parameters
-- Leave $\alpha$ `err prob` at .05 unless for some reason you're not testing at a 5% $\alpha$ level
-- Click `Calculate`
-- G*Power will come up with a nice plot of F distribution based on the $H_0$ (red line), the distribution if the true effect has the entered effect size (dashed blue line), the critical F value, and your $\alpha$ and $\beta$ error regions 
-- If you are running a post-hoc analysis: The `Power` (1-$\beta$ err prob) field will contain your power estimate
-- If you are running an a priori analysis: `The total sample size` field will contain your necessary sample size
+Writing it up
+==========================================================
+- See the exercise!
 
+Thank you!
+==========================================================
+- I know this was (and still is) a massive effort
+- Thank you for staying motivated and engaging with the material.
+- As always, come see me if you have questions!
