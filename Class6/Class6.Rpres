@@ -508,7 +508,7 @@ Maximum likelihood
 - Likelihood gets a little unwieldy -- lots of very small numbers
     - Solution: take the log (who would have thought?)
         - Added bonus: Now our multiplication becomes a sum (remember that from calculus?)
-        $log\;likelihood = \sum_{i = 1}^N Y_i\pi + (1-Y_i)(1-\pi)$
+          $log\;likelihood = \sum_{i = 1}^N Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi)$
 - Now we can simply try different values of $\pi$ until we find the one with the maximum likelihood
     - Remember that in logistic regression, $\pi$ is defined by our regression equation: $\pi = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$ 
     - Instead of simply trying different values of $\pi$, we have to try different values for $\beta_0$, $\beta_1$, etc. and compute $\pi$. This gets to be quite a lot of work.
@@ -552,7 +552,286 @@ summary(driving_glm)
 Model summary explained
 ========================================================
 - Deviance residuals:
-    - Calculating the raw residuals like in a linear regression model doesn't make a lot of sense (they would just consist of 0, 1, and -1)
+    - For these, we calculate the deviance separately for each case and then take the square root. We also change the sign depending on whether the observed case was 1 or 0:
+    - $d_i = s_i \sqrt{-2(Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi))}$
+        - with $s_i = 1$ if $Y_i = 1$ and $s_i = -1$ if $Y_i = 0$
+
+How to interpret logistic regression residuals
+========================================================
+- Can't test if they are normally distributed (because they are not)
+- But look out for very large residuals
+- You can get standardised residuals using `rstandard`.
+    - Look out for cases that are far away from 0.
+```{r, results='asis'}
+driving_residuals <- rstandard(driving_glm)
+plot(driving_residuals)
+```
+
+Model summary explained (2)
+==========================================================
+- The coefficients
+```{r, echo=FALSE, results='asis'}
+kable(coef(summary(driving_glm)))
+```
+- Analogous to linear regression: *b* value, *SE*, significance test
+- Using the **Wald** statistic instead of *t* tests
+    - $z = \frac{b}{SE_b}$
+    - Can be interpreted like *z* values from a standard normal distribution (that's how the *p*-value is computed)
+
+Interpreting the b values
+==========================================================
+- If you take the exponential of the coefficients (using `exp()` or `e^` in R), you get an **odds ratio**
+- Odds ratio = Odds after a unit change in the predictor divided by the original odds
+- Example: According to our model, each hour of practice increases the odds of passing the test by a factor of $e^{0.12959} = `r exp(.12959)`$
+    - e.g. if the odds were even (1/1) for X hours of practice, they would be slightly better than even (1.138/1) for X+1 hours of practice
+- On the other hand, each "unit" of examiner difficulty decreases the odds of passing the test by a factor of $e^{-0.03485} = `r exp(-.03485)`$
+    - e.g. if the odds were even (1/1) for an instructor with a difficulty of X, they would be slightly worse than even (0.9658/1) for an instructor with a difficulty of X+1
+
+Model summary explained (2)
+==========================================================
+- Null deviance: deviance from a model that estimates all values using the overall probability of passing the test (without taking into account the 4 predictors)
+- Residual deviance: deviance from the current model (note that we're losing 4 df due to the 4 predictors)
+- AIC: residual deviance + 2*model df (note that the model has 5 df, including one for the intercept)
+
+Model comparisons (LRT)
+==========================================================
+- Deviance has some neat properties
+    - We can compare likelihoods just like we compared mean squares in the F-test: by dividing them
+    - That is, we compute a likelihood ratio: $LR = \frac{L_{baseline}}{L_{new}}$, where *baseline* is the simpler model and *new* the more complex model.
+    - Now we can convert this likelihood ratio into a deviance: $deviance_{LR} = -2\frac{ln(L_{baseline})}{ln(L_{new})} = deviance_{baseline} - deviance_{new}$
+    - And now the most fun part: If the $H_0$ that the two models explain the data equally well is true, this likelihood-ratio deviance is distributed according to a $\chi^2$ distribution.
+    - The $\chi^2$ distribution has one parameter, degrees of freedom
+    - $df = k_{new}$ - $k_{baseline}$, where $k$ is the number of parameters (including the intercept)
+
+Model comparisons
+==========================================================
+- Now we can get a *p*-value! This is called the **Likelihood ratio test (LRT)**
+- So, if we want to test if the model is better than a model with just the intercept, we can do an LRT
+- $\chi^2 = deviance_{null} - deviance_{model} = 124.366 - 82.572 = 41.794$
+- $df = k_{null} - k_{model} = 89 - 85 = 4$ 
+- $p(\chi^2(4) \geq 41.794) < .01$
+- This is equivalent to the overall F-test for the model.
+
+Model comparisons (2)
+========================================================
+- We can use model comparisons to test how specific predictors contribute to the whole model (analogous to the F-tests in linear regression)
+- For this, you can use the `Anova` command from the `car` package:
+```{r}
+library(car)
+Anova(driving_glm)
+```
+
+Model comparisons (3)
+========================================================
+- This analysis of deviance follows the same logic as the ANOVA in the linear regression case
+- You can do Type I, Type II, and Type III LRT tests (they are not sums of squares in this case)
+- The LRTs are better tests than the Wald tests, since the Wald tests might be prone to overinflating the SE, leading to Type II error.
+- You can also use the LRT to directly compare a model to another (just like in the linear regression case). For this, you can use the `anova` command (lower case `a`).
+
+Diagnostics and assumption tests
+========================================================
+- We do not assume normality (so nothing to test for that one)
+- All the influence measures from linear regression work in logistic regression as well
+    - See Class 5 notes for explanations and criteria
+```{r,results='asis'}
+kable(head(influence.measures(driving_glm)$infmat))
+```
+
+Diagnostics and assumption tests (2)
+========================================================
+- Multicollinearity:
+- You can get Variance Inflation Factors (VIFs)
+    - Again, see Class 5 notes for explanations and criteria
+```{r}
+vif(driving_glm)
+```
+
+Linearity
+=============================================================
+- This is a new one: Test if the effects of the predictors on the logits are actually linear
+- How to do it: run a model that includes interactions between each *continuous* predictor and its logarithm
+- Test each interaction in a separate model
+- If you have 0s in your data, you might need to replace them by a very small value since log(0) = -Inf
+- If the interaction is significant, linearity is violated
+
+Linearity (2)
+=============================================================
+```{r, results='asis'}
+# remove 0s by adding a very small number to Cold.Remedy
+# test each factor in a separate model
+driving_tests$Cold.Remedy_no_0 <- driving_tests$Cold.Remedy + 1
+driving_glm_linearity <- glm(data = driving_tests, formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + Cold.Remedy_no_0 + Practice:log(Practice) + Examiner:log(Examiner) + Cold.Remedy_no_0:log(Cold.Remedy_no_0), family = binomial(link = "logit"))
+```
+
+
+Linearity(3)
+=============================================================
+```{r, results='asis'}
+kable(coef(summary(driving_glm_linearity)))
+```
+- There is an issue with the linearity of Cold.Remedy, suggesting that this variable might have to be transformed/coded as a factor/etc.
+    - Maybe this is why we don't see a significant effect?
+
+Reporting it
+=============================================================
+A logistic regression was conducted where the dependent variable was passing a driving test and the predictor variables were hours of practice, whether an emergency stop was successfully executed, how much the examiner was difficult, and amount of 'cold remedy drinks' consumed.  90 cases were examined and the model was found to significantly predict whether the test was passed (omnibus chi-square = 41.79, df=4, p<.001). that practice and examiner were the only two variables that reliably predicted if the driving test was passed. Increases in practice was associated with increased rate of passing (odds of passing increased by 1.14 per hour of practice, *b* = .130, SE = .03, *z* = 4.28, *p* < .01). Increases in the examiner being an difficult reduced the rate of passing (odds of passing decreased by 0.96 per unit of difficulty rating, *b* = -.00349, SE = .013, *z* = -2.679, *p* < .01). None of the other predictors reached significance (all *p*s > .05). There were no issues due to multicollinearity or influential cases, however, the linearity assumption was violated for the cold remedy drinks predictor. 
+
+Linear mixed models (LMMs)
+============================================================
+- The final step to greatness!
+    - Note that we can really only scratch the surface here.
+- Main issue:
+    - We know how to to regressions for continuous and discrete DVs now
+    - We know what the regression equivalent of a between-subjects ANOVA is and we can take the regression analysis much further than an ANOVA or ANCOVA would let us
+    - However: 
+        - What if we have a within-subject or repeated measures design?
+        - What if there is some other underlying correlation in the data 
+            - e.g. data collected from students in different classes in different schools
+                - Surely the classes and schools share some variance -- how to account for that?
+                
+Moving from linear regression to linear mixed models
+=============================================================
+- In repeated-measures ANOVA, we've dealt with within-subjects effects by removing the variance due to subject differences from the error
+    - Essentially, we have added a "subject" factor to the model
+    - Linear mixed models enable us to do the same thing for regression analyses
+
+Problem: how to add subject as a factor
+=============================================================
+- We could simply add a "subject" factor to the predictors
+    - This would reflect the systematic differences between subjects
+        - But that's not quite right: how do we deal with a factor with 40 levels?
+            - Also, we want to generalise our model to more than those 40 subjects that are in the analysis
+            - How do we do that?
+    - Subject is really like a random variable: we get a different set each time we run the experiment
+    - Instead of analysing the subject effect in a generalisable way, we really just want to get rid of the subject variance in the most efficient way possible
+
+Problem: how to add subject as a factor (2)
+=============================================================
+- Fixed effects vs. random effects
+    - Fixed effects: repeatable, generalisable (e.g. experiment condition)
+    - Random effects: non-repeatable, sampled from a general population
+    - Mixed effects models include both fixed and random effects
+- Another issue with including subject as a fixed effect:
+    - Each subject would take up a degree of freedom
+    - That would majorly impact the power of our analysis
+    - LMMs solve this issue by a procedure called **shrinkage**
+    
+Shrinkage
+===============================================================
+- Conceptually, LMMs allow subjects to have individual effects (e.g. in an eye-tracking experiment subject 1 might have an intercept of 200 ms, while subject 2 might have an intercept of 210 ms), but they pull each subject's effects
+towards an underlying distribution of subject effects
+- This reflects the idea that if 20 other subjects have intercepts between 180 and 220 ms, the current subject is unlikely to have an intercept of 400 ms, even though it looks like that from the data
+- Shrinkage also helps majorly with missing data issues (although it won't fix them for you!)
+- The downside of shrinkage is that it isn't clear what the df_{Error} should be
+    - This leads to some issues later on.
+    
+Example
+==============================================================
+- To start with, let's install two packages: `lme4`, which is the package that enables R to fit linear mixed models, and `languageR`, which contains the data set we will use. To install these, enter `install.packages(c("lme4","languageR"))` at the console.
+
+- We'll use the data set `lexdec` from `languageR` (Baayen, 2011)
+    - This data set contains lexical decision latencies from 21 subjects for 79 English nouns.
+    - In a lexical decision task, the subject has to decide whether the letters displayed on a screen form a word or not (the non-word data are usually discarded). The dependent variable is `RT` = ln(reaction time) (already transformed for your convenience)
+
+Example: Predictors
+========================================================
+- We're going to use a number of interesting predictors
+- Random effects:
+    - Subject
+    - Word (since we want to generalise our results for all words, not just the 79 in the data set)
+- Fixed effects:
+    - NativeLanguage: Whether the subject's native language was English
+    - Correct: Whether subjects incorrectly classified the word as a non-word
+    - Frequency: ln(Word frequency per million)
+    - Class: Does the word refer to an animal or a plant?
+    
+    
+Data cleanup
+=========================================================
+- These are real-world data, so they are bound to be messy
+- Let's start with some general data exclusion
+    - Extremely long reaction times are suspect -- maybe the subject fell asleep or just forgot to press the button
+        - Exclude all reaction times > 1100 ms (7 in log-transformed RTs)
+```{r}
+library(languageR) # get the data from the package
+lexdec2 <- subset(lexdec, RT < 7)
+# This excludes 41 data points.
+nrow(lexdec) - nrow(lexdec2)
+```
+
+Data cleanup
+=========================================================
+- We also only want to consider correct responses
+    - Incorrect responses might not even tap into the linguistic processes that we are interested in.
+```{r}
+lexdec3 <- subset(lexdec2, Correct == "correct")
+# This excludes only 61 further data points -- people are pretty good at this task.
+nrow(lexdec2) - nrow(lexdec3)
+```
+
+Start with linear regression
+=========================================================
+
+```{r, results='asis'}
+ld_lm <- lm(data = lexdec3, RT ~ NativeLanguage + Frequency + Class)
+kable(coef(summary(ld_lm)))
+```
+- Unfortunately, we are massively violating the independence assumption: observations from the same subject (and word) are definitely correlated
+
+Adding random effects
+===========================================================
+- Allow intercepts to vary by subject and word (random intercepts)
+    - `1` stands for the intercept. It is implicit, *except* when there is no other predictor
+```{r}
+library(lme4)
+ld_lmm <- lmer(data = lexdec, RT ~ NativeLanguage + Correct + Frequency + Class + (1|Subject) + (1|Word))
+shapiro.test(resid(ld_lmm))
+```
+- Still significant? Time for some model diagnostics
+
+Q-Q Plots
+===========================================================
+- Quantile-Quantile Plot: Split data into a number of quantiles and plot them against the quantiles of a hypothetical normal distribution
+
+```{r}
+qqnorm(resid(ld_lmm))
+# if the distribution is normal, the points should be on this line
+qqline(resid(ld_lmm))
+```
+
+Outlier removal
+===========================================================
+- The Q-Q plots of the residuals show a clear problem due to outliers on the right
+- Let's deal with that by removing values that are more than 2 SDs away from the mean of the raw data
+    - Careful with this kind of removal: you might remove your effect!
+        - In this case, few enough cases are affected that this should not be a problem
+```{r}
+ld_clean <- subset(lexdec, abs(scale(resid(ld_lmm))) < 2.5)
+# This is how many cases we remove. 79 out of 1659 seems OK.
+nrow(lexdec) - nrow(ld_clean)
+```
+
+Re-do the linear regression model with the clean data
+========================================================
+```{r, results='asis'}
+ld_lm <- lm(data = ld_clean, RT ~ NativeLanguage + Correct + Frequency + Class)
+kable(coef(summary(ld_lm)))
+```
+- So far so good
+```{r}
+ks.test(resid(ld_lm), pnorm)
+```
+- Unfortunately, we are massively violating the independence assumption: observations from the same subject (and word) are definitely correlated
+
+Adding random effects
+===========================================================
+- Allow intercepts to vary by subject and word (random intercepts)
+    - `1` stands for the intercept. It is implicit, *except* when there is no other predictor
+```{r}
+library(lme4)
+ld_lmm <- lmer(data = ld_clean, RT ~ NativeLanguage + Correct + Frequency + Class + (1|Subject) + (1|Word))
+ks.test(resid(ld_lmm), pnorm)
+```
 
 Power in ANOVA
 ========================================================
