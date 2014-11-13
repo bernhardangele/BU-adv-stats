@@ -1,11 +1,11 @@
-library(knitr)
+
 library(ggplot2)
 library(ez)
 library(lme4)
 library(car)
 
 # As always, replace this with your own working directory!
-setwd("~/Documents/Teaching/Winter 2014/Advanced Statistics/BU-adv-stats/Class6")
+setwd("C:/Bernhard/Documents/Teaching/Winter 2014/Advanced Statistics/BU-adv-stats/Class6")
 
 options(digits = 2, scipen = 4) # only print 2 digits from here on out
 
