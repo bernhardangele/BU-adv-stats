@@ -297,7 +297,7 @@ Example (continued)
 
 - Both contrasts sum to 0, so the intercept should be the grand mean
 - The absolute values sum to 2
-- The coefficient for x2 will be $Mean(Terrier) - Mean(Beagle)$, so it will be positive if the mean for Terrier is greater than that for Beagle and negative if $Mean(Beagle) > Mean(Terrier)$
+- The coefficient for x2 will be $Mean(Border Collie) - (Mean(Terrier) + Mean(Beagle))/2$, so it will be positive if the mean for Border Collie is greater than the mean of the means of Terrier and Beagle and negative if $(Mean(Terrier)+Mean(Beagle))/2 > Mean(Border Collie)$
 
 Defining your own contrast coding
 ========================================================
