@@ -1,0 +1,114 @@
+---
+title: "Advanced Statistics Class 6 Exercise"
+author: "Bernhard Angele"
+rating: "13/11/2014"
+output: pdf_document
+---
+
+### Scenario
+A PhD student wants to investigate whether our mood affects how we react to visual scenes. In order to do this, she showed 40 subjects a total of 40 scenes. There are two version of each scene: one contains people, the other one doesn't -- everything else is identical. The PhD student spent a considerable amount of time taking photos to ensure this (until her supervisor got a bit impatient). Before the experiment, all subjects were asked to rate their current mood on a scale from 0 (very sad) to 100 (very happy). They then looked at each scene and item how much they liked it on a scale from 0 (hate it) to 20 (love it). The student's hypothesis is that if you are happy, you should want to see scenes with people. If you are unhappy, you should prefer scenes without people. The data are given below. Will the student find what she is looking for? Or will she have to start from scratch and be in even more trouble with her supervisor?
+
+### Assignment
+Conduct and report the appropriate statistics using the data provided as one would for an academic journal. Be sure to report the means, group sizes, and standard deviations of the discrete variables in a table and to make a plot of all the significant effects. 
+Perform and report two analyses: 
+
+1. A standard multiple regression model with rating condition as a discrete predictor and mood as a continuous predictor
+2. A linear mixed model with rating condition as a discrete predictor and mood as a continuous predictor and random intercepts for both 
+participant and item person (as we want to be able to generalise the results beyond the 40 subjects and the 40 items).
+
+Are the results of the two analyses similar? If not, explain (in non-technical terms) why not. Which analysis is more appropriate to the data?
+Finally, in layperson (non-academic) language describe the results and summarise the answers to the two following questions: Will the student find what she is looking for? Does the presence of persons in a scene influence the rating for that scene, and what role does mood play in this process?
+
+#### Answer
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+library(ggplot2)
+library(ez)
+library(lme4)
+library(car)
+
+options(digits = 2, scipen = 4) # only print 2 digits from here on out
+
+scene_liking <- read.csv("Class 6 exercise data.csv")
+
+# make subject and item into factors
+scene_liking$subject <- factor(scene_liking$subject)
+scene_liking$item <- factor(scene_liking$item)
+
+# use nicer condition names for scene
+levels(scene_liking$scene) <- c("No people present", "People present")
+
+# Plotting a continuous effect is a little trickier than plotting a factorial design
+# We will use the "smooth" geom from ggplot2 to plot smoothed conditional means for each value of mood and for each scene type.
+# In ggplot2, a "geom" is a particular type of data visualisation. For example, there are geoms for scatterplots ("point"), line graphs ("line"), barplots ("bar"), and many more.
+# The "smooth" geom is particularly attractive for plotting continuous factors since it includes a smoothed estimate of the standard error
+# The easiest way to get started with ggplot2 is to use qplot ("quick plot")
+library(ggplot2)
+scene_liking_plot <- qplot(data = scene_liking, # the data frame that you want to use
+                           y = rating,          # the variable that goes on the y axis
+                           x = mood,            # the variable that goes on the x axis
+                           colour = scene,      # draw different colour lines for the levels of this factor
+                           geom = "smooth"      # use the "smooth" geom to draw this plot
+                           )
+
+# now add axis and legend labels
+scene_liking_plot <- scene_liking_plot + xlab("Mood rating") + ylab("Scene Rating") + labs(colour = "Scene type")
+
+# make sure to center the mood predictor -- remember the multicollinearity issues we ran into!:
+
+scene_liking$mood_raw <- scene_liking$mood
+
+scene_liking$mood <- scale(scene_liking$mood, scale = FALSE)
+
+scene_liking_lm <- lm(data = scene_liking, rating ~ scene * mood) 
+
+scene_liking_lm_coef <- coef(summary(scene_liking_lm))
+
+scene_liking_lm_predict <- predict(scene_liking_lm)
+scene_liking_lm_resid <- resid(scene_liking_lm)
+scene_liking_lm_shapiro <- shapiro.test(scene_liking_lm_resid)
+
+scene_liking_lm_vif <- vif(scene_liking_lm)
+scene_liking_lm_influence <- influence.measures(scene_liking_lm)
+#colnames(data) <- c("subject ID", "item ID", "Confederate scene in room", "mood", "rating probability rating")
+#kable(data)
+scene_liking_lmm_random_intercepts_only <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (1|item)) 
+
+scene_liking_lmm <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (mood|item)) 
+
+scene_liking_mood_slope_test <- anova(scene_liking_lmm, scene_liking_lmm_random_intercepts_only)
+
+scene_liking_lmm_coef <- coef(summary(scene_liking_lmm))
+
+scene_liking_lmm_predict <- predict(scene_liking_lmm)
+scene_liking_lmm_resid <- resid(scene_liking_lmm)
+scene_liking_lmm_shapiro <- shapiro.test(scene_liking_lmm_resid)
+
+# here's a little helper function to get the p-values printed right
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", round(p, 3)))
+  if(p > .05) return("*p* > .05")
+}
+```
+
+In order to evaluate the effects of scene type (people present vs. no people present; using a treatment contrast where no people present was represented by 0 and people present was represented by 1) and mood (as rated by each participant before the experiment on a scale from 0 to 100, with 0 being sad and 100 being happy; mean = `r mean(scene_liking$mood_raw)`, sd = `r sd(scene_liking$mood_raw)`) on scene rating (on a scale from 0 to 20, with 0 being dislike and 20 being like), we performed both a multiple regression analysis and a linear mixed model analysis using the `lmer` function from the `lme4` package in the R Statistical Software with random intercepts for subjects and items and a random slope for mood on items on the same data. A likelihood ratio test revealed that including mood as a random slope for items resulted in a significantly better model compared to a model with only random intercepts for items and subjects, $\chi^2$(`r scene_liking_mood_slope_test[2,]$"Chi Df"`) =  `r scene_liking_mood_slope_test[2,]$"Chisq"`, `r print_p(scene_liking_mood_slope_test[2,]$"Pr(>Chisq)")`. Figure 1 shows the effects of confederate presence and mood.
+
+\pagebreak
+
+*Figure 1. Conditional means for the scene type conditions and for mood (as determined by local polynomial regression fitting using the `loess` function in R). The confidence intervals denote 1 SE around the mean.*
+```{r, echo=FALSE}
+options(digits = 4, scipen = 4) # add digits for plot axis
+scene_liking_plot
+options(digits = 2, scipen = 4) # only print 2 digits from here on out
+```
+
+None of the predictors reached significance for the multiple regression model (all *p*s > .05). There were no multicollinearity issues (maximum VIF = 2) and no highly influential cases (all Cook's *d* < 1). However, Shapiro's test indicated that the normality assumption for the residuals was violated (*W* = `r scene_liking_lm_shapiro["statistic"]`, `r print_p(scene_liking_lm_shapiro["p.value"])`).
+
+In the linear mixed model (assuming that the *t*-values are interpretable as *z*-values, as we have more than 30 participants), there was a significant main effect of scene type (mean rating when people were present in the scene: `r mean(subset(scene_liking, scene == "People present")$rating)`, mean rating when no people were present in the scene: `r mean(subset(scene_liking, scene == "No people present")$rating)`; *b* = `r scene_liking_lmm_coef["scenePeople present", "Estimate"]`, SE = `r scene_liking_lmm_coef["scenePeople present", "Std. Error"]`, *t* = `r scene_liking_lmm_coef["scenePeople present", "t value"]`), indicating that, on average, scenes without people present were rated .263 points higher than scenes with people present. The main effect of the covariate mood was not significant (*b* = `r scene_liking_lmm_coef["mood", "Estimate"]`, SE = `r scene_liking_lmm_coef["mood", "Std. Error"]`, *t* = `r scene_liking_lmm_coef["mood", "t value"]`). However, there also was an interaction effect between scene type and the mood covariate (*b* = `r scene_liking_lmm_coef["scenePeople present:mood", "Estimate"]`, SE = `r scene_liking_lmm_coef["scenePeople present:mood", "Std. Error"]`, *t* = `r scene_liking_lmm_coef["scenePeople present:mood", "t value"]`), indicating that, when people were present in the scene, the scene rating was positively related to subject mood. When no people were present in the scene, the scene rating was negatively related to the mood. In other words, when people were present in the scene, happy participants rated the scene higher than unhappy participants. When no people were present in the scene, unhappy participants rated the scene higher than happy participants. Shapiro's test indicated that there was no evidence against the normality assumption for the residuals (`r print_p(scene_liking_lmm_shapiro["p.value"])`).
+
+In short, both models find an effect of mood, but only the LMM finds an effect of confedereate presence. Which model is more appropriate? When there is the potential for underlying correlations between certain sets of data points (e.g. those associated with the same subject or the same item), this violates the independence assumption of the standard multiple regression. The lack of normality in the residuals of the multiple regression model is indicative of this. Adding subject and item random effects in an LMM not only deals with independence concerns, but it also increases the power of the test since the random effects are no longer confounded with the error term. The higher power enables the LMM to detect the subtle scene type effect and its interaction with the mood covariate. In conclusion, the LMM is clearly the appropriate model for these data.
+
+##### Summary
+It seems that the PhD student was correct: Participants' ratings of scenes with and without persons were indeed related to the participants' mood at the time of performing the rating. There was a small overall effect of scene type, with scenes without people being rated slightly higher than scenes with people. Importantly, the effect of scene type was modulated by mood, with unhappy participants rating scenes without people higher than scenes with people, and happy participants rating scenes with people higher than scenes without people.
