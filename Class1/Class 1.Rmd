@@ -1,10 +1,19 @@
 ---
-output: pdf_document
+output: html_document
 ---
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: Class 1, October 2nd, 2014
+date: Class 1, October 1st, 2015 (recap)
+
+What did we do on Thursday?
+========================================================
+- We did a quick overview of probability as you will have encountered it in school
+- We have generated some data using dice and coins.
+- We used those data to explore descriptive statistics
+  - Measures of central tendency such as *mean* and *median*
+  - Measures of disperson or variability such as sta
+
 
 What is advanced about these statistics?
 ========================================================
@@ -22,226 +31,19 @@ How do I run simulations?
 ========================================================
 
 - Not very easy in SPSS
-- Very easy in R
-- You do have to learn how to communicate with R, though
-  - Don't worry, it's not as hard as you may think
-- R is a programming language with a command line interface
-- You write the commands, R does the work
-- The R language is not horribly difficult, but there are some quirks.
+- But Excel can help (to some degree..)
+- For more detailed simulations, you'll have to use a programming language such as R, Python, C++, etc.
 
-Interacting with R (1)
+Maths basics
 ========================================================
-- Easiest way: use RStudio
-- But there are still some common issues that people get confused about:
-  - The command prompt: 
-  
-  >`>`
-  >
-- This is where you type your commands.
-  - What if the prompt looks like this?
-  
-  >`+`
-  >
-  
-- R thinks that the previous command isn't finished yet. (Maybe you forgot a closing parenthesis?)
-  - If you don't want to finish it, press ESC
-  
-Interacting with R (2)
-========================================================
-- When working with R, you create and interact with **objects**
-- All **objects** live in the **workspace**
-- You can get a list of all the objects in the workspace by typing `ls()`
-- You can delete an object (e.g. an object named `example_object`) by typing `rm(example_object)` (replace `example_object` with the name of the object you want to delete)
-- You can combine these two commands in order to delete everything in the workspace: `rm(list = ls())`
-- This is useful when you want to start over from scratch.
-- It also demonstrates how you can nest commands: You're telling `rm` to use the output of `ls()` as the list of all the objects that should be deleted.
+- The summation operator $\sigma$:
 
-Interacting with R (3)
-========================================================
-- The R interpreter makes some basic assumptionss.
-  - For example, if you tell it the name of an object, it will print its contents.
-```{r}
-pi
-```
+$$x_1 + x_2 + x_3 + x_4 + x_5 = \sum\limits_{i=1}^5{x_i}$$
+
+- This means: beginning with $i=1$ and ending with $i=5$ sum over the variables $x_i$.
+    - This can save a lot of space if you are summing over lots of variables
 
 
-What went wrong here?
-========================================================
-```{r}
-rm
-```
-
-What went wrong on the last slide?
-========================================================
-- Answer: if you type the name of a command (or rather, a **function**) R prints its contents.
-  - In the case of a **function**, it will give you its definition
-- If you want the function to do something (i.e. you want to **execute** it), you need to call it like this:
-```{r, print=TRUE, warning = TRUE}
-rm(this_object_does_not_exist)
-```
-- What went wrong now?
-  - `rm` is telling me that the object I wanted to delete doesn't exist (duh).
-
-Errors and warnings
-========================================================
-- Errors:
-  - mean that something critical went wrong and the command was not executed
-- Warnings:
-  - mean that there was a less critical issue
-  - the command was still executed (but maybe didn't do what you thought it would do)
-- What's the worst kind of problem?
-  - Error?
-  - Warning?
-  - No, it's when R does something you didn't intend to do but doesn't warn you!
-
-
-Assignment
-========================================================
-- You can create new objects from existing ones:
-```{r}
-x <- 1
-y <- "meow"
-z <- ls
-x
-y
-z()
-```
-
-Let's do some maths
-========================================================
-Addition
-```{r}
-1+1
-```
-Subtraction
-```{r}
-1-1
-```
-
-More maths
-========================================================
-Multiplication and division
-```{r}
-4*3
-12/4
-```
-
-Even more maths
-========================================================
-Powers
-```{r}
-5^2
-2^3
-```
-
-Variables
-========================================================
-```{r}
-x <- 5
-x + 1
-```
-
-
-Commands
-========================================================
-```{r}
-x <- 5
-x + 1
-x
-```
-Is anyone surprised by this?
-
-Functions
-========================================================
-```{r}
-addOne <- function(x) {
-  x+1
-}
-addOne(5)
-addOne(-3)
-```
-
-Types of data
-========================================================
-```{r}
-x <- 1
-y <- "test"
-z <- c(1,2)
-z
-```
-z is a **vector**
-```{r}
-z + 1
-```
-
-Vector operations
-========================================================
-```{r}
-z <- c(1,2,3,4,5)
-z + 2
-z - 1
-z * 2
-```
-
-More vector operations
-========================================================
-```{r}
-z <- c(1,2,3,4,5)
-sum(z)
-length(z)
-sum(z)/length(z)
-```
-
-Descriptive statistics
-========================================================
-We could define a new function that calculates the mean.
-But maybe it's defined for us already?
-```{r}
-z <- c(1,2,3,4,5)
-mean(z)
-```
-
-What about other descriptive statistics?
-========================================================
-```{r}
-median(z)
-sd(z)
-var(z)
-```
-
-Summary: lots of interesting descriptive statistics at once
-========================================================
-```{r}
-summary(z)
-```
-
-
-Let's simulate some data
-========================================================
-
-```{r}
-x<-rnorm(1000)
-head(x)
-plot(x)
-```
-
-Distribution of the simulated data (histogram)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-## plot density histogram:
-par(mfrow=c(1,2)) # (little trick: two plots side-by-side)
-hist(x,freq=F)
-plot(density(x))
-```
-
-Probability density?
-========================================================
-```{r, echo=T, fig.width = 10, fig.height = 6}
-plot(function(x) dnorm(x), -3, 3,
-main = "Normal density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
 
 What is a probability distribution?
 ========================================================
@@ -295,7 +97,7 @@ Defining the normal PDF by hand (just in case you wanted to make sure)
 $$
   f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
 $$
-```{rfig.width = 10, fig.height = 6}
+```{r, fig.width = 10, fig.height = 6}
 dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
 plot(function(x) dnorm_manual(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
