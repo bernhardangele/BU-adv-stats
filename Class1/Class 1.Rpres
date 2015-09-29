@@ -98,18 +98,72 @@ $$
 
 Maths basics: Probability
 ========================================================
-- What is probability
+- Basic rules:
+    - All probabilities are between 0 and 1: $P(A)\in[0,1]$
+    - The complementary probability of an event (i.e. the probability that an event will NOT happen) is 1-the probability of the event: $P(A^c)=1-P(A)$
+    - A probability can be interpreted as the number of outcomes that form an event (e.g. the outcome "Heads" when flipping a coin) over the total number of outcomes (e.g. "Heads" and "Tails")
+    $$ p(A) = \frac{n_A}{n}$$
+    - But note that a probability of .5 (e.g. for getting "Heads"" on a coin flip) doesn't mean that you will get "Heads"" on exactly 50% of coin flips.
+    
+Maths basics: Probability (2)
+========================================================
+- Basic rules:
+    - What is the probability that Event A and Event B will happen together?
+$$\begin{align}
+P(A\cap B) & = P(A|B)P(B) = P(B|A)P(A)\\
+P(A\cap B) &  = P(A)P(B) \qquad\\&\mbox{if A and B are independent}\\
+\end{align}$$
+    - What is the probability that either Event A OR Event B will happen?:
+$$\begin{align}
+P(A\cup B) & = P(A)+P(B)-P(A\cap B) \\
+P(A\cup B) & = P(A)+P(B) \\\qquad&\mbox{if A and B are mutually exclusive} \\
+\end{align}$$
 
+Maths basics: Conditional probability
+==========================================================
+- What is the probability of Event A *GIVEN THAT* Event B happened?
+    - Divide the number of outcomes where A and B happen together by the number of all outcomes where B happens (regardless of whether A happened, too).
+    - If we divide both nominator and denominator by $n$, we can convert this into probabilities:
+$$P(A \mid B) = \frac{n_{AB}}{n_B} = \frac{n_{AB}/n}{n_B/n} = \frac{P(A \cap B)}{P(B)}$$
+- Now plug in our definition of joint probability (see last slide):
+$$P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B|A)P(A)}{P(B)}$$
+- This is known as *Bayes' theorem*. Keep it in mind for later!
 
+Back to our dice problem
+==========================================================
+- IN THEORY, each of our dice roll outcomes has the same probability:
+$$ 
+\begin{aligned}
+p(1) = \frac{n_1}{n_{total}} &= \frac{1}{6},
+p(2) = \frac{n_2}{n_{total}} &= \frac{1}{6}\\
+p(3) = \frac{n_3}{n_{total}} &= \frac{1}{6},
+p(4) = \frac{n_4}{n_{total}} &= \frac{1}{6}\\ 
+p(5) = \frac{n_5}{n_{total}} &= \frac{1}{6},
+p(6) = \frac{n_6}{n_{total}} &= \frac{1}{6}
+\end{aligned}
+$$
+- But how can we test whether that is actually true?
+- We need some way to compare the data to the actual probability distribution
+
+Aggregating our dice results
+==========================================================
+- We obviously need to take more than one dice roll into account. But how can we aggregate all our results in a convenient number?
+- As luck would have it, descriptive statistics provides us with a number of standard measures to characterise the properties of a *sample* (e.g. rolling the dice 10 times):
+- Measures of *central tendency*:
+  - The mean: $\bar{x}=\frac{\sum_{i=1}^{n} x_i}{n}$
+  - The median: The number separating the higher half of a sample from the lower half
+  - The mode: The most frequent observation
+- Measures of dispersion:
+  - The standard deviation: $s_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
 
 Statistics basics: Random variables
 ==========================================================
+- We need to consider our sample as a random variable
 - What is a random variable?
-- The true population mean and standard deviation of a *population* are not random. They have an actual point value (at any given point in time), and we could calculate that value if we were to measure every individual in the population.
-- From the point of view of any individual, their value on whatever measurement we're taking is of course not random either.
-- But, if we grab individuals at random and measure them, we will notice that their measure values are not completely arbitrary.
-    - Instead, depending on the probability density function, we will get some values more often than others.
-- That's all we mean by saying that something is a random variable.
+  - A random variable is a function that assigns a number to each possible outcome of our experiment (the dice roll)
+- The outcome of a single dice roll can be described by a very obvious function: just assign the numbers from 1 to 6
+- The outcome of *multiple* dice rolls is  little trickier
+- Regardless of which one we choose, we can then come up with a *theoretical* probability distribution for the random variable.
 
 Statistics basics: Random variables (formal definition!)
 ==========================================================
@@ -122,11 +176,11 @@ $\omega \in O$ exactly one number $X(\omega) = x$.
 
   - $X: \omega \rightarrow x$
 	- $\omega$: H, TH, TTH,$\dots$ (infinite)
-	- $x=0,1,2,\dots; x \in S_X$
+	- $x=0,1,2,\dots; x \in O_X$
   
 Random variables (2)
 ==========================================================
-Every discrete random variable X has associated with it a  **probability mass/density function (PDF)**, also called *distribution function*.
+Every discrete random variable X has associated with it a  **probability mass function**, also called *distribution function*.
 $$
 \begin{equation}
 p_X : S_X \rightarrow [0, 1] 
@@ -145,6 +199,223 @@ $$
 	- $x=0,1,2,\dots; x \in S_X$
   - $p_X = .5, .25, .125,\dots$ 
   
+
+What is a probability distribution?
+========================================================
+From Wikipedia:
+In probability and statistics, a probability distribution assigns a probability to each measurable subset of the possible outcomes of a random experiment, survey, or procedure of statistical inference.
+Here's an example of a discrete probability distribution, the distribution of the *sum of two dice rolls*:
+
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Discrete probability distribution
+========================================================
+![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
+
+Every possible outcome (sum of the numbers rolled on two dice) is assigned a corresponding probability. This is called a *probability mass function*.
+
+Important: all values sum to 1.
+
+From discrete to continuous
+=======================================================
+- Let's look at the probability distributions we get from rolling one, two, three etc. dice and summing up the results.
+- We'll start with rolling one die.
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot_freq_hist <- function(vec, breaks = "Sturges", title){
+  h <- hist(vec, plot=FALSE, breaks=breaks, right = FALSE)
+  h$counts=h$counts/sum(h$counts)
+  plot(h, main = title, xlab = "X", ylab = "P(X)")
+}
+
+plot_discrete_hist <- function(vec, title){
+  counts <- table(vec)
+  barplot(counts/sum(counts), main = title, xlab = "X", ylab = "P(X)")
+}
+
+plot_discrete_hist(sample(1:6, 100000, replace = TRUE), title = "One die")
+
+```
+
+Two dice
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+
+plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE), title = "Two dice")
+
+```
+
+Three dice
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+
+plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE), title = "Three dice")
+
+```
+
+Four dice
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+
+plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE),title = "Four dice")
+
+```
+
+Ten dice
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+
+roll_dice <- function(number_of_samples, number_of_dice){
+  result <- sample(1:6, number_of_samples, replace = TRUE)
+  for(i in 1:(number_of_dice-1)){
+    result<-result + sample(1:6, number_of_samples, replace = TRUE)
+  }
+  result
+}
+
+plot_discrete_hist(roll_dice(100000, 10),title = "Ten dice")
+
+```
+
+100 dice
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+
+plot_freq_hist(roll_dice(100000, 100), 150, title = "100 dice")
+
+```
+
+Continuous probability distribution
+=======================================================
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot(function(x) dnorm(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Here, the outcomes are continuous, so it doesn't make sense to ask about the probability of any point on the x-axis.
+
+- What is the probability of x = 1? 
+ - What do you mean by "1"? Does 1.00001 still qualify as 1?
+- It makes more sense to ask these questions about intervals.
+- Important: the total area under the curve is 1.
+
+Normal probability density function (PDF)
+========================================================
+$$
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+$$
+
+With $x$ = value, 
+$\mu$ = mean, 
+and $\sigma$ = standard deviation
+```{r, echo=F, fig.width = 10, fig.height = 6}
+plot(function(x) dnorm(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Defining the normal PDF by hand (just in case you wanted to make sure)
+========================================================
+$$
+  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
+$$
+```{r, fig.width = 10, fig.height = 6}
+dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
+plot(function(x) dnorm_manual(x), -3, 3,
+main = "Normal density",ylim=c(0,.4),
+ylab="density",xlab="X")
+```
+
+Asking reasonable questions about continuous distributions
+=======================================================
+- What's the probability of x being between 0 and 1?
+
+```{r, echo = F}
+cord.x <- c(0,seq(0,1,0.01),1)
+cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+
+- How do we do this?
+- We could integrate!
+  - But there's a more convenient way in R.
+  
+Using `pnorm`
+=======================================================
+- `pnorm(q)` gives you the probability of `x < q` (in the standard normal distribution)
+```{r}
+pnorm(1)
+```
+```{r, echo = F}
+cord.x <- c(-3,seq(-3,1,0.01),1)
+cord.y <- c(-3,dnorm(seq(-3,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+- `pnorm(1)` is not quite what we wanted yet.
+
+Using `pnorm` (2)
+=======================================================
+- What about `pnorm(0)`?
+```{r}
+pnorm(0)
+```
+```{r, echo = F}
+cord.x <- c(-3,seq(-3,0,0.01),0)
+cord.y <- c(-3,dnorm(seq(-3,0,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+Well, look at that!
+
+Finally getting our area under the curve
+========================================================
+- I hope you can guess how to do it now:
+```{r}
+pnorm(1)-pnorm(0)
+```{r, echo = F}
+cord.x <- c(0,seq(0,1,0.01),1)
+cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+- Success!
+
+Things you can do with this knowledge
+========================================================
+- Say I'm looking at random numbers from a standard normal distribution:
+```{r}
+rnorm(5)
+```
+- and I see that one of them is 4.
+  - That seems very unusual
+  - Just how unusual?
+    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?    
+
+Just how unusual is a value of 4?
+========================================================
+- Remember, when you have a continuous distribution, you can't think about point values (e.g. 5). Rather, what you want to know is:
+    - What is the probability of getting a value of 4 *or greater*?
+```{r, }
+print(pnorm(4), digits = 5)
+```
+- Is that the probability? No, that's the probability of getting a value of 4 *or less*
+- Just get the inverse probability:
+```{r}
+1 - pnorm(4)
+```
+
+Why do we care about the normal distribution?
+========================================================
+- Central limit theorem (CLT)
+
+> When sampling from a population that has a mean, provided the sample size is large
+> enough, the sampling distribution of the sample mean will be close to normal regardless
+> of the shape of the population distribution
+
+Let's see if that's actually true by running some simulations!
+
 
 Maths basics: Expected values
 ========================================================
@@ -399,155 +670,6 @@ E\Bigg(2\sum\limits_{i=1}^{n-1}{\sum\limits_{j=i+1}^{n}{X_i\cdot X_j}}\Bigg) &= 
 \end{aligned}
 $$
 - Since $E(\sum_{i=1}^{n}X_i) = \sum_{i=1}^{n}E(X_i)$ and $E(X_i) = \mu$
-
-What is a probability distribution?
-========================================================
-From Wikipedia:
-In probability and statistics, a probability distribution assigns a probability to each measurable subset of the possible outcomes of a random experiment, survey, or procedure of statistical inference.
-
-Here's an example of a discrete probability distribution:
-
-![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
-
-Discrete probability distribution
-========================================================
-![Dice Distribution (from Wikipedia)](https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Dice_Distribution_%28bar%29.svg/512px-Dice_Distribution_%28bar%29.svg.png)
-
-Every possible outcome (sum of the numbers rolled on two dice) is assigned a corresponding probability. This is called a *probability mass function*.
-
-Important: all values sum to 1.
-
-Continuous probability distribution
-=======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
-plot(function(x) dnorm(x), -3, 3,
-main = "Normal density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
-
-Here, the outcomes are continuous, so it doesn't make sense to ask about the probability of any point on the x-axis.
-
-- What is the probability of x = 1? 
- - What do you mean by "1"? Does 1.00001 still qualify as 1?
-- It makes more sense to ask these questions about intervals.
-- Important: the total area under the curve is 1.
-
-Normal probability density function (PDF)
-========================================================
-$$
-  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
-$$
-
-With $x$ = value, 
-$\mu$ = mean, 
-and $\sigma$ = standard deviation
-```{r, echo=F, fig.width = 10, fig.height = 6}
-plot(function(x) dnorm(x), -3, 3,
-main = "Normal density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
-
-Defining the normal PDF by hand (just in case you wanted to make sure)
-========================================================
-$$
-  f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
-$$
-```{r, fig.width = 10, fig.height = 6}
-dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
-plot(function(x) dnorm_manual(x), -3, 3,
-main = "Normal density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
-
-Asking reasonable questions about continuous distributions
-=======================================================
-- What's the probability of x being between 0 and 1?
-
-```{r, echo = F}
-cord.x <- c(0,seq(0,1,0.01),1)
-cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-
-- How do we do this?
-- We could integrate!
-  - But there's a more convenient way in R.
-  
-Using `pnorm`
-=======================================================
-- `pnorm(q)` gives you the probability of `x < q` (in the standard normal distribution)
-```{r}
-pnorm(1)
-```
-```{r, echo = F}
-cord.x <- c(-3,seq(-3,1,0.01),1)
-cord.y <- c(-3,dnorm(seq(-3,1,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-- `pnorm(1)` is not quite what we wanted yet.
-
-Using `pnorm` (2)
-=======================================================
-- What about `pnorm(0)`?
-```{r}
-pnorm(0)
-```
-```{r, echo = F}
-cord.x <- c(-3,seq(-3,0,0.01),0)
-cord.y <- c(-3,dnorm(seq(-3,0,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-Well, look at that!
-
-Finally getting our area under the curve
-========================================================
-- I hope you can guess how to do it now:
-```{r}
-pnorm(1)-pnorm(0)
-```{r, echo = F}
-cord.x <- c(0,seq(0,1,0.01),1)
-cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-- Success!
-
-Things you can do with this knowledge
-========================================================
-- Say I'm looking at random numbers from a standard normal distribution:
-```{r}
-rnorm(5)
-```
-- and I see that one of them is 4.
-  - That seems very unusual
-  - Just how unusual?
-    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?    
-
-Just how unusual is a value of 4?
-========================================================
-- Remember, when you have a continuous distribution, you can't think about point values (e.g. 5). Rather, what you want to know is:
-    - What is the probability of getting a value of 4 *or greater*?
-```{r, }
-print(pnorm(4), digits = 5)
-```
-- Is that the probability? No, that's the probability of getting a value of 4 *or less*
-- Just get the inverse probability:
-```{r}
-1 - pnorm(4)
-```
-
-Why do we care about the normal distribution?
-========================================================
-- Central limit theorem (CLT)
-
-> When sampling from a population that has a mean, provided the sample size is large
-> enough, the sampling distribution of the sample mean will be close to normal regardless
-> of the shape of the population distribution
-
-Let's see if that's actually true by running some simulations!
 
 Non-normal distributions: Gamma
 ========================================================
