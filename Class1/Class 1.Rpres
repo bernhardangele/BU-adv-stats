@@ -1,18 +1,18 @@
 Class 1: Fundamentals of probability and statistical inference
-========================================================
-author: Bernhard Angele
-date: Oct 1st, 2015
+======================================================================
+---
+title: "Class 1: Fundamentals of probability and statistical inference"
+author: "Bernhard Angele"
+date: "1 October 2015"
+output: beamer_presentation
+---
 
-Advanced Statistics
-========================================================
-author: Bernhard Angele 
-date: Class 1, October 1st, 2015 (recap)
 
-What did we do on Thursday?
+What did/will we do on Thursday?
 ========================================================
-- We did a quick overview of probability as you will have encountered it in school
-- We have generated some data using dice and coins.
-- We used those data to explore descriptive statistics
+- We did/will do a quick overview of probability as you will have encountered it in school
+- We will have generated some data using dice and coins.
+- We will use those data to explore descriptive statistics
   - Measures of central tendency such as *mean* and *median*
   - Measures of disperson or variability such as variance and standard deviation
 
@@ -67,7 +67,7 @@ $$\sum\limits_{i}{x_i}$$
 
 Maths basics: Summation (2)
 ========================================================
-- You can have multiple multiple indeces and sum over them (e.g. if you have multiple people in multiple groups, which is something that happens in Psychology *ALL THE TIME*). For example:
+- You can have multiple multiple indices and sum over them (e.g. if you have multiple people in multiple groups, which is something that happens in Psychology *ALL THE TIME*). For example:
 
 Group 1 (females): $x_{11},  x_{12},  x_{13},  x_{14}$
 
@@ -77,7 +77,7 @@ Sum of all the individuals in all the groups:
 
 $$
 \begin{aligned}
-\prod\limits_{m=1}^{2}\prod\limits_{x=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
+\sum\limits_{m=1}^{2}\sum\limits_{x=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
   + x_{21} + x_{22} + x_{23} + x_{24}
 \end{aligned}
 $$
@@ -103,7 +103,7 @@ Maths basics: Probability
     - The complementary probability of an event (i.e. the probability that an event will NOT happen) is 1-the probability of the event: $P(A^c)=1-P(A)$
     - A probability can be interpreted as the number of outcomes that form an event (e.g. the outcome "Heads" when flipping a coin) over the total number of outcomes (e.g. "Heads" and "Tails")
     $$ p(A) = \frac{n_A}{n}$$
-    - But note that a probability of .5 (e.g. for getting "Heads"" on a coin flip) doesn't mean that you will get "Heads"" on exactly 50% of coin flips.
+    - But note that a probability of .5 (e.g. for getting "Heads" on a coin flip) doesn't mean that you will get "Heads" on exactly 50% of coin flips.
     
 Maths basics: Probability (2)
 ========================================================
@@ -113,7 +113,7 @@ $$\begin{align}
 P(A\cap B) & = P(A|B)P(B) = P(B|A)P(A)\\
 P(A\cap B) &  = P(A)P(B) \qquad\\&\mbox{if A and B are independent}\\
 \end{align}$$
-    - What is the probability that either Event A OR Event B will happen?:
+    - What is the probability that either Event A OR Event B will happen?
 $$\begin{align}
 P(A\cup B) & = P(A)+P(B)-P(A\cap B) \\
 P(A\cup B) & = P(A)+P(B) \\\qquad&\mbox{if A and B are mutually exclusive} \\
@@ -143,7 +143,7 @@ p(6) = \frac{n_6}{n_{total}} &= \frac{1}{6}
 \end{aligned}
 $$
 - But how can we test whether that is actually true?
-- We need some way to compare the data to the actual probability distribution
+- We need some way to compare the data to the theoretical probability distribution
 
 Aggregating our dice results
 ==========================================================
@@ -164,6 +164,7 @@ Statistics basics: Random variables
 - The outcome of a single dice roll can be described by a very obvious function: just assign the numbers from 1 to 6
 - The outcome of *multiple* dice rolls is  little trickier
 - Regardless of which one we choose, we can then come up with a *theoretical* probability distribution for the random variable.
+- The opposite of a random variable is a *constant*, a value that's the same for every sample.
 
 Statistics basics: Random variables (formal definition!)
 ==========================================================
@@ -216,10 +217,18 @@ Every possible outcome (sum of the numbers rolled on two dice) is assigned a cor
 
 Important: all values sum to 1.
 
+A quick clarification: Sample and population
+==========================================================
+- With the introduction of *theoretical* probability distributions, we need to be very careful to not confuse properties of the theoretical distribution with properties of an individual sample.
+- Standard practice is to use 
+    - roman letters (e.g. $m$ or $\bar{x}$ for the mean, $s$ for the standard deviation) for properties of the sample
+    - greek letters (e.g. $\mu$ "mu" for the mean and $\sigma$ "sigma" for the standard deviation) for properties of the distribution (or the population that is represented by the distribution).
+
 From discrete to continuous
 =======================================================
 - Let's look at the probability distributions we get from rolling one, two, three etc. dice and summing up the results.
-- We'll start with rolling one die.
+- We'll start with rolling one die (note that the bars may be a tiny bit uneven since I used a simulation to produce this graph).
+
 ```{r, echo=F, fig.width = 10, fig.height = 6}
 plot_freq_hist <- function(vec, breaks = "Sturges", title){
   h <- hist(vec, plot=FALSE, breaks=breaks, right = FALSE)
@@ -232,12 +241,13 @@ plot_discrete_hist <- function(vec, title){
   barplot(counts/sum(counts), main = title, xlab = "X", ylab = "P(X)")
 }
 
-plot_discrete_hist(sample(1:6, 100000, replace = TRUE), title = "One die")
+plot_discrete_hist(sample(1:6, 1000000, replace = TRUE), title = "One die")
 
 ```
 
 Two dice
 =======================================================
+- This is the same as the image from Wikipedia.
 ```{r, echo=F, fig.width = 10, fig.height = 6}
 
 plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE), title = "Two dice")
@@ -284,7 +294,25 @@ plot_freq_hist(roll_dice(100000, 100), 150, title = "100 dice")
 
 ```
 
-Continuous probability distribution
+Do you see a pattern?
+========================================================
+- Central limit theorem (CLT)
+
+> When sampling from a population that has a mean, provided the sample size is large
+> enough, the sampling distribution of the sample mean will be close to normal regardless
+> of the shape of the population distribution
+
+- (Technically, we were sampling the sum of X rather than the mean, but the mean of X is simply the sum divided by the number of observations. Do you care about this distintion? Didn't think so. It makes me feel better, though.)
+
+What does this mean?
+========================================================
+- For our dice problem, it means that we can compute the means of our samples (e.g. the mean of the 5, or 10, or 100 samples) 
+- Remember, the *sample mean* is a random variable as well, since it is different every time we take a sample
+- We can then use a *continuous* probability distribution -- the **normal distribution** as the theoretical probability distribution for our random variable (i.e. the sample mean).
+- This makes our life easy, because the normal distribution is very simple to handle mathematically (really!).
+
+
+Continuous probability distributions
 =======================================================
 ```{r, echo=F, fig.width = 10, fig.height = 6}
 plot(function(x) dnorm(x), -3, 3,
@@ -293,10 +321,9 @@ ylab="density",xlab="X")
 ```
 
 Here, the outcomes are continuous, so it doesn't make sense to ask about the probability of any point on the x-axis.
-
 - What is the probability of x = 1? 
- - What do you mean by "1"? Does 1.00001 still qualify as 1?
-- It makes more sense to ask these questions about intervals.
+ - What do you mean by "1"? The function is continuous, so does 1.00001 still qualify as 1?
+- It makes more sense to ask these questions about intervals. The probability is then the area under the curve for the interval.
 - Important: the total area under the curve is 1.
 
 Normal probability density function (PDF)
@@ -305,29 +332,38 @@ $$
   f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
 $$
 
-With $x$ = value, 
-$\mu$ = mean, 
-and $\sigma$ = standard deviation
 ```{r, echo=F, fig.width = 10, fig.height = 6}
 plot(function(x) dnorm(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
 ```
 
-Defining the normal PDF by hand (just in case you wanted to make sure)
+Normal probability density function (PDF)
 ========================================================
 $$
   f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
 $$
-```{r, fig.width = 10, fig.height = 6}
-dnorm_manual <- function(x, mu = 0, sigma = 1) {1/(sigma*sqrt(2*pi)) * exp(-((x-mu)^2/2*sigma^2))}
-plot(function(x) dnorm_manual(x), -3, 3,
-main = "Normal density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
+- This looks scary, but it really isn't. This is simply a mathematical function that happens to describe the distribution of a lot of random variables in nature.
+    - If you look closely, you can see that the function has three parameters, $x, \mu,$ and $\sigma$ ($\pi$ and $e$ are constants).
+      - The first parameter, $x$ is the random variable. The function gives you the probability density at each value of $x$
+      - The second parameter, $\mu$, is called the **expected value** or the **mean** of the distribution.
+      - The third parameter, $\sigma$, is called the standard deviation.
 
-Asking reasonable questions about continuous distributions
+Standard normal distribution
 =======================================================
+- There is an infinite number of normal distributions with different parameters $\mu$ and $\sigma$. The one with $\mu = 0$ and $\sigma = 1$ is particularly useful and is called the *standard* normal distribution.
+- Look at how simple and nice the normal distribution appears when we plug in those values:
+$$
+  f(z,\mu,\sigma) = \frac{1}{\sqrt{2 \pi}} e^{-z^2/2}
+$$
+- You can *transform* values from any normal distribution to the normal distribution.
+- This is known as a *z-transformation*: $z = \frac{x - \mu}{\sigma}$
+- By transforming all our observations to z-values and then looking up their probability in the standard normal distribution, this is the only distribution we'll ever need (...mostly).
+
+The probability of outcomes in the standard normal distribution
+=======================================================
+- Remember, we can't really get the probability of a *point* event in a continuous distribution, since there are no "points" in a continuous variable
+- But we can ask questions about *intervals*:
 - What's the probability of x being between 0 and 1?
 
 ```{r, echo = F}
@@ -337,96 +373,71 @@ curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
 polygon(cord.x,cord.y,col='skyblue')
 ```
 
-- How do we do this?
-- We could integrate!
-  - But there's a more convenient way in R.
-  
-Using `pnorm`
+Getting the area under the curve
 =======================================================
-- `pnorm(q)` gives you the probability of `x < q` (in the standard normal distribution)
-```{r}
-pnorm(1)
-```
-```{r, echo = F}
-cord.x <- c(-3,seq(-3,1,0.01),1)
-cord.y <- c(-3,dnorm(seq(-3,1,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-- `pnorm(1)` is not quite what we wanted yet.
+- Since we know exactly what the function is, we can get the area under the curve.
+  - Remember how to do that from maths class? Your best friend, integration :
+$$ p (0 < z < 1) = \int\limits_{0}^{1} \frac{1}{\sqrt{2 \pi}} e^{-z^2/2} dz$$
+- Don't want to do integration? Well, you're in luck, because most statistical software (and Excel!) can do this for you.
+- `=NORM.S.DIST(0,TRUE)` will give you the area under the curve to the left of 0 (i.e. the probability that $z < 0$)
+- `=NORM.S.DIST(1,TRUE)` will give you the area under the curve to the left of 1 (i.e. the probability that $z < 1$)
 
-Using `pnorm` (2)
+Getting the area under the curve
 =======================================================
-- What about `pnorm(0)`?
-```{r}
-pnorm(0)
-```
-```{r, echo = F}
-cord.x <- c(-3,seq(-3,0,0.01),0)
-cord.y <- c(-3,dnorm(seq(-3,0,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
-Well, look at that!
-
-Finally getting our area under the curve
-========================================================
-- I hope you can guess how to do it now:
-```{r}
-pnorm(1)-pnorm(0)
-```{r, echo = F}
-cord.x <- c(0,seq(0,1,0.01),1)
-cord.y <- c(0,dnorm(seq(0,1,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
+- So, for our interval: $p (0 < z < 1) = p(z < 1) - p(z < 0)$
+- Remember, Excel gives us the upper tail (the area under the curve to the right of the $z$ value)
+  - So we rewrite our interval: since $p(z < 1) = 1-p(z > 1)$ and $p(z < 0) = 1-p(z > 0)$, $p (0 < z < 1) = 1-p(z > 1) - (1-p(z > 0))$
+  - In Excel: 
+      - `=NORM.S.DIST(1,TRUE)-NORM.S.DIST(0, TRUE)`
+      - Result: `r pnorm(1)-pnorm(0)`
 - Success!
 
 Things you can do with this knowledge
 ========================================================
-- Say I'm looking at random numbers from a standard normal distribution:
-```{r}
-rnorm(5)
-```
-- and I see that one of them is 4.
+- Say I'm looking at random numbers from a standard normal distribution, and I see that one of them is 4.
   - That seems very unusual
   - Just how unusual?
-    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?    
+    - What's the probability of getting a value of 4 when sampling from a standard normal distribution (mean = 0, sd = 1)?  
 
 Just how unusual is a value of 4?
 ========================================================
 - Remember, when you have a continuous distribution, you can't think about point values (e.g. 5). Rather, what you want to know is:
-    - What is the probability of getting a value of 4 *or greater*?
-```{r, }
-print(pnorm(4), digits = 5)
-```
-- Is that the probability? No, that's the probability of getting a value of 4 *or less*
-- Just get the inverse probability:
-```{r}
-1 - pnorm(4)
-```
+    - What is the probability of getting a value of 4 *or greater* (or $p(z > 4) = 1-p(z < 4)$)?
+- Let's ask Excel: `=1-NORM.S.DIST(4,TRUE)`
+    - Result: `r format(dnorm(4), scipen = 8)`
+- So it's very unusual.
+- Can we come up with a similar test for our dice sample mean?
+- We'll have to figure out how the dice sample means are distributed.
+    - Then we can take our sample mean and see how likely (or unlikely) it is that it comes from the theoretical distribution.
 
-Why do we care about the normal distribution?
+The theoretical distribution of dice sample means
 ========================================================
-- Central limit theorem (CLT)
+- We've seen that we can approximate our theoretical distribution (which is actually discrete) using a continuous distribution function, namely the normal distribution, which makes our lives very easy (yes, really!).
+- We have to figure out the $\mu$ and the $sigma$ parameters for our theoretical normal distribution of sample means, though.
+- Note for those of you who care (probably no one): In the case that we actually know exactly what the probabilities for our discrete probability distribution should look like, we could also use a different distribution, the $\chi^2$ (chi square) distibution. More about that next week, otherwise our heads may explode.
 
-> When sampling from a population that has a mean, provided the sample size is large
-> enough, the sampling distribution of the sample mean will be close to normal regardless
-> of the shape of the population distribution
+Random variables: Expected value
+========================================================
+- Random variables have expected values
+- For discrete random variables, the expected value is the outcome value multiplied by the probability of the outcome:
+$$ E(X) = \mu = \sum\limits_{i=1}^k p(x_i)\cdot x_i$$
+  - where $E(X)$ is the expected value of a discrete random variable $X$ with the outcomes $(x_1 \dots x_k)$ and the associated probabilities $(p(x_1)\dots p(x_k))$
+- The equivalent for continuous random variables:
+$$\mu = \int\limits_{-\infty}^{\infty}x f(x) dx$$
 
-Let's see if that's actually true by running some simulations!
+Random variables: Variance
+========================================================
+- Random variables also have variances
+- For discrete random variables, the variance is the difference between the outcome value and the mean multiplied by the probability of the outcome:
+$$ \sigma^2 = \sum\limits_{i=1}^k p(x_i)\cdot (x_i - \mu)^2$$
+  - where $\sigma^2$ is the variance of a discrete random variable $X$ with the outcomes $(x_1 \dots x_k)$ and the associated probabilities $(p(x_1)\dots p(x_k))$
+- The equivalent for continuous random variables:
+$$\mu = \int\limits_{-\infty}^{\infty}(x-\mu)^2 f(x) dx$$
 
 
 Maths basics: Expected values
 ========================================================
-- Random variables have expected values
-- For discrete random variables, the expected value is the outcome value multiplied by the probability of the outcome:
-$$ E(X) = \sum\limits_{i=1}^k p(x_i)\cdot x_i$$
-  - where $E(X)$ is the expected value of a discrete random variable $X$ with the outcomes $(x_1 \dots x_k)$ and the associated probabilities $(p(x_1)\dots p(x_k))$
-
-Maths basics: Expected values (2)
-========================================================
-- For example, the expected value of rolling a six-sided die is:
+- For example, the expected value $\mu$ of rolling a six-sided die is:
 $$
 \begin{aligned}
 E(X) &= \sum\limits_{i=1}^{6} p(x_i) \cdot x_i \\
@@ -437,6 +448,27 @@ E(X) &= \sum\limits_{i=1}^{6} p(x_i) \cdot x_i \\
     &= \frac{21}{6} = 3.5
 \end{aligned}
 $$
+
+Maths basics: Variance
+========================================================
+- For example, the variance $\sigma^2$ of rolling a six-sided die is:
+$$
+\begin{aligned}
+\sigma^2 &= \sum\limits_{i=1}^6 p(x_i)\cdot (x_i - \mu)^2 \\
+    &= (x_1-\mu)^2 \cdot p(x_1) + (x_2-\mu)^2 \cdot p(x_2) + (x_3-\mu)^2 \cdot p(x_3) \\
+    &+ (x_4-\mu)^2 \cdot p(x_4) + (x_5-\mu)^2 \cdot p(x_5) + (x_6-\mu)^2 \cdot p(x_6) \\
+    &= \frac{1}{6}\cdot \Big((1-3.5)^2 + (2-3.5)^2 + (3-3.5)^2 \\
+    &+ (4-3.5)^2 + (5-3.5)^2+ (6-3.5)^2\Big) \\
+    &= \frac{17.5}{6} = 2.9167
+\end{aligned}
+$$
+
+Back to the dice example again
+=======================================================
+- So, we know that, if our dice are fair, our dice rolls come from a discrete theoretical distribution with $\mu = 3.5$ and $\sigma^2 = 2.9167$. 
+- But remember, we don't want to evaluate single dice rolls, but rather the mean of a sample of dice rolls, since that will enable us to use the nice and easy normal distribution to calculate the probabilities.
+- So, what is the mean $\mu_{\bar{x}}$ and what is the variance $\sigma_{\bar{x}^2}$ for the **distribution of sample means**?
+
 
 Maths basics: Expected values (3)
 ========================================================
@@ -519,15 +551,23 @@ $$
 
 The expected value of the sample mean (3)
 ========================================================
-- We just found that the expected value of the sample mean $E(\bar{X})$ is identical to the population mean $\mu_x$, *regardless of the sample size*.
+- We just found that the expected value of the sample mean $E(\bar{X})$ is identical to the expected value (the mean) of the population $\mu_x$, *regardless of the sample size*.
 - We can say that the sample mean $\overline{X}$ is an *unbiased estimator* of the population mean $\mu$
 - No matter what we do and what crazy population we're taking samples of, the sample means will always be distributed around the true population mean.
     - *Isn't that cool?*
     - I know what you're thinking right now, but this is *actually* cool. Just think about it: If you want to know the true population mean of any population, all you have to do is take enough samples.
+    
+Our dice example
+========================================================
+- Remember, we want to know how the means of our dice rolls should be distributed if the dice are fair. So, now we know that they are normally distributed (because of the Central Limit Theorem) with an expected value of $\mu_{\bar{x}} = 3.5$.
+- What about the *variance* of the *distribution of sample means*?
+    - Well, this will take some work. Sorry, people. It's maths time.
+    - First, we need to know how the sample variance is related to the population variance.
+    - In other words, we need to know the expected value of the sample variance.
 
 The expected value of the sample variance
 ========================================================
-- OK, now we want to know how the variance of your samples ($s^2$) is related to the population variance $\sigma^2$.
+- OK, first we want to know how the variance of your samples ($s^2$) is related to the population variance $\sigma^2$.
 - Remember that the variance of a sample is
 $$ s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n}$$
 - We can rewrite this as:
@@ -564,7 +604,7 @@ The expected value of the sample variance (4)
 ========================================================
 - And $\frac{n\cdot E(X_i^2)}{n}-E(\bar{X}^2)$ of course simplifies to $E(X_i^2)-E(\bar{X}^2)$
 - So, now we have to figure out what $E(X_i^2)$ and $E(\bar{X}^2)$ are.
-- The easiest way to do this is to start with the population variance $\sigma^2$ and the variance of the sample means $\sigma_{\bar{x}}^2$
+- The "easiest" (I know, right?) way to do this is to start with the population variance $\sigma^2$ and the variance of the sample means $\sigma_{\bar{x}}^2$
 
 The expected value of the sample variance (5)
 ========================================================
@@ -654,7 +694,7 @@ The expected value of the variance of sample means
 - We can rewrite $\bar{X}^2$ as:
 $$
 \begin{aligned} 
-\bar{\bar{X}}^2 &= \frac{(X_1+X_2+\dots+X_n)^2}{n^2} \\
+\bar{X}^2 &= \frac{(X_1+X_2+\dots+X_n)^2}{n^2} \\
           &= \frac{1}{n^2}\cdot \Bigg(X_1^2+X_2^2 + \dots+X_n^2 \\
           &+2\sum\limits_{i=1}{\sum\limits_{j=i+1}{X_i\cdot X_j}}\Bigg)
 \end{aligned}
@@ -662,7 +702,7 @@ $$
 
 The expected value of the variance of sample means (2)
 ========================================================
-- If (and only if!) $X_1, X_2,\dots, X_n$ are independent (i.e. the value of $X_1$ doesn't depend on the value of $X_2$, or $X_3$, etc.), we can write expected value of the final term of this expression as:
+- If (and only if!) $X_1, X_2,\dots, X_n$ are independent (i.e. the value of $X_1$ doesn't depend on the value of $X_2$, or $X_3$, etc.), we can write the expected value of the final term of this expression as:
 $$
 \begin{aligned}
 E\Bigg(2\sum\limits_{i=1}^{n-1}{\sum\limits_{j=i+1}^{n}{X_i\cdot X_j}}\Bigg) &= n\cdot*(n-1)\cdot E(X_i)\cdot E(X_j)\\
@@ -671,257 +711,86 @@ E\Bigg(2\sum\limits_{i=1}^{n-1}{\sum\limits_{j=i+1}^{n}{X_i\cdot X_j}}\Bigg) &= 
 $$
 - Since $E(\sum_{i=1}^{n}X_i) = \sum_{i=1}^{n}E(X_i)$ and $E(X_i) = \mu$
 
-Non-normal distributions: Gamma
+The expected value of the variance of sample means (3)
 ========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-## plot density histogram:
-x<-rgamma(n = 1000, shape = 3)
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(x,freq=F, breaks = 20)
-plot(function(x) dgamma(x, shape = 3), 0, 6,
-main = "Gamma density",ylim=c(0,.4),
-ylab="density",xlab="X")
-```
-
-
-Sampling from a gamma distribution (1)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-sample_size <- 100
-number_of_simulations <- 1000
-
-sample_means <- replicate(number_of_simulations, mean(rgamma(n = sample_size, shape = 3)))
-
-mean(sample_means)
-sd(sample_means)
-```
-
-Sampling from a gamma distribution (2)
-========================================================
-Make a function to combine histogram and plot:
-```{r, echo=T, fig.width = 14, fig.height = 6}
-make_hist_and_plot <- function(sample_means){
-  par(mfrow=c(1,2)) # (two plots side-by-side)
-  hist(sample_means,freq=F, breaks = 30)
-  plot(density(sample_means), main = paste("Mean = ", round(mean(sample_means),2) , 
-                                           "SD = ", round(sd(sample_means),2)))
-} # label the plot with mean and sd
-make_hist_and_plot(sample_means)
-```
-
-
-Non-normal distributions: Uniform
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-## plot density histogram:
-x <- runif(n = 1000)
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(x,freq=F)
-plot(function(x) dunif(x), -3, 3,
-main = "Uniform density",ylim=c(0,1),
-ylab="density",xlab="X")
-```
-
-Sampling from a uniform distribution (1)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-sample_size <- 100
-number_of_simulations <- 1000
-
-sample_means <- replicate(number_of_simulations, mean(runif(n = sample_size)))
-
-mean(sample_means)
-sd(sample_means)
-```
-
-Sampling from a uniform distribution (2)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-make_hist_and_plot(sample_means)
-```
-
-Non-normal distributions: Exponential
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-## plot density histogram:
-x <- rexp(n = 1000)
-par(mfrow=c(1,2)) # (two plots side-by-side)
-hist(x,freq=F)
-plot(function(x) dexp(x), 0, 6,
-main = "Exponential distribution density",ylim=c(0,1),
-ylab="density",xlab="X")
-```
-
-Sampling from an exponential distribution (1)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-number_of_simulations <- 100
-
-sample_mean_from_exp<- function(number_of_samples){
-  samples <- rexp(number_of_samples)
-  mean(samples)
-}
-
-sample_means <- sapply(1:number_of_simulations, sample_mean_from_exp)
-summary(sample_means)
-```
-
-Sampling from an exponential distribution (2)
-========================================================
-
-```{r, echo=T, fig.width = 14, fig.height = 6}
-make_hist_and_plot(sample_means)
-```
-```
-
-The sampling distribution of the mean (1)
-========================================================
-- Notice something about the means of the samples?
-  - They seem to cluster around the population mean
-  - Let's play with this some more.
-  - First, make a function for running the simulations so that we don't have to type all the code from the previous slides again and again
-    - We're going to sample from the normal distribution again since it's easy to specify mean and sd for it.
-  
-The sampling distribution of the mean (2)
-========================================================
-This is our convenience function for running the simulations.
-Don't worry if you don't understand everything yet!
-```{r}
-run_simulation <- function(sample_size = 100, 
-                           number_of_simulations = 1000, 
-                           population_mean = 0, 
-                           population_sd = 1)
-  {
-
-sample_means <- replicate(number_of_simulations, 
-                          mean(rnorm(n = sample_size, 
-                                     mean = population_mean, 
-                                     sd = population_sd)))
-
-make_hist_and_plot(sample_means)
-}
-```
-
-The sampling distribution of the mean (2)
-========================================================
-It works:
-```{r,fig.width = 10, fig.height = 6}
-run_simulation(sample_size = 100, 
-               number_of_simulations = 1000, 
-               population_mean = 0, 
-               population_sd = 1)
-```
-
-
-The sampling distribution of the mean (3)
-========================================================
-Now, let's try different parameters. What happens if we change the mean of the population?
-```{r,fig.width = 10, fig.height = 6}
-run_simulation(sample_size = 100, 
-               number_of_simulations = 1000, 
-               population_mean = 100, 
-               population_sd = 1)
-```
-
-The sampling distribution of the mean (3)
-========================================================
-The sampling distribution of the mean has the same mean as the population!
-You can (hopefully) see how this might be useful.
-```{r,fig.width = 10, fig.height = 6}
-run_simulation(sample_size = 100,
-               number_of_simulations = 1000, 
-               population_mean = 50000, 
-               population_sd = 1)
-```
-
-Sample mean and population mean (1)
-========================================================
-- OK, *why* is it useful?
-  - Well, usually, we don't know the population mean.
-  - We have to estimate it somehow.
-  - Solution: just use the sample mean as an estimator for the population mean.
-    - Can this go wrong?
-      - Yes, definitely.
-      
-Sample mean and population mean (2)
-========================================================
-- Remember the plots we just made:
-
-```{r,fig.width = 10, fig.height = 6, echo = F}
-run_simulation(sample_size = 100,
-               number_of_simulations = 1000, 
-               population_mean = 0,
-               population_sd = 1)
-```
-
-- Notice that the sample mean is not **not always** the same as the population mean (0 in this case).
-  - This is due to the random nature of drawing a sample from the population.
-  
-Sample mean and population mean (3)
-========================================================
-- Let's try reducing the sample size
-```{r,fig.width = 10, fig.height = 6, echo = T}
-run_simulation(sample_size = 10,
-               number_of_simulations = 1000,
-               population_mean = 0,
-               population_sd = 1)
-```
-- Things got a bit noisier (note that the x-axis is scaled automatically)
-- The sd of the distribution of the sample means went up.
-
-Sample mean and population mean (4)
-========================================================
-- Let's try increasing the sample size
-```{r,fig.width = 10, fig.height = 6, echo = T}
-run_simulation(sample_size = 1000,
-               number_of_simulations = 1000,
-               population_mean = 0, 
-               population_sd = 1)
-```
-- Things got a lot less noisy (note that the x-axis is scaled automatically)
-- The sd of the distribution of the sample means went down.
-
-Sample mean and population mean (5)
-========================================================
-- Note that when we changed the sample size, the sd of the distribution of sample means changed.
-- The mean stayed the same though!
-- The larger your sample is, the closer your average sample mean is going to be to the true population mean.
-- Formally speaking, the sample mean is an **unbiased estimator** of the population mean.
-- I could show you the mathematical proof for that, but I won't.
-
-Standard error of the mean (SE) (1)
-========================================================
-
-Population SD = 1
-
-|Sample size|  SD of the sample mean|
-|----------:|----------------------:|
-|         10|                    .31|
-|        100|                     .1|
-|       1000|                    .03|
-
-See a pattern?
-
-This relationship holds in general:
+- With that, we can rewrite $E(\bar{X^2})$ as
 $$
-\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
-$$
-where $\sigma_{\bar{x}}$ is the standard deviation of the sample means, $\sigma$ is the population standard deviation, and $n$ is the sample size
+\begin{aligned}
+E(\bar{X^2}) &= \frac{1}{n^2}\cdot \Big(E(X_1)^2 + E(X_2)^2 + \dots \\
+             &+ E(X_n)^2) + n \cdot (n-1)\cdot \mu^2\Big)
+\end{aligned}$$
+- But we know already (through our hard work earlier) that the expected value of the square of $X_i$ is $E(X_i^2) = \sigma^2 + \mu^2$. 
+- So we can replace $E(X_1)^2 + E(X_2)^2 + \dots + E(X_n)^2$ with $n\cdot(\sigma^2 + \mu^2) = n\cdot \sigma^2 + n\cdot \mu^2$.
 
-
-Standard error of the mean (SE) (2)
+The expected value of the variance of sample means (4)
 ========================================================
-- Usually, we don't know what $\sigma$ is, but we can still can estimate $\sigma_{\bar{x}}$ from our sample:
+- Let's do that now:
 $$
-SE_{\bar{x}} = \frac{s}{\sqrt{n}}
+\begin{aligned}
+E(\bar{X^2}) &= \frac{1}{n^2}\cdot \Big(n\cdot \sigma^2 + n\cdot \mu^2+ n \cdot (n-1)\cdot \mu^2\Big)\\
+             &= \frac{\sigma^2}{n}+\frac{n\cdot \mu^2+n*2\cdot\mu^2-n\cdot\mu^2}{n^2} = \frac{\sigma^2}{n}+\mu^2
+\end{aligned}$$
+- Plugging this into our previous equation $\sigma_{\bar{x}}^2 = E(\bar{X}^2) - \mu^2$ we get:
+$$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}+\mu^2 - \mu^2 = \frac{\sigma^2}{n}$$
+- If we take the square root of this, we *FINALLY* get the **standard error of the mean**:
+$$\sigma_{\bar{x}} = \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$$
+
+Correcting the bias in the expected value of the sample variance
+================================================================
+- Before we actually use our hard-earned $\mu_{\bar{x}}$ and $\sigma_{\bar{x}}$, a quick detour:
+  - Remember that the expected value of the sample variance was biased by the variance of the sample mean, i.e. $E(S^2) = \sigma^2 - \sigma_{\bar{x}}^2$?
+  - Now we know what the variance of the sample mean is, so let's plug it in:
+$$
+\begin{aligned}
+E(S^2) &= \sigma^2 - \sigma_{\bar{x}}^2 = \sigma^2 - \frac{\sigma^2}{n} = \frac{n\cdot\sigma^2-\sigma^2}{n} \\
+       &= \sigma^2\cdot\frac{n-1}{n}
+\end{aligned}
 $$
 
-where $SE_{\bar{x}}$ is the estimated **standard error of the mean**, $s$ is the population standard deviation, and $n$ is the sample size.
-- More about that next week.
+Correcting the bias in the expected value of the sample variance (2)
+================================================================
+- We just found out that the expected value of the sample variance $E(s^2)$ underestimates the true population variance $\sigma^2$ by a factor of $\frac{n-1}{n}$.
+- That means we can apply a correction factor to the sample variance so that it becomes an *unbiased* estimator of the population variance:
+$$
+\begin{aligned}
+s_{n-1}^2 &= s^2 / \frac{n-1}{n} =  s^2\cdot\frac{n}{n-1} = \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n}\cdot\frac{n}{n-1}\\
+          &= \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n-1}
+\end{aligned}
+$$
+
+Correcting the bias in the expected value of the sample variance (3)
+================================================================
+- Most statistical software will use this corrected formula for computing the sample variance: $s_{n-1}^2 = \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n-1}$
+- If you want a more intuitive explanation of what is going on here, watch the videos at EasyStats:
+[http://easystats.org/](http://easystats.org/)
+
+Please, let's FINALLY finish the dice example
+================================================================
+- OK, OK. We now have everything we need to determine whether our dice roll sample mean is unusual assuming fair dice.
+- More formally, we call this a **Hypothesis Test**
+- We establish a *Null Hypothesis* $H_0$ (e.g. the dice are fair), 
+    - determine a theoretical probability distribution of the random variable (our dice roll means) given that the $H_0$ is true:
+        - a normal distribution with $\mu_{\bar{x}} = 3.5$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{\sqrt{2.9167}}{\sqrt{n}}$, where n is the number of dice rolls in our sample,
+    - and finally we can calculate the probability that you would observe the sample mean you observed given the $H_0$.
+    
+Final steps
+=================================================================
+- So, let's assume you did 10 dice rolls for this example, and that your mean was 4.
+- Since we know that the sample means should be normally distributed, we can transform your mean into a *z*-value: 
+- Since $\mu_{\bar{x}} = 3.5$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{\sqrt{2.9167}}{\sqrt{10}} = `r sqrt(2.9167)/sqrt(10)`$:
+$$ z(4) = \frac{4-3.5}{`r sqrt(2.9167)/sqrt(10)`}=`r (4-3.5)/(sqrt(2.9167)/sqrt(10))`$$
+- Let's ask Excel what the probability of observing a sample mean this far away (or farther) from the population mean is for the standard normal distribution: `1-NORM.S.DIST(0.9258,TRUE)`
+    - Result: 0.177274964
+    
+Final steps (2)
+=================================================================
+- Fisher (who popularised this sort of hypothesis testing) suggested that we should consider data with a probability of less than 5% (or .05) given the null hypothesis as **significant** evidence for rejecting the null hypothesis.
+- In our case, we are far away from a probability (or short, *p*-value) of .05. So, we can't reject the null hypothesis. Try it for yourselves, though.
+- More on this next week.
+
+Technical note for those who really care
+=================================================================
+- We really don't care about the direction of the effect here, just the absolute distance from the mean (i.e. this is a *two-tailed* test).
+- So, to be absolutely correct, we should ask Excel to give us the probability of z being at least this far away from the mean on either side: $p(z < -.9258 \cup z > .9258) \\= p(z < -.9258) + (1-p(z < .9258))$. 
+- When we ask Excel for the p-value `=NORM.S.DIST(-0.9258,TRUE)+(1-NORM.S.DIST(0.9258,TRUE))` we get the actual, correct result of `r pnorm(-.9258)+(1-pnorm(.9258))`.
+- Good times. Until next week!
