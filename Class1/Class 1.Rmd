@@ -5,7 +5,6 @@ date: "1 October 2015"
 output: pdf_document
 ---
 
-
 What did/will we do on Thursday?
 ========================================================
 - We did/will do a quick overview of probability as you will have encountered it in school
@@ -75,7 +74,7 @@ Sum of all the individuals in all the groups:
 
 $$
 \begin{aligned}
-\sum\limits_{m=1}^{2}\sum\limits_{x=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
+\sum\limits_{m=1}^{2}\sum\limits_{i=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
   + x_{21} + x_{22} + x_{23} + x_{24}
 \end{aligned}
 $$
@@ -89,7 +88,7 @@ $$x_1 \cdot x_2 \cdot x_3 \cdot x_4 \cdot x_5 = \prod\limits_{i=1}^5{x_i}$$
 
 $$
 \begin{aligned}
-\prod\limits_{m=1}^{2}\prod\limits_{x=1}^{4}{x_{mi}} = x_{11}\cdot x_{12}\cdot x_{13}\cdot x_{14} \\
+\prod\limits_{m=1}^{2}\prod\limits_{i=1}^{4}{x_{mi}} = x_{11}\cdot x_{12}\cdot x_{13}\cdot x_{14} \\
   \cdot x_{21} \cdot x_{22} \cdot x_{23} \cdot x_{24}
 \end{aligned}
 $$
@@ -153,7 +152,7 @@ Aggregating our dice results
   - The median: The number separating the higher half of a sample from the lower half
   - The mode: The most frequent observation
 - Measures of dispersion:
-  - The standard deviation: $s_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
+  - The variance: $s_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
 
 Statistics basics: Random variables
 ==========================================================

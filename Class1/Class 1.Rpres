@@ -1,12 +1,7 @@
 Class 1: Fundamentals of probability and statistical inference
-======================================================================
----
-title: "Class 1: Fundamentals of probability and statistical inference"
-author: "Bernhard Angele"
-date: "1 October 2015"
-output: beamer_presentation
----
-
+==================================================================================
+author: Bernhard Angele
+date: 1 October 2015
 
 What did/will we do on Thursday?
 ========================================================
@@ -77,7 +72,7 @@ Sum of all the individuals in all the groups:
 
 $$
 \begin{aligned}
-\sum\limits_{m=1}^{2}\sum\limits_{x=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
+\sum\limits_{m=1}^{2}\sum\limits_{i=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
   + x_{21} + x_{22} + x_{23} + x_{24}
 \end{aligned}
 $$
@@ -91,7 +86,7 @@ $$x_1 \cdot x_2 \cdot x_3 \cdot x_4 \cdot x_5 = \prod\limits_{i=1}^5{x_i}$$
 
 $$
 \begin{aligned}
-\prod\limits_{m=1}^{2}\prod\limits_{x=1}^{4}{x_{mi}} = x_{11}\cdot x_{12}\cdot x_{13}\cdot x_{14} \\
+\prod\limits_{m=1}^{2}\prod\limits_{i=1}^{4}{x_{mi}} = x_{11}\cdot x_{12}\cdot x_{13}\cdot x_{14} \\
   \cdot x_{21} \cdot x_{22} \cdot x_{23} \cdot x_{24}
 \end{aligned}
 $$
@@ -109,15 +104,16 @@ Maths basics: Probability (2)
 ========================================================
 - Basic rules:
     - What is the probability that Event A and Event B will happen together?
-$$\begin{align}
+$$\begin{aligned}
 P(A\cap B) & = P(A|B)P(B) = P(B|A)P(A)\\
 P(A\cap B) &  = P(A)P(B) \qquad\\&\mbox{if A and B are independent}\\
-\end{align}$$
-    - What is the probability that either Event A OR Event B will happen?
-$$\begin{align}
+\end{aligned}$$
+
+- What is the probability that either Event A OR Event B will happen?
+$$\begin{aligned}
 P(A\cup B) & = P(A)+P(B)-P(A\cap B) \\
 P(A\cup B) & = P(A)+P(B) \\\qquad&\mbox{if A and B are mutually exclusive} \\
-\end{align}$$
+\end{aligned}$$
 
 Maths basics: Conditional probability
 ==========================================================
@@ -154,7 +150,7 @@ Aggregating our dice results
   - The median: The number separating the higher half of a sample from the lower half
   - The mode: The most frequent observation
 - Measures of dispersion:
-  - The standard deviation: $s_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
+  - The variance: $s_x^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2$
 
 Statistics basics: Random variables
 ==========================================================
@@ -183,15 +179,11 @@ Random variables (2)
 ==========================================================
 Every discrete random variable X has associated with it a  **probability mass function**, also called *distribution function*.
 $$
-\begin{equation}
 p_X : S_X \rightarrow [0, 1] 
-\end{equation}
 $$
 defined by
 $$
-\begin{equation}
 p_X(x) = P(X(\omega) = x), x \in S_X
- \end{equation}
 $$
 - Back to the example: number of coin tosses till H
 
@@ -229,7 +221,7 @@ From discrete to continuous
 - Let's look at the probability distributions we get from rolling one, two, three etc. dice and summing up the results.
 - We'll start with rolling one die (note that the bars may be a tiny bit uneven since I used a simulation to produce this graph).
 
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 plot_freq_hist <- function(vec, breaks = "Sturges", title){
   h <- hist(vec, plot=FALSE, breaks=breaks, right = FALSE)
   h$counts=h$counts/sum(h$counts)
@@ -248,7 +240,8 @@ plot_discrete_hist(sample(1:6, 1000000, replace = TRUE), title = "One die")
 Two dice
 =======================================================
 - This is the same as the image from Wikipedia.
-```{r, echo=F, fig.width = 10, fig.height = 6}
+
+```{r, echo=F}
 
 plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE), title = "Two dice")
 
@@ -256,7 +249,7 @@ plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replac
 
 Three dice
 =======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 
 plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE), title = "Three dice")
 
@@ -264,7 +257,7 @@ plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replac
 
 Four dice
 =======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 
 plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE)+sample(1:6, 100000, replace = TRUE),title = "Four dice")
 
@@ -272,7 +265,7 @@ plot_discrete_hist(sample(1:6, 100000, replace = TRUE)+sample(1:6,100000, replac
 
 Ten dice
 =======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 
 roll_dice <- function(number_of_samples, number_of_dice){
   result <- sample(1:6, number_of_samples, replace = TRUE)
@@ -288,7 +281,7 @@ plot_discrete_hist(roll_dice(100000, 10),title = "Ten dice")
 
 100 dice
 =======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 
 plot_freq_hist(roll_dice(100000, 100), 150, title = "100 dice")
 
@@ -314,7 +307,7 @@ What does this mean?
 
 Continuous probability distributions
 =======================================================
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 plot(function(x) dnorm(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
@@ -332,7 +325,7 @@ $$
   f(x,\mu,\sigma) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-((x - \mu)^2/2 \sigma^2)}
 $$
 
-```{r, echo=F, fig.width = 10, fig.height = 6}
+```{r, echo=F}
 plot(function(x) dnorm(x), -3, 3,
 main = "Normal density",ylim=c(0,.4),
 ylab="density",xlab="X")
@@ -791,6 +784,6 @@ Final steps (2)
 Technical note for those who really care
 =================================================================
 - We really don't care about the direction of the effect here, just the absolute distance from the mean (i.e. this is a *two-tailed* test).
-- So, to be absolutely correct, we should ask Excel to give us the probability of z being at least this far away from the mean on either side: $p(z < -.9258 \cup z > .9258) \\= p(z < -.9258) + (1-p(z < .9258))$. 
-- When we ask Excel for the p-value `=NORM.S.DIST(-0.9258,TRUE)+(1-NORM.S.DIST(0.9258,TRUE))` we get the actual, correct result of `r pnorm(-.9258)+(1-pnorm(.9258))`.
+- So, to be absolutely correct, we should ask Excel to give us the probability of z being at least this far away from the mean on either side: $p(z < -.9258 \cup z > .9258) = p(z < -.9258) + (1-p(z < .9258))$. 
+- When we ask Excel for the p-value `=NORM.S.DIST(-0.9258,TRUE)+(1-NORM.S.DIST(0.9258,TRUE))` we get the actual, correct result of $`r pnorm(-.9258)+(1-pnorm(.9258))`$.
 - Good times. Until next week!
