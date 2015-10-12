@@ -14,7 +14,7 @@ $$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}$$
 
 How can we use this?
 =======================================================
-- Hypothesis testing with normal distributions:
+- We can do hypothesis testing with normal distributions:
   - Let's say we're forensic psychologists trying to screen prisoners for signs of psychopathy.
   - Let's say that we have a test that's normed for a standard (prison) population. Thanks to the norming, we know that this standard population has a mean psychopathy score of 50 and a standard deviation of 10. The psychopathy scores (the scores themselves, not just their means) are approximately normally distributed.
   - You see a prisoner with a score of 72. Is this an unusually high score? Should you be concerned?
@@ -94,27 +94,14 @@ Confidence intervals (3)
 - We want to get an interval that includes 95% of the area under the curve
   - That means we need to take off 2.5% on every side
   - For the left interval boundary, we want the x value that is greater than or equal to 2.5% of x values
-
-```r
-qnorm(.025)
-```
-
-```
-[1] -1.959964
-```
+  - ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.025)`
+  - Result: -1.959964
 
 Confidence intervals (4)
 =========================================================
 - For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values.
-- Get the corresponding **z-score**:
-
-```r
-qnorm(.975)
-```
-
-```
-[1] 1.959964
-```
+- ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.975)`
+  - Result: 1.959964
 - If you've done statistics before, these numbers should be pretty familiar to you.
 - Generalising this to other normal distributions is easy:
 $\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
@@ -128,7 +115,6 @@ Exercise
 - This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
 - Suppose I'm adopting 3 cats instead of 2 -- does that change anything about my estimate?
-- Hint: The function you want to use starts with a `q`.
 
 Solution
 =========================================================
@@ -136,79 +122,39 @@ Solution
   - How hungry? Mean = 2 cans/day, sd = .05 cans/day
   - I want a 90% CI for the mean of that sample
 - Get the z-scores for the lower and the upper bound:
+    - lower: `=NORM.S.INV(.05)` = -1.6448536
+    - upper: `=NORM.S.INV(.95)` = 1.6448536
 
-```r
-qnorm(.05)
-```
-
-```
-[1] -1.644854
-```
-
-```r
-qnorm(.95)
-```
-
-```
-[1] 1.644854
-```
 
 Solution (2)
 =========================================================
 - Calculate the CI:
-
-```r
-2 + qnorm(.05) * .5/sqrt(2) # lower limit
-```
-
-```
-[1] 1.418456
-```
-
-```r
-2 + qnorm(.95) * .5/sqrt(2) # upper limit
-```
-
-```
-[1] 2.581544
-```
+  - lower limit: `=2 + NORM.S.INV(.05) * .5/sqrt(2)` = 1.4184564
+  - upper limit: `=2 + NORM.S.INV(.95) * .5/sqrt(2)` = 2.5815436
 - Those are some hungry cats!
 - I need to plan on buying between 1.4184564 and 2.5815436 cans of cat food per day (per cat).
 
 Plot it!
 =========================================================
-![plot of chunk unnamed-chunk-9](Class2-figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-5](Class2-figure/unnamed-chunk-5-1.png) 
 
 Solution (4)
 =========================================================
 - If I only care about the maximum, I don't need the lower limit.
 - I can use a different upper limit to get an interval that delimits 90% of the area under the curve.
-
-```r
-2 + qnorm(.90) * .5/sqrt(2) # upper limit
-```
-
-```
-[1] 2.453097
-```
+    - upper limit: `=2 + NORM.S.INV(.90) * .5/sqrt(2)`
 - Those are still some hungry cats!
 - I need to plan on buying at most 2.4530969 cans of cat food per day (per cat).
 
 Plot it again!
 =========================================================
-![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-6](Class2-figure/unnamed-chunk-6-1.png) 
 
 Solution (5)
 =========================================================
 - What if I'm getting 3 cats?
-
-```r
-2 + qnorm(.90) * .5/sqrt(3) # upper limit
-```
-
-```
-[1] 2.369952
-```
+- upper limit: `2 + NORM.S.INV(.90) * .5/sqrt(3)`
+- Result: `r `2 + qnorm(.90) * .5/sqrt(3)`
 - Why is it less?
 - The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats.
 
@@ -242,57 +188,36 @@ Computing a CI from the sample mean
   - We have already estabished that the sample mean is a good estimator for the population mean.
 - What about the sample sd ($s$)? Is it a good estimator for the population sd ($\sigma$)?
 - Or the equivalent question: is sample variance ($s^2$) a good estimator of population variance ($\sigma^2$)?
-- This sounds like really tricky maths problem.
-  - But we can take it easy and just simulate!
+- We just tackled this in the last lecture analytically
+  - Today, we can take it easy and just simulate!
+- If you haven't done it before, now is a really good time to watch (at the very least) the first 7 minutes of [Julian's video](https://www.youtube.com/watch?v=Juo5NJSHlMM) (see myBU).
 
-
-Set up a function to simulate sampling and calculate sample variances
-===========================================================
-
-```r
-run_variance_simulation <- function(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
-  {
-
-sample_variances <- replicate(number_of_simulations, var(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
-}
-
-#Define a new plot function so that the plot titles are correct
-make_variance_hist_and_plot <- function(sample_variance){
-  par(mfrow=c(1,2)) # 
-  hist(sample_variance,freq=F, breaks = 30)
-  plot(density(sample_variance), main = paste("Mean = ", round(mean(sample_variance),2) , "SD = ", round(sd(sample_variance),2)))} 
-```
 
 Population variance and sample variance: plots
 ===========================================================
+- Taking samples of size 2 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+![plot of chunk unnamed-chunk-7](Class2-figure/unnamed-chunk-7-1.png) 
 
-```r
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
-```
-
-![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14-1.png) 
 
 Population variance and sample variance: plots
 ===========================================================
+- Taking samples of size 4 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+![plot of chunk unnamed-chunk-8](Class2-figure/unnamed-chunk-8-1.png) 
 
-```r
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
-```
-
-![plot of chunk unnamed-chunk-15](Class2-figure/unnamed-chunk-15-1.png) 
 
 Population variance and sample variance: plots
 ===========================================================
+- Taking samples of size 10 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+![plot of chunk unnamed-chunk-9](Class2-figure/unnamed-chunk-9-1.png) 
 
-```r
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
-```
-
-![plot of chunk unnamed-chunk-16](Class2-figure/unnamed-chunk-16-1.png) 
+Population variance and sample variance: plots
+===========================================================
+- Taking samples of size 100 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+![plot of chunk unnamed-chunk-10](Class2-figure/unnamed-chunk-10-1.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
-- Looks like it's a pretty good estimator (unbiased actually)
+- Looks like sample variance (at least if we calculate it dividing by $n-1$ instead of $n$ is a pretty good estimator (unbiased actually)
 - We can plug the sd of the sample into the equation for the SD of the sampling distribution (or rather, the standard error):
 $$
 \begin{equation}
@@ -300,9 +225,91 @@ SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{equation}
 $$
 (Note that we are ignoring the question if the relationship between $s$ and $s^2$ is really the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that, if you are really curious.)
-- But this means that our SE is an estimate of an estimate (estimating $\sigma$ from $s$, then estimating $SE_{\bar{x}}$).
+- But as you saw in Julian's video, the estimate of $\sigma$ from $s$ is sometimes quite far away from the correct $\sigma$, especially for small sample sizes.
 - This means that our estimate for $\sigma$ is going to vary. Its accuracy will depend on the sample size.
 
+The chi-square distribution
+============================================================
+- But there's another striking thing going on here. Look again at the distribution of variances for sample size 2:
+![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11-1.png) 
+- This is definitely not a normal distribution!
+
+The chi-square distribution
+============================================================
+- What is a variance again?
+    - Definition: $s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \mu)^2}{n-1}$
+    - If we have a standard normal distribution ($\mu = 0$ and $\sigma = 1$): $s^2 = \frac{\sum\limits_{i=1}^{n}z_i^2}{n-1}$
+    - If $n = 2$: $s^2 = \sum\limits_{i=1}^{n}z_i^2$
+    - The $\chi_1^2$ distribution is the distribution of the square of a random variable following the standard normal distribution
+        - i.e. squares of *z*-values are $\chi_1^2$ distributed
+        
+Chi-square distributions
+============================================================
+- There is more than one $\chi^2$ distribution:
+    - The sum of the squares of two **independent**, squared random variables following the standard normal distribution (i.e. *z*-values) follows the $\chi_2^2$ distribution: $\chi_2^2 = z_1^2 + z_2^2$
+    - In general, $\chi_n^2 = \sum\limits_{i=1}^{n}z_i^2$
+      - Here, $n$, the number of independent $z^2$ variables is also known as the **degrees of freedom** of the $\chi^2$ distribution.
+      
+Chi-square distributions plotted
+===========================================================
+![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12-1.png) 
+
+What can we do with chi-square?
+============================================================
+- We can approach our dice problem in a different way
+- Instead of looking at the sample means, we can look at the dice roll results directly
+- These come from a distribution called the **multinomial** distribution
+- Let's start with coin flips though, because that way we can use the **binomial** distribution
+
+The binomial distribution
+============================================================
+- This is the distribution of number of successes in a sequence of n independent yes/no experiments
+- Definition: $$f(X = k|n, p) = \binom{n}{k}\cdot p^k\cdot (1-p)^{n-k}$$
+    - Where $k$ is the number of successes (e.g. number of heads), $n$ is the total number of experiments (coin flips), and $p$ is the probability of the success (e.g. 0.5 for a fair coin).
+- You almost definitely did this in school, but we won't go into the details of this distribution much. Instead, we'll just look at what happens when we increase the sample size 
+
+Plotting the binomial distribution
+============================================================
+![plot of chunk unnamed-chunk-13](Class2-figure/unnamed-chunk-13-1.png) 
+
+Binomial and normal distribution
+===========================================================
+- For large sample sizes, the binomial distribution approximates the normal distribution
+- Because of this, there is an easy way of calculating a z-value (or rather, the square of a z-value -- I'll spare you the proof, but ask me if you're interested): 
+    - First, get the frequencies of successes $f_{b(1)}$ and non-successes $f_{b(2)}$.
+        - For example, if you had $f_{b(1)} = 40$ times Heads and $f_{b(2)} = 60$ times Tails, can we conclude that the coin is not fair?
+    - Then get the expected frequencies given the null hypothesis. If we have a fair coin, our p(Heads) should be .5, so we're expecting $f_{e(1)}=50$ times Heads and $f_{e(2)}=50$ times tails.
+
+The chi-square test
+===========================================================
+- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distributions and the squared differences between the observed ($f_{b(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
+$$z^2 = \chi_1^2 = \frac{\sum\limits_{j = 1}^{n}(f_{b(j)}-f_{e(j)})^2}{f_{e(j)}}$$
+
+The chi-square test (2)
+===========================================================
+- In this case, we have two groups (Heads and Tails), so $n = 2$. We can rewrite the sum as:
+$$z^2 = \chi_1^2 = \frac{(f_{b(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{b(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- Plug in our values ($f_{b(1)} = 40$, $f_{b(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
+$$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
+- We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is 0.0455003
+- Conclusion: if the null hypothesis (fair coin, p(H) = .5) is true, we would expect to find an outcome like H: 40, T:60 in less than 5% of samples.
+
+Degrees of freedom
+============================================================
+- Wait, what is the `1` in `=1-CHISQ.DIST(4,1,TRUE)`?
+    - That's the degrees of freedom. Remember, the degrees of freedom are the number of independent $z^2$ variables we are summing up.
+    - Why only one, when we are summing two terms?
+$$z^2 = \chi_1^2 = \frac{(f_{b(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{b(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- In this expression, the second term is determined by the first, since $f_{b(2)} = n - f_{b(1)}$.
+    - There is only one term that can vary freely, hence $df(\chi^2) = 1$.
+    
+Generalising the chi-square test
+============================================================
+- Why use $\chi^2$ here at all, when we could just take the square root and do a *z*-test?
+- The answer is that this whole principle generalises to the **multinomial** distribution, i.e. cases where we have more than two groups.
+- In the multinomial distribution, 
+    
+    
 Dealing with the uncertainty in s
 ============================================================
 - We need a way to account for $s$ being less accurate at low sample sizes.
@@ -316,7 +323,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17-1.png) 
+![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14-1.png) 
 
 Let's try this
 ==========================================================
@@ -355,7 +362,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.3051783
+[1] -0.004637187
 ```
 
 ```r
@@ -363,7 +370,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.7869643
+[1] 0.8997069
 ```
 
 ```r
@@ -371,7 +378,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.8681387
+[1] -0.6482488
 ```
 
 ```r
@@ -379,15 +386,15 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.2577821
+[1] 0.6389744
 ```
 
 Back to our example
 ===========================================================
 - Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
-  - The lowest mean in the CI is -0.8681387, which maybe translates to "apathetic but slightly worried."
+  - The lowest mean in the CI is -0.6482488, which maybe translates to "apathetic but slightly worried."
 - But they don't love me either:
-  - The highest mean in the CI is 0.2577821, which maybe translates to "apathetic but slightly hopeful."
+  - The highest mean in the CI is 0.6389744, which maybe translates to "apathetic but slightly hopeful."
 - Of course, there is a 5% chance that the true mean is actually outside this interval.
 
 There's a function for that
@@ -402,13 +409,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -1.2263, df = 9, p-value = 0.2512
+t = -0.016299, df = 9, p-value = 0.9874
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.8681387  0.2577821
+ -0.6482488  0.6389744
 sample estimates:
- mean of x 
--0.3051783 
+   mean of x 
+-0.004637187 
 ```
 How convenient is that?
 
@@ -446,7 +453,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   46   954 
+   54   946 
 ```
 - It's true! Almost exactly 5%
 
@@ -490,55 +497,10 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   46   954 
+   50   950 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
-
-Random variables
-==========================================================
-- One of the points that I was trying to make above was that the true population mean and sd are not random. They have an actual point value (at any given point in time), and we could calculate that value if we were to measure every individual in the population.
-- From the point of view of any individual, their value on whatever measurement we're taking is of course not random either.
-- But, if we grab individuals at random, we will notice that their measure values are not completely arbitrary.
-- Instead, depending on the probability density function, we will get some values more often than others.
-- That's all we mean by saying that something is a random variable.
-
-Random variables (bear with me)
-==========================================================
-Can we follow Shravan here? Warning: Some mathematical notation follows.
-
-- A random variable $X$ is a function $X : S \rightarrow \mathbb{R}$ that associates to each outcome
-$\omega \in S$ exactly one number $X(\omega) = x$.
-  - Note: $\mathbb{R}$ = real numbers
-
-- $S_X$ is all the $x$'s (all the possible values of X, the support of X). i.e., $x \in S_X$.
-
-- Good example: number of coin tosses till you get Heads (H) for the first time
-
-  - $X: \omega \rightarrow x$
-	- $\omega$: H, TH, TTH,$\dots$ (infinite)
-	- $x=0,1,2,\dots; x \in S_X$
-  
-Random variables (2)
-==========================================================
-Every discrete random variable X has associated with it a  **probability mass/density function (PDF)**, also called *distribution function*.
-$$
-\begin{equation}
-p_X : S_X \rightarrow [0, 1] 
-\end{equation}
-$$
-defined by
-$$
-\begin{equation}
-p_X(x) = P(X(\omega) = x), x \in S_X
- \end{equation}
-$$
-- Back to the example: number of coin tosses till H
-
-  - $X: \omega \rightarrow x$
-  - $\omega$: H, TH, TTH,$\dots$ (infinite)
-	- $x=0,1,2,\dots; x \in S_X$
-  - $p_X = .5, .25, .125,\dots$ 
   
 Hypothesis tests
 =========================================================
@@ -571,13 +533,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = -1.2263, df = 9, p-value = 0.2512
+t = -0.016299, df = 9, p-value = 0.9874
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.8681387  0.2577821
+ -0.6482488  0.6389744
 sample estimates:
- mean of x 
--0.3051783 
+   mean of x 
+-0.004637187 
 ```
 
 Two-tailed t-tests
@@ -624,7 +586,7 @@ Example
 
 
 ```
-[1] 1.68 0.05 2.14 0.54 0.57
+[1]  2.32  0.28 -0.48  0.17  1.62
 ```
 Your turn. What is the null hypothesis?
 
@@ -641,13 +603,13 @@ t.test(sleep_times)
 	One Sample t-test
 
 data:  sleep_times
-t = 2.5459, df = 4, p-value = 0.06358
+t = 1.521, df = 4, p-value = 0.2029
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.0901757  2.0821757
+ -0.6454924  2.2094924
 sample estimates:
 mean of x 
-    0.996 
+    0.782 
 ```
 If p $\le$ .05: reject the null hypothesis.
 
@@ -667,7 +629,7 @@ table(replicate(1000, t_test_sim(5, 1, 1)))
 ```
 
 FALSE  TRUE 
-  616   384 
+  592   408 
 ```
 Not so great!
 
@@ -683,7 +645,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
 ```
 
 FALSE  TRUE 
-   97   903 
+  110   890 
 ```
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 
@@ -694,7 +656,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
 ```
 
 FALSE  TRUE 
-   99   901 
+   73   927 
 ```
 
 How to increase power (realistically!)
@@ -709,7 +671,7 @@ table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  426   574 
+  374   626 
 ```
 
 ```r
@@ -719,7 +681,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking
 ```
 
 FALSE  TRUE 
-  216   784 
+  183   817 
 ```
 
 Double-checking our results
@@ -822,7 +784,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  720   280 
+  757   243 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -865,14 +827,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -10 SD =  4.57"
+[1] "Mean = -9.95 SD =  4.49"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-42](Class2-figure/unnamed-chunk-42-1.png) 
+![plot of chunk unnamed-chunk-39](Class2-figure/unnamed-chunk-39-1.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -886,7 +848,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.752192
+[1] 7.020905
 ```
 
 ```r
@@ -895,7 +857,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.162649
+[1] 7.144232
 ```
 
 The two-sample t-test (3)
@@ -908,7 +870,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.546969
+[1] 5.416797
 ```
 
 ```r
@@ -917,7 +879,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.517486
+[1] 6.443544
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 
