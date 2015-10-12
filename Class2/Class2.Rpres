@@ -1,81 +1,99 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: Class 2, October 9, 2014
+date: Class 2, October 15, 2015
+
+What have we learned last time?
+========================================================
+- We figured out that, when we're taking random samples from *any* distribution (with a mean and a variance), the means (and sums) of these samples will approximately follow a **normal distribution** if the sample size is large enough (in general, $n \geq 30$ is a good rule of thumb).
+- We even determined what the mean of this sampling distribution of the mean will be (namely, it will be the same as the mean of the population we're sampling from):
+$$\mu_{\bar{x}} = \mu$$ 
+- We also determined what the variance of the sampling distribution will be. It will be the variance of the population we're sampling from divided by the sample size:
+$$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}$$
 
 
-Some general advice on working with R
-=========================================================
-- Write all important steps into a script file or into your Rmd file so that you have a record.
-  - That is the number 1 secret for working with R.
-  - It generalises to SPSS: always save the code you used so you can replicate your analyses.
-  - This will save you an incredible amount of work if you have to go back and double-check what you did.
-- You can send any line in the script file to the console by pressing Ctrl + Enter.
-- Use the console only for things you don't want to save, like printing a variable to see what it is, trying out a new command, etc.
+How can we use this?
+=======================================================
+- Hypothesis testing with normal distributions:
+  - Let's say we're forensic psychologists trying to screen prisoners for signs of psychopathy.
+  - Let's say that we have a test that's normed for a standard (prison) population. Thanks to the norming, we know that this standard population has a mean psychopathy score of 50 and a standard deviation of 10. The psychopathy scores (the scores themselves, not just their means) are approximately normally distributed.
+  - You see a prisoner with a score of 72. Is this an unusually high score? Should you be concerned?
+  
+What do you do now?
+=======================================================
+- Establish null and alternative hypotheses:
+  - Null hypothesis ($H_0$): the prisoner comes from the standard prison population ($E(x) = \mu_{\bar{x}} = \mu$).
+  - Alternative hypothesis ($H_A$): the prisoner's score is higher than that of the standard prison population ($E(x) > \mu$)
+- Convert the score into a *z*-value:
+$$ z(60) = \frac{72-50}{10} = 2.2$$
+- What is the probability of getting a *z*-value of 2.2 given that the null hypothesis is true?
+    - Check the standard normal distribution.
 
-How to print your reports
-=========================================================
-- Make sure the file name ends in `.Rmd`
-- Click on the little arrow next to the Knit button
-- Select "Knit Word"
-- Open the resulting file in Word and print it. Easy!
+Make a plot
+========================================================
+- Always a good idea! A quick sketch is all it takes.
 
-Commenting
-=========================================================
-- In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
-  - Invaluable when you go back years later
-  - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
-- [XKCD on comments](http://xkcd.com/1421/)
+```{r, echo = F}
+cord.x <- c(2.2,seq(2.2,3,0.01),3)
+cord.y <- c(0,dnorm(seq(2.2,3,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
 
-Recap
-=========================================================
-- Last week, we talked a lot about sampling from different probability distribution.
-- We also talked about the properties of the distribution of sample means (hint: it's always roughly normal).
-- Now what can we do with this knowledge? Remember the convenience function we wrote last time:
-```{r}
-run_simulation <- function(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
-  {
+Get the p-value
+==========================================================
+- Get Excel (or another software) to give you the area under the curve.
+- $p(z > 2.2) = 1 - p(z < 2.2)$, so `=1-NORM.S.DIST(2.2,TRUE)`
+- Result: `r 1-pnorm(2.2)`
+- The prisoner is in the extreme 5% of the distribution.
+- Maybe you should be concerned?
 
-sample_means <- replicate(number_of_simulations, mean(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
+
+Use the EasyStats excel spreadsheet to run many simulations
+========================================================
+- This is a more intuitive way to do the same thing we did analytically last time.
+- Observe:
+    - What changes on each run?
+    - What stays the same?
+
+What changes when we re-run the simulation?
+========================================================
+```{r, echo = FALSE}
+run_one_sample <- function(sample_size = 100, population_mean = 0, population_sd = 1)
+{
+  sample_means <- rnorm(n = sample_size, mean = population_mean, sd = population_sd) 
+  data.frame(mean = mean(sample_means), variance = var(sample_means))
 }
-```
 
-Recap (2)
-========================================================
-- Remember our function for plotting these distributions:
-```{r, echo=TRUE, fig.height = 3}
+run_simulation <- function(sample_size = 100, 
+                           number_of_simulations = 1000, 
+                           population_mean = 0, 
+                           population_sd = 1)
+  {
+require(data.table)
+rbindlist(replicate(number_of_simulations, 
+  list(run_one_sample(sample_size = sample_size, 
+  population_mean = population_mean, 
+  population_sd = population_sd))))
+
+}
 make_hist_and_plot <- function(sample_means){
-  par(mfrow=c(1,2)) # 
-  hist(sample_means,freq=F, breaks = 30)
-  plot(density(sample_means), 
-       main = paste("Mean = ", round(mean(sample_means),2) , 
-                    "SD = ", round(sd(sample_means),2)))} 
-```
-
-Recap (3)
-========================================================
-```{r}
-make_hist_and_plot(
-  run_simulation(100,1000,0,1))
-```
-
-What changes when we re-run the simulation?
-========================================================
-```{r}
+  par(mfrow=c(2,2)) # 
+  hist(sample_means$mean,freq=F, breaks = 30, main = "Sample Mean")
+  plot(density(sample_means$mean), 
+       main = paste("Mean = ", round(mean(sample_means$mean),2) , 
+                    "SD = ", round(sd(sample_means$mean),2)))
+  hist(sample_means$variance,freq=F, breaks = 30, main = 'Sample variance')
+  plot(density(sample_means$variance), 
+       main = paste("Mean = ", round(mean(sample_means$variance),2) , 
+                    "SD = ", round(sd(sample_means$variance),2)))} 
 make_hist_and_plot(
   run_simulation(100,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
-```{r}
-make_hist_and_plot(
-  run_simulation(100,1000,20,5))
-```
-
-What changes when we re-run the simulation?
-========================================================
-```{r}
+```{r, echo = FALSE}
 make_hist_and_plot(
   run_simulation(100,1000,20,5))
 ```
@@ -90,18 +108,18 @@ $$
 $$
 So, to sum up:
 The distribution of sample means is (roughly) normal, with $\mu_{\bar{x}} = \mu$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
-This means we can apply some of our knowledge about the normal distribution!
+This means we can apply our knowledge about the normal distribution to find out the theoretical probability of our result given the $H_0$ (*p*-values).
 
 Confidence intervals
 =========================================================
+- A different way of using the normal distribution to express our null hypotheses
 - If the distribution of sample means is normal, that means we can say something about the relationship between sample mean and population mean.
 - Let's say the population mean $\mu$ is `r (pop.mean <- 0)` and the population sd $\sigma$ is `r (pop.sd <- 1)`.
 - What is the sample mean going to be?
 - Think: what is the answer to this going to look like?
   - $\mu_{\bar{x}}$ is a random variable, so it doesn't make sense to give a point estimate
   - Instead, we can give an interval.
-  - Do you remember the function for that?
-    - That's right, it's `qnorm`.
+
     
 Confidence intervals (2)
 =========================================================
@@ -139,7 +157,7 @@ $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
 
 Exercise
 =========================================================
-- It is (for some reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
+- It is (for some strange reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
 - What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
 - This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
@@ -533,135 +551,6 @@ The $H_0$ is that the true mean of the population is 0.
 t.test(sleep_times)
 ```
 If p $\le$ .05: reject the null hypothesis.
-
-Power
-===========================================================
-- We've talked about the probability of the type I error ($\alpha$, which we want to be no greater than 5%).
-- What about the opposite error, where there is an actual effect but we fail to reject the null hypothesis?
-
-| Test result       | No true effect         | True effect            |
-|:------------------|:-----------------------|:-----------------------|
-|$H_0$ rejected     | Type I error ($\alpha$)| correct  (Power)       |   
-|$H_0$ not rejected | correct ($1-\alpha$)   | Type II error ($\beta$)|
-
-- Power: The probability of correctly rejecting the $H_0$ given that there is an actual effect in the population.
-- By the way, you **never** accept the $H_0$, you just fail to reject it (the table in Shravan's statistics notes got that wrong).
-
-Plotting the situation
-=========================================================
-```{r, echo=FALSE}
-plot.type1.error<-function(x,
-                           x.min,
-                           x.max,
-                           qnts,
-                           mean,
-                           sd,
-                           gray.level,main,show.legend=TRUE){
-
-        plot(x,dnorm(x,mean,sd), 
-                     type = "l",xlab="",ylab="",main=main)
-        abline(h = 0)
-
-## left side    
-    x1 = seq(x.min, qnorm(qnts[1]), qnts[1]/5)
-    y1 = dnorm(x1, mean, sd)
-
-    polygon(c(x1, rev(x1)), 
-            c(rep(0, length(x1)), rev(y1)), 
-            col = gray.level)
-
-## right side            
-    x1 = seq(qnorm(qnts[2]), x.max, qnts[1]/5)
-    y1 = dnorm(x1, mean, sd)
-    polygon(c(x1, rev(x1)), 
-            c(rep(0, length(x1)), rev(y1)), 
-            col = gray.level)
-if(show.legend==TRUE){legend(2,0.3, legend="Type I error",fill=gray.level,cex=1)}
-  }
-
-plot.type1type2.error<-function(x,
-                           x.min,
-                           x.max,
-                           qnts,
-                           mean.null,
-                           mean.true,
-                           sd,
-                           gray1,
-                           gray2,main,show.legend=TRUE){
-    	## the reality:
-    	plot(x, dnorm(x,mean.true,sd), type = "l",ylab="",xlab="",main=main)
-    	## null hypothesis distribution:
-      lines(x,dnorm(x,mean.null,sd),col="black") 
-      abline(h = 0)
-    
-    ## plot Type II error region: 
- 
-    	x1 = seq(qnorm(qnts[1]), x.max, qnts[1]/5)
-        y1 = dnorm(x1, mean.true, sd) 
- 
-      polygon(c(x1, rev(x1)), 
-              c(rep(0, length(x1)), 
-              rev(y1)), col = gray2)
-
-    ## plot Type I error region assuming alpha 0.05:
-
-    x1 = seq(x.min, qnorm(qnts[1]), qnts[1]/5)
-    y1 = dnorm(x1, mean.null, sd)
-    polygon(c(x1, rev(x1)), c(rep(0, length(x1)), rev(y1)), col = gray1)
-
-    x1 = seq(qnorm(qnts[2]), x.max, qnts[1]/5)
-    y1 = dnorm(x1, mean.null, sd) ## changed
-    polygon(c(x1, rev(x1)), c(rep(0, length(x1)), rev(y1)), col = gray1)
-
-if(show.legend==TRUE){
-    legend(2,0.3, legend=c("Type I error","Type II error"),
-    fill=c(gray1,gray2),cex=1)}
-}   
-
-shadenormal2<- 
-function (plot.only.type1=TRUE,
-          alpha=0.05,
-          gray1=gray(0.3), ## type I shading
-          gray2=gray(0.7), ## type II shading
-          x.min=-6,
-          x.max=abs(x.min),
-          x = seq(x.min, x.max, 0.01),
-          mean.null=0,
-          mean.true=-2,
-          sd=1,main="",show.legend=TRUE) 
-{
-
-    qnt.lower<-alpha/2
-    qnt.upper<-1-qnt.lower
-    qnts<-c(qnt.lower,qnt.upper)
- 
-    if(plot.only.type1==TRUE){
-
-     plot.type1.error(x,x.min,x.max,qnts,mean.null,sd,
-     gray1,main,show.legend)     
-
-    } else { ## plot type I and type II error regions
-      
-   plot.type1type2.error(x,
-                         x.min,
-                         x.max,
-                         qnts,
-                         mean.null,
-                         mean.true,
-                         sd,
-                         gray1,
-                         gray2,main,show.legend)     
-     }
-}
-shadenormal2(plot.only.type1=FALSE,mean.true=-4)
-```
-
-A much worse situation with severe power issues
-==========================================================
-Here, the true mean is -1.
-```{r, echo=FALSE}
-shadenormal2(plot.only.type1=FALSE,mean.true=-1)
-```
 
 Power simulations
 ==========================================================

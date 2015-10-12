@@ -1,98 +1,63 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: Class 2, October 9, 2014
+date: Class 2, October 15, 2015
 
-
-Some general advice on working with R
-=========================================================
-- Write all important steps into a script file or into your Rmd file so that you have a record.
-  - That is the number 1 secret for working with R.
-  - It generalises to SPSS: always save the code you used so you can replicate your analyses.
-  - This will save you an incredible amount of work if you have to go back and double-check what you did.
-- You can send any line in the script file to the console by pressing Ctrl + Enter.
-- Use the console only for things you don't want to save, like printing a variable to see what it is, trying out a new command, etc.
-
-How to print your reports
-=========================================================
-- Make sure the file name ends in `.Rmd`
-- Click on the little arrow next to the Knit button
-- Select "Knit Word"
-- Open the resulting file in Word and print it. Easy!
-
-Commenting
-=========================================================
-- In your scripts, make use of the `# comment symbol` to write little notes to yourself about what you were thinking.
-  - Invaluable when you go back years later
-  - Also, if you put these in your code for the assignments, it will help me understand what you were thinking, too!
-- [XKCD on comments](http://xkcd.com/1421/)
-
-Recap
-=========================================================
-- Last week, we talked a lot about sampling from different probability distribution.
-- We also talked about the properties of the distribution of sample means (hint: it's always roughly normal).
-- Now what can we do with this knowledge? Remember the convenience function we wrote last time:
-
-```r
-run_simulation <- function(sample_size = 100, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
-  {
-
-sample_means <- replicate(number_of_simulations, mean(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
-}
-```
-
-Recap (2)
+What have we learned last time?
 ========================================================
-- Remember our function for plotting these distributions:
+- We figured out that, when we're taking random samples from *any* distribution (with a mean and a variance), the means (and sums) of these samples will approximately follow a **normal distribution** if the sample size is large enough (in general, $n \geq 30$ is a good rule of thumb).
+- We even determined what the mean of this sampling distribution of the mean will be (namely, it will be the same as the mean of the population we're sampling from):
+$$\mu_{\bar{x}} = \mu$$ 
+- We also determined what the variance of the sampling distribution will be. It will be the variance of the population we're sampling from divided by the sample size:
+$$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}$$
 
-```r
-make_hist_and_plot <- function(sample_means){
-  par(mfrow=c(1,2)) # 
-  hist(sample_means,freq=F, breaks = 30)
-  plot(density(sample_means), 
-       main = paste("Mean = ", round(mean(sample_means),2) , 
-                    "SD = ", round(sd(sample_means),2)))} 
-```
 
-Recap (3)
+How can we use this?
+=======================================================
+- Hypothesis testing with normal distributions:
+  - Let's say we're forensic psychologists trying to screen prisoners for signs of psychopathy.
+  - Let's say that we have a test that's normed for a standard (prison) population. Thanks to the norming, we know that this standard population has a mean psychopathy score of 50 and a standard deviation of 10. The psychopathy scores (the scores themselves, not just their means) are approximately normally distributed.
+  - You see a prisoner with a score of 72. Is this an unusually high score? Should you be concerned?
+  
+What do you do now?
+=======================================================
+- Establish null and alternative hypotheses:
+  - Null hypothesis ($H_0$): the prisoner comes from the standard prison population ($E(x) = \mu_{\bar{x}} = \mu$).
+  - Alternative hypothesis ($H_A$): the prisoner's score is higher than that of the standard prison population ($E(x) > \mu$)
+- Convert the score into a *z*-value:
+$$ z(60) = \frac{72-50}{10} = 2.2$$
+- What is the probability of getting a *z*-value of 2.2 given that the null hypothesis is true?
+    - Check the standard normal distribution.
+
+Make a plot
 ========================================================
+- Always a good idea! A quick sketch is all it takes.
 
-```r
-make_hist_and_plot(
-  run_simulation(100,1000,0,1))
-```
+![plot of chunk unnamed-chunk-1](Class2-figure/unnamed-chunk-1-1.png) 
 
-![plot of chunk unnamed-chunk-3](Class2-figure/unnamed-chunk-3.png) 
+Get the p-value
+==========================================================
+- Get Excel (or another software) to give you the area under the curve.
+- $p(z > 2.2) = 1 - p(z < 2.2)$, so `=1-NORM.S.DIST(2.2,TRUE)`
+- Result: 0.0139034
+- The prisoner is in the extreme 5% of the distribution.
+- Maybe you should be concerned?
+
+
+Use the EasyStats excel spreadsheet to run many simulations
+========================================================
+- This is a more intuitive way to do the same thing we did analytically last time.
+- Observe:
+    - What changes on each run?
+    - What stays the same?
 
 What changes when we re-run the simulation?
 ========================================================
-
-```r
-make_hist_and_plot(
-  run_simulation(100,1000,20,5))
-```
-
-![plot of chunk unnamed-chunk-4](Class2-figure/unnamed-chunk-4.png) 
+![plot of chunk unnamed-chunk-2](Class2-figure/unnamed-chunk-2-1.png) 
 
 What changes when we re-run the simulation?
 ========================================================
-
-```r
-make_hist_and_plot(
-  run_simulation(100,1000,20,5))
-```
-
-![plot of chunk unnamed-chunk-5](Class2-figure/unnamed-chunk-5.png) 
-
-What changes when we re-run the simulation?
-========================================================
-
-```r
-make_hist_and_plot(
-  run_simulation(100,1000,20,5))
-```
-
-![plot of chunk unnamed-chunk-6](Class2-figure/unnamed-chunk-6.png) 
+![plot of chunk unnamed-chunk-3](Class2-figure/unnamed-chunk-3-1.png) 
 
 What changes when we re-run the simulation?
 ========================================================
@@ -104,24 +69,24 @@ $$
 $$
 So, to sum up:
 The distribution of sample means is (roughly) normal, with $\mu_{\bar{x}} = \mu$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
-This means we can apply some of our knowledge about the normal distribution!
+This means we can apply our knowledge about the normal distribution to find out the theoretical probability of our result given the $H_0$ (*p*-values).
 
 Confidence intervals
 =========================================================
+- A different way of using the normal distribution to express our null hypotheses
 - If the distribution of sample means is normal, that means we can say something about the relationship between sample mean and population mean.
 - Let's say the population mean $\mu$ is 0 and the population sd $\sigma$ is 1.
 - What is the sample mean going to be?
 - Think: what is the answer to this going to look like?
   - $\mu_{\bar{x}}$ is a random variable, so it doesn't make sense to give a point estimate
   - Instead, we can give an interval.
-  - Do you remember the function for that?
-    - That's right, it's `qnorm`.
+
     
 Confidence intervals (2)
 =========================================================
 - So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
 - We want something like this:
-![plot of chunk unnamed-chunk-7](Class2-figure/unnamed-chunk-7.png) 
+![plot of chunk unnamed-chunk-4](Class2-figure/unnamed-chunk-4-1.png) 
 
 Confidence intervals (3)
 =========================================================
@@ -135,7 +100,7 @@ qnorm(.025)
 ```
 
 ```
-[1] -1.96
+[1] -1.959964
 ```
 
 Confidence intervals (4)
@@ -148,7 +113,7 @@ qnorm(.975)
 ```
 
 ```
-[1] 1.96
+[1] 1.959964
 ```
 - If you've done statistics before, these numbers should be pretty familiar to you.
 - Generalising this to other normal distributions is easy:
@@ -158,7 +123,7 @@ $\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
 
 Exercise
 =========================================================
-- It is (for some reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
+- It is (for some strange reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
 - What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
 - This estimate should be fairly accurate and should only have a 10% chance of being wrong.
 - Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
@@ -177,7 +142,7 @@ qnorm(.05)
 ```
 
 ```
-[1] -1.645
+[1] -1.644854
 ```
 
 ```r
@@ -185,7 +150,7 @@ qnorm(.95)
 ```
 
 ```
-[1] 1.645
+[1] 1.644854
 ```
 
 Solution (2)
@@ -197,7 +162,7 @@ Solution (2)
 ```
 
 ```
-[1] 1.418
+[1] 1.418456
 ```
 
 ```r
@@ -205,14 +170,14 @@ Solution (2)
 ```
 
 ```
-[1] 2.582
+[1] 2.581544
 ```
 - Those are some hungry cats!
-- I need to plan on buying between 1.4185 and 2.5815 cans of cat food per day (per cat).
+- I need to plan on buying between 1.4184564 and 2.5815436 cans of cat food per day (per cat).
 
 Plot it!
 =========================================================
-![plot of chunk unnamed-chunk-12](Class2-figure/unnamed-chunk-12.png) 
+![plot of chunk unnamed-chunk-9](Class2-figure/unnamed-chunk-9-1.png) 
 
 Solution (4)
 =========================================================
@@ -224,14 +189,14 @@ Solution (4)
 ```
 
 ```
-[1] 2.453
+[1] 2.453097
 ```
 - Those are still some hungry cats!
-- I need to plan on buying at most 2.4531 cans of cat food per day (per cat).
+- I need to plan on buying at most 2.4530969 cans of cat food per day (per cat).
 
 Plot it again!
 =========================================================
-![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14.png) 
+![plot of chunk unnamed-chunk-11](Class2-figure/unnamed-chunk-11-1.png) 
 
 Solution (5)
 =========================================================
@@ -242,7 +207,7 @@ Solution (5)
 ```
 
 ```
-[1] 2.37
+[1] 2.369952
 ```
 - Why is it less?
 - The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats.
@@ -305,7 +270,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 5))
 ```
 
-![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17.png) 
+![plot of chunk unnamed-chunk-14](Class2-figure/unnamed-chunk-14-1.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -314,7 +279,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 50))
 ```
 
-![plot of chunk unnamed-chunk-18](Class2-figure/unnamed-chunk-18.png) 
+![plot of chunk unnamed-chunk-15](Class2-figure/unnamed-chunk-15-1.png) 
 
 Population variance and sample variance: plots
 ===========================================================
@@ -323,7 +288,7 @@ Population variance and sample variance: plots
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = 1000, population_mean = 20, population_sd = 500))
 ```
 
-![plot of chunk unnamed-chunk-19](Class2-figure/unnamed-chunk-19.png) 
+![plot of chunk unnamed-chunk-16](Class2-figure/unnamed-chunk-16-1.png) 
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -351,7 +316,7 @@ Dealing with the uncertainty in s
 See for yourselves
 ============================================================
 Solid = normal distribution, dashed = *t*-distribution
-![plot of chunk unnamed-chunk-20](Class2-figure/unnamed-chunk-20.png) 
+![plot of chunk unnamed-chunk-17](Class2-figure/unnamed-chunk-17-1.png) 
 
 Let's try this
 ==========================================================
@@ -364,7 +329,7 @@ sample_means <- rnorm(n, mean = 0, sd = 1)
 ```
 
 ```
-[1] -2.262
+[1] -2.262157
 ```
 
 ```r
@@ -372,7 +337,7 @@ sample_means <- rnorm(n, mean = 0, sd = 1)
 ```
 
 ```
-[1] 2.262
+[1] 2.262157
 ```
 Why $n-1$? Unless you really love statistics and want to find out more, don't worry about it.
 
@@ -390,7 +355,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.05861
+[1] -0.3051783
 ```
 
 ```r
@@ -398,7 +363,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.8464
+[1] 0.7869643
 ```
 
 ```r
@@ -406,7 +371,7 @@ Computing CIs (2)
 ```
 
 ```
-[1] -0.5469
+[1] -0.8681387
 ```
 
 ```r
@@ -414,15 +379,15 @@ Computing CIs (2)
 ```
 
 ```
-[1] 0.6641
+[1] 0.2577821
 ```
 
 Back to our example
 ===========================================================
 - Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
-  - The lowest mean in the CI is -0.5469, which maybe translates to "apathetic but slightly worried."
+  - The lowest mean in the CI is -0.8681387, which maybe translates to "apathetic but slightly worried."
 - But they don't love me either:
-  - The highest mean in the CI is 0.6641, which maybe translates to "apathetic but slightly hopeful."
+  - The highest mean in the CI is 0.2577821, which maybe translates to "apathetic but slightly hopeful."
 - Of course, there is a 5% chance that the true mean is actually outside this interval.
 
 There's a function for that
@@ -437,13 +402,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 0.219, df = 9, p-value = 0.8316
+t = -1.2263, df = 9, p-value = 0.2512
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.5469  0.6641
+ -0.8681387  0.2577821
 sample estimates:
-mean of x 
-  0.05861 
+ mean of x 
+-0.3051783 
 ```
 How convenient is that?
 
@@ -481,7 +446,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   35   965 
+   46   954 
 ```
 - It's true! Almost exactly 5%
 
@@ -525,7 +490,7 @@ table(mean_in_ci)
 ```
 mean_in_ci
 FALSE  TRUE 
-   48   952 
+   46   954 
 ```
 - Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
 - Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
@@ -606,13 +571,13 @@ t.test(sample_means)
 	One Sample t-test
 
 data:  sample_means
-t = 0.219, df = 9, p-value = 0.8316
+t = -1.2263, df = 9, p-value = 0.2512
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.5469  0.6641
+ -0.8681387  0.2577821
 sample estimates:
-mean of x 
-  0.05861 
+ mean of x 
+-0.3051783 
 ```
 
 Two-tailed t-tests
@@ -625,7 +590,7 @@ qt(.975, df = 9)
 ```
 
 ```
-[1] 2.262
+[1] 2.262157
 ```
 and $t_{crit}$ for the lower bound is
 
@@ -634,7 +599,7 @@ qt(.025, df = 9) # note that the t-distribution is symmetrical
 ```
 
 ```
-[1] -2.262
+[1] -2.262157
 ```
 In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
 
@@ -648,7 +613,7 @@ qt(.95, df = 9)
 ```
 
 ```
-[1] 1.833
+[1] 1.833113
 ```
 - But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
 - This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
@@ -659,7 +624,7 @@ Example
 
 
 ```
-[1] 0.29 2.58 0.86 1.11 0.41
+[1] 1.68 0.05 2.14 0.54 0.57
 ```
 Your turn. What is the null hypothesis?
 
@@ -676,37 +641,15 @@ t.test(sleep_times)
 	One Sample t-test
 
 data:  sleep_times
-t = 2.559, df = 4, p-value = 0.06272
+t = 2.5459, df = 4, p-value = 0.06358
 alternative hypothesis: true mean is not equal to 0
 95 percent confidence interval:
- -0.08932  2.18932
+ -0.0901757  2.0821757
 sample estimates:
 mean of x 
-     1.05 
+    0.996 
 ```
 If p $\le$ .05: reject the null hypothesis.
-
-Power
-===========================================================
-- We've talked about the probability of the type I error ($\alpha$, which we want to be no greater than 5%).
-- What about the opposite error, where there is an actual effect but we fail to reject the null hypothesis?
-
-| Test result       | No true effect         | True effect            |
-|:------------------|:-----------------------|:-----------------------|
-|$H_0$ rejected     | Type I error ($\alpha$)| correct  (Power)       |   
-|$H_0$ not rejected | correct ($1-\alpha$)   | Type II error ($\beta$)|
-
-- Power: The probability of correctly rejecting the $H_0$ given that there is an actual effect in the population.
-- By the way, you **never** accept the $H_0$, you just fail to reject it (the table in Shravan's statistics notes got that wrong).
-
-Plotting the situation
-=========================================================
-![plot of chunk unnamed-chunk-35](Class2-figure/unnamed-chunk-35.png) 
-
-A much worse situation with severe power issues
-==========================================================
-Here, the true mean is -1.
-![plot of chunk unnamed-chunk-36](Class2-figure/unnamed-chunk-36.png) 
 
 Power simulations
 ==========================================================
@@ -724,7 +667,7 @@ table(replicate(1000, t_test_sim(5, 1, 1)))
 ```
 
 FALSE  TRUE 
-  603   397 
+  616   384 
 ```
 Not so great!
 
@@ -740,7 +683,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
 ```
 
 FALSE  TRUE 
-   92   908 
+   97   903 
 ```
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 
@@ -751,7 +694,7 @@ table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
 ```
 
 FALSE  TRUE 
-   84   916 
+   99   901 
 ```
 
 How to increase power (realistically!)
@@ -766,7 +709,7 @@ table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
 ```
 
 FALSE  TRUE 
-  397   603 
+  426   574 
 ```
 
 ```r
@@ -776,7 +719,7 @@ table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking
 ```
 
 FALSE  TRUE 
-  205   795 
+  216   784 
 ```
 
 Double-checking our results
@@ -795,7 +738,7 @@ power.t.test(n = 10, delta = 1, sd = 1, type = "one.sample")
           delta = 1
              sd = 1
       sig.level = 0.05
-          power = 0.8031
+          power = 0.8030962
     alternative = two.sided
 ```
 Remarkably similar to our simulation! (See Vasishth, Chapter 3 if you want to know how R calculates this!)
@@ -814,7 +757,7 @@ power.t.test(delta = 1, sd = 1, power = .8, type = "one.sample")
 
      One-sample t test power calculation 
 
-              n = 9.938
+              n = 9.937864
           delta = 1
              sd = 1
       sig.level = 0.05
@@ -838,7 +781,7 @@ power.t.test(n = 100, sd = 10, power = .8, type = "one.sample")
      One-sample t test power calculation 
 
               n = 100
-          delta = 2.829
+          delta = 2.829133
              sd = 10
       sig.level = 0.05
           power = 0.8
@@ -879,7 +822,7 @@ table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
 ```
 
 FALSE  TRUE 
-  771   229 
+  720   280 
 ```
 - Whoa! False positive alert!
   - $\alpha$ is at 25%, instead of 5% where it should be.
@@ -922,14 +865,14 @@ paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
 ```
 
 ```
-[1] "Mean = -9.94 SD =  4.67"
+[1] "Mean = -10 SD =  4.57"
 ```
 
 ```r
 hist(d_samples)
 ```
 
-![plot of chunk unnamed-chunk-47](Class2-figure/unnamed-chunk-47.png) 
+![plot of chunk unnamed-chunk-42](Class2-figure/unnamed-chunk-42-1.png) 
 
 The two-sample t-test (3)
 =========================================================
@@ -943,7 +886,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.974
+[1] 6.752192
 ```
 
 ```r
@@ -952,7 +895,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 7.355
+[1] 7.162649
 ```
 
 The two-sample t-test (3)
@@ -965,7 +908,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 5.449
+[1] 5.546969
 ```
 
 ```r
@@ -974,7 +917,7 @@ sd(d_samples)
 ```
 
 ```
-[1] 6.778
+[1] 6.517486
 ```
 - Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
 

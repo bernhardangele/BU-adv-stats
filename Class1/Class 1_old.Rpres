@@ -1,14 +1,7 @@
----
-title: "Advanced Statistics Class 1: Fundamentals of probability and statistical inference"
-author: "Bernhard Angele"
-date: "1 October 2015"
-output: pdf_document
----
-
 Class 1: Fundamentals of probability and statistical inference
 ==================================================================================
 author: Bernhard Angele
-date: 1 and 8 October 2015
+date: 1 October 2015
 
 What did/will we do on Thursday?
 ========================================================
@@ -529,11 +522,11 @@ The expected value of the sample mean
 ========================================================
 - If $X$ is a random variable, and we take a sample of size $n$ from $X$, what is the expected value of the mean of that sample?
 - Remember, this is how you compute the sample mean: 
-$$\bar{x} = \frac{\sum\limits_{i=1}^{n}}{n}$$
+$$\bar{x} = \frac{\sum\limits_{i=1}^{n}X_i}{n}$$
 - The expected value of the sample mean is:
 $$
 \begin{aligned}
-E(\bar{X}) &= E\Bigg(\frac{\sum\limits_{i=1}^{n}}{n}\Bigg)\\
+E(\bar{X}) &= E\Bigg(\frac{\sum\limits_{i=1}^{n}X_i}{n}\Bigg)\\
            &= \frac{1}{n}\cdot\big(E\sum\limits_{i=1}^n{X_i}\big)
 \end{aligned}$$
 
@@ -566,59 +559,202 @@ Our dice example
 
 The expected value of the sample variance
 ========================================================
-- We could now go through the same process for the sample variance $s^2$, but this would take a lot of time and most of you may not care about the details.
-- Instead, I will just tell you what we would find if we did this:
-- It turns out that the sample variance $$s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \mu)^2}{n}$$ is **not** an unbiased estimator of the population variance. In fact, it *underestimates* the population variance.
-- I have posted a link to [a video](https://www.youtube.com/watch?v=D1hgiAla3KI) that very nicely and intuitively demonstrates this point on myBU in case you don't believe me.
+- OK, first we want to know how the variance of your samples ($s^2$) is related to the population variance $\sigma^2$.
+- Remember that the variance of a sample is
+$$ s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n}$$
+- We can rewrite this as:
+$$
+\begin{aligned}
+s^2 &= \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n} = \frac{\sum\limits_{i=1}^{n}(x_i^2 - 2 \cdot x_i \cdot \bar{x}+ \bar{x}^{2})}{n}\\
+    &=\frac{\sum\limits_{i=1}^{n}x_i^2 - 2\cdot \bar{x} \cdot\sum\limits_{i=1}^{n}x_i + n\cdot\bar{x}^{2}}{n}
+\end{aligned}
+$$
 
 The expected value of the sample variance (2)
 ========================================================
-- We can correct our sample variance if we divide by $n-1$ instead of $n$:
-$$s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \mu)^2}{n-1}$$
-- This definition of the sample variance *does* give us an unbiased estimator of the population variance $\sigma^2$.
-- I have posted a link to [another video](https://www.youtube.com/watch?v=9ONRMymR2Eg) that gives you the proof of this in case you don't believe me. 
+- Since $\sum\limits_{i=1}^{n} x_i = n \cdot \bar{x}$ (because $\bar{x} = \frac{\sum\limits_{i=1}^{n}x_i}{n}$):
+$$
+\begin{aligned}
+s^2 &=\frac{\sum\limits_{i=1}^{n}x_i^2 - 2\cdot \bar{x} \cdot\sum\limits_{i=1}^{n}x_i + n\cdot\bar{x}^{2}}{n}\\
+    &= \frac{\sum\limits_{i=1}^{n}x_i^2 - 2\cdot \bar{x} \cdot n \cdot \bar{x} + n\cdot\bar{x}^{2}}{n}\\
+    &= \frac{\sum\limits_{i=1}^{n}x_i^2 - n\cdot \bar{x}^2}{n} = \frac{\sum\limits_{i=1}^{n}x_i^2}{n} - \bar{x}^2
+\end{aligned}
+$$
+
+The expected value of the sample variance (3)
+========================================================
+- Now we can calculate the expected value of $s^2$:
+$$
+\begin{aligned}
+E(S^2) &= E\Bigg(\frac{\sum\limits_{i=1}^{n}X_i^2}{n} - \bar{X}^2\Bigg) \\
+       &= E\Bigg(\frac{\sum\limits_{i=1}^{n}X_i^2}{n}\Bigg) - E(\bar{X}^2) \\
+       &= \frac{\sum\limits_{i=1}^{n}E(X_i^2)}{n} - E(\bar{X}^2) = \frac{n\cdot E(X_i^2)}{n}-E(\bar{X}^2)
+\end{aligned}
+$$
+
+The expected value of the sample variance (4)
+========================================================
+- And $\frac{n\cdot E(X_i^2)}{n}-E(\bar{X}^2)$ of course simplifies to $E(X_i^2)-E(\bar{X}^2)$
+- So, now we have to figure out what $E(X_i^2)$ and $E(\bar{X}^2)$ are.
+- The "easiest" (I know, right?) way to do this is to start with the population variance $\sigma^2$ and the variance of the sample means $\sigma_{\bar{x}}^2$
+
+The expected value of the sample variance (5)
+========================================================
+- We can define the population variance as $\sigma^2 = E(X_i - \mu)^2$, the expected value of the squared deviations of $X$ from the population mean $\mu$
+- Let's rewrite this:
+$$
+\begin{aligned}
+\sigma^2 &= E(X_i - \mu)^2 = E(X_i^2 - 2X_i\mu + \mu^2) \\
+         &= E(X_i^2) - E(2X_i\mu) + E(\mu^2)\\
+         &= E(X_i^2) - 2\mu E(X_i) + \mu^2
+\end{aligned}
+$$
+since $\mu$ is a constant (and $\mu^2$ is too, of course).
+
+The expected value of the sample variance (6)
+========================================================
+Continuing from previous slide:
+- We already determined that $\mu = E(X)$, so:
+$$
+\begin{aligned}
+\sigma^2 &= E(X_i^2) - 2\mu E(X_i) + \mu^2 \\
+         &= E(X_i^2) - 2\mu^2 + \mu^2 = E(X_i^2) - \mu^2 
+\end{aligned}
+$$
+- Solving for $E(X_i^2)$:
+$$\begin{aligned}
+\sigma^2 &= E(X_i^2) - \mu^2  \\
+&\Leftrightarrow E(X_i^2) = \sigma^2 + \mu^2
+\end{aligned}
+$$
+- OK, so now we know that the expected value of a squared random variable is equal to the sum of the population variance $\sigma^2$ and the square of the population mean $\mu^2$.
+
+The expected value of the sample variance (7)
+========================================================
+- Next up: the variance of sample means $\sigma_{\bar{x}}^2$
+    - This is the square of the *standard error* of the mean $\sigma_{\bar{x}}$
+- We can define the variance of sample means as $\sigma_{\bar{x}}^2 = E(\bar{X} - \mu)^2$, i.e. the expected value of the squared deviations of the sample means from the true population mean
+- We can rewrite this just like we did for the sample variance (this works exactly the same as before; if you are bored, you can skip the next two slides).
+
+The expected value of the sample variance (7a)
+========================================================
+- We can define the variance of the sample means as $\sigma_{\bar{x}}^2 = E(\bar{X} - \mu)^2$
+- Let's rewrite this:
+$$
+\begin{aligned}
+\sigma^2 &= E(\bar{X} - \mu)^2 = E(\bar{X}^2 - 2\bar{X}\mu + \mu^2) \\
+         &= E(\bar{X}^2) - E(2\bar{X}\mu) + E(\mu^2)\\
+         &= E(\bar{X}^2) - 2\mu E(\bar{X}) + \mu^2
+\end{aligned}
+$$
+since $\mu$ is a constant (and $\mu^2$ is too, of course).
+
+The expected value of the sample variance (7b)
+========================================================
+Continuing from previous slide:
+- We already determined that $\mu = E(\bar{X})$, so:
+$$
+\begin{aligned}
+\sigma_{\bar{x}}^2 &= E(\bar{X}^2) - 2\mu E(\bar{X}) + \mu^2 \\
+         &= E(\bar{X}^2) - 2\mu^2 + \mu^2 = E(\bar{X}^2) - \mu^2 
+\end{aligned}
+$$
+- Solving for $E(\bar{X}^2)$:
+$$\begin{aligned}
+\sigma_{\bar{x}}^2 &= E(\bar{X}^2) - \mu^2  \\
+&\Leftrightarrow E(\bar{X}^2) = \sigma_{\bar{x}}^2 + \mu^2
+\end{aligned}
+$$
+- OK, so now we know that the expected value of the squared mean of  a random variable is equal to the sum of the variance of the sample means $\sigma_{\bar{x}}^2$ and the square of the population mean $\mu^2$.
+
+The expected value of the sample variance (8)
+========================================================
+- Plugging $E(X_i^2) = \sigma^2 + \mu^2$ and $E(\bar{X}^2) = \sigma_{\bar{x}}^2 + \mu^2$ into our term for the expected value of the sample variance:
+$$
+\begin{aligned}
+E(S^2) &= E(X_i^2)-E(\bar{X}^2) = \sigma^2 + \mu^2 - (\sigma_{\bar{x}}^2 + \mu^2) \\
+       &= \sigma^2 - \sigma_{\bar{x}}^2
+\end{aligned}
+$$ 
+- In words: the expected value of the sample variance is equal to the population variance minus the variance of the sample means.
+    - This means that the sample variance *systematically* underestimates the population variance
+    - The sample variance is *NOT* an unbiased estimator of the population variance.
 
 The expected value of the variance of sample means
 ========================================================
-- Remember, now we are no longer talking about the population variance $\sigma^2$ now, but the **variance of the sample means** $\sigma_{\bar{x}}^2$. 
-- Also remember that the population does not have to be distributed normally, but the means of samples from this distribution will be if the sample size is large enough (that's the whole reason we're concerning ourselves with the means rather than individual samples here).
-- We'll start by rewriting $E(\sigma_{\bar{x}}^2)$ as $Var(\bar{X})$, that is, the expected variance of the sample mean. Same thing, but makes the following steps more obvious.
+- We start with the relationship we just figured out: $E(\sigma_{\bar{x}}^2) = \sigma_{\bar{x}}^2 = E(\bar{X}^2)-\mu^2$ (since $E(\bar{X}^2)$ and $\mu^2$ are both constants).
+- We can rewrite $\bar{X}^2$ as:
+$$
+\begin{aligned} 
+\bar{X}^2 &= \frac{(X_1+X_2+\dots+X_n)^2}{n^2} \\
+          &= \frac{1}{n^2}\cdot \Bigg(X_1^2+X_2^2 + \dots+X_n^2 \\
+          &+2\sum\limits_{i=1}{\sum\limits_{j=i+1}{X_i\cdot X_j}}\Bigg)
+\end{aligned}
+$$
 
 The expected value of the variance of sample means (2)
 ========================================================
-- Now we replace $\bar{X}$ with the definition of the sample mean:
+- If (and only if!) $X_1, X_2,\dots, X_n$ are independent (i.e. the value of $X_1$ doesn't depend on the value of $X_2$, or $X_3$, etc.), we can write the expected value of the final term of this expression as:
 $$
 \begin{aligned}
-Var(\bar{X}) &= Var(\frac{X_1 + X_2 + \dots + X_n}{n})\\
-&= \frac{1}{n^2}\cdot Var(X_1 + X_2 + \dots + X_n)
+E\Bigg(2\sum\limits_{i=1}^{n-1}{\sum\limits_{j=i+1}^{n}{X_i\cdot X_j}}\Bigg) &= n\cdot(n-1)\cdot E(X_i)\cdot E(X_j)\\
+&= n\cdot(n-1)\cdot\mu^2
 \end{aligned}
 $$
-- What have we done now? We just moved the constant out of the expected variance
-    - Tiny not-that-intuitive detail: The variance is a square ($s^2$), so as we move $1/n$ out of the term, we need to square it too.
-    
+- Since $E(\sum_{i=1}^{n}X_i) = \sum_{i=1}^{n}E(X_i)$ and $E(X_i) = \mu$
+
 The expected value of the variance of sample means (3)
 ========================================================
-- We can treat expected variances just like expected values. 
-    - If (and only if!) $X_1, X_2,\dots, X_n$ are independent (i.e. the value of $X_1$ doesn't depend on the value of $X_2$, or $X_3$, etc.), we can rewrite the expected variance of a sum as the sum of its expected variances 
+- With that, we can rewrite $E(\bar{X^2})$ as
 $$
 \begin{aligned}
-Var(\bar{X}) &= \frac{1}{n^2}\cdot Var(X_1 + X_2 + \dots + X_n)\\
-             &=\frac{1}{n^2}\cdot (Var(X_1) + Var(X_2) + \dots + Var(X_n))
-\end{aligned}
-$$  
+E(\bar{X^2}) &= \frac{1}{n^2}\cdot \Big(E(X_1^2) + E(X_2^2) + \dots \\
+             &+ E(X_n^2) + n \cdot (n-1)\cdot \mu^2\Big)
+\end{aligned}$$
+- But we know already (through our hard work earlier) that the expected value of the square of $X_i$ is $E(X_i^2) = \sigma^2 + \mu^2$. 
+- So we can replace $E(X_1^2) + E(X_2^2) + \dots + E(X_n^2)$ with $n\cdot(\sigma^2 + \mu^2) = n\cdot \sigma^2 + n\cdot \mu^2$.
 
 The expected value of the variance of sample means (4)
 ========================================================
-- We just established that the expected value of the variance of each individual sample (if we apply the correction and divide by $n-1$) is the population variance $\sigma^2$. So let's replace each term $Var(X_i)$ with $\sigma^2$:
+- Let's do that now:
 $$
 \begin{aligned}
-Var(\bar{X}) &= \frac{1}{n^2}\cdot(Var(X_1) + Var(X_2) + \dots + Var(X_n)) \\
-             &= \frac{1}{n^2}\cdot(\sigma^2 + \sigma^2 + \dots + \sigma^2) \\
-             &= \frac{1}{n^2}\cdot n \cdot \sigma^2 \\
-             &= \frac{\sigma^2}{n}
+E(\bar{X^2}) &= \frac{1}{n^2}\cdot \Big(n\cdot \sigma^2 + n\cdot \mu^2+ n \cdot (n-1)\cdot \mu^2\Big)\\
+             &= \frac{\sigma^2}{n}+\frac{n\cdot \mu^2+n*2\cdot\mu^2-n\cdot\mu^2}{n^2} = \frac{\sigma^2}{n}+\mu^2
+\end{aligned}$$
+- Plugging this into our previous equation $\sigma_{\bar{x}}^2 = E(\bar{X}^2) - \mu^2$ we get:
+$$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}+\mu^2 - \mu^2 = \frac{\sigma^2}{n}$$
+- If we take the square root of this, we *FINALLY* get the **standard error of the mean**:
+$$\sigma_{\bar{x}} = \sqrt{\frac{\sigma^2}{n}} = \frac{\sigma}{\sqrt{n}}$$
+
+Correcting the bias in the expected value of the sample variance
+================================================================
+- Before we actually use our hard-earned $\mu_{\bar{x}}$ and $\sigma_{\bar{x}}$, a quick detour:
+  - Remember that the expected value of the sample variance was biased by the variance of the sample mean, i.e. $E(S^2) = \sigma^2 - \sigma_{\bar{x}}^2$?
+  - Now we know what the variance of the sample mean is, so let's plug it in:
+$$
+\begin{aligned}
+E(S^2) &= \sigma^2 - \sigma_{\bar{x}}^2 = \sigma^2 - \frac{\sigma^2}{n} = \frac{n\cdot\sigma^2-\sigma^2}{n} \\
+       &= \sigma^2\cdot\frac{n-1}{n}
 \end{aligned}
 $$
-- So, the expected value of the variance of sample means $\sigma_{\bar{x}}^2$ is $\frac{\sigma^2}{n}$ and the expected value of the standard deviation of sample means (also called **standard error**) is $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
+
+Correcting the bias in the expected value of the sample variance (2)
+================================================================
+- We just found out that the expected value of the sample variance $E(s^2)$ underestimates the true population variance $\sigma^2$ by a factor of $\frac{n-1}{n}$.
+- That means we can apply a correction factor to the sample variance so that it becomes an *unbiased* estimator of the population variance:
+$$
+\begin{aligned}
+s_{n-1}^2 &= s^2 / \frac{n-1}{n} =  s^2\cdot\frac{n}{n-1} = \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n}\cdot\frac{n}{n-1}\\
+          &= \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n-1}
+\end{aligned}
+$$
+
+Correcting the bias in the expected value of the sample variance (3)
+================================================================
+- Most statistical software will use this corrected formula for computing the sample variance: $s_{n-1}^2 = \frac{\sum\limits_{i=1}^n(x_i-\bar{x})^2}{n-1}$
+- If you want a more intuitive explanation of what is going on here, watch the videos at EasyStats:
+[http://easystats.org/](http://easystats.org/)
 
 Please, let's FINALLY finish the dice example
 ================================================================
