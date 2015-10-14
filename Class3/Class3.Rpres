@@ -1,108 +1,8 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: Class 3, October 16, 2014
+date: Lecture 3
 
-Your last serving of R basics
-========================================================
-- Working with files
-  - R can open all kinds of data files
-  - You do have to tell it where to find them
-- R's working directory
-  - This is where R looks for files to open
-  - You change it using `setwd("C:/My_example_R_directory")
-  - No backslashes `\` allowed! Use forward slashes instead `/`
- 
-Getting more practice with R
-==========================================================
-- Here's a free introduction to R which might be helpful to you. It repeats a lot of the things I have showed you only briefly.
-
-
-Setting your working directory
-==========================================================
- - Don't know where your working directory should be?
-  - Start by putting your script files in a location that is sensible (to you)
-    - e.g. `C:\Some_Document_Folder\AdvStats\Class3\` or `/home/My_Name/Documents/MastersProject/Data`
-    - That directory should also be your working directory for the current session
-    - In RStudio, open your script file, then use the menu bar and go to Session --> Set Working Directory --> To Source File Location
-      - RStudio will write a setwd command to the console.
-      - Copy and paste this command to your script, and you're set. Every time you run the script, the working directory will be automatically set
-- When you use R Markdown, Knitr sets your working directory to the location of the Rmd file automatically.
-      
-Opening files and importing data
-========================================================
-- If you have data in Excel:
-  - Save them as comma-separated values (CSV)
-  - If you are using Excel formulas and other bells and whistles, check that your data are exported correctly
-  - Make sure the first row of every column contains its column name
-  - Save this file in your working directory (remember where that was?)
-  - Now you can import the file using `new_object_with_a_sensible_name <- read.csv(file = "my_filename.csv")`
-  - If there is an error/warning message, check that there are no missing cells
-    - Same number of data points in each row
-
-
-Data Frames
-========================================================
-- A Data Frame is a combination of a list and a matrix
-- It gets its row/column structure from the matrix
-- But you can use columns of any data type (numeric, logical, factor (discrete), logical, character)
-- Perfect for the kind of analyses we would like to do
-- Very similar to SPSS data files
-- Get a column by using `object_name$column_name`
-- Get a column by slicing: `object_name[,1]`
-- Get a row by slicing: `object_name[1,]`
-- Get a cell by slicing: `object_name[1,1]`
-
-Packages
-========================================================
-- Many authors have worked on extending R and teaching it new tricks
-- Packages are collections of functions that help you perform a certain task
-  - For example, the `ez` package has all kinds of useful functions for performing ANOVAs
-- To install a package, type `install.packages("package_name")` at the Console.
-  - e.g. `install.packages("ez")`
-- You can ask R to install multiple packages at once:
-  - Run this line in the console now: `install.packages(c("ez","reshape","ggplot2","lme4", "plyr"))
-
-Loading packages
-=========================================================
-- Installed packages are not loaded automatically
-- If you want to use a command from a package, you need to load it: `library(package_name)`
-  - e.g. `library(ez)`
-- Once it is loaded, the package and all of its commands are ready to go until you restart R.
-
-Starting a script
-==========================================================
-Good practice when starting a script:
-```{r,eval=FALSE}
-# My_testscript.R
-# Author: Bernhard Angele
-# Description: Demonstrates how to start a script
-###########################
-
-rm(list = ls()) # clear the workspace to avoid problems caused by old objects
-library(ez) # load (only) those libraries that you need
-?library(reshape)
-library(ggplot2)
-# Set your working directory
-setwd("C:/I_know_my_working_directory_and_this_is_it/")
-# Now load your data, do your analyses and win fame and fortune!
-```
-
-Starting an Rmd file
-========================================================
-- Fill in the header:
-```{r, eval = FALSE}
----
-title: "My fantastic results section"
-output: word_document
----
-```
-- Then do the same things as above in the first code chunk
-  - Hint: you can tell R to hide this boring code by adding `hide = TRUE` to the header. It will still get evaluated
-```{r,eval =FALSE}
-Start your code chunk like this: ```{r, hide = TRUE}
-```
-    
 Comparing multiple groups
 ========================================================
 - t-tests are nice if you only have two groups that you want to compare.
@@ -114,8 +14,8 @@ Making fake data for our example
 ========================================================
 - Let's assume that the true state of affairs is that there is no difference in intelligence
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
-- Let's generate 3 data sets according to this criterion:
-```{r}
+- Let's generate 3 data sets according to this criterion
+```{r, echo=FALSE}
 # The following line sets the random number generator to a specific state
 # and ensures that you get the same numbers that I did.
 set.seed("16102014")
@@ -124,11 +24,29 @@ soton <- rnorm(n = 10, mean = 100, sd = 15)
 oxford <- rnorm(n = 10, mean = 100, sd = 15)
 ```
 
+Simulating data with Excel
+========================================================
+- `=RAND()` will give you a random number between 0 and 1 (continuous uniform distribution, if you must know)
+- `=NORM.INV(probability, mean, sd)` will take a probability (= left tail proportion) and give you the corresponding x-value from the distribution
+- combine the two, and you get random samples from a normal distribution: `=NORM.INV(RAND(), mean, sd)`
+
+Let's make some random samples for our simulation
+========================================================
+- Make a spreadsheet, add three column headers (BU, Soton, Oxford)
+    - Below the group headers, generate 10 samples each using the formula `=NORM.INV(RAND(), 100, 15)`
+- Note that the null hypothesis is true here: all values come from the same normal distribution
+
+
 What if we use t-tests?
 ========================================================
 - We could simply perform t-tests on these data
 - How many would we need?
   - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
+  
+t-tests in Excel
+========================================================
+- Simple, just follow the formulas
+- First, calculate the mean and variance for each sample
 
 BU vs Soton
 =========================================================

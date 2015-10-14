@@ -1,7 +1,8 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele 
-date: Class 2, October 15, 2015
+date: Lecture 2
+
 
 What have we learned last time?
 ========================================================
@@ -88,23 +89,23 @@ make_hist_and_plot <- function(sample_means){
        main = paste("Mean = ", round(mean(sample_means$variance),2) , 
                     "SD = ", round(sd(sample_means$variance),2)))} 
 make_hist_and_plot(
-  run_simulation(100,1000,20,5))
+  run_simulation(10,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
 ```{r, echo = FALSE}
 make_hist_and_plot(
-  run_simulation(100,1000,20,5))
+  run_simulation(10,1000,20,5))
 ```
 
 What changes when we re-run the simulation?
 ========================================================
 It turns out the mean of the distribution of sample means varies around the population mean. The sd also varies, but a lot less. It varies around
 $$
-\begin{equation} \label{sigmabar}
+\begin{aligned} \label{sigmabar}
 \sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
-\end{equation}
+\end{aligned}
 $$
 So, to sum up:
 The distribution of sample means is (roughly) normal, with $\mu_{\bar{x}} = \mu$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
@@ -125,6 +126,7 @@ Confidence intervals (2)
 =========================================================
 - So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
 - We want something like this:
+
 ```{r, echo = F}
 cord.x <- c(-3,seq(-1.96,1.96,0.01),1.96)
 cord.y <- c(-3,dnorm(seq(-1.96,1.96,0.01)),0)
@@ -163,7 +165,7 @@ Exercise
 Solution
 =========================================================
 - I'm drawing a random sample of hungry cats (sample size 2) from the population of hungry cats
-  - How hungry? Mean = 2 cans/day, sd = .05 cans/day
+  - How hungry? Mean = 2 cans/day, sd = .5 cans/day
   - I want a 90% CI for the mean of that sample
 - Get the z-scores for the lower and the upper bound:
     - lower: `=NORM.S.INV(.05)` = `r qnorm(.05)`
@@ -212,9 +214,9 @@ Solution (5)
 =========================================================
 - What if I'm getting 3 cats?
 - upper limit: `2 + NORM.S.INV(.90) * .5/sqrt(3)`
-- Result: `r `2 + qnorm(.90) * .5/sqrt(3)`
+- Result: `r 2 + qnorm(.90) * .5/sqrt(3)`
 - Why is it less?
-- The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats.
+- The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats (of course, these figures are per cat, so I'll still have to buy a ridiculous amount of food).
 
 
 Now reverse the idea
@@ -299,9 +301,9 @@ Sample variance as an estimator of population variance
 - Looks like sample variance (at least if we calculate it dividing by $n-1$ instead of $n$ is a pretty good estimator (unbiased actually)
 - We can plug the sd of the sample into the equation for the SD of the sampling distribution (or rather, the standard error):
 $$
-\begin{equation}
+\begin{aligned}
 SE_{\bar{x}} = \frac{s}{\sqrt{n}}
-\end{equation}
+\end{aligned}
 $$
 (Note that we are ignoring the question if the relationship between $s$ and $s^2$ is really the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that, if you are really curious.)
 - But as you saw in Julian's video, the estimate of $\sigma$ from $s$ is sometimes quite far away from the correct $\sigma$, especially for small sample sizes.
@@ -374,20 +376,20 @@ Binomial and normal distribution
 ===========================================================
 - For large sample sizes, the binomial distribution approximates the normal distribution
 - Because of this, there is an easy way of calculating a z-value (or rather, the square of a z-value -- I'll spare you the proof, but ask me if you're interested): 
-    - First, get the frequencies of successes $f_{b(1)}$ and non-successes $f_{b(2)}$.
-        - For example, if you had $f_{b(1)} = 40$ times Heads and $f_{b(2)} = 60$ times Tails, can we conclude that the coin is not fair?
+    - First, get the frequencies of successes $f_{o(1)}$ and non-successes $f_{o(2)}$.
+        - For example, if you had $f_{o(1)} = 40$ times Heads and $f_{o(2)} = 60$ times Tails, can we conclude that the coin is not fair?
     - Then get the expected frequencies given the null hypothesis. If we have a fair coin, our p(Heads) should be .5, so we're expecting $f_{e(1)}=50$ times Heads and $f_{e(2)}=50$ times tails.
 
 The chi-square test
 ===========================================================
-- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distributions and the squared differences between the observed ($f_{b(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
-$$z^2 = \chi_1^2 = \frac{\sum\limits_{j = 1}^{n}(f_{b(j)}-f_{e(j)})^2}{f_{e(j)}}$$
+- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distributions and the squared differences between the observed ($f_{o(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
+$$z^2 = \chi_1^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$
 
 The chi-square test (2)
 ===========================================================
 - In this case, we have two groups (Heads and Tails), so $n = 2$. We can rewrite the sum as:
-$$z^2 = \chi_1^2 = \frac{(f_{b(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{b(2)}-f_{e(2)})^2}{f_{e(2)}}$$
-- Plug in our values ($f_{b(1)} = 40$, $f_{b(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
+$$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- Plug in our values ($f_{o(1)} = 40$, $f_{o(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
 $$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
 - We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is `r 1-pchisq(4,1)`
 - Conclusion: if the null hypothesis (fair coin, p(H) = .5) is true, we would expect to find an outcome like H: 40, T:60 in less than 5% of samples.
@@ -397,36 +399,66 @@ Degrees of freedom
 - Wait, what is the `1` in `=1-CHISQ.DIST(4,1,TRUE)`?
     - That's the degrees of freedom. Remember, the degrees of freedom are the number of independent $z^2$ variables we are summing up.
     - Why only one, when we are summing two terms?
-$$z^2 = \chi_1^2 = \frac{(f_{b(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{b(2)}-f_{e(2)})^2}{f_{e(2)}}$$
-- In this expression, the second term is determined by the first, since $f_{b(2)} = n - f_{b(1)}$.
+$$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- In this expression, the second term is determined by the first, since $f_{o(2)} = n - f_{o(1)}$.
     - There is only one term that can vary freely, hence $df(\chi^2) = 1$.
     
 Generalising the chi-square test
 ============================================================
 - Why use $\chi^2$ here at all, when we could just take the square root and do a *z*-test?
 - The answer is that this whole principle generalises to the **multinomial** distribution, i.e. cases where we have more than two groups.
-- In the multinomial distribution, 
-    
-    
-Dealing with the uncertainty in s
-============================================================
-- We need a way to account for $s$ being less accurate at low sample sizes.
-- Solution: assume that the sample means aren't normally distributed, but rather *t*-distributed
-- Why *t*?
-  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about the name yet).
-  - The higher df, the closer the *t*-distribution is to the standard normal distribution
-  - For lower df, the *t*-distribution has "heavy tails", meaning that it's wider
-    - This reflects greater uncertainty.
+- In the multinomial distribution, we have more than $n=2$ groups, but the general equation stays the same:
+$$\chi_{n-1}^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$    
+- Our $chi^2$ is distributed with $n-1$ degrees of freedom, where $n$ is the group size.
 
-See for yourselves
+Try it
+=============================================================
+- The following table is from a dice roll experiment. Use the $\chi^2$ test to decide whether the die was fair or not.
+```{r echo = F,results='as.is'}
+library(knitr)
+set.seed(238239)
+dice_table <- data.frame(table(sample(1:6,100,replace = TRUE)))
+names(dice_table) <- c("$x_i$", "$f_{o(i)}$")
+kable(dice_table)
+```
+
+More fun things to do with chi-square
 ============================================================
-Solid = normal distribution, dashed = *t*-distribution
+- Remember, we still have the issue of usually not knowing anything at all about the true population mean $\mu$ and the true population standard deviation $\sigma$
+- Instead, we have to estimate them using the sample mean $\bar{x}$ and the sample standard deviation $s$.
+    - Both of this is not a problem at high sample sizes (as you can see very clearly in Julian's video and in our simulations here)
+    - But we need a way to account for $s$ being less accurate at low sample sizes.
+    
+Solution: The t-distribution
+=============================================================
+- If we divide a *z*-value by the square root of an *independent* $\chi^2$ value divided by n, we get a *t*-value: $$t_n = \frac{z}{\sqrt{\chi_n^2/n}}$$
+- The *t*-value has **degrees of freedom** as well -- it inherits them from the $\chi^2$ value in its denominator.
+- Practically, the numerator makes the distribution have "heavier" tails -- exactly what we need for our problem.
+
+Let's plot some t-distributions
+==============================================================
+
+```{r, echo = F}
+library(ggplot2)
+x <- seq(from = -5,by = .01,to = 5)
+ggplot(data.frame(x = x), aes(x = x)) + 
+  stat_function(fun = dt, args=list(df = 1), aes(linetype = "df = 1")) +
+  stat_function(fun = dt, args=list(df = 2), aes(linetype = "df = 2")) +
+  stat_function(fun = dt, args=list(df = 4), aes(linetype = "df = 4")) +
+  stat_function(fun = dt, args=list(df = 10), aes(linetype = "df = 10")) +
+  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
+```
+
+The t-distribution vs. the normal distribution
+============================================================
+- Solid = normal distribution, dashed = *t*-distribution
+
 ```{r, echo = F}
 ## plot multiple figures:
 ## replace ugly par... specification with 
 ## something easier to remember:
 multiplot <- function(row,col){
-     par(mfrow=c(row,col),pty="s")
+     par(mfrow= c(row,col), pty = "s")
    }
 
 range <- seq(-4,4,.01)  
@@ -442,46 +474,50 @@ multiplot(2,2)
  }
 ```
 
-Let's try this
-==========================================================
-- Using the *t*-distribution can compute CIs from samples as follows: get the lower and upper bounds (depending on sample size, e.g. 10):
-```{r}
-  n <- 10
-sample_means <- rnorm(n, mean = 0, sd = 1)
-  qt(.025, df = n - 1)
-  qt(.975, df = n - 1)
-```
-Why $n-1$? Unless you really love statistics and want to find out more, don't worry about it.
+The t-test
+===============================================================
+- Solution: assume that the sample means aren't normally distributed, but rather *t*-distributed
+- Why *t*?
+  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about the name yet).
+  - The higher df, the closer the *t*-distribution is to the standard normal distribution
+  - For lower df, the *t*-distribution has "heavy tails", meaning that it's wider
+    - This reflects greater uncertainty.
 
+t as a test statistic
+==========================================================
+- Once again, the mathematical proof of this would take too long, but you can show that $$t_{n-1} = \frac{\bar{x} - \mu_0}{\hat{\sigma}_{\bar{x}}}$$, where $\mu_0$ is the mean according to the null hypothesis and $\hat{\sigma}_{\bar{x}}$ is the estimate of the standard error of the mean (based on the sample standard deviation) is t-distributed with $df = n-1$ degrees of freedom.
+
+Back to my little example
+==========================================================
+- Consider the following scenario:
+
+> I have collected 10 responses to my class evaluation (the other students never turned their forms back in). The mean of the responses is 0 (apathy) and the sd is 1. Given that these 10 responses are just a small sample of the population, and that the population I'm really interested in is the population of all current and future Adv Stats students, is there anything I can say about the true population mean? Can I at least conclude that students didn't absolutely hate this class?
+
+Computing the 95% CI
+===========================================================
+- Using the *t*-distribution, we can compute CIs from samples as follows: get the lower and upper bounds from the t-distribution (which one depends on the sample size, e.g. in this we have $n = 10$, so we will use a *t*-distribution with $df = n-1 = 9$):
+- Lower bound (remember, we want to exclude the extreme low 2.5%): `=T.INV(0.025, 9)` (where 9 is the df)
+    - Result: `r qt(.025, 9)`
+- Upper bound (remember, we want to exclude the extreme high 2.5%): `=T.INV(0.975, 9)` (where 9 is the df)
+    - Result: `r qt(.975, 9)`
+- No surprise: the t-distribution is symmetrical
+    
 Computing CIs
 ==========================================================
 - Then take the upper and lower bounds and compute the CIs as follows:
-$\bar{x} = \mu_{\bar{x}} \pm 2.262 \times \frac{s}{\sqrt{n}}$
-- Remember we estimated $\mu_{\bar{x}}$ using the sample mean
-
-Computing CIs (2)
-===========================================================
-```{r}
-  (sample_mean <- mean(sample_means))
-  (sample_sd <- sd(sample_means))
-  (lower_bound <- sample_mean + qt(.025, df = n - 1)*(sample_sd/sqrt(n)))
-  (upper_bound <- sample_mean + qt(.975, df = n - 1)*(sample_sd/sqrt(n)))
-```
+$\bar{x} = \mu_{\bar{x}} \pm 2.262 \cdot \frac{s}{\sqrt{n}}$
+- Remember, we estimated $\mu_{\bar{x}}$ using the sample mean (in our example, $\bar{x} = 0$) and the population variance $\sigma$ using the sample standard deviation (in our example, $s = 1$).
+- CI: $0 \pm 2.262 \cdot \frac{1}{\sqrt{10}} = 0 \pm .7153$
+- Lower bound: -.7153
+- Upper bound: .7153
 
 Back to our example
 ===========================================================
-- Hey, there's a 95% chance that my current and future students don't hate me (yet)! 
-  - The lowest mean in the CI is `r lower_bound`, which maybe translates to "apathetic but slightly worried."
+- Hey, there is a good chance that my current and future students don't absolutely hate me (yet)! 
+  - The lowest mean in the CI is -.7153, which maybe translates to "apathetic but slightly worried."
 - But they don't love me either:
-  - The highest mean in the CI is `r upper_bound`, which maybe translates to "apathetic but slightly hopeful."
-- Of course, there is a 5% chance that the true mean is actually outside this interval.
-
-There's a function for that
-===========================================================
-```{r}
-t.test(sample_means)
-```
-How convenient is that?
+  - The highest mean in the CI is .7153, which maybe translates to "apathetic but slightly hopeful."
+- Of course, the true mean is actually outside 5% of the intervals calculated like this.
 
 What does the CI of the sample mean mean? (sorry)
 ===========================================================
@@ -495,54 +531,12 @@ What does the CI of the sample mean mean? (sorry)
 Let's test this
 ==========================================================
 - Let's get 10 samples from a normal distribution, then get CIs from them and see how often they contain the true mean.
-- Write a function for that:
-```{r}
-test_cis <- function(n, mean = 60, sd = 4){
-  t_results <- t.test(rnorm(n, mean, sd))
-  # test that the mean is within the bounds of the CI. Returns TRUE or FALSE.
-  mean > t_results$conf.int[1] & mean < t_results$conf.int[2]
-}
-```
+- We'll do this in class.
+- Spoiler:
+  - The proportion of CIs that does not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
+  - Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
+    - Horrible, money-wasting, science-distorting, extermely expensive errors!
 
-Let's test this (2)
-==========================================================
-- Now run the tests:
-```{r}
-mean_in_ci <- replicate(1000, test_cis(n = 10, mean = 60, sd = 4))
-table(mean_in_ci)
-```
-- It's true! Almost exactly 5%
-
-What happens if we don't use the t distribution?
-==========================================================
-```{r}
-test_cis_norm <- function(n, mean = 60, sd = 4){
-  samples <- rnorm(n, mean, sd)
-  upper <- mean(samples) + 1.96*(sd(samples)/sqrt(n))
-  lower <- mean(samples) - 1.96*(sd(samples)/sqrt(n))
-  # test that the mean is within the bounds of the CI. Returns TRUE if it is and FALSE if it isn't.
-  mean > lower & mean < upper
-}
-```
-What happens if we don't use the t distribution? (2)
-==========================================================
-```{r}
-mean_in_ci <- replicate(1000, test_cis_norm(10, 60, 4))
-table(mean_in_ci)
-```
-- The proportion of CIs that did not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
-- Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
-  - Horrible, money-wasting, science-distorting, extermely expensive errors!
-
-What if we use a larger sample size?
-==========================================================
-```{r}
-mean_in_ci <- replicate(1000, test_cis_norm(100, 60, 4))
-table(mean_in_ci)
-```
-- Back at 5%! For large sample sizes it's fine to use the normal distribution instead of the t-distribution (of course, the t-distribution works anyway).
-- Could you have come up with this? You didn't have to thanks to the work William Sealy Gosset did back in 1908.
-  
 Hypothesis tests
 =========================================================
 - In a way, by calculating the CI we already have a way to test hypotheses
@@ -560,34 +554,17 @@ Example
 ===========================================================
 - Remember my survey? The CI did not contain -3, so I can conclude (with an $\alpha$ of 5%), that the average member of the population of current and future Adv Stats students attitude towards me is not intense hatred. Relief!
 
-
-Hypothesis tests (2)
-===========================================================
-Let's look at the `t.test` output again.
-```{r}
-t.test(sample_means)
-```
-
 Two-tailed t-tests
 ============================================================
 - Instead of computing the CI from the t-value, we can also just take the t-value itself as a measure of how far the sample mean is away from the mean specified in the null hypothesis.
-- We can determine a critical t-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is
-```{r}
-qt(.975, df = 9)
-```
-and $t_{crit}$ for the lower bound is
-```{r}
-qt(.025, df = 9) # note that the t-distribution is symmetrical
-```
+- We can determine a critical t-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is `=T.INV(.975,9)`, which gives us`r qt(.975, df = 9)` and $t_{crit}$ for the lower bound is `=T.INV(.025,9)`, which gives us`r qt(.025, df = 9)`
+- Note that the t-distribution is symmetrical
 In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
 
 What about one-tailed t-tests?
 ===========================================================
 - If we are absolutely sure of the direction of the effect, then we could use a t-test that only rejects the null hypothesis when the t-value is greater than $t_{crit}$ or if it is smaller than $t_{crit}$ (depending on what direction we want to test for).
-- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only.
-```{r}
-qt(.95, df = 9)
-```
+- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only: `=T.INV(.95,9)`, which gives us `r qt(.95, df = 9)`.
 - But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
 - This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
 
@@ -606,58 +583,67 @@ The $H_0$ is that the true mean of the population is 0.
 ```{r}
 t.test(sleep_times)
 ```
-If p $\le$ .05: reject the null hypothesis.
+-If p $\le$ .05: reject the null hypothesis.
+- Try this in SPSS!
 
 Power simulations
 ==========================================================
-- For simple (and even more complex) designs, you can compute power analytically.
-- But simulations are a lot easier!
+- For simple (and even more complex) designs, you can compute power analytically. I will show you how to do this using a program called GPower.
+- But simulations are a lot more intuitive!
 - Let's go back to the sleep example and assume that the true mean was 1 (that means that on average, people get one hour more sleep when using the medication) and the sd was 1.
-```{r}
+
+Power simulations plot
+==========================================================
+- Remember, $t_{crit} = `r qt(.975, 4)`$
+
+```{r, echo = FALSE}
 t_test_sim <- function(n, mean = 1, sd = 1){
   t_results <- t.test(rnorm(n, mean, sd))
-  t_results$p.value <= .05}
-table(replicate(1000, t_test_sim(5, 1, 1)))
+  t_results$statistic}
+simulation_results <- replicate(1000, t_test_sim(5, 1, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
 ```
+
 Not so great!
 
 How to increase power
 =======================================================
-Let's try some different scenarios:
-- The effect size in the population is larger (people sleep longer on the medication)
-```{r}
-table(replicate(1000, t_test_sim(n = 5, mean = 2, sd = 1)))
+- Let's try a higher true mean ($\mu = 2$):
+```{r, echo =F}
+simulation_results <- replicate(1000, t_test_sim(5, 2, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
 ```
+
+How to increase power (2)
+=======================================================
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
-```{r}
-table(replicate(1000, t_test_sim(n = 5, mean = 1, sd = .5)))
+- Let's try a true value of $\sigma = 4$
+
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_sim(5, 1, .5))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
+
 ```
 
 How to increase power (realistically!)
 =======================================================
-You don't really have any direct control over population mean (i.e. effect size) or sd (i.e. noise). Let's focus on the one variable that you do have control over.
-- The sample size is larger
-```{r}
-table(replicate(1000, t_test_sim(n = 7, mean = 1, sd = 1))) # not quite enough
-table(replicate(1000, t_test_sim(n = 10, mean = 1, sd = 1))) # now we're talking!
+- You don't really have any direct control over population mean (i.e. effect size) or sd (i.e. noise). Let's focus on the one variable that you do have control over.
+- The sample size is larger: let's try $n=10$
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_sim(10, 1, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
 ```
 
 Double-checking our results
 =========================================================
-- Let's just check analytically that we have this correctly: If we want to show in the one-sample t-test that a mean of 1 is different from 0 (when sd = 1), we need about 10 subjects. R has a function for that!
-```{r}
-power.t.test(n = 10, delta = 1, sd = 1, type = "one.sample")
-```
-Remarkably similar to our simulation! (See Vasishth, Chapter 3 if you want to know how R calculates this!)
+- Let's just check analytically that we have this correctly: If we want to show in the one-sample t-test that a mean of 1 is different from 0 (when sd = 1), we need about 10 subjects. I will show you how to use GPower for that.
 
 Setting yourself up for success (or failure)
 =========================================================
 - You don't want to run an underpowered study. Most likely, you'll get a null result that tells you nothing about the true state of the world.
 - How can you avoid this? 
-  - Run a realistic number of participants so you reach acceptable power (the APA recomments .8):
-```{r}
-power.t.test(delta = 1, sd = 1, power = .8, type = "one.sample")
-```
+  - Run a realistic number of participants so you reach acceptable power (the APA recomments .8).
+
 
 Exercise
 ========================================================
@@ -665,10 +651,8 @@ Exercise
 
 Solution
 ========================================================
-```{r}
-power.t.test(n = 100, sd = 10, power = .8, type = "one.sample")
-```
-A difference in as little as 2.9 friends would be detectable.
+- Use GPower
+- A difference in as little as 2.9 friends would be detectable.
 
 Don't cheat!
 ========================================================
@@ -678,14 +662,15 @@ Don't cheat!
 
 - Let's see just what happens to $\alpha$ if you do that.
 - Run a simulation where there is no effect (i.e. where we know the $H_0$ is true)
-```{r}  
+
+```{r, echo = FALSE}  
 t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
   samples <- NULL
   significant <- FALSE
   
   while(length(samples) <= n_max & significant == FALSE){
       samples <- c(samples, rnorm(n_increments, mean = 0, sd = sd))
-      significant <- t.test(samples)$p.value  <= .05
+      significant <- t.test(samples)$p.value <= .05
     }
   return(significant)
   }
@@ -693,11 +678,16 @@ t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
 
 The consequences of cheating
 ======================================================
-Let's run this simulation 1000 times and make a table with the results:
-```{r}
-table(replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1)))
+Let's run this simulation 1000 times and make a plot with the results:
+
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
+barplot(table(simulation_results), names.arg = c("no","yes"),xlab= "Significant", ylab = "Number of simulations", main = paste0("Proportion of significant results: ", sum(simulation_results)/length(simulation_results)), 100)
 ```
-- Whoa! False positive alert!
+
+The consequences of cheating (2)
+======================================================
+- Holy inflated Type I error rate, Batman!
   - $\alpha$ is at 25%, instead of 5% where it should be.
 - Unfortunately, this strategy of using stopping rules ("data peeking") is quite common.
   - Solution: do a power analysis, set your sample size beforehand, and stick to it!
@@ -719,53 +709,21 @@ The two-sample t-test
 - Remember, we are comparing two samples now. We'll call the sample means $\mu_1$ and $\mu_2$.
 - Our null hypothesis is $H_0: \mu_1 = \mu_2$
 - We can rephrase this as $H_0: \mu_1 - \mu_2 = \delta = 0$
-- We already know the logic of this: we just want to find out if $\delta$ is extreme enough so we can reject the $H_0$.
+- We already know the logic of this: we just want to find out if $d$ ($\delta$ = true population difference, $d$ = sample difference)is extreme enough so we can reject the $H_0$.
 - Let's see how $\delta$ is distributed.
-```{r}
-simulate_d <- function(n1, n2, mean1, mean2, sd1, sd2){
-  mean(rnorm(n1, mean1, sd1)) - mean(rnorm(n2, mean2, sd2))
-}
-```
-
-The two-sample t-test (2)
-==========================================================
-Now run the simulation and make a histogram.
-```{r}
-d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 10, sd2 = 10))
-paste("Mean =", round(mean(d_samples), 2), "SD = ", round(sd(d_samples),2))
-hist(d_samples)
-```
-
-The two-sample t-test (3)
-=========================================================
-- OK, this looks normally distributed enough
-- The mean of this distribution seems to be centered on the difference between $\mu_1$ and $\mu_2$.
-- But what is the standard deviation? Let's try what happens if we change the sd of the two groups.
-```{r}
-d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
-sd(d_samples)
-d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 10, sd2 = 20))
-sd(d_samples)
-```
-
-The two-sample t-test (3)
-=========================================================
-- Let's also change the sample size
-```{r}
-d_samples <- replicate(1000, simulate_d(n1 = 20, n2 = 10, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
-sd(d_samples)
-d_samples <- replicate(1000, simulate_d(n1 = 10, n2 = 20, mean1 = 50, mean2 = 60, sd1 = 20, sd2 = 10))
-sd(d_samples)
-```
-- Looks like the sd of this distribution goes up as the sd of the two sample populations goes up and goes down as the size of one or both of the samples goes down.
+- We could do this analytically, using the things we've learned about expected values, but I'll leave that to those of you who are really really interested and just give you the end results.
 
 The two-sample t-test (4)
 =========================================================
-- We could play with the simulations until we've figured the relationship out, but as a shortcut, here it is:
+- We're looking for the distribution of sample differences $x_1 - x_2$:
+- If we knew the population standard deviation, we could use the following formulas:
 $$
-\sigma_{\bar{x}_1 - \bar{x}_2} = \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+\begin{aligned}
+\mu_{\bar{x}_1 - \bar{x}_2} &= \mu_1 - \mu_2\\
+\hat{\sigma}_{\bar{x}_1 - \bar{x}_2} &= \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+\end{aligned}
 $$
-- Based on this, we could calculate CIs or just a z-value (why not t? Hold your horses!)
+- Based on this, we could calculate CIs or just a z-value
 - Remember our $H_0: \mu_1 - \mu_2 = 0$ 
 - The z-value would then be:
 $z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1- \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}$
@@ -782,13 +740,27 @@ $t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
 
 - Only problem: what is the df of that test?
   - There are some shortcuts that we can take if the sample sizes and population variances are the same, but is there a general solution?
-- Shravan suggests we should just use the lower of the sample sizes, but this will cost us power
+- We could just use the lower of the sample sizes, but this will cost us power
 - This was actually a big problem in statistics, but B. L. Welch found an approximate solution (called *Welch's t-test*)
-- You can look the details up on Wikipedia, but R knows them and applies them automatically when you use `t.test`.
+- You can look the details up on Wikipedia, but SPSS knows them and will apply them automatically.
 
 The dependent t-test for paired samples
 ==========================================================
 - This is actually a lot easier. Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample t-test to check if they are 0.
+- First, we calculate the mean and the standard deviation of our sample of $n$ difference values $d_i = x_{i1}-x_{i2}$:
+$$ 
+\begin{aligned}
+\hat{\mu}_d = \bar{x}_d &= \frac{\sum\limits_{i=1}^{n}d_i}{n}\\
+\hat{\sigma}_d = s_d &= \sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{x}_d)^2}{n-1}}
+\end{aligned}
+$$
+- Here, $n$ is the number of sample *pairs*
+
+
+The dependent t-test for paired samples (2)
+==========================================================
+- Then we can calculate the *t*-value:
+$$t = \frac{\bar{x}_d - \mu_0}{\hat{\sigma}_d}$$, where $\mu_d$ is the population mean for the difference given that the $H_0$ is true. If the $H_0$ is that both samples are the same ($\mu_d = 0$), this simplifies to
+$$t = \frac{\bar{x}_d}{\hat{\sigma}_d}$$
+- The resulting *t*-value will have a df of $n-1$, where $n$ is the number of sample pairs.
 - Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.
-- We'll get back to that next week when we're talking about ANOVAs.
-- In R, use `t.test(..., paired = TRUE)` to perform this test.

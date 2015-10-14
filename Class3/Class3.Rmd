@@ -1,7 +1,7 @@
 ---
 title: Advanced Statistics
 author: Bernhard Angele 
-date: Class 3, October 16, 2014
+date: Lecture 3
 output: pdf_document
 ---
 

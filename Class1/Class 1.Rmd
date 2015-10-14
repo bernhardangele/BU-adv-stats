@@ -1,8 +1,8 @@
 ---
-title: "Advanced Statistics Class 1: Fundamentals of probability and statistical inference"
+title: 'Advanced Statistics Class 1: Fundamentals of probability and statistical inference'
 author: "Bernhard Angele"
 date: "1 October 2015"
-output: pdf_document
+output: html_document
 ---
 
 Class 1: Fundamentals of probability and statistical inference
