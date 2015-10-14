@@ -13,6 +13,8 @@ Comparing multiple groups
 Making fake data for our example
 ========================================================
 - Let's assume that the true state of affairs is that there is no difference in intelligence
+  - $H_0: \mu_1 = \mu_2 = \mu_3$
+  - The alternative hypothesis is that the population means differ (but we don't specify a direction, hence we'll do a two-tailed test)
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
 - Let's generate 3 data sets according to this criterion
 ```{r, echo=FALSE}
@@ -35,33 +37,71 @@ Let's make some random samples for our simulation
 - Make a spreadsheet, add three column headers (BU, Soton, Oxford)
     - Below the group headers, generate 10 samples each using the formula `=NORM.INV(RAND(), 100, 15)`
 - Note that the null hypothesis is true here: all values come from the same normal distribution
-
-
-What if we use t-tests?
-========================================================
-- We could simply perform t-tests on these data
-- How many would we need?
-  - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
+- Let's do t-tests first
+  - How many would we need?
+    - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
+- Let's pretend that we (just like in real life) don't know the true properties of the population (so we use *t*-tests)
   
 t-tests in Excel
 ========================================================
 - Simple, just follow the formulas
 - First, calculate the mean and variance for each sample
+- Then calculate the t-value based on the formula I gave you in the last lecture:
+$$t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
+- In this case, the Excel version of the formula above will be `=(MEAN1-MEAN2)/SQRT((SD1^2/10)+(SD2^2/10))`
+      - Replace `MEAN1`, `MEAN2`, `SD1`, and `SD2` with the actual cells that these values are in (e.g. `A12`)
+
+t-tests in Excel (2)
+========================================================
+- Now use `=T.DIST.2T(ABS(TVALUE), DF)` to get the p-value for a two-tailed test
+  - Replace `TVALUE` and `DF` with the cells containing those values
+    - What should the DF be? Let's first assume that the population variances are equal (as they should be if these really come from the same population). In that case, the DF should be `n_1+n_2-2`. So, in our example with two groups of 10, it should be 18.
+  - Why `T.DIST.2T`? This will give us the two-tailed p-value (we could also use 1-T.DIST and multiply the result by 2)
+  - Why `ABS(TVALUE)`? If $\bar{x_1} < \bar{x_2}$, the *t*-value will be negative. Since the t-distribution is symmetrical, it's easiest to just use the absolute t-value ($|t|$, i.e. the t-value without the sign) and get the area under the curve in the right tail
+
+A quick plot to visualise this
+=========================================================
+- The 2.5% lower and upper tails are highlighted. They have exactly the same area, so we could also just use double the area of the upper tail. This is exaclty what `T.DIST.2T` does.
+```{r, echo = F}
+cord.x <- seq(-3,3,0.01)
+cord.y <- dt(cord.x, df = 18)
+cord.y[cord.x > qt(.025, df =18) & cord.x < qt(.975, df =18)] <- dt(-3, df = 18)
+curve(dt(x, df =18),xlim=c(-3,3),main='t(df=18)')
+polygon(cord.x,cord.y,col='skyblue')
+```
+
+t-tests in Excel (3)
+========================================================
+- Believe it or not, Excel also has its own *t*-test function: `=T.TEST(ARRAY1, ARRAY2, TAILS, TYPE)`
+    - `ARRAY1` is the data from the first group (e.g. A2:A11, if your data are in those cells)
+    - `ARRAY2` is the data from the second group (e.g. A2:A11, if your data are in those cells)
+    - `TAILS`: `1` for a one-tailed test, `2` for a two-tailed test
+    - `TYPE`: `1` for a paired *t*-test, `2` for a two-group *t*-test with equal variances, `3` for a two-group *t*-test with unequal variances
+- The test we just did by hand is a two-tailed test with equal variances
+- Confirm that you get the same result using `T.TEST` as you did by hand. If you don't, you did something wrong.
+
+t-tests in Excel (4)
+========================================================
+- If you set `TYPE` to `3`, you get Welch's t-test. This corrects the degrees of freedom to account for unequal variances.
+- Do a Welch's *t*-test on the same data and compare the results with the *t*-test assuming equal variances. What changes?
 
 BU vs Soton
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(bu, soton)
 ```
 
 BU vs Oxford
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(bu, oxford)
 ```
 
 Soton vs Oxford
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(soton, oxford)
 ```
@@ -74,19 +114,18 @@ Anything wrong with that?
   - It's 1 - the chance that we get no spurious results
   - $1 - .95*.95*.95 = .14$
   - We have a problem: our $\alpha$ is almost three times as high as it should be.
-  - SPSS calls this LSD (least significant differences) - don't use it!
+  - SPSS calls this "correction" (which really isn't one) LSD (least significant differences) - don't use it!
 
 Exercise: Give it a try
 =========================================================
-- Instead of running the simulation on my computer, I'll run it on **you**
+- Instead of running the simulation just my computer, I'll run it on **you**
 - What I mean by that:
-  - Generate three data sets like I've just shown you
-  - **Don't** use `set.seed()` now, or we'll all get the exact same data
-  - Make sure that all three data sets are samples from the same normal distribution
-    - Same mean and sd, of course same n as well
-  - Run three two-sample t-tests comparing the means
-  - Afterwards, I will ask you and count how many of you found at least one significant result.
-  - If the $\alpha$ level isn't inflated, only one or two of you should find one
+  - Generate three data sets in Excel like I've just shown you
+  - Make sure that all three data sets are samples from the same normal distribution: Same mean and sd, of course same n as well
+  - Run three two-sample *t*-tests (assuming equal variances) comparing the means
+  - Re-generate the random variables 20 times (you can do that by simply double-clicking on any empty cell and changing it)
+  - Afterwards, I will ask you and count how many significant t-tests you observed (p < .05).
+  - If the $\alpha$ level isn't inflated, you should not observe much more than 1 (5% is 1 in 20).
 
 Solutions
 =========================================================
@@ -102,45 +141,57 @@ Solutions
 - Maybe we just want to know if there is a difference at all between any of these three means
   - One-way ANOVA
 
-
-Putting our fake data in a different format
+Analysis of Variance
 ========================================================
-- Usually, we aren't getting our data neatly in different objects
-- Instead, we'll have a big table with our data
-- If we are going to put our data in this format, we need a variable (or column) identifying the group
-- Let's add that to each of our data sets
-```{r}
-bu <- data.frame(iq = bu, group = "BU")
-soton <- data.frame(iq = soton, group = "Soton")
-oxford <- data.frame(iq = oxford, group = "Oxford")
-```
+- The idea behind the analysis of variance is simple: We want to split the total variance in our data into variance explained by our grouping factor and random noise (error) variance.
+- If the grouping factor explains more of the variance than we would expect based on random noise, then we can conclude that the grouping factor *significantly* improves our model (because yes, an ANOVA is a very simple statistical model)
+- In other words, we can conclude that at least two of the factor levels are significantly different
 
-Looking at these data now
-=========================================================
-```{r}
-bu
-```
-
-Putting it all together
-=========================================================
-```{r}
-iqdata <- rbind(bu, soton, oxford)
-str(iqdata)
-```
-- Data frames are smart: 
-  - R has automatically converted `group` into a factor
-    - A factor is a discrete variable (nominal scale)
-  - R left `iq` as a numeric variable
-    - Numeric variables are continuous (interval or ratio scale)
-
-Running an ANOVA -- by hand!
+Analysis of Variance (2)
 ========================================================
-- One-way ANOVAs are so simple, all you need is a calculator (or R, even better)
-- First, we need an estimate of the total variance in the data: calculate the total sum of squared deviations from the mean (or short, sum of squares, SS)
-- $SS_{total} = \sum{(x_i - \bar{x})^2}$, where $x_i$ is each individual value and $\bar{x}$ is the grand mean of the data.
-```{r}
-(SS_tot <- sum((iqdata$iq - mean(iqdata$iq))^2))
-```
+- How do we compare variances? We divide them!
+- First, a bit of terminology. As you should remember, we can estimate the population variance from the sample variance:
+$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{i = 1}^{n}(x_i - \bar{x})^2}{n-1}$$
+- Let's change the names a little to better fit the ANOVA model: since the data will come in different groups (factor levels), let's use the index $i$ to denote the factor level and the index $m$ to denote the $m^{th}$ observation (e.g. the $m^{th}$ person) within each factor level
+- Let's also call the number of factor levels $p$ and the number of observations per level $n$ (this is different from the way we have used $n$ so far).
+
+Anova matrix
+========================================================
+- Columns are factor levels, rows are observations within a level
+- $i$ = factor level, $p$ = number of factor levels
+- $m$ = observation, $n$ = number of observations per factor level
+
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
+x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
+\end{matrix}
+$$
+
+Analysis of Variance (2)
+========================================================
+- With this new terminology, our formula looks like this (remember the double sum operator!):
+$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2}{n\cdot p-1}$$
+- In ANOVA terminology, we call the **numerator** of this equation the **sum of squares of the total variance** or ${SS}_{tot}$ for short.
+- So, ${SS}_{tot} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- We call the **denominator** of this equation the **degrees of freedom of the total variance** or ${df}_{tot}$ for short.
+- So, ${df}_{tot} = n\cdot p-1$
+
+Partitioning the variance
+=======================================================
+- Now we can start the interesting part of actually dividing up the variance into variance explained by the factor and unexplained error variance:
+- First, we compute the estimate of the variance explained by our factor. We call the corresponding sum of squares ${SS}_{model}$ (remember, an ANOVA is a statistical model. This will become important later).
+
+The model variance
+========================================================
+- Some textbooks also call this the **treatment** variance.
+- In ANOVA terminology, we call the means of the observations in each level of our factor $\bar{A}_i$. (Why A? Well, in more complex designs, there might be a Factor B!). $${SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
+- This gives us the variance that we would get if each observation were exactly equal to the group (factor level) mean
+    - i.e. if all the variance were **between** groups, and none **within**
 
 Running an ANOVA -- by hand! (2)
 ========================================================
