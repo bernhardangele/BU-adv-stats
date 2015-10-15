@@ -29,7 +29,7 @@ What do you do now?
   - Null hypothesis ($H_0$): the prisoner comes from the standard prison population ($E(x) = \mu_{\bar{x}} = \mu$).
   - Alternative hypothesis ($H_A$): the prisoner's score is higher than that of the standard prison population ($E(x) > \mu$)
 - Convert the score into a *z*-value:
-$$ z(60) = \frac{72-50}{10} = 2.2$$
+$$ z(72) = \frac{72-50}{10} = 2.2$$
 - What is the probability of getting a *z*-value of 2.2 given that the null hypothesis is true?
     - Check the standard normal distribution.
 
@@ -398,7 +398,7 @@ The chi-square test (2)
 - In this case, we have two groups (Heads and Tails), so $n = 2$. We can rewrite the sum as:
 $$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
 - Plug in our values ($f_{o(1)} = 40$, $f_{o(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
-$$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
+$$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{(60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
 - We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is `r 1-pchisq(4,1)`
 - Conclusion: if the null hypothesis (fair coin, p(H) = .5) is true, we would expect to find an outcome like H: 40, T:60 in less than 5% of samples.
 
@@ -441,7 +441,7 @@ Solution: The t-distribution
 =============================================================
 - If we divide a *z*-value by the square root of an *independent* $\chi^2$ value divided by n, we get a *t*-value: $$t_n = \frac{z}{\sqrt{\chi_n^2/n}}$$
 - The *t*-value has **degrees of freedom** as well -- it inherits them from the $\chi^2$ value in its denominator.
-- Practically, the numerator makes the distribution have "heavier" tails -- exactly what we need for our problem.
+- Practically, the denominator makes the distribution have "heavier" tails -- exactly what we need for our problem.
 
 Let's plot some t-distributions
 ==============================================================
@@ -661,8 +661,16 @@ Exercise
 
 Solution
 ========================================================
-- Use GPower
-- A difference in as little as 2.9 friends would be detectable.
+- Effect size is defined as
+$$d = \frac{\mu_1 - \mu_2}{\hat{\sigma}}$$
+- We're doing a t-test where we want to know if the group mean (for a group size of $n=100$) comes from a known population ($\mu = 70, \sigma = 10$)
+- We want to find the necessary effect size given the sample size and the standard error of the mean. The test would be two-tailed, since we don't know the direction of the effect. The power we want is $(1-\beta) = .8$
+
+In GPower
+========================================================
+- In GPower, select `t tests` as `Test family` and `Means: Difference from constant (one sample case)` as `Statistical test`. As `Type of power analysis`, select `Sensitivity: Compute required effect size`
+- In the `Input Parameters` area, select `Two` for `Tails`, leave the $\alpha$ at `.05`, set the `Power` to `0.8`, and set the `Total sample size` to `100`. You get an effect size of $d = `r power.t.test(n = 100, sd = 1, power = .8, type = "one.sample", alternative = "two.sided")$delta`$
+- A difference in as little as $d \cdot \sigma = .283 \cdot 10=  2.83$ friends would be detectable.
 
 Don't cheat!
 ========================================================
