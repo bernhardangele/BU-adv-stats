@@ -110,11 +110,24 @@ Anything wrong with that?
 ========================================================
 - We are doing three independent t-tests
 - Each t-test has a 5% chance of producing a spurious result ($\alpha$)
-- What is the chance that we get at least one spuriously significant result?
-  - It's 1 - the chance that we get no spurious results
-  - $1 - .95*.95*.95 = .14$
+- What is the probability that we get at least one spuriously significant result?
+  - It's 1 - the probability that we get no spurious results
+  - $1 - .95\cdot.95\cdot.95 = .14$
   - We have a problem: our $\alpha$ is almost three times as high as it should be.
   - SPSS calls this "correction" (which really isn't one) LSD (least significant differences) - don't use it!
+  
+Just a quick reminder about power
+========================================================
+- Possible outcomes of a hypothesis test (given the true state of the world)
+
+                                             |Null hypothesis is actually **TRUE**    |Null hypothesis is actually **FALSE**
+---------------------------------------------|----------------------------------------|-----------------------------------------------------
+Decision from sample is "reject $H_0$"       | **Type I error**. Probability: $\alpha$|Correct rejection. Probability: $1~-~\beta=$**power** 
+Decision from sample is "do not reject $H_0$"| Correct failure to reject: Probability: $1 - \alpha$    |**Type II error**. Probability: $\beta$ 
+
+- Of course, we want to minimise $\alpha$, the probability of a **Type I error**. But we also want to minimise $\beta$, the probability of a **Type II error* (i.e. we want to maximise power). 
+- Lowering $\alpha$ (i.e. making the test more conservative) increases $\beta$. By how much? Dependent on the effect size, the population standard deviation, and the sample size.
+- $\alpha = .05$ is a compromise! Thanks, R.A. Fisher!
 
 Exercise: Give it a try
 =========================================================
@@ -176,20 +189,20 @@ Analysis of Variance (2)
 ========================================================
 - With this new terminology, our formula looks like this (remember the double sum operator!):
 $$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2}{n\cdot p-1}$$
-- In ANOVA terminology, we call the **numerator** of this equation the **sum of squares of the total variance** or ${SS}_{tot}$ for short.
-- So, ${SS}_{tot} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
-- We call the **denominator** of this equation the **degrees of freedom of the total variance** or ${df}_{tot}$ for short.
-- So, ${df}_{tot} = n\cdot p-1$
+- In ANOVA terminology, we call the **numerator** of this equation the **sum of squares of the total variance** or ${SS}_{total}$ for short.
+- So, ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- We call the **denominator** of this equation the **degrees of freedom of the total variance** or ${df}_{total}$ for short.
+- So, ${df}_{total} = n\cdot p-1$
 
 Partitioning the variance
 =======================================================
 - Now we can start the interesting part of actually dividing up the variance into variance explained by the factor and unexplained error variance:
-- First, we compute the estimate of the variance explained by our factor. We call the corresponding sum of squares ${SS}_{model}$ (remember, an ANOVA is a statistical model. This will become important later).
+- First, we compute the estimate of the variance explained by our factor. We call the corresponding sum of squares ${SS}_{model}$ (remember, an ANOVA is a simple statistical model. We'll deal with more complicated models later).
 
 The model variance
 ========================================================
 - Some textbooks also call this the **treatment** variance.
-- In ANOVA terminology, we call the means of the observations in each level of our factor $\bar{A}_i$. (Why A? Well, in more complex designs, there might be a Factor B!). $${SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
+- In ANOVA terminology, we call the means of the observations in each level of our factor $\bar{A}_i$. (Why $A$? Well, in more complex designs, there might be a Factor $B$). $${SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
 - This gives us the variance that we would get if each observation were exactly equal to the group (factor level) mean
     - i.e. if all the variance were **between** groups, and none **within**
 
@@ -197,63 +210,41 @@ Running an ANOVA -- by hand! (2)
 ========================================================
 - Now we need an estimate of the variance explained by `group`
 - $SS_{model} = n_k(\bar{x}_k - \bar{x})^2$, where $\bar{x}_k$ denotes the mean for each group, $n_k$ is the number of subjects in each group, and $\bar{x}$ is the grand mean of the data.
-```{r}
-bu_mean <- mean(subset(iqdata, group == "BU")$iq)
-soton_mean <- mean(subset(iqdata, group == "Soton")$iq)
-oxford_mean <- mean(subset(iqdata, group == "Oxford")$iq)
-n <- 10
-
-(SS_model <- sum(n*(bu_mean - mean(iqdata$iq))^2, n*(soton_mean - mean(iqdata$iq))^2, n*(oxford_mean - mean(iqdata$iq))^2))
-```
 
 Running an ANOVA -- by hand! (3)
 ========================================================
 - Now get an estimate of the variance that is *not* explained by `group`, i.e. the error.
-- Easy: Just subtract $SS_{model}$ from $SS_{total}$.
+- $SS_{error}$ is the sum of the squares of the differences between each observation $x_{mi}$ and its group mean $\bar{A}_m$:
+$$SS_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
+- As you may have guessed (or not) from the sums: ${SS}_{total} = {SS}_{model} + {SS}_{error}$
+- So, we can take a shortcut for calculating ${SS}_{error}$ Just subtract ${SS}_{model}$ from ${SS}_{total}$.
 - $SS_{error} = SS_{total} - SS_{model}$
-```{r}
-(SS_error <- SS_tot - SS_model)
-```
 
 Running an ANOVA -- by hand! (4)
 ========================================================
 - With $SS_{model}$ and $SS_Error$, we can compute the ratio of explained variance to error (or unexplained) variance.
-- First, we need to take into account the number of measurements which went into each SS
-- These are called the degrees of freedom
-- This is equivalent to calculating the variance as a descriptive statistic ($SS/df$)
-- $df_{total} = n*k-1$, where $n$ is the number of observations per group (10) and $k$ is the number of groups
-  - Why -1? Very good question. Short answer: Whenever we want to make conclusions about the population, we use n-1 instead of n.
-  - Long answer (if you are REALLY interested and won't shut up about it): [Here](http://nebula.deanza.edu/~bloom/Math10/M10DivideBy_nminus1.pdf)
-  
-Running an ANOVA -- by hand! (5)
-========================================================
+- First, we need to take into account the number of measurements which went into each SS (i.e. actually compute the variance)
+- Again, the denominator of each variance term is called the **degrees of freedom** of that variance
 - $df_{total} = n \cdot k-1$
 - $df_{model} = k-1$, where $k$ is the number of groups.
-- $df_{error} = df_{total} - df_{error} = n \cdot k - k$
-```{r}
-k <- 3
-(df_total <- n * k - 1)
-(df_model <- k - 1)
-(df_error <- n * k - k)
-```
+- $df_{error} = df_{total} - df_{model} = n \cdot k - k$
 
 Running an ANOVA -- almost done!
 ========================================================
-- Now we compute the mean squares (MS) as an estimate of the variance
-- $MS_{model} = \frac{SS_{model}}{df_{model}}$
-- $MS_{error} = \frac{SS_{error}}{df_{error}}$
-
-```{r}
-(MS_model <- SS_model/df_model)
-(MS_error <- SS_error/df_error)
-```
-Running an ANOVA -- final steps!
-========================================================
+- Now we compute our sample variances, called mean squares (MS) in the ANOVA terminology.
+  - $MS_{model} = \frac{SS_{model}}{df_{model}}$
+  - $MS_{error} = \frac{SS_{error}}{df_{error}}$
 - Finally, we take the ratio of the two.
-- $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
-```{r}
-(F_value <- MS_model/MS_error)
-```
+  - $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
+
+What is an F-value?
+========================================================
+- If you have followed our discussion of how **variance estimates** of random variables that come from a normal distribution are always $\chi^2$ distributed, you may not be too surprised by this.
+- An *F*-value is the *quotient* of two random variables following the $\chi^2$ distribution, each divided by their degrees of freedom:
+$$ F_{(n_1, n_2)} = \frac{\chi_{n_1}^2/n_1}{\chi_{n_2}^2/n_2} = \frac{\chi_{n_1}^2}{\chi_{n_2}^2}\cdot\frac{n_2}{n_1}$$
+  - *F*-values inherit both of the $\chi^2$'s degrees of freedom, so that they have both a numerator and a denominator degree of freedom.
+
+(You remember that a quotient is the result of a division, right?)
 
 What to do with this F-value
 ========================================================
