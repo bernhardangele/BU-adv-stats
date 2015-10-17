@@ -246,7 +246,7 @@ $$ F_{(n_1, n_2)} = \frac{\chi_{n_1}^2/n_1}{\chi_{n_2}^2/n_2} = \frac{\chi_{n_1}
 
 (You remember that a quotient is the result of a division, right?)
 
-What to do with this F-value
+The F distribution
 ========================================================
 - It turns out that the ratio between model and error variance follows a specific distribution
   - If there is no actual effect (!) and
@@ -259,53 +259,42 @@ What to do with this F-value
 The F-distribution
 =========================================================
 - Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
-- Remember that F is a *ratio* of two variances.
+- Remember that F is the *ratio* of two variances (both $chi^2$-distributed).
   - Because of this, the F distribtion has *two* degrees of freedom parameters
     - $df_{numerator}$
     - $df_{denominator}$
-- Guess what the R functions for the F distribution are called
-  - That's right: `df`, `pf`, `qf`, `rf`
   
 Plotting it
 ==========================================================
 - Let's take a look
-```{r}
+```{r, echo = FALSE}
 curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 ```
-- Looks like x can't be negative
-  - this makes sense: you can't have negative variance
+- F can't be negative
+  - this makes sense: it's the quotient of two $\chi^2$s. You may remember that a square of a number can never be negative!
+
+Plotting the F-distribution
+==========================================================
+```{r, echo = F}
+par(mfrow = c(4,4))
+for(df1 in c(1,2,4,40)){
+  for(df2 in c(1,2,4,40)){
+    curve(df(x, df1 = df1, df2 = df2), from = 0, to = 5, ylab = "f(x)", main = paste0("df1 = ", df1, ", df2 = ", df2))    
+  }
+}
+```
 
 Plotting it (2)
 ==========================================================
-- Adjusting the x-axis
-```{r}
-curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6)
-```
-
-The F distribution
-==========================================================
-```{r}
-curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6, main = "F(1,30)")
-```
-
-The F distribution (2)
-==========================================================
-```{r}
-curve(df(x, df1 = 3, df2 = 30), from = 0, to = 6, main = "F(3,30)")
-```
-
-
-The F distribution (3)
-==========================================================
-```{r}
-curve(df(x, df1 = 10, df2 = 30), from = 0, to = 6, main = "F(10,30)")
-```
-
-
-The F distribution (4)
-==========================================================
-```{r}
-curve(df(x, df1 = 10, df2 = 10), from = 0, to = 6, main = "F(10,10)")
+```{r, echo = F}
+library(ggplot2)
+x <- seq(from = 0,by = .01,to = 6)
+ggplot(data.frame(x = x), aes(x = x)) + 
+  stat_function(fun = df, args=list(df1 = 1, df2 = 1), aes(linetype = "df1 = 1")) +
+  stat_function(fun = df, args=list(df1 = 2, df2 = 1), aes(linetype = "df1 = 2")) +
+  stat_function(fun = df, args=list(df1 = 4, df2 = 1), aes(linetype = "df1 = 4")) +
+  stat_function(fun = df, args=list(df1 = 10, df2 = 1), aes(linetype = "df1 = 10")) +
+  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
 ```
 
 Finally finishing that ANOVA
