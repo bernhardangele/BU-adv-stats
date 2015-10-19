@@ -683,8 +683,8 @@ Repeated measures
 - Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
 - This is bad, because we violate the independence assumption in the standard ANOVA.
 - This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
-- $SS_{total} = SS_{BetweenParticipants} + SS_{WithinParticipants}$
-- $SS_{WithinParticipants} = SS_{model} + SS_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
+- $SS_{total} = SS_{betweenParticipants} + SS_{withinParticipants}$
+- $SS_{withinParticipants} = SS_{model} + SS_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
 - Result: Less unexplained variance and higher power.
 - In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
 - In the repeated measures ANOVA, we can separate them!
@@ -711,22 +711,22 @@ Calculating the sums of squares
 =============================================================
 - The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
 - ${df}_{total} = n\cdot p-1$
-- The between participants sum of squares is new. It is $${SS}_{BetweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
+- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
 where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
-- Same for the within participans sum of squares: $${SS}_{WithinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
+- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
 where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
 
 Calculating the sums of squares (2)
 =============================================================
 - Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
 - The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
-  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{WithinParticipants} - {SS}_{model}$$
+  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
   
 Degrees of freedom
 ============================================================
 - ${df}_{total} = p\cdot n - 1$
-- ${df}_{BetweenParticipants} = n - 1$
-- ${df}_{WithinParticipants} = n \cdot (p - 1)$
+- ${df}_{betweenParticipants} = n - 1$
+- ${df}_{withinParticipants} = n \cdot (p - 1)$
 - ${df}_{model} = p - 1$
 - ${df}_{residual} = (n-1) \cdot (p - 1)$
   - Where $p$ is the number of factor levels and $n$ is the number of participants
@@ -747,38 +747,31 @@ life <- read.csv("life.csv")
 life$Subject <- factor(life$Subject)
 ```
 
-Life experiences and happiness
+Let's first do this one in Excel, then in SPSS
 =============================================================
-Make a table
-```{r, results='asis'}
+- First, figure out the data
+- Make a means table (in Excel, use Pivot Tables)
+```{r, results='asis', echo = FALSE}
 # add subject column
 #
 life_stats <- ezStats(data = life, dv = Happiness, wid = Subject, within = Experience)
-kable(life_stats)
+kable(life_stats[,-ncol(life_stats)])
 ```
 
 Life experiences and happiness (2)
 =============================================================
-- Let's have ezANOVA do the ANOVA for us (just use `within` instead of `between` to tell it that you have a within-subjects effect)
-```{r}
-(life_anova <- ezANOVA(data = life, dv = Happiness, wid = Subject, within = Experience))
-```
-What are these values?
-=============================================================
-- This one you know already: it's the ANOVA output:
-```{r, echo = FALSE, results='asis'}
-kable(life_anova$ANOVA)
+- Now run the ANOVA (see video)
+- For your reference: this is very close what you should get from SPSS:
+```{r, echo = FALSE}
+life_anova <- ezANOVA(data = life, dv = Happiness, wid = Subject, within = Experience)
+kable(life_anova$ANOVA, col.names = c("Effect", "$df_n$", "$df_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta^2$"), row.names = FALSE)
 ```
 
-- This one is new: Mauchly's test for Sphericity
-```{r, echo = FALSE, results='asis'}
-kable(life_anova$"Mauchly's Test for Sphericity")
-```
-
-- This one is, too: Sphericity corrections
-```{r, echo = FALSE, results='asis'}
-kable(life_anova$"Sphericity Corrections")
-``` 
+Assumptions
+==============================================================
+- Essentially the same as for the independent ANOVA
+    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
+    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
 
 What is sphericity?
 ==============================================================
@@ -792,11 +785,7 @@ What is sphericity?
 Testing for sphericity violations
 =================================================================
 - Mauchly's Test for Sphericity
-
-```{r, echo = FALSE, results='asis'}
-kable(life_anova$"Mauchly's Test for Sphericity")
-```
-
+- Performed automatically by SPSS
 - If it's significant, sphericity is violated.
 - In this case, we're OK
 - You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
@@ -817,7 +806,6 @@ Dealing with sphericity violations
 Dealing with sphericity violations (2)
 ==================================================================
 - SPSS computes the dfs for you and you just have to pick the correct entry in the table
-- ezANOVA makes it a *tiny* bit more difficult:
 
 ```{r, echo = FALSE, results='asis'}
 kable(life_anova$"Sphericity Corrections")
