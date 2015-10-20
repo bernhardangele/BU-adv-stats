@@ -264,7 +264,7 @@ The F-distribution
     - $df_1$, also called $df_{numerator}$
     - $df_2$, also called $df_{denominator}$
   
-Plotting it
+Plotting the F distribution (1)
 ==========================================================
 - Let's take a look
 ```{r, echo = FALSE}
@@ -273,7 +273,7 @@ curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 - F can't be negative
   - this makes sense: it's the quotient of two $\chi^2$s. You may remember that a square of a number can never be negative!
 
-Plotting the F-distribution
+Plotting the F-distribution (2)
 ==========================================================
 ```{r, echo = F}
 par(mfrow = c(4,4))
@@ -284,18 +284,6 @@ for(df1 in c(1,2,4,40)){
 }
 ```
 
-Plotting it (2)
-==========================================================
-```{r, echo = F}
-library(ggplot2)
-x <- seq(from = 0,by = .01,to = 6)
-ggplot(data.frame(x = x), aes(x = x)) + 
-  stat_function(fun = df, args=list(df1 = 1, df2 = 1), aes(linetype = "df1 = 1")) +
-  stat_function(fun = df, args=list(df1 = 2, df2 = 1), aes(linetype = "df1 = 2")) +
-  stat_function(fun = df, args=list(df1 = 4, df2 = 1), aes(linetype = "df1 = 4")) +
-  stat_function(fun = df, args=list(df1 = 10, df2 = 1), aes(linetype = "df1 = 10")) +
-  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
-```
 
 The F distribution and the t distribution
 =========================================================
@@ -421,7 +409,7 @@ What to do if Levene's tests is significant?
           - Games-Howell for unequal variance
           - Hochberg's GT2 for non-equal sample sizes
 
-The SPSS (textbook)a pproach to statistics
+The SPSS (or rather, SPSS textbook) approach to statistics
 ============================================================
 - Throw as many obscure tests at the problem as you can
   - This is a sales strategy: "We need to buy SPSS since no other program has the Games-Howell test!"
@@ -452,13 +440,13 @@ ANOVA assumptions (3)
         - Participants are tested in multiple conditions
         - This can be addressed by using a repeated-measures ANOVA or Linear Mixed Models.
       
-Reporting a one-way ANOVA
+Using SPSS to perform a one-way ANOVA
 ============================================================
 - Let's walk through it together
-- I stole this data set from Andy Johnson
+- I took this data set from Andy Johnson, hence the colourful topic (and the absence of cats).
 - We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
 - Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
-- Get the file `pain.csv` from myBU. `csv` stands for **c**omma **s**eparated **v**alues and is a very useful format for passing data from Excel to SPSS and other software programs (and vice versa)
+- Get the SPSS data file `Swearing and Pain Data.sav` from myBU.
 ```{r, echo = FALSE}
 # open the data file (available on GitHub; don't forget to use setwd to set the working directory to where you put the file)
 # setwd("C:/my_data/")
@@ -468,14 +456,12 @@ pain <- read.csv("./pain.csv")
 Get an idea of what's in the file
 ===========================================================
 - Is the design balanced?
-- Calculate means and SDs
-  - You can do that in Excel or SPSS
 - Is the DV normal?
   - Note: The raw DV does not have to be perfectly normal!
    - In fact, your alternative hypothesis is that it's not, since it is influenced by the treatment effect!
    - The error should be normal, though.
     - That is, the residual data (the data that you get when you take the treatment effect out) should be normal.
-- Make a plot
+- Make a histogram and a means plot
 
 Notes about the plot
 ==========================================================
@@ -531,7 +517,7 @@ kable(TukeyHSD(x = pain_anova$aov)$Swear.Condition)
 
 Now: report it
 ==========================================================
-I'll show you how in your homework assignment.
+- You'll do this in your homework assignment (but I'll give you an example later).
 
 Multiway ANOVA
 =========================================================
@@ -664,7 +650,7 @@ kable(attract_anova$"Levene's Test for Homogeneity of Variance", col.names = c("
 
 - No problems with homogeneity of variances
 
-- Shapiro-Wilk test (do this one in SPSS)
+- Shapiro-Wilk test (you can do do this one in SPSS)
 
 Pairwise comparisons
 ============================================================
@@ -730,42 +716,91 @@ Degrees of freedom
 - ${df}_{model} = p - 1$
 - ${df}_{residual} = (n-1) \cdot (p - 1)$
   - Where $p$ is the number of factor levels and $n$ is the number of participants
-      
-One-way repeated measures ANOVA
+
+Test statistic
 ==============================================================
-- Do you feel happier after certain life experiences?
-- 20 subjects were asked to rate their happiness after certain typical life experiences
-  - Doing nothing for a day
-  - Climbing Mount Everest (!)
-  - Going shopping
-- Each subject had all three experiences and gave three ratings
-```{r}
-library(ez)
-library(knitr)
-# load the data
-life <- read.csv("life.csv")
-life$Subject <- factor(life$Subject)
+- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
+
+Quick example by hand
+=============================================================
+- 10 cats were asked to try 3 different brands of cat food: Whiskers, Paws, and Industrial Waste. They received the same amount of each food after not having eaten for 8 hours. The dependent variable amount of food (in grammes) that they ate of each brand. Do cats prefer one or more brands over others or do they eat the same amount of each?
+
+Copy this table into Excel (or SPSS)
+==============================================================
+```{r echo = F}
+set.seed("3")
+n_participants <- 10
+overall_intercept <- 100
+
+Subject <- rep(1:n_participants, each = 3)
+Brand <- rep(1:3)
+
+subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
+
+brand_means <- c(25, 25, -50)
+
+random_error <- rnorm(length(Subject), mean = 0, sd = 10)
+
+df <- data.frame(Subject, Brand)
+
+df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
+
+df$Subject <- factor(df$Subject, labels = c("Cali",
+	"Callie",
+	"Casper",
+	"Charlie",
+	"Chester",
+	"Chloe",
+	"Cleo",
+	"Coco",
+	"Cookie",
+	"Cuddles"))
+
+df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
+
+library(reshape)
+df_m <- melt(df, measure = "eaten")
+df_c <- cast(df_m, Subject ~ Brand)
+kable(df_c)
 ```
 
-Let's first do this one in Excel, then in SPSS
-=============================================================
-- First, figure out the data
-- Make a means table (in Excel, use Pivot Tables)
-```{r, results='asis', echo = FALSE}
-# add subject column
-#
-life_stats <- ezStats(data = life, dv = Happiness, wid = Subject, within = Experience)
-kable(life_stats[,-ncol(life_stats)])
-```
+Doing the ANOVA in Excel
+==============================================================
+- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
+- Calculate your Sums of Squares
+  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
+    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
+  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
+  
+Sums of squares (continued)
+===============================================================
+- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
+- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
+- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
+- Then calculate the degrees of freedom and the MS as shown earlier
+- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
 
-Life experiences and happiness (2)
-=============================================================
-- Now run the ANOVA (see video)
-- For your reference: this is very close what you should get from SPSS:
+Final step
+==============================================================
+- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
+- For comparison: ANOVA output form R
 ```{r, echo = FALSE}
-life_anova <- ezANOVA(data = life, dv = Happiness, wid = Subject, within = Experience)
-kable(life_anova$ANOVA, col.names = c("Effect", "$df_n$", "$df_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta^2$"), row.names = FALSE)
+summary(ezANOVA(data = df, wid = Subject, within = Brand, dv = eaten, return_aov = TRUE)$aov)
 ```
+
+Post-hoc comparisons
+==============================================================
+- Compute pairwise t-tests
+  - For each subject, calculate the differences between the conditions
+  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
+  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
+  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
+  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
+
+One-way repeated measures ANOVA in SPSS
+==============================================================
+- Watch Andy Johnson's video on myBU and follow along with the data set.
 
 Assumptions
 ==============================================================
@@ -776,10 +811,10 @@ Assumptions
 What is sphericity?
 ==============================================================
 - The variances of the differences between treatment levels should be roughly equal ("spherical")
-- For example, it could be that everyone reacts similarly to doing nothing and going shopping
-    - But an Everest climb might make some people very happy and some people very unhappy
-- In that case, the difference between "Nothing" and "Shopping" would have a very low variance
-    - But the difference between "Nothing" or "Shopping" and "Everest" would be huge
+- For example, it could be that all cats react similarly to the first two brands
+    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
+- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
+    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
 - This could make the ANOVA anticonservative ($\alpha$ is inflated)
 
 Testing for sphericity violations
@@ -802,51 +837,15 @@ Dealing with sphericity violations
     - Huynh-Feldt
 - Recommendation: If Greenhouse-Geisser $\epsilon < .75$, use it. Otherwise, use Huynh-Feldt.
    - Of course, if Mauchly's test is not significant, use neither!
-  
-Dealing with sphericity violations (2)
-==================================================================
-- SPSS computes the dfs for you and you just have to pick the correct entry in the table
-
-```{r, echo = FALSE, results='asis'}
-kable(life_anova$"Sphericity Corrections")
-```
-
-- It gives you the correction factors (`GGe` for Greenhouse-Geisser $\epsilon$ and `HFe` for Huynh-Feldt $\epsilon$) and the corresponding *p*-values, but not the corrected dfs themselves
-- So you just have to do the multiplication yourself if you want to report the corrected dfs
-- Important: If you use a correction method, report which one you used!
+- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
 
 Testing for normality
 ===================================================================
-- Computing residuals for repeated-measures ANOVAs is tricky
-    - No residuals means we can't do the Shapiro-Wilk test on them
-- SPSS gets around this by doing the Shapiro-Wilk test inside each factor level
-    - This is problematic, too: small sample sizes reduce the power of the test
-       - Normality violations might not be detected
-
-Testing for normality (2)
-===================================================================
-- Other option: Simply test normality for the raw data
-```{r}
-  shapiro.test(life$Happiness)
-```
-- No issues here.
-- This is not great, since we know the data aren't going to be perfectly normal if we think there is a systematic effect
-   - Both ways are really equally bad...
-
-Testing for normality (3)
-===================================================================
-- I'm fine if you do either normality test for the assignment.
+- You can do the Shapiro-Wilk test in SPSS
 - Normality isn't usually *much* of an issue, especially if your group sizes are equal
   - The **ANOVA is robust**
-- There is actually a better way for doing all of this, but you have to wait until our last class to find out!
-
 
 Post-hoc tests
 ===================================================================
-- You can use `pairwise.t.test` to compare each condition
-  - In this case, there is no signficant effect, but I'll do them anyway to demonstrate
-  - Remember: in a repeated measures design, we have to use paired *t*-tests
-    - use `paired = TRUE`
-```{r}
-pairwise.t.test(x = life$Happiness, g = life$Experience, paired = TRUE)
-```
+- You can again use paired t-tests to compare factor levels
+- Remember to do Bonferroni corrections if you do these tests by hand

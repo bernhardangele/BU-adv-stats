@@ -5,119 +5,22 @@ date: Lecture 3
 output: pdf_document
 ---
 
-Your last serving of R basics
-========================================================
-- Working with files
-  - R can open all kinds of data files
-  - You do have to tell it where to find them
-- R's working directory
-  - This is where R looks for files to open
-  - You change it using `setwd("C:/My_example_R_directory")
-  - No backslashes `\` allowed! Use forward slashes instead `/`
- 
-Getting more practice with R
-==========================================================
-- Here's a free introduction to R which might be helpful to you. It repeats a lot of the things I have showed you only briefly.
 
-
-Setting your working directory
-==========================================================
- - Don't know where your working directory should be?
-  - Start by putting your script files in a location that is sensible (to you)
-    - e.g. `C:\Some_Document_Folder\AdvStats\Class3\` or `/home/My_Name/Documents/MastersProject/Data`
-    - That directory should also be your working directory for the current session
-    - In RStudio, open your script file, then use the menu bar and go to Session --> Set Working Directory --> To Source File Location
-      - RStudio will write a setwd command to the console.
-      - Copy and paste this command to your script, and you're set. Every time you run the script, the working directory will be automatically set
-- When you use R Markdown, Knitr sets your working directory to the location of the Rmd file automatically.
-      
-Opening files and importing data
-========================================================
-- If you have data in Excel:
-  - Save them as comma-separated values (CSV)
-  - If you are using Excel formulas and other bells and whistles, check that your data are exported correctly
-  - Make sure the first row of every column contains its column name
-  - Save this file in your working directory (remember where that was?)
-  - Now you can import the file using `new_object_with_a_sensible_name <- read.csv(file = "my_filename.csv")`
-  - If there is an error/warning message, check that there are no missing cells
-    - Same number of data points in each row
-
-
-Data Frames
-========================================================
-- A Data Frame is a combination of a list and a matrix
-- It gets its row/column structure from the matrix
-- But you can use columns of any data type (numeric, logical, factor (discrete), logical, character)
-- Perfect for the kind of analyses we would like to do
-- Very similar to SPSS data files
-- Get a column by using `object_name$column_name`
-- Get a column by slicing: `object_name[,1]`
-- Get a row by slicing: `object_name[1,]`
-- Get a cell by slicing: `object_name[1,1]`
-
-Packages
-========================================================
-- Many authors have worked on extending R and teaching it new tricks
-- Packages are collections of functions that help you perform a certain task
-  - For example, the `ez` package has all kinds of useful functions for performing ANOVAs
-- To install a package, type `install.packages("package_name")` at the Console.
-  - e.g. `install.packages("ez")`
-- You can ask R to install multiple packages at once:
-  - Run this line in the console now: `install.packages(c("ez","reshape","ggplot2","lme4", "plyr"))
-
-Loading packages
-=========================================================
-- Installed packages are not loaded automatically
-- If you want to use a command from a package, you need to load it: `library(package_name)`
-  - e.g. `library(ez)`
-- Once it is loaded, the package and all of its commands are ready to go until you restart R.
-
-Starting a script
-==========================================================
-Good practice when starting a script:
-```{r,eval=FALSE}
-# My_testscript.R
-# Author: Bernhard Angele
-# Description: Demonstrates how to start a script
-###########################
-
-rm(list = ls()) # clear the workspace to avoid problems caused by old objects
-library(ez) # load (only) those libraries that you need
-?library(reshape)
-library(ggplot2)
-# Set your working directory
-setwd("C:/I_know_my_working_directory_and_this_is_it/")
-# Now load your data, do your analyses and win fame and fortune!
-```
-
-Starting an Rmd file
-========================================================
-- Fill in the header:
-```{r, eval = FALSE}
----
-title: "My fantastic results section"
-output: pdf_document
----
-```
-- Then do the same things as above in the first code chunk
-  - Hint: you can tell R to hide this boring code by adding `hide = TRUE` to the header. It will still get evaluated
-```{r,eval =FALSE}
-Start your code chunk like this: ```{r, hide = TRUE}
-```
-    
 Comparing multiple groups
 ========================================================
 - t-tests are nice if you only have two groups that you want to compare.
 - But maybe you have more groups
-
-Example: A researcher wants to find out if there is a systematic difference in intelligence between MSc students from different universities. She performs intelligence tests on 10 students each from BU, University of Southampton and Oxford University and records the results.
+- Example:
+> A researcher wants to find out if there is a systematic difference in intelligence between MSc students from different universities. She performs intelligence tests on 10 students each from BU, University of Southampton and Oxford University and records the results.
 
 Making fake data for our example
 ========================================================
 - Let's assume that the true state of affairs is that there is no difference in intelligence
+  - $H_0: \mu_1 = \mu_2 = \mu_3$
+  - The alternative hypothesis is that the population means differ (but we don't specify a direction, hence we'll do a two-tailed test)
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
-- Let's generate 3 data sets according to this criterion:
-```{r}
+- Let's generate 3 data sets according to this criterion
+```{r, echo=FALSE}
 # The following line sets the random number generator to a specific state
 # and ensures that you get the same numbers that I did.
 set.seed("16102014")
@@ -126,26 +29,82 @@ soton <- rnorm(n = 10, mean = 100, sd = 15)
 oxford <- rnorm(n = 10, mean = 100, sd = 15)
 ```
 
-What if we use t-tests?
+Simulating data with Excel
 ========================================================
-- We could simply perform t-tests on these data
-- How many would we need?
-  - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
+- `=RAND()` will give you a random number between 0 and 1 (continuous uniform distribution, if you must know)
+- `=NORM.INV(probability, mean, sd)` will take a probability (= left tail proportion) and give you the corresponding x-value from the distribution
+- combine the two, and you get random samples from a normal distribution: `=NORM.INV(RAND(), mean, sd)`
+
+Let's make some random samples for our simulation
+========================================================
+- Make a spreadsheet, add three column headers (BU, Soton, Oxford)
+    - Below the group headers, generate 10 samples each using the formula `=NORM.INV(RAND(), 100, 15)`
+- Note that the null hypothesis is true here: all values come from the same normal distribution
+- Let's do t-tests first
+  - How many would we need?
+    - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
+- Let's pretend that we (just like in real life) don't know the true properties of the population (so we use *t*-tests)
+  
+t-tests in Excel
+========================================================
+- Simple, just follow the formulas
+- First, calculate the mean and standard deviation for each group (using `=AVERAGE` and `=STDEV.S`; the .S stands for the sample variance, essentially meaning that we're using the corrected standard deviation, dividing by $n-1$ instead of $n$)
+- Then calculate the t-value based on the formula I gave you in the last lecture:
+$$t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
+- In this case, the Excel version of the formula above will be `=(MEAN1-MEAN2)/SQRT((SD1^2/10)+(SD2^2/10))`
+      - Replace `MEAN1`, `MEAN2`, `SD1`, and `SD2` with the actual cells that these values are in (e.g. `A12`)
+
+t-tests in Excel (2)
+========================================================
+- Now use `=T.DIST.2T(ABS(TVALUE), DF)` to get the p-value for a two-tailed test
+  - Replace `TVALUE` and `DF` with the cells containing those values
+    - What should the DF be? Let's first assume that the population variances are equal (as they should be if these really come from the same population). In that case, the DF should be `n_1+n_2-2`. So, in our example with two groups of 10, it should be 18.
+  - Why `T.DIST.2T`? This will give us the two-tailed p-value (we could also use 1-T.DIST and multiply the result by 2)
+  - Why `ABS(TVALUE)`? If $\bar{x_1} < \bar{x_2}$, the *t*-value will be negative. Since the t-distribution is symmetrical, it's easiest to just use the absolute t-value ($|t|$, i.e. the t-value without the sign) and get the area under the curve in the right tail
+
+A quick plot to visualise this
+=========================================================
+- The 2.5% lower and upper tails are highlighted. They have exactly the same area, so we could also just use double the area of the upper tail. This is exaclty what `T.DIST.2T` does.
+```{r, echo = F}
+cord.x <- seq(-3,3,0.01)
+cord.y <- dt(cord.x, df = 18)
+cord.y[cord.x > qt(.025, df =18) & cord.x < qt(.975, df =18)] <- dt(-3, df = 18)
+curve(dt(x, df =18),xlim=c(-3,3),main='t(df=18)')
+polygon(cord.x,cord.y,col='skyblue')
+```
+
+t-tests in Excel (3)
+========================================================
+- Believe it or not, Excel also has its own *t*-test function: `=T.TEST(ARRAY1, ARRAY2, TAILS, TYPE)`
+    - `ARRAY1` is the data from the first group (e.g. A2:A11, if your data are in those cells)
+    - `ARRAY2` is the data from the second group (e.g. A2:A11, if your data are in those cells)
+    - `TAILS`: `1` for a one-tailed test, `2` for a two-tailed test
+    - `TYPE`: `1` for a paired *t*-test, `2` for a two-group *t*-test with equal variances, `3` for a two-group *t*-test with unequal variances
+- The test we just did by hand is a two-tailed test with equal variances
+- Confirm that you get the same result using `T.TEST` as you did by hand. If you don't, you did something wrong.
+
+t-tests in Excel (4)
+========================================================
+- If you set `TYPE` to `3`, you get Welch's t-test. This corrects the degrees of freedom to account for unequal variances.
+- Do a Welch's *t*-test on the same data and compare the results with the *t*-test assuming equal variances. What changes?
 
 BU vs Soton
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(bu, soton)
 ```
 
 BU vs Oxford
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(bu, oxford)
 ```
 
 Soton vs Oxford
 =========================================================
+- In case you don't have Excel handy, here I'm doing the same tests in R:
 ```{r}
 t.test(soton, oxford)
 ```
@@ -154,23 +113,35 @@ Anything wrong with that?
 ========================================================
 - We are doing three independent t-tests
 - Each t-test has a 5% chance of producing a spurious result ($\alpha$)
-- What is the chance that we get at least one spuriously significant result?
-  - It's 1 - the chance that we get no spurious results
-  - $1 - .95*.95*.95 = .14$
+- What is the probability that we get at least one spuriously significant result?
+  - It's 1 - the probability that we get no spurious results
+  - $1 - .95\cdot.95\cdot.95 = .14$
   - We have a problem: our $\alpha$ is almost three times as high as it should be.
-  - SPSS calls this LSD (least significant differences) - don't use it!
+  - SPSS calls this "correction" (which really isn't one) LSD (least significant differences) - don't use it!
+  
+Just a quick reminder about power
+========================================================
+- Possible outcomes of a hypothesis test (given the true state of the world)
+
+                                             |Null hypothesis is actually **TRUE**    |Null hypothesis is actually **FALSE**
+---------------------------------------------|----------------------------------------|-----------------------------------------------------
+Decision from sample is "reject $H_0$"       | **Type I error**. Probability: $\alpha$|Correct rejection. Probability: $1~-~\beta=$**power** 
+Decision from sample is "do not reject $H_0$"| Correct failure to reject: Probability: $1 - \alpha$    |**Type II error**. Probability: $\beta$ 
+
+- Of course, we want to minimise $\alpha$, the probability of a **Type I error**. But we also want to minimise $\beta$, the probability of a **Type II error* (i.e. we want to maximise power). 
+- Lowering $\alpha$ (i.e. making the test more conservative) increases $\beta$. By how much? Dependent on the effect size, the population standard deviation, and the sample size.
+- $\alpha = .05$ is a compromise! Thanks, R.A. Fisher!
 
 Exercise: Give it a try
 =========================================================
-- Instead of running the simulation on my computer, I'll run it on **you**
+- Instead of running the simulation just my computer, I'll run it on **you**
 - What I mean by that:
-  - Generate three data sets like I've just shown you
-  - **Don't** use `set.seed()` now, or we'll all get the exact same data
-  - Make sure that all three data sets are samples from the same normal distribution
-    - Same mean and sd, of course same n as well
-  - Run three two-sample t-tests comparing the means
-  - Afterwards, I will ask you and count how many of you found at least one significant result.
-  - If the $\alpha$ level isn't inflated, only one or two of you should find one
+  - Generate three data sets in Excel like I've just shown you
+  - Make sure that all three data sets are samples from the same normal distribution: Same mean and sd, of course same n as well
+  - Run three two-sample *t*-tests (assuming equal variances) comparing the means
+  - Re-generate the random variables 20 times (you can do that by simply double-clicking on any empty cell and changing it)
+  - Afterwards, I will ask you and count how many significant t-tests you observed (p < .05).
+  - If the $\alpha$ level isn't inflated, you should not observe much more than 1 (5% is 1 in 20).
 
 Solutions
 =========================================================
@@ -179,119 +150,109 @@ Solutions
   - Our total $\alpha$ is then: $1-(1-.05/3)^3 = .049$
   - This is called a **Bonferroni correction**
   - Problem solved?
-  - Yes, but the lower the $\alpha$ level, the lower the power.
+  - Yes, but this is essentially lowering the $\alpha$ level, leading to lower power.
 - Better ways (but still lowering power):
   - Holm-Bonferroni (same principle as Bonferroni, but better power)
   - Tukey's HSD (honestly significant differences)
 - Maybe we just want to know if there is a difference at all between any of these three means
   - One-way ANOVA
 
-
-Putting our fake data in a different format
+Analysis of Variance
 ========================================================
-- Usually, we aren't getting our data neatly in different objects
-- Instead, we'll have a big table with our data
-- If we are going to put our data in this format, we need a variable (or column) identifying the group
-- Let's add that to each of our data sets
-```{r}
-bu <- data.frame(iq = bu, group = "BU")
-soton <- data.frame(iq = soton, group = "Soton")
-oxford <- data.frame(iq = oxford, group = "Oxford")
-```
+- The idea behind the analysis of variance is simple: We want to split the total variance in our data into variance explained by our grouping factor and random noise (error) variance.
+- If the grouping factor explains more of the variance than we would expect based on random noise, then we can conclude that the grouping factor *significantly* improves our model (because yes, an ANOVA is a very simple statistical model)
+- In other words, we can conclude that at least two of the factor levels are significantly different
 
-Looking at these data now
-=========================================================
-```{r}
-bu
-```
-
-Putting it all together
-=========================================================
-```{r}
-iqdata <- rbind(bu, soton, oxford)
-str(iqdata)
-```
-- Data frames are smart: 
-  - R has automatically converted `group` into a factor
-    - A factor is a discrete variable (nominal scale)
-  - R left `iq` as a numeric variable
-    - Numeric variables are continuous (interval or ratio scale)
-
-Running an ANOVA -- by hand!
+Analysis of Variance (2)
 ========================================================
-- One-way ANOVAs are so simple, all you need is a calculator (or R, even better)
-- First, we need an estimate of the total variance in the data: calculate the total sum of squared deviations from the mean (or short, sum of squares, SS)
-- $SS_{total} = \sum{(x_i - \bar{x})^2}$, where $x_i$ is each individual value and $\bar{x}$ is the grand mean of the data.
-```{r}
-(SS_tot <- sum((iqdata$iq - mean(iqdata$iq))^2))
-```
+- How do we compare variances? We divide them!
+- First, a bit of terminology. As you should remember, we can estimate the population variance from the sample variance:
+$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{i = 1}^{n}(x_i - \bar{x})^2}{n-1}$$
+- Let's change the names a little to better fit the ANOVA model: since the data will come in different groups (factor levels), let's use the index $i$ to denote the factor level and the index $m$ to denote the $m^{th}$ observation (e.g. the $m^{th}$ person) within each factor level
+- Let's also call the number of factor levels $p$ and the number of observations per level $n$ (this is different from the way we have used $n$ so far).
+
+Data matrix
+========================================================
+- Columns are factor levels, rows are observations within a level
+- $i$ = factor level, $p$ = number of factor levels
+- $m$ = observation, $n$ = number of observations per factor level
+
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
+x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
+\end{matrix}
+$$
+
+Analysis of Variance (2)
+========================================================
+- With this new terminology, our formula looks like this (remember the double sum operator!):
+$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2}{n\cdot p-1}$$
+- In ANOVA terminology, we call the **numerator** of this equation the **sum of squares of the total variance** or ${SS}_{total}$ for short.
+- So, ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- We call the **denominator** of this equation the **degrees of freedom of the total variance** or ${df}_{total}$ for short.
+- So, ${df}_{total} = n\cdot p-1$
+
+Partitioning the variance
+=======================================================
+- Now we can start the interesting part of actually dividing up the variance into variance explained by the factor and unexplained error variance:
+- First, we compute the estimate of the variance explained by our factor. We call the corresponding sum of squares ${SS}_{model}$ (remember, an ANOVA is a simple statistical model. We'll deal with more complicated models later).
+
+The model variance
+========================================================
+- Some textbooks also call this the **treatment** variance.
+- In ANOVA terminology, we call the means of the observations in each level of our factor $\bar{A}_i$. (Why $A$? Well, in more complex designs, there might be a Factor $B$). $${SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
+- This gives us the variance that we would get if each observation were exactly equal to the group (factor level) mean
+    - i.e. if all the variance were **between** groups, and none **within**
 
 Running an ANOVA -- by hand! (2)
 ========================================================
 - Now we need an estimate of the variance explained by `group`
 - $SS_{model} = n_k(\bar{x}_k - \bar{x})^2$, where $\bar{x}_k$ denotes the mean for each group, $n_k$ is the number of subjects in each group, and $\bar{x}$ is the grand mean of the data.
-```{r}
-bu_mean <- mean(subset(iqdata, group == "BU")$iq)
-soton_mean <- mean(subset(iqdata, group == "Soton")$iq)
-oxford_mean <- mean(subset(iqdata, group == "Oxford")$iq)
-n <- 10
-
-(SS_model <- sum(n*(bu_mean - mean(iqdata$iq))^2, n*(soton_mean - mean(iqdata$iq))^2, n*(oxford_mean - mean(iqdata$iq))^2))
-```
 
 Running an ANOVA -- by hand! (3)
 ========================================================
 - Now get an estimate of the variance that is *not* explained by `group`, i.e. the error.
-- Easy: Just subtract $SS_{model}$ from $SS_{total}$.
+- $SS_{error}$ is the sum of the squares of the differences between each observation $x_{mi}$ and its group mean $\bar{A}_m$:
+$$SS_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
+- As you may have guessed (or not) from the sums: ${SS}_{total} = {SS}_{model} + {SS}_{error}$
+- So, we can take a shortcut for calculating ${SS}_{error}$ Just subtract ${SS}_{model}$ from ${SS}_{total}$.
 - $SS_{error} = SS_{total} - SS_{model}$
-```{r}
-(SS_error <- SS_tot - SS_model)
-```
 
 Running an ANOVA -- by hand! (4)
 ========================================================
 - With $SS_{model}$ and $SS_Error$, we can compute the ratio of explained variance to error (or unexplained) variance.
-- First, we need to take into account the number of measurements which went into each SS
-- These are called the degrees of freedom
-- This is equivalent to calculating the variance as a descriptive statistic ($SS/df$)
-- $df_{total} = n*k-1$, where $n$ is the number of observations per group (10) and $k$ is the number of groups
-  - Why -1? Very good question. Short answer: Whenever we want to make conclusions about the population, we use n-1 instead of n.
-  - Long answer (if you are REALLY interested and won't shut up about it): [Here](http://nebula.deanza.edu/~bloom/Math10/M10DivideBy_nminus1.pdf)
-  
-Running an ANOVA -- by hand! (5)
-========================================================
+- First, we need to take into account the number of measurements which went into each SS (i.e. actually compute the variance)
+- Again, the denominator of each variance term is called the **degrees of freedom** of that variance
 - $df_{total} = n \cdot k-1$
 - $df_{model} = k-1$, where $k$ is the number of groups.
-- $df_{error} = df_{total} - df_{error} = n \cdot k - k$
-```{r}
-k <- 3
-(df_total <- n * k - 1)
-(df_model <- k - 1)
-(df_error <- n * k - k)
-```
+- $df_{error} = df_{total} - df_{model} = n \cdot k - k$
 
 Running an ANOVA -- almost done!
 ========================================================
-- Now we compute the mean squares (MS) as an estimate of the variance
-- $MS_{model} = \frac{SS_{model}}{df_{model}}$
-- $MS_{error} = \frac{SS_{error}}{df_{error}}$
-
-```{r}
-(MS_model <- SS_model/df_model)
-(MS_error <- SS_error/df_error)
-```
-Running an ANOVA -- final steps!
-========================================================
+- Now we compute our sample variances, called mean squares (MS) in the ANOVA terminology.
+  - $MS_{model} = \frac{SS_{model}}{df_{model}}$
+  - $MS_{error} = \frac{SS_{error}}{df_{error}}$
 - Finally, we take the ratio of the two.
-- $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
-```{r}
-(F_value <- MS_model/MS_error)
-```
+  - $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
 
-What to do with this F-value
+What is an F-value?
+========================================================
+- If you have followed our discussion of how **variance estimates** of random variables that come from a normal distribution are always $\chi^2$ distributed, you may not be too surprised by this.
+- An *F*-value is the *quotient* of two random variables following the $\chi^2$ distribution, each divided by their degrees of freedom:
+$$ F_{(n_1, n_2)} = \frac{\chi_{n_1}^2/n_1}{\chi_{n_2}^2/n_2} = \frac{\chi_{n_1}^2}{\chi_{n_2}^2}\cdot\frac{n_2}{n_1}$$
+  - *F*-values inherit both of the $\chi^2$'s degrees of freedom, so that they have both a numerator and a denominator degree of freedom.
+
+(You remember that a quotient is the result of a division, right?)
+
+The F distribution
 ========================================================
 - It turns out that the ratio between model and error variance follows a specific distribution
-  - If there is no actual effect (!) and
+  - If there is no actual effect (i.e. the groups are just assigned at random) and
   - As long as certain assumptions are valid (more on that later)
 - This distribution is called the F-distribution
 - Occasionally you will get a high $MS_{model}$ simply by chance, but such occurrences are quite rare
@@ -301,146 +262,157 @@ What to do with this F-value
 The F-distribution
 =========================================================
 - Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
-- Remember that F is a *ratio* of two variances.
+- Remember that F is the *ratio* of two variances (both $chi^2$-distributed).
   - Because of this, the F distribtion has *two* degrees of freedom parameters
-    - $df_{numerator}$
-    - $df_{denominator}$
-- Guess what the R functions for the F distribution are called
-  - That's right: `df`, `pf`, `qf`, `rf`
+    - $df_1$, also called $df_{numerator}$
+    - $df_2$, also called $df_{denominator}$
   
-Plotting it
+Plotting the F distribution (1)
 ==========================================================
 - Let's take a look
-```{r}
+```{r, echo = FALSE}
 curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 ```
-- Looks like x can't be negative
-  - this makes sense: you can't have negative variance
+- F can't be negative
+  - this makes sense: it's the quotient of two $\chi^2$s. You may remember that a square of a number can never be negative!
 
-Plotting it (2)
+Plotting the F-distribution (2)
 ==========================================================
-- Adjusting the x-axis
-```{r}
-curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6)
-```
-
-The F distribution
-==========================================================
-```{r}
-curve(df(x, df1 = 1, df2 = 30), from = 0, to = 6, main = "F(1,30)")
-```
-
-The F distribution (2)
-==========================================================
-```{r}
-curve(df(x, df1 = 3, df2 = 30), from = 0, to = 6, main = "F(3,30)")
+```{r, echo = F}
+par(mfrow = c(4,4))
+for(df1 in c(1,2,4,40)){
+  for(df2 in c(1,2,4,40)){
+    curve(df(x, df1 = df1, df2 = df2), from = 0, to = 5, ylab = "f(x)", main = paste0("df1 = ", df1, ", df2 = ", df2))    
+  }
+}
 ```
 
 
-The F distribution (3)
-==========================================================
-```{r}
-curve(df(x, df1 = 10, df2 = 30), from = 0, to = 6, main = "F(10,30)")
-```
-
-
-The F distribution (4)
-==========================================================
-```{r}
-curve(df(x, df1 = 10, df2 = 10), from = 0, to = 6, main = "F(10,10)")
-```
-
-Finally finishing that ANOVA
+The F distribution and the t distribution
 =========================================================
-- So, how extreme is our F-value given the $H_0$?
-- Let's get the p-value for our F-value
-```{r}
-(p_value <- 1 - pf(F_value, df1 = df_model, df2 = df_error))
-```
-It's 1 - pf since pf gives you the probability for an F value to be smaller than the value given. We want the opposite.
-If $p \leq .05$, the effect of group is significant (spuriously in this case, since we know there was no effect).
+- For $df_1 = 1$, the *F* distribution is the same as the distribution of the square of the *t* distribution with the same $df_2$
+- Remember, $t_{df} = \frac{z}{\sqrt{\chi_{df}^2}/df}$
+    - So, $t^2_{df} = \frac{z^2}{\chi_{df}^2/df}$. A $z^2$ value is $\chi^2$ distributed with $df = 1$, so that $t^2_{df} = F_{(1, df)}=\frac{\chi_1^2}{\chi_{df}^2/df}$
+- You can literally take the square root of the *F*-value of a two-level one-way ANOVA and get the corresponding *t*-value.
+- Of course, if you have more than two factor levels, then this doesn't work anymore because $df_1 > 0$ (but you can't analyse a design like that with a t-test anyway.)
 
-Can we just let R do it?
+Let's do an ANOVA by hand
 ==========================================================
-- Remember the formula format for the t-test command:
-```{r}
-summary(aov(formula = iq ~ group, data = iqdata))
-```
-- `summary()` is necessary here to get the p-value
-- This is just a convention in r
+- Use the same spreadsheet with fake values that we used for the t-tests
+- For this, let's assume that you have 3 groups ($p=3$) with 10 participants each ($n=10$) and that your data are in `A2:A11` for Group 1, `B2:B11` for Group 2, and `C2:C11` for Group 3. `A12`, `B12`, and `C12` contain your group means (`=AVERAGE(A2:A11)` etc.) and `A13`, `B13`, and `C13` contain your group standard deviations (`=STDEV.S(A2:A11)` etc.)
 
-A different way, using a package
+Calculate sums of squares in Excel
 ==========================================================
-```{r}
-library(ez)
-# ezANOVA wants a subject identifier, so let's generate one
-# every row is a different subject, so we just need to make a new variable that numbers the rows
-iqdata$subnum <- 1:30
+- ${SS}_{model} = n_k(\bar{x}_k - \bar{x})^2$
+    - In Excel: `=10*((A12-AVERAGE(A2:C11))^2+(B12-AVERAGE(A2:C11))^2+(C12-AVERAGE(A2:C11))^2)`
+- ${SS}_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$. 
+    - Excel has a useful function called `DEVSQ` which gives you the sum of squares of deviations of data points from their sample mean
+    - So: `=DEVSQ(A2:A11)+DEVSQ(B2:B11)+DEVSQ(C2:C11)`
+- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+  - Thanks to DEVSQ, this is really easy: `=DEVSQ(A2:C11)`
+
+Calculate degrees of freedom and mean squares
+============================================================
+- ${df}_{model} = n\cdot p - 1 = 3 - 1= 2$
+- ${df}_{error} = n\cdot p - p = 10\cdot3-3 = 27$
+- ${df}_{total} = n\cdot p-1 = 10\cdot3-1 = 29$
+- Let's assume that your sums of squares are in `B20`, `B21`, `B22` for model, error, and total, respectively. Then your means squares are
+    - ${MS}_{model} = \frac{{SS}_{model}}{{df}_{model}}$; `=B20/2` in Excel.
+    - ${MS}_{error} = \frac{{SS}_{error}}{{df}_{error}}$; `=B21/27` in Excel.
+    - ${MS}_{total}$: We don't actually need that!
+    
+Compute your F-value and the corresponding p-value
+=============================================================
+- Our *F*-value: $F_(df_{model}, df_{error}) = \frac{MS_{model}}{MS_{error}}$
+- Assuming that you've stored ${MS}_{model}$ in `C20` and ${MS}_{error}$ in `C21`: `=C20/C21`
+  - Easy!
+- Assuming that you put the *F*-value in `D20`, we can get the *p*-value using `=F.DIST.RT(D20,2,27)`, where 2 is ${df}_{model}$ and 27 is ${df}_{error}$.
+
+Example data set
+==============================================================
+- If you don't have Excel handy to generate your own or if you want to compare your calculations to mine.
+
+         BU|    Soton |    Oxford|
+|---------:|---------:|---------:|
+| 101.37080| 112.28569| 105.39426|
+|  98.90038|  92.33469| 102.64322|
+|  99.35124| 110.97803|  85.54996|
+| 110.41595| 121.00897|  85.18428|
+| 113.22132| 114.35717| 121.77122|
+|  95.67537| 126.07178|  95.09605|
+| 113.69695| 110.15121|  86.46963|
+| 114.53939|  96.40311|  77.37942|
+|  98.88912| 126.64088| 111.85448|
+|  55.56055| 114.37858|  94.99734|
+
+```{r echo = F}
+my_data <- c(101.37080, 98.90038, 99.35124, 110.41595, 113.22132, 95.67537, 113.69695, 114.53939, 98.88912, 55.56055, 112.28569, 92.33469, 110.97803, 121.00897, 114.35717, 126.07178, 110.15121, 96.40311, 126.64088, 114.37858, 105.39426, 102.64322, 85.54996, 85.18428, 121.77122, 95.09605, 86.46963, 77.37942, 111.85448, 94.99734)
 ```
 
-ezANOVA
-===========================================================
-```{r}
-(iq_anova <- ezANOVA(iqdata, dv = iq, wid = subnum, between = group))
+ANOVA table
+==========================================================
+```{r echo = F, results="as.is"}
+my_df <- data.frame(Group = factor(rep(c("BU", "Soton", "Oxford"))), IQ = my_data)
+my_aov <- aov(data = my_df, formula = IQ ~ Group)
+my_aov_sum <- summary(my_aov)[[1]]
+my_aov_sum <- rbind(my_aov_sum, c(sum(my_aov_sum$Df), sum(my_aov_sum$`Sum Sq`), NA, NA, NA))
+row.names(my_aov_sum)[2:3] <- c("Error", "Total")
+kable(my_aov_sum)
 ```
-- Nice. What's `ges` and what is that second output?
 
 Effect size
 ===========================================================
-- `ges` = generalised eta squared
+- Just like for t-tests, we can get an estimate of effect sizes (called $\eta^2$, "eta-squared")
 - $\eta^2 = \frac{SS_{model}}{SS_{total}}$
-- $\eta_G^2$ is $\eta^2$ with a correction for repeated measures designs (if applicable; we'll talk about those later)
 - $\eta^2$ is an estimate of the relationship between variance explained by the ANOVA model and total variance in the data
-- Compare this to Cohen's $d$, another estimate of effect size:
+- You can use $\eta^2$ for power estimates with GPower.
+- Compare this to Cohen's $d$, another estimate of effect size that we used for *t*-tests:
   - $d$ = $\frac{\bar{x_1} - \bar{x_2}}{s}$
-  - Cohen's $d$ is an estimate of how large a difference in means is (in standard deviations)
-  - What is $s$? The standard deviation of the difference in means (from your sample)
+  - Cohen's $d$ is an estimate of how large a difference in means is (in sample standard deviations)
   
-Levene's test for homogeneity of variance
+ANOVA assumptions (1)
 ===========================================================
-```{r}
-iq_anova[2] # get the second element of the list iq_anova
-```
-- When you perform an ANOVA, you make the assumption that the variances within each group are similar
-  - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
-  - Levene's test compares the group variances
-    - What's the test statistic for a test that compares variances? It's *F*!
+- **Normality**. The observed test statistic ($\frac{MS_{model}}{MS_{error}}$) can only be assumed to come from an *F*-distribution if:
+  - The error variance (i.e. all the variance not explained by the group factors) is normally distributed
+    - This is because the $\chi^2$-values are assumed to come from a standard normal distribution
+
+ANOVA assumptions (2)
+===========================================================
+- **Homogeneity of variances** (also known as **homoscedasticity**). The variances within each group are similar.
+      - This is because of the way we add up the variances in each group to get an estimate of the total error variance ${SS}_{error}$:
+      $$SS_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
+      - You can only do this if the variances in each group are roughly similar.
+        - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
+  - If you have more than two groups, SPSS will automatically run Levene's test, which compares the group variances
+    - What's the test statistic for a test that compares variances? Of course, it's *F* again!
     - The p-value tells you if the variances are significantly different between groups.
 
-Levene's test for homogeneity of variance
+Levene's test for homogeneity of variances
 ===========================================================
-- You do not need Levene's test if you only have two independent groups (and ezANOVA won't do it then)
-- If Levene's test is not significant, all is well
-- If Levene's test is significant, you're violating the homogeneity of variance assumption
-  - Not a big issue if the sample sizes are equal for all groups (balanced design)
-  - If sample sizes aren't equal (unbalanced design) and the larger groups have higher variance, your ANOVA loses power
-  - If sample sizes aren't equal and the larger groups have lower variance, your ANOVA becomes anti-conservative ($\alpha$ increases)!
+- You could do Levene's test by hand, but if you actually need it, chances are that your design is too complicated to do by hand anyway.
+- If Levene's test is not significant, all is well.
+- If Levene's test is significant, you're violating the homogeneity of variance assumption.
+  - Not a big issue if the sample sizes are equal for all groups (balanced design).
+  - If sample sizes aren't equal (unbalanced design) and the larger groups have higher variance, your ANOVA loses power.
+  - If sample sizes aren't equal and the larger groups have lower variance, your ANOVA becomes anti-conservative ($\alpha$ increases).
 
-Alternative: Bartlett's test
+What to do if Levene's tests is significant?
 ============================================================
-```{r}
-bartlett.test(formula = iq ~ group, data = iqdata)
-```
-- Bartlett's test is more sensitive to deviations from normality than Levene's test
-- It's up to you which one you want to use (with ezANOVA, Levene's test is more convenient)
-
-What to do if Levene's or Bartlett's tests are significant
-============================================================
-- If your group sizes are equal, nothing to worry about.
+- If your group sizes are equal, nothing to worry about. The ANOVA is robust in this regard.
 - If not:
   - Calculate the variance for each group and see if you're dealing with just a power issue or an $\alpha$ issue
-  - If the largest group variance is less than 4 times the smallest group variance, you're good.
+  - If the largest group variance is less than 4 times the smallest group variance, you may have a power issue, but the test is not anticonservative.
   - If you have huge variance differences and there might be an $\alpha$ issue:
-    - Easiest solution: Fix the sample size issue (e.g. run more participants)!
+    - Easiest solution: Fix the sample size issue (e.g. run more participants)
     - Use linear mixed models (LMMs; more on that later)
-    - Use specialised tests (this is SPSS's approach):
-      - Welch's t-test (R has this test as `oneway.test()`)
-      - Brown-Forsythe instead of ANOVA (R has this test in the `lawstats` package)
+    - Use specialised tests (this is the approach preferred in most SPSS textbooks):
+      - Welch's t-test
+      - Brown-Forsythe (uses median instead of mean)
       - Post-hoc tests:
           - Games-Howell for unequal variance
           - Hochberg's GT2 for non-equal sample sizes
 
-The SPSS approach to statistics
+The SPSS (or rather, SPSS textbook) approach to statistics
 ============================================================
 - Throw as many obscure tests at the problem as you can
   - This is a sales strategy: "We need to buy SPSS since no other program has the Games-Howell test!"
@@ -460,185 +432,423 @@ Just so we're clear
   - Stopping rules (test after every X participants, then stop as soon as you have a significant result)
   - Failing to report non-significant conditions
   - Failing to correct for multiple comparisons
-- Don't let SPSS (or over-cautious textbooks) discourage you from running plain, simple ANOVAs
+- Don't let over-cautious textbooks discourage you from running plain, simple ANOVAs
 - Be honest and transparent about your data and how you collected them and you'll be fine.
 
-Reporting a one-way ANOVA
+ANOVA assumptions (3)
+===========================================================
+- **Independence of variances** The variances within each group are independent.
+      - There are no systematic relatioships between measurements in each group
+      - Most commonly violated by within-participants (repeated measures) designs
+        - Participants are tested in multiple conditions
+        - This can be addressed by using a repeated-measures ANOVA or Linear Mixed Models.
+      
+Using SPSS to perform a one-way ANOVA
 ============================================================
 - Let's walk through it together
-- I stole this data set from Andy Johnson
+- I took this data set from Andy Johnson, hence the colourful topic (and the absence of cats).
 - We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
 - Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
-```{r}
+- Get the SPSS data file `Swearing and Pain Data.sav` from myBU.
+```{r, echo = FALSE}
 # open the data file (available on GitHub; don't forget to use setwd to set the working directory to where you put the file)
 # setwd("C:/my_data/")
-pain <- read.csv("pain.csv")
+pain <- read.csv("./pain.csv")
 ```
 
 Get an idea of what's in the file
 ===========================================================
-```{r}
-head(pain)
-str(pain)
-```
-
-Is the design balanced?
-===========================================================
-```{r}
-table(pain$Swear.Condition)
-```
-
-How is the DV distributed?
-===========================================================
-```{r}
-hist(pain$Time.In.Cold.Water)
-```
-
-Is the DV normal?
-===========================================================
-- Note: The raw DV does not have to be perfectly normal!
- - In fact, your alternative hypothesis is that it's not, since it is influenced by the treatment effect!
- - The error should be normal, though.
-  - That is, the residual data that you get when you take the treatment effect out should be normal.
-  - I'll show you how to test that in a second.
-
-Calculate means and SDs
-===========================================================
-```{r}
-library(ez)
-# for ez, we need a subject identifier so the function can tell if 
-# it's a between or within or mixed subject design
-
-# nrow(pain) gives you the number of observations.
-# Each observation is a subject
-# 1:nrow(pain) gives you a vector with 1,2,3,...,number of observations
-
-pain$subject <- factor(1:nrow(pain)) 
-
-(pain_stats <- ezStats(data = pain, 
-                       dv = Time.In.Cold.Water, 
-                       wid = subject, 
-                       between =  Swear.Condition))
-```
-
-Calculate means and SEs
-===========================================================
-```{r}
-pain_stats
-```
-- This gives you a nice overview of the group sizes, group means, and group variance/
-- N is the group size. It's the same for each group, so your design is balanced.
-- The mean is almost the same for the neutral and the quiet conditions, but higher in the swear word condition.
-- SDs are quite similar, so it doesn't seem like the homogeneity of variance assumption is an issue
-- Fisher's Least Significant Difference (FLSD): gives you an idea of the minimum effect size that would be significant in a t-test between any of these groups. This is just an estimate, not a replacement for the ANOVA and a post-hoc test. 
-  - Still useful to see which differences might be significant and which definitely aren't.
-  
-Plot means
-==========================================================
-```{r}
-ezPlot(data = pain, 
-       dv = Time.In.Cold.Water, 
-       wid = subject, 
-       between = Swear.Condition, 
-       x = Swear.Condition)
-```
+- Is the design balanced?
+- Is the DV normal?
+  - Note: The raw DV does not have to be perfectly normal!
+   - In fact, your alternative hypothesis is that it's not, since it is influenced by the treatment effect!
+   - The error should be normal, though.
+    - That is, the residual data (the data that you get when you take the treatment effect out) should be normal.
+- Make a histogram and a means plot
 
 Notes about the plot
 ==========================================================
-- This plot is pretty good (better than anything SPSS gives you), but it is not perfect
 - Discrete factors should be plotted as bars, not lines
-- The error bars are Fisher's LSD, which is helpful in interpreting the differences, but unusual
-- In a plot for publication, you would also want to change the axis labels
-- I will give you a better function to use later
-- For now, this is perfectly fine
+- You want error bars showing the 95% confidence interval ($\bar{A}_{i} \pm 1.96 \cdot SE$, where $\bar{A}_{i}$ = the group mean and $SE$ = Standard Error)
+- I'll show you how to do this in SPSS
 
 Perform the ANOVA
 ==========================================================
-```{r}
-pain_anova <- ezANOVA(data = pain, 
-                      dv = Time.In.Cold.Water,
-                      wid = subject, 
-                      between = Swear.Condition, 
-                      return_aov = TRUE)
+```{r, echo=FALSE}
+library(ez)
+options(digits = 2)
+pain$subject <- factor(1:nrow(pain))
+pain_anova <- ezANOVA(data = pain, dv = Time.In.Cold.Water, wid = subject, between = Swear.Condition, return_aov = TRUE)
+pain_anova_summary <- pain_anova$ANOVA
+colnames(pain_anova_summary) <- c("Effect", "$df_n$", "$df_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta^2$")
+kable(pain_anova_summary)
 ```
-- Note the `return_aov = TRUE`.
-- We need that because we want to look at the residuals later.
+  - Looks like there is a significant effect of swear condition.
 
-Look at the results
-==========================================================
-```{r}
-pain_anova$ANOVA
-```
-- Looks like there is a significant effect of swear condition.
-```{r}
-pain_anova$"Levene's Test for Homogeneity of Variance"
-```
-- No issues with homogeneity of variance.
+Levene's test:
 
-Visually examine residuals
-========================================================
-```{r}
-pain_residuals <- resid(pain_anova$aov)
-hist(pain_residuals)
+```{r, echo=FALSE}
+kable(pain_anova$"Levene's Test for Homogeneity of Variance", col.names = c("$df_n$", "$df_d$", "$SS_n$","$SS_d$","$F$", "$p$", "$p < 0.5$"))
 ```
-- Looks quite normal.
-
-Quantile-Quantile Plot
-========================================================
-```{r}
-qqnorm(pain_residuals)
-qqline(pain_residuals)
-```
-- Plots the distribution of the variable in question against a hypothetical perfect normal distribution
-- Deviations from the line are deviations from normality
-- Our residuals are very slightly deviated. Is this an issue? Probably not.
+  - No issues with homogeneity of variance.
 
 Formally test normality of residuals
 =========================================================
-- Shapiro-Wilk normality test
-```{r}
-shapiro.test(pain_residuals)
-```
-- Not significant at all. No issues with non-normality.
+- Shapiro-Wilk normality test (do this in SPSS)
+  - Not significant at all. No issues with non-normality.
 
 Perform post-hoc pairwise comparisons
 =========================================================
-```{r}
-(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water, 
-                                                      g = Swear.Condition, 
-                                                      pool.sd = FALSE, 
-                                                      p.adj = "bonferroni")))
-```
-- These are the p-values for all the possible t-tests (Bonferroni correction applied)
-
-Perform post-hoc pairwise comparisons
+- If you get a significant result, perform all the possible *t*-tests to find out which levels are actuually significant
+- **Important**: You need to correct your p-values for multiple comparisons, since you are performing three independent tests
+    - The Bonferroni correction is simple: Just multiply the *p*-values by the number of comparisons (e.g. in this case, by 3) and see if they are still below .05.
+    
+Corrected pairwise comparisons
 =========================================================
-- Better: Use Holm's correction instead of Bonferroni's correction for higher power
-```{r}
-(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water, 
-                                                      g = Swear.Condition, 
-                                                      pool.sd = FALSE, 
-                                                      p.adj = "holm")))
-```
-
-Perform post-hoc pairwise comparisons
-=========================================================
-- If you have no issues with homogeneity of variance, you can use the same pooled sd for all the tests:
-
-```{r}
-(pain_pairwise_p_values <- with(pain, pairwise.t.test(x = Time.In.Cold.Water,
-                                                      g = Swear.Condition, 
-                                                      pool.sd = FALSE, 
-                                                      p.adj = "holm")))
+- This table shows the corrected *p*-values. You can see that the *p*-value for the comparison between the quiet and the neutral word condition is 1 (this can happen if you have a high *p*-value before your correction). 
+- This indicates that there is no significant difference between the quiet and the neutral word conditions.
+```{r, echo = FALSE}
+kable(with(pain, pairwise.t.test(x = Time.In.Cold.Water, g = Swear.Condition, pool.sd = FALSE, p.adj = "bonferroni"))$p.value)
 ```
 
 Alternative: Tukey's HSD
 ==========================================================
-```{r}
-TukeyHSD(x = pain_anova$aov)
+```{r, echo = FALSE}
+kable(TukeyHSD(x = pain_anova$aov)$Swear.Condition)
 ```
 - Another way of correcting for multiple comparisons. Assumes equal variance.
 
 Now: report it
 ==========================================================
-I'll show you how in Homework 3.
+- You'll do this in your homework assignment (but I'll give you an example later).
+
+Multiway ANOVA
+=========================================================
+- What if we have two independent variables, $A$ and $B$?
+- We can still split the total variance into $SS_{total} = SS_{model} + SS_{error}$
+  - But now $SS_{model}$ is composed of multiple terms: ${SS}_{model} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B}$, so that ${SS}_{total} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B} + SS_{Error}$
+  - Each of these terms has degrees of freedom: $df_{Total} = df_A + df_B + df_{A \times B} + df_{Error}$
+  - For each term, you can compute mean squares and F values, e.g. $F_A = \frac{{MS}_A}{{MS}_{Error}}$
+  - What is ${SS}_{A \times B}$? It's the **interaction** between A and B
+      - A *main effect* (A or B) is a difference between means
+      - An *interaction* is a difference between differences
+
+Multiway ANOVA (2)
+==========================================================
+- At this point, doing the analysis by hand is getting really tedious. Leave this to SPSS!
+- As a little taster, I'll show you the formula for the total sums of squares: $$SS_{total} = \sum\limits_{i = 1}^{p}\sum\limits_{j = 1}^{q}\sum\limits_{m = 1}^{n}(x_{ijm} - \bar{x})^2,$$ where $i$ is the level of factor A, $p$ is the total number of levels of factor A, $j$ is the level of factor B, $q$ is the total number of levels of factor B, $m$ denotes the current observation number within its cell (i.e. the $m^{th}$ observation within that combination of A and B), $n$ is the total number of observations within each cell, and the mean is $\bar{x} = \frac{\sum\limits_{i = 1}^{p}\sum\limits_{j = 1}^{q}\sum\limits_{m = 1}^{n}x_{ijm}}{p\cdot q \cdot n}$
+- Nice and simple, right? This is why people started writing software to do this!
+
+Multiway ANOVA (2)
+==========================================================
+- How to compute the dfs:
+    - For main effects, just like in the oneway ANOVA: $df_A = k_{A} - 1$, where $k_A$ is the number of groups or *levels* of that variable
+    - For interactions, it's the product of the dfs of the corresponding main effects:
+      - $df_{A \times B} = df_A \cdot df_B$
+    - Just as a reminder: $df_{Total}$ is still $N - 1$, where $N = p\cdot q \cdot n$ is the total number of subjects or observations in your study (across all variables)
+    - And as before, if you subtract all the other dfs from $df_{Total}$, you get $df_{Error}$ 
+    - $df_{Error} = df_{Total} - df_A - df_B - df_{A \times B}$ 
+
+Interactions
+==========================================================
+- Main effects are additive
+- For example, this table shows the (fictional) total calories that you might have for lunch given two different food choices and two different drink choices:
+
+```{r, echo = FALSE, results='asis'}
+library(knitr)
+food_example <- data.frame(Food = c(rep("Pizza",2),rep("Salad",2)), Drink = rep(c("Water","Cola"), 2), Calories = c(800, 1100, 200, 500))
+kable(food_example)
+```
+
+Additive effects
+=========================================================
+```{r, echo=FALSE}
+options(digits = 3, scipen = 5)
+library(ggplot2)
+qplot(data = food_example, geom = c("point","line"), x = Food, fill = Drink, colour = Drink, group = Drink, y = Calories)
+```
+
+Non-additive effects
+==========================================================
+- Example: Animal and maximum movement speed (meters/s) on land and in water (mostly non-fictional, based on a very quick Wikipedia search)
+
+```{r, echo = FALSE, results='asis'}
+move_example <- data.frame(Where = c(rep("Land",2),rep("Water",2)), Animal = rep(c("Dog","Dolphin"), 2), Speed = c(15, 0, .4, 11))
+kable(move_example)
+```
+
+Non-additive effects (2)
+==========================================================
+```{r, echo=FALSE}
+library(ggplot2)
+qplot(data = move_example, geom = c("point","line"), x = Where, fill = Animal, colour = Animal, group = Animal, y = Speed, ylab = "Maximum speed in m/s")
+```
+- Crossover interaction
+
+Marginal effects
+==========================================================
+- In the presence of a significant interaction, main effects are much harder to interpret
+    - Better to call them marginal effects (although few people do, even in publications!)
+- What does it mean that the marginal speed of a dolphin is 7.5 m/s (when averaging over the water and land conditions)?
+    - Not much! The mean is nearly meaningless here...
+  
+Marginal effects (2)
+=========================================================
+- In some cases, you will still be interested in the marginal effects
+    - For example, your anxiety treatment might differ in its effectiveness for male and female participants, but the marginal effects show that overall, everyone benefits from it at least a little.
+    - Of course, if males get a little more anxious and females get a lot less anxious (a crossover interaction), the positive marginal effect still doesn't mean you should give males this treatment!
+  
+How to do a multiway ANOVA
+==========================================================
+- Example data: Attractiveness, music, and alcohol
+```{r, echo = FALSE, results='asis'}
+attract <- read.csv("attract.csv")
+# by default, R will sort factor levels alphabetically
+# the following line will make "No alcohol" the baseline level for the "Alcohol" factor
+attract$Alcohol <- relevel(attract$Alcohol, ref = "No alcohol")
+
+# Now we make the "subject" column that ezANOVA needs
+# Every row gets a different subject number
+# The subject column is discrete, so we make it a factor
+attract$subject <- factor(1:nrow(attract))
+```
+
+Make a means table
+=========================================================
+```{r, echo = FALSE, results='asis'}
+library(ez)
+library(knitr)
+attract_stats <- ezStats(data = attract, 
+                         dv = Attractiveness.Rating, 
+                         wid = subject, 
+                         between = .(Music, Alcohol))
+kable(attract_stats[,-ncol(attract_stats)])
+```
+
+Plot it
+==========================================================
+- Line plots are OK when you're plotting an interaction.
+- Always put the variable with the most levels on the x-axis.
+
+Do the ANOVA
+===========================================================
+```{r echo = FALSE}
+attract_anova <- ezANOVA(data = attract, 
+                          dv = Attractiveness.Rating, 
+                          wid = subject, 
+                          between = .(Music, Alcohol))
+kable(attract_anova$ANOVA, col.names = c("Effect", "$df_n$", "$df_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta_P^2$"))
+```
+- All three terms are significant.
+    - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
+- Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$
+
+Assumption tests:
+===========================================================
+- Levene's test:
+
+```{r echo=FALSE}
+kable(attract_anova$"Levene's Test for Homogeneity of Variance", col.names = c("$df_n$", "$df_d$", "$SS_n$","$SS_d$","$F$", "$p$", "$p < 0.5$"))
+```
+
+- No problems with homogeneity of variances
+
+- Shapiro-Wilk test (you can do do this one in SPSS)
+
+Pairwise comparisons
+============================================================
+- Easiest way: Use Tukey's HSD (I'll explain that with SPSS, since the output is a bit complicated)
+
+Writing it up
+============================================================
+A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). There was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_G^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_P^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
+
+Writing it up (2)
+=============================================================
+The music by alcohol interaction was also significant, *F*(2,54) = 3.24, *p* = .047, $\eta_G^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M = 49.30, SD = 5.50) and no music (M = 47.90, SD = 4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M = 52.20, SD = 5.88) and no music (M = 52.30, SD = 5.77). However, following 4-pints attractiveness ratings were higher with music (M = 70.40, SD = 5.04) than without music (M = 62.30, SD = 5.36). This effect was significant (*p* = .018).
+
+Repeated measures
+=============================================================
+- Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
+- This is bad, because we violate the independence assumption in the standard ANOVA.
+- This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
+- $SS_{total} = SS_{betweenParticipants} + SS_{withinParticipants}$
+- $SS_{withinParticipants} = SS_{model} + SS_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
+- Result: Less unexplained variance and higher power.
+- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
+- In the repeated measures ANOVA, we can separate them!
+
+Repeated measures data matrix
+=============================================================
+- Almost the same as for the standard one-way ANOVA
+  - Columns are factor levels, rows are **participants**
+- $i$ = factor level, $p$ = number of factor levels
+- $m$ = **participant**, $n$ = number of **participants**
+
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
+x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
+\end{matrix}
+$$
+
+Calculating the sums of squares
+=============================================================
+- The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- ${df}_{total} = n\cdot p-1$
+- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
+- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
+
+Calculating the sums of squares (2)
+=============================================================
+- Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
+- The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
+  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
+  
+Degrees of freedom
+============================================================
+- ${df}_{total} = p\cdot n - 1$
+- ${df}_{betweenParticipants} = n - 1$
+- ${df}_{withinParticipants} = n \cdot (p - 1)$
+- ${df}_{model} = p - 1$
+- ${df}_{residual} = (n-1) \cdot (p - 1)$
+  - Where $p$ is the number of factor levels and $n$ is the number of participants
+
+Test statistic
+==============================================================
+- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
+
+Quick example by hand
+=============================================================
+- 10 cats were asked to try 3 different brands of cat food: Whiskers, Paws, and Industrial Waste. They received the same amount of each food after not having eaten for 8 hours. The dependent variable amount of food (in grammes) that they ate of each brand. Do cats prefer one or more brands over others or do they eat the same amount of each?
+
+Copy this table into Excel (or SPSS)
+==============================================================
+```{r echo = F}
+set.seed("3")
+n_participants <- 10
+overall_intercept <- 100
+
+Subject <- rep(1:n_participants, each = 3)
+Brand <- rep(1:3)
+
+subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
+
+brand_means <- c(25, 25, -50)
+
+random_error <- rnorm(length(Subject), mean = 0, sd = 10)
+
+df <- data.frame(Subject, Brand)
+
+df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
+
+df$Subject <- factor(df$Subject, labels = c("Cali",
+	"Callie",
+	"Casper",
+	"Charlie",
+	"Chester",
+	"Chloe",
+	"Cleo",
+	"Coco",
+	"Cookie",
+	"Cuddles"))
+
+df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
+
+library(reshape)
+df_m <- melt(df, measure = "eaten")
+df_c <- cast(df_m, Subject ~ Brand)
+kable(df_c)
+```
+
+Doing the ANOVA in Excel
+==============================================================
+- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
+- Calculate your Sums of Squares
+  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
+    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
+  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
+  
+Sums of squares (continued)
+===============================================================
+- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
+- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
+- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
+- Then calculate the degrees of freedom and the MS as shown earlier
+- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+
+Final step
+==============================================================
+- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
+- For comparison: ANOVA output form R
+```{r, echo = FALSE}
+summary(ezANOVA(data = df, wid = Subject, within = Brand, dv = eaten, return_aov = TRUE)$aov)
+```
+
+Post-hoc comparisons
+==============================================================
+- Compute pairwise t-tests
+  - For each subject, calculate the differences between the conditions
+  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
+  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
+  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
+  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
+
+One-way repeated measures ANOVA in SPSS
+==============================================================
+- Watch Andy Johnson's video on myBU and follow along with the data set.
+
+Assumptions
+==============================================================
+- Essentially the same as for the independent ANOVA
+    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
+    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
+
+What is sphericity?
+==============================================================
+- The variances of the differences between treatment levels should be roughly equal ("spherical")
+- For example, it could be that all cats react similarly to the first two brands
+    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
+- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
+    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
+- This could make the ANOVA anticonservative ($\alpha$ is inflated)
+
+Testing for sphericity violations
+=================================================================
+- Mauchly's Test for Sphericity
+- Performed automatically by SPSS
+- If it's significant, sphericity is violated.
+- In this case, we're OK
+- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
+- If you only have two levels, there is only one difference, so differences can't be unequal
+
+Dealing with sphericity violations
+==================================================================
+- Good news: It's easy. 
+- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
+    - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
+- You do this by multiplying the $df_{Model}$ and $df_{Error}$ by a correction factor $\epsilon$
+- Two ways to calculate $\epsilon$:
+    - Greenhouse-Geisser
+    - Huynh-Feldt
+- Recommendation: If Greenhouse-Geisser $\epsilon < .75$, use it. Otherwise, use Huynh-Feldt.
+   - Of course, if Mauchly's test is not significant, use neither!
+- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
+
+Testing for normality
+===================================================================
+- You can do the Shapiro-Wilk test in SPSS
+- Normality isn't usually *much* of an issue, especially if your group sizes are equal
+  - The **ANOVA is robust**
+
+Post-hoc tests
+===================================================================
+- You can again use paired t-tests to compare factor levels
+- Remember to do Bonferroni corrections if you do these tests by hand
