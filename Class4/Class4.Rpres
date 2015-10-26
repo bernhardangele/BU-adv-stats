@@ -49,36 +49,119 @@ kable(head(catfood))
 
 Let's plot it
 ==========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 plot(x = catfood$CatWeight, y = catfood$FoodEaten)
 ```
 
-Looks quite linear
+Fitting a line to the data
 ==========================================================
 - Let's put a line through it
-```{r, echo = FALSE)
+
+```{r, echo = FALSE}
 plot(x = catfood$CatWeight, y = catfood$FoodEaten)
-abline(lm(catfood$FoodEaten ~ catfood$CatWeight))
+abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
 ```
 
-Correlation
-==========================================================
 - Looks like we have a strong positive relationship:
     - The heavier the cat (variable $x$), the more food eaten (variable $y$).
-- We can compute the correlation coefficient
-  - The correlation $r$ is the covariance $s_{xy} = \frac{1}{n-1}\sum\limits_{i = 1}^n {(x_i - \bar{x})\cdot(y_i - \bar{y})}$, where $x_i$ and $y_i$ are each pair of individual values in the two variables and $\bar{x}$ and $\bar{y}$ are the means) which we standardise by dividing it by the product of the standard deviations ($s_x \cdot s_y$). In short, $r = \frac{s_{xy}}{s_x \cdot s_y}$.
-  - Or we can just have R do it for us:
-```{r, echo = FALSE)
-cor(catfood$CatWeight, catfood$FoodEaten)
+
+Fitting a line to the data
+==========================================================
+- What is this line?
+  - There are lots of possible lines to draw for data like these
+      - What is the best line to describe these data?
+      - Remember (from school) that a line is (exhaustively) described by an equation such as $$y = a+b\cdot x$$
+          - $a$ is called the *intercept*. It describes where the line intersects the $x$-axis
+          - $b$ is called the *slope*. It describes by how many units $y$ changes when $x$ changes
+          - You may have learned this as $y = mx + c$ depending on where you went to school
+
+The Least-Squares regression line
+=========================================================
+- How do we find the best $a$ and $b$ for the data?
+  - Since we are (as always) taking samples from a larger population, no line will ever fit the data perfectly (i.e. go through all the points), even if there is a perfect linear relationship in the population
+  - We can determine the line that best estimates the actual data points, though
+      - What does "best" mean?
+        - We want the line that minimises the deviations of the values predicted by the equation ($\hat{y}$) from the actual $y$ values
+          - Actually, we want to penalise large deviations, so we use the square: $$\sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2 =min$$
+
+The Least-Squares regression line
+=========================================================
+- Here, I've plotted the deviations of the predicted values (on the line) from the actual values. These are also called the **residuals**.
+
+```{r echo = FALSE}
+plot(x = catfood$CatWeight, y = catfood$FoodEaten)
+abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
+pre <- predict(mod1) # plot distances between points and the regression line
+segments(catfood$CatWeight, catfood$FoodEaten, catfood$CatWeight, pre, col="red")
 ```
 
-Correlation (2)
+- For the simple case where all we do is predict one $y$ from one $x$ variable, the $b$ value is really easy to calculate. We start with the covariance.
+
+Covariance
+=======================================================
+- Defined as: $$cov(x, y) = \frac{\sum\limits_{i = 1}^n {(x_i - \bar{x})\cdot(y_i - \bar{y})}}{n-1}$$
+  - The covariance gives us a measure of how much $x$ and $y$ vary together: 
+      - if $x$-values that are far away from the mean co-occur with $y$ values that are also far from the mean, we get a large absolute covariance (it can be either positive or negative, depending on which way the relationship between $x$ and $y$ goes)
+      - if $x$-values that are far away from the mean co-occur with $y$ values that are close to the mean (and vice-versa), we get a small absolute covariance (i.e. $x$ and $y$ don't change together)
+
+Covariance, the regression slope, and correlation
+======================================================
+- In the simple regression case, we can compute the regression slope from the covariance: $$b = \frac{cov(x, y)}{s_x^2}$$
+- Why? The explanation would involve derivatives, which you may not want to deal with right now.
+- We get the **correlation** $r$ if we standardise the covariance by dividing it by the product of the standard deviations ($s_x \cdot s_y$). In short, $r = \frac{cov(x, y)}{s_x \cdot s_y}$.
+
+Sums of squares
 ===========================================================
-- If we square the correlation $r$, we get $R^2$, the proportion of variance in variable $X$ explained by variable $Y$ (and vice-versa, of course)
-```{r, echo = FALSE)
-cor(catfood$CatWeight, catfood$FoodEaten)^2
-```
+- We can also express how well our model predicts the data as **sums of squares**
+- The total sums of squares is simply the numerator of the variance of $y$ (just like in the ANOVA): ${SS}_{total} = \sum\limits_{i=1}^{n}(y_i - \bar{y})^2$
+- The **regression** or model sums of squares is the variance explained by the regression model: ${SS}_{model} = \sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2$
+- The residual sums of squares is the squared differences $e_i$ between the actual $y$-values and the predicted $\hat{y}$-values: ${SS}_{residual} =  \sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2$
+- Of course, these add up just like in the ANOVA: $SS_{total} = {SS}_{model} + {SS}_residual$
 
+
+Coefficient of determination
+============================================================
+- Remember $\eta^2$ for the ANOVA? We can do the same thing for the sums of squares in the regression:
+$$r^2 = \frac{{SS}_{model}}{{SS}_{residual}}$$
+- $\frac{{SS}_{model}}{{SS}_{residual}}$ is the same as the square of the correlation coefficient $r$.
+    - Fun activity at home: Work out why!
+- In multiple regression, we call the coefficient of determination $R^2$ instead of $r^2$. Here, we have multiple predictors and multiple correlations, so $R^2$ doesn't correspond to the square of any one of them. It still tells you how much variance your model explains, though.
+- In our example: $r^2 = `r cor(catfood$CatWeight, catfood$FoodEaten)^2`$
+
+Hypothesis tests
+==========================================================
+- We assume that there is the following linear relationship in our population: $$Y_i = \alpha + \beta\cdot x_i + \epsilon_i$$
+  - $\alpha$ and $\beta$ are our population coefficients. $\epsilon_i$ is the error for this particular observation.
+- We will need to estimate our regression equation based on our sample, so that $a$ and $b$ are estimates of the population coefficients $\alpha$ and $\beta$.
+- $\epsilon$ is the **error**. It represents all the influences (random or not) that we are not considering in the linear relationship.
+    - If the relationship is actually linear, then $E(\epsilon) = 0$
+- How can we interpret these estimated coefficients? Mostly, we care about whether $\beta$ is 0, i.e. whether there is a significant relationship between $x$ and $y$ in the population.
+
+Assumptions
+==========================================================
+- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma^2_{x,y}$.
+- The bivariate (or, more generally, multivariate) normal distribution assumes that:
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are normally distributed: $\epsilon \sim N(0, \sigma_{\epsilon}^2$)
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon_i}^2$
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon$s are independent)
+- Pretty similar to the ANOVA assumptions, actually. I wonder why?
+
+Distribution of the coefficient estimates
+===========================================================
+- If our assumptions are met, our coefficient estimates $a$ and $b$ will be themselves normally distributed
+- What do their distributions look like?
+- What about the means (or rather, the expected values?): $E(a) = \alpha$; $E(b) = \beta$ (no derivations here, just the end results)
+- What about the variance?
+  - We don't really care about $a$, but $b$ is important: $$Var(b) = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
+- This means that the sampling variance of our estimate of $\beta$ will be smaller when:
+    - the overall error variance is small
+    - our $x$-values are spread out (covering a wide range)
+
+Doing a hypothesis test on b
+==========================================================
+- We now know the sampling distribution of $b$: $$ b \sim N\left(\beta, \frac{\sigma_{\epsilon}^2}{\sqrt{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2}}\right)$$
+- All we need to do is find an estimate for $\sigma_{\epsilon}$
+- We can get this by calculating the variance of the residuals: $$s^2_e = \frac{\sum\limits_{i = 1}^{n} e_i^2}{n-2} = \frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}$$
 
 Testing correlations
 ==========================================================
@@ -91,7 +174,7 @@ Testing correlations
 Testing correlations (2)
 ==========================================================
 - R can do this *t*-test very easily using the `cor.test` function:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 cor.test(catfood$CatWeight, catfood$FoodEaten)
 ```
 
@@ -110,21 +193,10 @@ Linear models
 ===========================================================
 - Remember the formula interface? It's `Dependent variable ~ Independent variable(s)`
 - Also, I can use `data = catfood` to avoid having to write `catfood$` every time.
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 lm(formula = FoodEaten ~ CatWeight, data = catfood)
 ```
 
-What do these values mean?
-============================================================
-- `lm` tries to fit a *least squares* line through the data
-- That means that it fits a line that minimises the square of each data point's deviation from the line
-- *Least squares* means that large errors are penalised much more than small errors
-- If you remember algebra from school, the function that draws a line has the following format:
-    - $y = m \cdot x + c$
-    - $c$ is called the *intercept*, since it gives the $y$-value where the line intersects the $y$-axis
-    - $m$ is called the *slope*. For each unit of $x$, $y$ changes this many units
-    - In regression, we usually write the intercept first ($c + m \cdot x$), but that's just a convention.
-    
 What do these values mean (2)?
 ============================================================
 - So, in our case, the best fitting line for the cat food data intersects the $y$-axis at the point (0, `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]`).
@@ -156,7 +228,7 @@ Back to hypothesis testing
 Hypothesis testing using lm
 =================================================================
 - In R, the `summary` function will usually give us the hypothesis tests corresponding to a linear model:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(lm(formula = FoodEaten ~ CatWeight, data = catfood))
 ```
 
@@ -193,7 +265,7 @@ Example (2)
 ==================================================================
 - In a formula, the `:` symbol symbolises the interaction term
 
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(lm(formula = FoodEaten ~ CatWeight + CatAge + CatWeight:CatAge, data = catfood_age))
 ```
 
@@ -202,7 +274,7 @@ Example (3)
 - You can also use the shorthand `*` to add both a main effect and an interaction.
   - This model is exactly the same as the previous one:
 
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)
 summary(lm_catfood_interaction)
 ```
@@ -251,14 +323,14 @@ Regression and F-Tests
 - You can use *F*-Tests to compare any regression models that you want
   - Although the comparison only makes sense if they share predictors
 - For example, is a model containing the CatWeight by CatAge interaction better than a model without it?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 anova(lm_catfood_interaction, lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age))
 ```
 
 Regression and F-Tests (2)
 =================================================================
 - You can use the `anova` command for this. If you only give one linear model to the ANOVA command, it will run an *F*-Test for each predictor
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 anova(lm_catfood_interaction)
 ```
 
@@ -333,7 +405,7 @@ Multicollinearity
 - Once again: Type III SS and *t*-tests measure how much of the variance each predictor explains **given that all the other predictors are in the model as well**.
 - This may not seem important at first, but often, the predictors will be correlated themselves
 - This is called *multicollinearity*.
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 cor(catfood_age$CatWeight, catfood_age$CatAge)
 ```
 - In this case, they aren't. So where is the problem?
@@ -342,7 +414,7 @@ Multicollinearity (2)
 =================================================================
 - Imagine what would happen if CatWeight and CatAge were somehow (almost) perfectly correlated
 - Actually, let's just try it
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # make a copy of catfood_age
 catfood_age_bizarre <- catfood_age
 catfood_age_bizarre$CatAge <- catfood_age_bizarre$CatWeight/10 + 
@@ -354,13 +426,13 @@ catfood_age_bizarre$CatAge <- catfood_age_bizarre$CatWeight/10 +
 Multicollinearity (3)
 =================================================================
 - Neat little trick: If you give `plot` just a data frame object instead of columns, it will make every possible scatter plot from the data (a scatter plot matrix).
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 plot(catfood_age_bizarre)
 ```
 
 Multicollinearity (4)
 =================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bizarre))
 ```
 
@@ -390,7 +462,7 @@ Diagnosing Multicollinearity
 ================================================================
 - You can use `vif` from the `car` package
 - First the sane data, where cat age isn't almost perfectly correlated with cat weight (note that I'm taking the interaction out for the time being)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(car)
 vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age))
 ```
@@ -398,7 +470,7 @@ vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age))
 Diagnosing Multicollinearity
 ================================================================
 - Now the insane data, where all cats gain almost exactly 100 grammes per month for some bizarre reason.
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(car)
 vif(lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age_bizarre))
 ```
@@ -415,7 +487,7 @@ Interpreting the VIF
 Now what about that problematic interaction model?
 ==================================================================
 - We use the non-bizarre data (of course)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 vif(lm_catfood_interaction)
 ```
 - Those are some seriously high VIFs!
@@ -425,7 +497,7 @@ Where does the multicollinearity come from?
 ==================================================================
 - Here's the problem: The interaction effect is equivalent to CatWeight x CatAge
 - Unfortunately, the product of the two variables is highly correlated with at least one of the two variables:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 with(catfood_age, cor(CatWeight, CatWeight*CatAge))
 with(catfood_age, cor(CatAge, CatWeight*CatAge))
 ```
@@ -435,7 +507,7 @@ What to do?
 - Luckily, there is an easy solution:
   - If we **center** both variables (i.e. subtract the mean from each observation), the correlation will disappear
   - You can center variables either by hand `x - mean(x)` or by using `scale(x, scale = FALSE)` (one of the least intuitive commands I've seen so far!)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_age$CatWeight <- catfood_age$CatWeight - mean(catfood_age$CatWeight)
 catfood_age$CatAge <- catfood_age$CatAge - mean(catfood_age$CatAge)
 ```
@@ -443,7 +515,7 @@ catfood_age$CatAge <- catfood_age$CatAge - mean(catfood_age$CatAge)
 Did this help?
 ===================================================================
 - Yes, it did:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 with(catfood_age, cor(CatWeight, CatWeight*CatAge))
 with(catfood_age, cor(CatAge, CatWeight*CatAge))
 # re-fit the model
@@ -471,7 +543,7 @@ Influential cases
 Influential cases (2)
 ====================================================================
 - Let's add him to the data:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_goliath <- rbind(catfood_age, c(20, 4, 101))
 # don't forget to re-center the predictors!
 catfood_goliath$CatWeight <- scale(catfood_goliath$CatWeight, scale = FALSE)
@@ -481,7 +553,7 @@ catfood_goliath$CatAge <- scale(catfood_goliath$CatAge, scale = FALSE)
 Influential cases (3)
 ====================================================================
 - Make a plot of the situation. See Goliath out there?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 plot(catfood_goliath)
 ```
 
@@ -498,7 +570,7 @@ kable(coef(summary(lm_goliath)))
 
 Let's plot it
 =====================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 with(catfood_goliath, plot(x = CatWeight, y = FoodEaten))
 abline(lm_goliath)
 ```
@@ -547,7 +619,7 @@ General strategy for diagnosing influential cases
 More assumption tests
 ===========================================================================
 - Normality of the residuals (we already know that one)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(lm_catfood_interaction))
 ```
 
@@ -555,7 +627,7 @@ More assumption tests (2)
 ===========================================================================
 - Durbin-Watson test for autocorrelated errors (in `car` package)
 - Are adjacent residuals correlated?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 durbinWatsonTest(lm_catfood_interaction)
 ```
 - Not in this case.
@@ -565,7 +637,7 @@ More assumption tests (3)
 - Heteroskedasticity
     - Look at the plot of residuals by predicted values
     - Does it look like there is more variance for certain predicted values?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 plot(x = predict(lm_catfood_interaction), y = resid(lm_catfood_interaction))
 ```
 
@@ -612,19 +684,19 @@ kable(head(catfood_breed))
 
 We could do a t-test
 =================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 t.test(formula = FoodEaten ~ CatBreed, data = catfood_breed)
 ```
 
 Or an ANOVA
 ==================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(aov(formula = FoodEaten ~ CatBreed, data = catfood_breed))
 ```
 
 Or we could assign dummy values and do a regression
 ==================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # assign 0 to all shorthairs and 1 to all manxs
 catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
 summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
@@ -632,7 +704,7 @@ summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
 
 Let's plot the situation
 =================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten)
 abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
 ```
@@ -649,7 +721,7 @@ Different dummy values
 - Nobody forces us to set the values to 0 and 1
 - We could use any values we want, e.g. 99 and 23419 (although have fun interpreting *that* equation)
 - -1 and 1 might be more reasonable:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
 ```
 
@@ -679,11 +751,11 @@ Contrasts
 Contrasts (2)
 ================================================================
 - Take a look at the contrasts for a factor using `contrasts`:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 contrasts(catfood_breed$CatBreed)
 ```
 - We want shorthair as the baseline. You can use `relevel` to change the baseline (or reference level):
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_breed$CatBreed <- relevel(x = catfood_breed$CatBreed, ref = "Shorthair")
 contrasts(catfood_breed$CatBreed)
 ```
@@ -692,7 +764,7 @@ Contrasts (3)
 ================================================================
 - You can also assign other contrasts. For example, for 2 levels, *sum* or *effect* coding is (-1 vs. 1).
 - To assign a different contrast type, you use `contrasts` together with a function to generate the contrast matrix (e.g. `contr.sum`)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 contr.sum(2)
 contrasts(catfood_breed$CatBreed) <- contr.sum(2)
 contrasts(catfood_breed$CatBreed)
@@ -714,7 +786,7 @@ Analysis of Covariance (ANCOVA)
 
 Use lm to perform the ANCOVA (1)
 ================================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + CatBreed)
 summary(catfood_breed_lm)
 ```
@@ -722,7 +794,7 @@ summary(catfood_breed_lm)
 Use lm to perform the ANCOVA (2)
 ================================================================
 - Get F values using `Anova` from the `car` package (Type II or III SS doesn't matter since we have no interactions):
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 Anova(catfood_breed_lm, type = "III")
 ```
 
@@ -736,7 +808,7 @@ Assumption tests: Homogeneity of regression slopes
 Assumption tests: Homogeneity of regression slopes (2)
 ===============================================================
 - We need to use the lower-case `anova` function to compare the two models:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 catfood_breed_interact_lm <- lm(data = catfood_breed, 
                                 formula = FoodEaten ~ CatWeight * CatAge * CatBreed)
 anova(catfood_breed_lm, catfood_breed_interact_lm)
@@ -745,7 +817,7 @@ anova(catfood_breed_lm, catfood_breed_interact_lm)
 
 Assumption checks: Multicollinearity
 ==============================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 vif(catfood_breed_lm)
 ```
 - All good.
@@ -753,7 +825,7 @@ vif(catfood_breed_lm)
 Assumption checks: Normality
 ===============================================================
 Again, check for normality violations:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(catfood_breed_lm))
 ```
 
@@ -762,7 +834,7 @@ Assumption checks: Homogeneity of variance
 - Just like in the between-subjects ANOVA, we have to check homogeneity of variances for the factor.
 - Unlike `ezANOVA`, `lm` doesn't do this for us automatically.
     - We can use the function `leveneTest` from the `car` package (that's what `ezANOVA` does internally, anyway):
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 leveneTest(y = FoodEaten ~ CatBreed, data = catfood_breed)
 ```
 
@@ -773,7 +845,7 @@ Assumption checks: Influential cases
 Assumption checks: Homoscedasticity
 ==============================================================
 No evidence for autocorrelation:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 durbinWatsonTest(catfood_breed_lm)
 ```
 
@@ -833,7 +905,7 @@ Example (2)
 Generating the data
 ========================================================
 - Feel free to skip over this if you don't care about how we generate the fake data
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # Seed for random number generators, so that we all get the same results
 set.seed("6")
 # Column 1: Breed - repeat each breed name 15 times, then combine
@@ -845,7 +917,7 @@ objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
 Generating the data (2)
 ========================================================
 - You can still skip this if you must...
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # Add random noise to the objects scores
 objects <- objects + rnorm(n = 45, mean = 0 , sd = 6)
 # for more realism, round the objects scores to full integers
@@ -857,7 +929,7 @@ dogs <- data.frame(breed, objects)
 
 The data
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # get the means for each breed
 mean(dogs[dogs$breed == "Beagle",]$objects)
 mean(dogs[dogs$breed == "Border Collie",]$objects)
@@ -869,18 +941,18 @@ tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean)
 Comparing the means
 ========================================================
 - We can always do pairwise *t*-tests. Those give us all the comparisons, but at the cost of making multiple comparisons.
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 pairwise.t.test(x = dogs$objects, g = dogs$breed)
 ```
 
 Adding contrasts
 ========================================================
 - Let's make "breed" into a factor
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 dogs$breed <- factor(dogs$breed)
 ```
 - R automatically assigns *treatment* contrasts to each factor, which you can look at using the `contrasts` command:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 contrasts(dogs$breed)
 ```
 - "Beagle" is the baseline level here. Why? Because it comes first alphabetically and R really has no way to know if there is another baseline level that would suit you more.
@@ -949,7 +1021,7 @@ kable(contrast_matrix)
 
 Let's try it
 ==========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 lm(data = dogs, objects ~ breed)
 ```
 - Looks just about right (remember, the means differ from the true population means because this is a -- simulated -- sample and contains random error)
@@ -957,13 +1029,13 @@ lm(data = dogs, objects ~ breed)
 Let's do the hypothesis tests
 ==========================================================
 - First, the ANOVA:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 anova(lm(data = dogs, objects ~ breed))
 ```
 
 Now, the contrasts
 ==========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(lm(data = dogs, objects ~ breed))
 ```
 
@@ -1082,7 +1154,7 @@ Defining your own contrast coding
 - You'll need the library "MASS"
     - If you don't have it yet, install it: `install.packages("MASS")`
 - Put together the contrast matrix:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 x1 <- c(1, 0, -1)
 x2 <- c(-.5, 1 , -.5)
 # cbind: bind the vectors together as columns in a matrix
@@ -1095,7 +1167,7 @@ Defining your own contrast coding (2)
 - Important: you don't actually assign your home-made contrast matrix itself, but rather the transposed generalised inverse of the matrix
     - Why? That's just how R expects to get the contrasts...
 - The only thing you need to be aware of is that `ginv` requires the `MASS` package to be loaded:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(MASS)
 contrasts(dogs$breed) <- t(ginv(my_contrasts))
 ```
@@ -1158,7 +1230,7 @@ Example data
 - Example experiment: how long do people look at swear words vs. non-swear words?
     - Let's assume that the true means are 250 ms for non swear words and 300 ms for swear words
 - Let's generate data based on this assumption
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 set.seed("11233")
 # 60 subjects
 word_condition <- factor(c(rep("swear word", 30), rep("non swear word", 30)))
@@ -1174,14 +1246,14 @@ swear_exp <- data.frame(word_condition, fixation_time)
 
 Running a linear model
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 linear_model <- lm(data = swear_exp, fixation_time ~ word_condition)
 summary(linear_model)
 ```
 
 Assumption test
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(linear_model))
 ```
 - Clearly not normal!
@@ -1191,14 +1263,14 @@ shapiro.test(resid(linear_model))
 
 Running a log model
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 log_model <- lm(data = swear_exp, log(fixation_time) ~ word_condition)
 summary(log_model)
 ```
 
 Assumption test
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(log_model))
 ```
 
@@ -1325,7 +1397,7 @@ Fitting the model
 - We use `glm` instead of `lm` (short for generalised linear model)
 - We tell `glm` that our data are binomial and we want to use the logit function as the link
 - Note that, for simplicity, we're not investigating interactions here (let's assume that in this example we simply aren't interested in them)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 driving_glm <- glm(data = driving_tests, 
                    formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + Cold.Remedy, 
                    family = binomial(link = "logit"))
@@ -1333,7 +1405,7 @@ driving_glm <- glm(data = driving_tests,
 
 Model summary
 ========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(driving_glm)
 ```
 
@@ -1406,7 +1478,7 @@ Model comparisons (2)
 ========================================================
 - We can use model comparisons to test how specific predictors contribute to the whole model (analogous to the *F*-tests in linear regression)
 - For this, you can use the `Anova` command from the `car` package:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(car)
 Anova(driving_glm)
 ```
@@ -1433,7 +1505,7 @@ Diagnostics and assumption tests (2)
 - Multicollinearity:
 - You can get Variance Inflation Factors (VIFs)
     - Again, see Class 5 notes for explanations and criteria
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 vif(driving_glm)
 ```
 
@@ -1533,7 +1605,7 @@ Example Data
 - Scene Type: within-item factor ("no people" vs. "people")
 - Mood: between-subject factor (scale from 0--100)
 - Rating: Dependent variable (scale from 0 to 20)
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 # Start by loading the data
 scene_liking <- read.csv("Class 6 exercise data.csv")
 ```
@@ -1546,7 +1618,7 @@ kable(head(scene_liking))
 
 Looking at the data (2)
 =========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 str(scene_liking)
 # We should set subject and item to be factors
 scene_liking$subject <- factor(scene_liking$subject)
@@ -1560,7 +1632,7 @@ Calculating means
 - In theory, we could report means by subject or means by item
 - Either one would be fine, but usually people report subject means.
     - We use `melt` and `cast` from the `reshape` package to calculate the means
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(reshape)
 # set rating as the dependent (measure) variable
 scene_liking.m <- melt(scene_liking, measure = "rating")
@@ -1570,14 +1642,14 @@ scene_liking.c <- cast(scene_liking.m, subject + mood + scene ~ variable, mean)
 
 Calculating means (2)
 =========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 head(scene_liking.c)
 ```
 
 Calculating means (2)
 =========================================================
 - Now we can use this to calculate our means for the scene condition
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 (mean_people <- mean(subset(scene_liking.c, scene == "people")$rating))
 (mean_no_people <- mean(subset(scene_liking.c, scene == "no people")$rating))
 ```
@@ -1585,7 +1657,7 @@ Calculating means (2)
 Calculating means (3)
 =========================================================
 - Let's also get sd, N, and SE
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 (sd_people <- sd(subset(scene_liking.c, scene == "people")$rating))
 (sd_no_people <- sd(subset(scene_liking.c, scene == "no people")$rating))
 (N_people <- length(subset(scene_liking.c, scene == "people")$rating))
@@ -1619,7 +1691,7 @@ Plotting the interaction (2)
 Start with linear regression
 =========================================================
 - Let's check our contrasts for `scene`
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 contrasts(scene_liking$scene)
 ```
 - Are we happy with this?
@@ -1638,7 +1710,7 @@ kable(coef(summary(scene_lm)))
 Regression diagnostics
 =========================================================
 - Multicollinearity?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 vif(scene_lm)
 ```
 - Aha! Those VIFs are quite  a bit larger than 1. That spells trouble.
@@ -1649,7 +1721,7 @@ Addressing multicollinearity
 - What is wrong?
 - We forgot to center the continuous predictor `mood`
 - Let's fix this:
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 scene_liking$mood <- scale(scene_liking$mood, scale = FALSE) # See Class 5
 ```
 
@@ -1666,7 +1738,7 @@ kable(coef(summary(scene_lm)))
 Regression diagnostics -- again
 =========================================================
 - Multicollinearity?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 vif(scene_lm)
 ```
 - The VIFs are fine now.
@@ -1679,7 +1751,7 @@ kable(head(influence.measures(scene_lm)$infmat))
 
 - Any Cook's d greater than 1?
 
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 sum(cooks.distance(scene_lm) > 1 )
 ```
 
@@ -1687,7 +1759,7 @@ sum(cooks.distance(scene_lm) > 1 )
 
 Normality
 =========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(scene_lm))
 ```
 - Whoa! But we saw this in the plot already
@@ -1697,7 +1769,7 @@ Q-Q Plots
 - Here's a visual way to assess normality
 - Quantile-Quantile Plot: Split data into a number of quantiles and plot them against the quantiles of a hypothetical normal distribution
 
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 qqnorm(resid(scene_lm))
 # if the distribution is normal, the points should be on this line
 qqline(resid(scene_lm))
@@ -1723,14 +1795,14 @@ Running the model
 - In `lmer`, we specify the model in a formula just like in `lm`, but we add random effects terms, e.g. `(1|subject)`
     - The left side of the pipe stands for the random effect, the right side stands for the group for which we want to define the random effect
     - `1` stands for the intercept. It is implicitly added, *except* when there is no other predictor
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(lme4)
 scene_lmm <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (1|item))
 ```
 
 Examining the model
 ============================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 summary(scene_lmm)
 ```
 
@@ -1763,7 +1835,7 @@ Model comparisons
 - Unfortunately, *F*-tests won't work, because we don't know what the $df_{Error}$ would be
 - But we can do the likelihood ratio test (LRT)
 - As always, we use `Anova` from `car`. This one gives us *p* values!
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 library(car)
 Anova(scene_lmm)
 ```
@@ -1771,7 +1843,7 @@ Anova(scene_lmm)
 More model diagnostics
 =========================================================
 - Something still seems to be wrong with this model. How about testing the normality assumption again?
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(scene_lmm))
 ```
 - Still significant? Maybe there still is a random effect that we haven't accounted for.
@@ -1793,7 +1865,7 @@ Random slopes (2)
 $y_{ij} = \beta_0 + \beta_1 x_{1} + \beta_2 x_{2} + \gamma_{0i} + \gamma_{1i} x_{1} + \gamma_{0j} + \epsilon_{ij}$
 - We can tell `lmer` to fit such models like this (note that the intercept is implicit again in `(mood|item)` and `(scene|subject)`.
     - Note that we don't have enough data to include both random effects in one model.
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 scene_lmm_mood <- lmer(data = scene_liking, 
                        rating ~ scene * mood + (1|subject) + (mood|item))
 scene_lmm_scene <- lmer(data = scene_liking, 
@@ -1804,21 +1876,21 @@ Testing the effect of random slopes
 ===========================================================
 - We can use the LRT to test whether the slopes actually improve the models.
     - We use the `anova` command (lower case `a`) to compare each random slope model with the random intercept model we fitted earlier
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 anova(scene_lmm, scene_lmm_mood)
 ```
 - Seems to improve the model! (Note that R automatically uses ML instead of REML for model comparison)
 
 Testing the effect of random slopes
 ===========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 anova(scene_lmm, scene_lmm_scene)
 ```
 - No improvement here.
 
 Diagnostics -- yet again!
 ==========================================================
-```{r, echo = FALSE)
+```{r, echo = FALSE}
 shapiro.test(resid(scene_lmm_mood))
 ```
 - Looks like adding a random slope for `mood` also (mostly) fixed our normality problem
