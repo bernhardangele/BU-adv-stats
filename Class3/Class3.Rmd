@@ -21,6 +21,7 @@ Making fake data for our example
 - In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
 - Let's generate 3 data sets according to this criterion
 ```{r, echo=FALSE}
+library(knitr)
 # The following line sets the random number generator to a specific state
 # and ensures that you get the same numbers that I did.
 set.seed("16102014")
@@ -66,9 +67,9 @@ A quick plot to visualise this
 =========================================================
 - The 2.5% lower and upper tails are highlighted. They have exactly the same area, so we could also just use double the area of the upper tail. This is exaclty what `T.DIST.2T` does.
 ```{r, echo = F}
-cord.x <- seq(-3,3,0.01)
+cord.x <- seq(-3,3,0.001)
 cord.y <- dt(cord.x, df = 18)
-cord.y[cord.x > qt(.025, df =18) & cord.x < qt(.975, df =18)] <- dt(-3, df = 18)
+cord.y[cord.x >= qt(.025, df =18) & cord.x < qt(.975, df =18)] <- dt(-3, df = 18)
 curve(dt(x, df =18),xlim=c(-3,3),main='t(df=18)')
 polygon(cord.x,cord.y,col='skyblue')
 ```
@@ -123,10 +124,10 @@ Just a quick reminder about power
 ========================================================
 - Possible outcomes of a hypothesis test (given the true state of the world)
 
-                                             |Null hypothesis is actually **TRUE**    |Null hypothesis is actually **FALSE**
----------------------------------------------|----------------------------------------|-----------------------------------------------------
-Decision from sample is "reject $H_0$"       | **Type I error**. Probability: $\alpha$|Correct rejection. Probability: $1~-~\beta=$**power** 
-Decision from sample is "do not reject $H_0$"| Correct failure to reject: Probability: $1 - \alpha$    |**Type II error**. Probability: $\beta$ 
+Decision from sample |Null hypothesis is actually **TRUE**    |Null hypothesis is actually **FALSE**
+---------------------|----------------------------------------|----------------------------------------------------------
+Reject $H_0$"        | **Type I error**. Probability: $\alpha$|Correct rejection. Probability: $1~-~\beta=$**power** 
+"Do not reject $H_0$"| Correct failure to reject: Probability: $1 - \alpha$    |**Type II error**. Probability: $\beta$ 
 
 - Of course, we want to minimise $\alpha$, the probability of a **Type I error**. But we also want to minimise $\beta$, the probability of a **Type II error* (i.e. we want to maximise power). 
 - Lowering $\alpha$ (i.e. making the test more conservative) increases $\beta$. By how much? Dependent on the effect size, the population standard deviation, and the sample size.
@@ -270,15 +271,17 @@ The F-distribution
 Plotting the F distribution (1)
 ==========================================================
 - Let's take a look
+
 ```{r, echo = FALSE}
 curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 ```
+
 - F can't be negative
   - this makes sense: it's the quotient of two $\chi^2$s. You may remember that a square of a number can never be negative!
 
 Plotting the F-distribution (2)
 ==========================================================
-```{r, echo = F}
+```{r, echo = F, fig.width=10, fig.height=10}
 par(mfrow = c(4,4))
 for(df1 in c(1,2,4,40)){
   for(df2 in c(1,2,4,40)){
@@ -639,6 +642,7 @@ attract_anova <- ezANOVA(data = attract,
                           between = .(Music, Alcohol))
 kable(attract_anova$ANOVA, col.names = c("Effect", "$df_n$", "$df_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta_P^2$"))
 ```
+
 - All three terms are significant.
     - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
 - Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$
