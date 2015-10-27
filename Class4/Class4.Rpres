@@ -21,7 +21,7 @@ n <- 30
 intercept <- 100
 options(digits = 3, scipen = 4)
 
-set.seed("126810")
+set.seed("12681")
 cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
 cat_age <- rnorm(n, mean = 48, sd = 24) # cat age in months
 cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
@@ -152,7 +152,7 @@ Distribution of the coefficient estimates
 - What do their distributions look like?
 - What about the means (or rather, the expected values?): $E(a) = \alpha$; $E(b) = \beta$ (no derivations here, just the end results)
 - What about the variance?
-  - We don't really care about $a$, but $b$ is important: $$Var(b) = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
+  - We don't really care about $a$, but $b$ is important: $$\sigma_b = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
 - This means that the sampling variance of our estimate of $\beta$ will be smaller when:
     - the overall error variance is small
     - our $x$-values are spread out (covering a wide range)
@@ -161,7 +161,44 @@ Doing a hypothesis test on b
 ==========================================================
 - We now know the sampling distribution of $b$: $$ b \sim N\left(\beta, \frac{\sigma_{\epsilon}^2}{\sqrt{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2}}\right)$$
 - All we need to do is find an estimate for $\sigma_{\epsilon}$
-- We can get this by calculating the variance of the residuals: $$s^2_e = \frac{\sum\limits_{i = 1}^{n} e_i^2}{n-2} = \frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}$$
+- We can get this by calculating the variance of the residuals (the error): $$s^2_e = \frac{\sum\limits_{i = 1}^{n} e_i^2}{n-2} = \frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}$$
+    - Why divide by $n-2$? So we get an unbiased estimator of the error. Not showing you the derivation of why it has to be $n-2$.
+- Since we are *estimating* the error variance, we need to use the *t*-distribution instead of the standard normal distribution.
+
+Testing coefficients
+===========================================================
+- Our null hypothesis is usually $H_0: \beta = 0$
+    - i.e. there is no systematic relationship between $x$ and $y$; you can't predict $y$ from $x$
+- We calculate a *t*-value for our observed $b$ just like we do when we're comparing means: $$t = \frac{b - \beta_0}{\sqrt{\hat{\sigma_b}^2}}$$ where $\beta_0$ is the value of $/beta$ assumed by the null hypothesis. In our case, $\beta_0 = 0$, to we can rewrite this as $t = \frac{b}{\sqrt{\hat{\sigma_b}^2}}$
+- As always, this *t*-value has as many degrees of freedom as the estimated variance, i.e. $n-2$ in the case of the error variance.
+- We can also get confidence intervals, just like when comparing means: $CI: b \pm t_{\alpha/2}\cdot\hat{\sigma_b}$. We reject the $H_0$ if the CI doesn't include 0.
+
+Back to our example
+=============================================================
+```{r, echo = FALSE}
+plot(x = catfood$CatWeight, y = catfood$FoodEaten)
+abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
+pre <- predict(mod1) # plot distances between points and the regression line
+segments(catfood$CatWeight, catfood$FoodEaten, catfood$CatWeight, pre, col="red")
+```
+- We can calculate $b$ from the data by first getting the covariance:
+    - $cov(CatWeight,FoodEaten) = \frac{\sum\limits_{i = 1}^n {(CatWeight_i - \bar{CatWeight})\cdot(FoodEaten_i - \bar{FoodEaten})}}{n-1} = `r with(catfood, cov(CatWeight, FoodEaten))`$
+- Then $$b = \frac{cov(CatWeight, CatFood)}{s_{CatWeight}^2} = \frac{`r with(catfood, cov(CatWeight, FoodEaten))`}{`r var(catfood$CatWeight)`} = `r (b <- with(catfood, cov(CatWeight, FoodEaten))/var(catfood$CatWeight))`$$
+
+Back to our example (2)
+===============================================================
+- Now calculate the standard error of $b$ (replacing $CatWeight$ with $x$ for better readability: $$\hat{\sigma_b^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}} = \frac{\frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}}{(n-1)\cdot s^2_{x}} = \frac{\frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2}}{(`r nrow(catfood)` - 1)\cdot `r var(catfood$CatWeight)`} = `r (var_b <- sum(resid(mod1)^2)/(nrow(catfood)-2)/((nrow(catfood) - 1)*var(catfood$CatWeight)))`$$
+- And the $t$-value: $$t_{`r nrow(catfood)-2`} = \frac{b}{\sqrt{\hat{\sigma_b}^2}} = \frac{`r b`}{\sqrt{`r var_b`}} = \frac{`r b`}{`r sqrt(var_b)`} = `r b/sqrt(var_b)`$$
+- And the *p*-value (look it up in Excel): $p(|t_{`r nrow(catfood)-2`}| = `r b/sqrt(var_b)`) = `r format(dt(b/sqrt(var_b), nrow(catfood)-2),digits = 2)`$
+- Looks like we can reject the $H_0$ this time: Heavier cats tend to eat more.
+
+Can we also do an F-test?
+================================================================
+- Of course we can!
+- $MS_{model} = \frac{SS_{model}}{df_{model}} = \frac{\sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2}{1} = `r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`$
+  - $df_{model}$ is the number of slopes that we're estimating.
+- $MS_{residual} = \frac{SS_{residual}}{df_{residual}} = \frac{\sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2}{n-2} = \frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2} = `r sum(resid(mod1)^2)/(nrow(catfood) - 2)`$
+- $F_{(1, `r nrow(catfood) - 2)`)} = \frac{MS_{model}}{MS_{residual}} = \frac{`r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`}{`r sum(resid(mod1)^2)/nrow(catfood) - 2`}$
 
 Testing correlations
 ==========================================================
