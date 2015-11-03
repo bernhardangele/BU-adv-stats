@@ -55,6 +55,8 @@ hist(resid(linear_model), 10)
 
 Running a log model
 ========================================================
+- Use `Compute` to transform the predicted variable
+
 ```{r, echo = FALSE}
 log_model <- lm(data = swear_exp, log(fixation_time) ~ word_condition)
 summary(log_model)
@@ -70,18 +72,21 @@ hist(resid(log_model), 10)
 
 How to interpret a log model
 ========================================================
-- Formula: $ln(y_{i}) = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
-- Let's rewrite that: $y_{i} = e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i} = e^{\alpha} \times e^{\beta_1x_{i1}} \times e^{\beta_2x_{i2}}$
-    - If this confuses you: we are using the natural logarithm ($ln$; R somewhat confusingly calls it `log`) here. This is a logarithm to the base $e = `r exp(1)`$. Maybe you'll remember that $e^{ln(x)} = x$
-- Log models are *multiplicative* rather than *additive*
+- We are transforming the predicted values using the natural logarithm ($ln$) here. This is a logarithm to the base $e = `r exp(1)`$. You may remember from school that $e^{ln(x)} = x$ and $ln(e^x) = x$.
+- Important: You can only log-transform positive and non-zero values. If you have zeroes or negative values in your dependent variable, you have to transform it.
+  - For example, to eliminate zeroes, you might add a tiny amount to all values.
+- Log models are *multiplicative* rather than *additive*:
+  - $e^{x+y} = e^x \cdot e^y$, and $e^{ln(x) + ln(y)} = x\cdot y$
+- Our model formula: $ln(y_{i}) = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
+  - Let's rewrite that: $y_{i} = e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i} = e^{\alpha} \cdot e^{\beta_1x_{i1}} \cdot e^{\beta_2x_{i2}}$
 
 How to interpret a log model (2)
 ========================================================
 - Example: Our swear word fixation time study
-    - Fitted model: $ln(y_{i}) = 5.683 - .195 \times x_i$
+    - Fitted model: $ln(y_{i}) = 5.683 - .195 \cdot x_i$
     - Remember: We're using treatment contrasts. $x_i$ is 0 for non swear words and 1 for swear words
-    - Predicted value for non swear words: $e^{5.683} \times e^{-.195 \times 0} = e^{5.683} =  293.82$
-    - Predicted value for swear words: $e^{5.683} \times e^{-.195 \times 1} = 293.82 \times e^{-.195} = 293.82 * .823 = 241.81$
+    - Predicted value for non swear words: $e^{5.683} \cdot e^{-.195 \cdot 0} = e^{5.683} =  293.82$
+    - Predicted value for swear words: $e^{5.683} \cdot e^{-.195 \cdot 1} = 293.82 \cdot e^{-.195} = 293.82 * .823 = 241.81$
 - Conclusion: Fixation times on swear words were 17.7% lower than fixation times on non swear words (*b* = -.195, *SE* = .074, *t* = -2.63, *p* = .011).
 
 Logistic regression
@@ -90,21 +95,104 @@ Logistic regression
     - Yes vs. no, error vs. no error, alive vs. dead, pregnant vs. not pregnant
 - Our example (from A. Johnson): Factors that make (or don't make) you fail your driving test
 - 90 candidates
-- Dependent variable: `Driving.Test`
+- Dependent variable: `Driving.Test`: Yes or No
 - Predictor variables:
     - `Practice`: in hours
     - `Emergency.Stop`: Whether the candidate performed the emergency stop (yes or no)
     - `Examiner`: How difficult the examiner is (on a scale from 0 = easy to 100 = extremely difficult)
     - `Cold.Remedy`: How many doses of cold remedy the candidate had before the test
 
+Examining the data
+=======================================================
+- These are our data (first 6 rows):
+
+```{r, results='asis', echo =FALSE}
+driving_tests <- read.csv("driving_tests.csv")
+kable(head(driving_tests))
+```
+
 Where to start?
 =========================================================
-- We would like to use our standard regression model $y_{i} = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
-- But our data are definitely not normally distributed (they aren't even continuous)
-- First step: represent the data as probabilities rather than Yes or No
-    - What's the probability of passing the test given that I've had (at most) 20 hours of practice, did my emergency stop, had at most an average examiner (50) and had only one cup of cold remedy?
-    - Probabilities are still weird: They only go from 0 to 1, and they also aren't great for linear relationships
-    - Let's try something else: odds
+- First, let's recode our dependent variable, replacing "No" with 0 and "Yes" with 1
+```{r, results='asis', echo =FALSE}
+driving_tests$Driving.Test <- as.numeric(driving_tests$Driving.Test) - 1
+kable(head(driving_tests))
+```
+
+Let's plot it
+=========================================================
+- Now we can make a plot of the situation
+- Let's just consider the number of practice hours right now and ignore the other predictors
+
+```{r, echo = FALSE}
+plot(x = driving_tests$Practice, y = driving_tests$Driving.Test, ylab = "Driving Test (+ jitter)",  xlab = "Practice (in hours)")
+```
+
+Adding some jitter
+=========================================================
+- Since the y-value is either 0 or 1, a lot of the points are plotted on top of each other (overplotting)
+- To avoid this, we add or subtract a small amount to the y value ("jitter")
+  - Now we can see the pattern a little better.
+
+```{r, echo = FALSE}
+plot(x = driving_tests$Practice, y = jitter(driving_tests$Driving.Test, factor = .25), ylab = "Driving Test (+ jitter)",  xlab = "Practice (in hours)")
+```
+
+What do we want to estimate?
+=========================================================
+- The regression line gives us the expected $\hat{y}$-value (the mean $y$-value) for each value $x_i$
+- In this case, if we code our dependent variable as 0 and 1, the mean (expected value) at each x value will give us the conditional probability $E(Y|x_i) = \pi_i$ of our event. 
+  - Note that we're talking about estimating the theoretical probability in the population, hence the Greek letter. This is not the mathematical constant $\pi = `r pi`$
+- Then our model can give us predictions like this: What's the probability of passing the test given that I've had (at most) 20 hours of practice, did my emergency stop, had at most an average examiner (50) and had only one cup of cold remedy?
+    
+Predicting probabilities
+==========================================================
+- We can try a standard linear function
+- This would be our model then: $P(Y_i = 1) = \alpha + \beta X_{i} + \epsilon_i$
+
+```{r, echo = FALSE}
+plot(x = driving_tests$Practice, y = jitter(driving_tests$Driving.Test, factor = .25))
+lines(abline(lm(data = driving_tests, Driving.Test ~ Practice)))
+```
+
+Problems with a linear prediction
+==========================================================
+- But it's not very well suited!
+  - It predicts probabilities $P(Y_i = 1) < 0$ and $P(Y_i = 1) > 1$ for some $x$-values!
+  - Also, the error variance is clearly not equal for all $x$-values
+  - And we really can't pretend that our data are normally distributed.
+
+Using a different regression function
+=========================================================
+- We would like a function that makes sure our linear predictor $\alpha + \beta x_i$ stays between 0 and 1
+ - This function $P$ would apply to our linear predictor and transform it into a probability: $\pi_i = P(\alpha + \beta x_i)$
+- If the function is monotone, meaning that it consistently increases as $\alpha + \beta x_i$ gets larger, that would be advantageous, since then we can use the inverse of the function $P^{-1}$ to transform the probability into the linear predictor: $P^{-1}(\pi_i) =\alpha + \beta x_i$
+- There are two functions that are most commonly used: the cumulative probability function of the normal distribution and the logistic function
+
+The cumulative probability function of the normal distribution
+=========================================================
+- Look up the function definition on Wikipedia, if you really care.
+
+```{r, echo = FALSE}
+curve(pnorm(x), -3,3)
+```
+
+The logistic distribution function
+=========================================================
+- Here, the definition is simpler: $\Lambda(z) = \frac{1}{1+e^{-z}}$
+  - Where $z$ is a *z*-value, and $e$ is the constant $e = `r exp(1)`$. $\Lambda$ is the capital letter Lambda.
+
+```{r, echo = FALSE}
+curve(plogis(x), -3,3)
+```
+
+Applying the functions
+========================================================
+- Applying the cumulative normal distribution function gives you the **linear probit model**.
+- Applying the logistic distribution gives you the **linear logit model**, also called **linear logistic regression**:
+$$\pi_i = \Lambda(\alpha + \beta x_i) = \frac{1}{1+e^{-(\alpha+\beta x_i)}}$$
+- Both functions work equally well, but the logistic distribution function has the advantage that the transformed values are directly interpretable:
+  - Rewrite the above equation and you get **odds**: $$\frac{\pi_i}{1-\pi_i} = e^{\alpha+\beta x_i}$$
     
 Probability and odds
 ========================================================
@@ -115,32 +203,44 @@ Probability and odds
       - $P = .25$ gives you $\frac{.25}{.75} = 1/3$
       - $P = .75$ gives you $\frac{.75}{.25} = 3/1$
 - Odds are nice because they aren't bounded, but for high probabilities they get very large very quickly ($P = .99 \Leftrightarrow Odds = 99/1$) and for small probabilities, they get very small very quickly ($P = .01 \Leftrightarrow Odds = 1/99$)
-- What to do?
 
 Log odds (logits)
 =========================================================
 - Just transform our odds (just like we did with our continuous fixation time variable earlier) by taking the natural logarithm: $logit = ln(Odds) = ln(\frac{P}{1-P})$
 - Now we have a dependent measure that is suitable for linear relationships
-- Our new logistic regression model is $ln(\frac{P}{1-P}) = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
-- If we want to get back to probabilities, we can exponentiate both sides of the equation: $\frac{P}{1-P} = e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}$
-- Solving this for $P$: $P = \frac{e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}}{1 + e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}} = \frac{1}{1 + e^{-(\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$
+- Log odds is just what we happen to get if we take the natural logarithm (log to the base of $e$, short $ln$) on both sides of our logistic regression equation from earlier:
+$$
+\begin{aligned}
+\frac{\pi_i}{1-\pi_i} &= e^{\alpha+\beta x_i}\\
+\leftrightarrow ln(\frac{\pi_i}{1-\pi_i}) &= ln(e^{\alpha+\beta x_i})\\
+\leftrightarrow ln(\frac{\pi_i}{1-\pi_i}) &= \alpha+\beta x_i\\
+\end{aligned}
+$$
+
+The logistic model
+==========================================================
+- So, our full model (including errors) is
+$$logit_i = ln(\frac{\pi_i}{1-\pi}) = \alpha + \beta x_i + \epsilon_i$$
+- If we want to get back from logits to probabilities, we can do that by reversing the transformation:
+$$\pi_i = \frac{1}{1+e^{-(logit_i)}}$$
 
 How do you fit a logistic regression line?
 =========================================================
-- Least squares won't work
+- Sadly, you can't fit the logistic regression model using the least squares approach (the errors still aren't nromally distributed or homoscedastic)
 - We can evaluate the **likelihood** of the parameters instead
-- Probability: observations given parameters
-- Likelihood: parameters given observations
+- In statistics, probability and likelihood aren't the same:
+  - Probability: observations given parameters
+  - Likelihood: parameters given observations
 
 Calculating likelihood
 ========================================================
 - Very simple example: Let's assume we have the following data from flipping a coin: $Y = (H H H T H T H H)$
 - Likelihood is the product of all the probabilities given a certain parameter value. In this case, we are trying different parameter values for the probability: 
-    - We usually call the observed probability $p$, but since we are trying different population parameters, we'll give it a greek letter and call our population probability of observing "heads" (ignoring order) $\pi$ (that is, pi)
-- $\pi = .5$: $L(Y|\pi = .5) = .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 = .5^8 = .00039$
-- $\pi = .25$: $L(Y|\pi = .35) = .25 \times .25 \times .25 \times .75 \times .25 \times .75 \times .25 \times .25 = .25^6 \times .75^2 = .00014$
+    -We're interested in the population parameter, so again, our population probability of observing "heads" (ignoring order) will be called $\pi$:
+- $\pi = .5$: $L(Y|\pi = .5) = .5 \cdot .5 \cdot .5 \cdot .5 \cdot .5 \cdot .5 \cdot .5 \cdot .5 = .5^8 = .00039$
+- $\pi = .25$: $L(Y|\pi = .25) = .25 \cdot .25 \cdot .25 \cdot .75 \cdot .25 \cdot .75 \cdot .25 \cdot .25 = .25^6 \cdot .75^2 = .00014$
     - $\pi = .25$ has a lower likelihood than $\pi = .5$.
-- Let's try $\pi = .75$: $L(Y|\pi = .75) = .75 \times .75 \times .75 \times .25 \times .75 \times .25 \times .75 \times .75 = .75^6 \times .25^2 = .00111$
+- Let's try $\pi = .75$: $L(Y|\pi = .75) = .75 \cdot .75 \cdot .75 \cdot .25 \cdot .75 \cdot .25 \cdot .75 \cdot .75 = .75^6 \cdot .25^2 = .00111$
     - This is the highest one yet.
 
 The likelihood function for logistic regression
@@ -151,73 +251,53 @@ The likelihood function for logistic regression
 - Then you get the likelihood for the full data set $Y$ by multiplying all the individual likelihoods
     - $L(Y|\pi) = \prod_{i = 1}^N{L(Y_i|\pi)}$
 - You can simplify this a bit if you replace H with 1 and T with 0:
-    -  $L(Y_i|\pi) = \pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+    -  $L(Y_i|\pi) = \pi^{Y_i} \cdot (1-\pi)^{(1-Y_i)}$
     - And combining the two equations above:
-        - $L(Y|\pi) = \prod_{i = 1}^N\pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+        - $L(Y|\pi) = \prod_{i = 1}^N\pi^{Y_i} \cdot (1-\pi)^{(1-Y_i)}$
 
 Maximum likelihood
 ========================================================
 - Likelihood gets a little unwieldy -- lots of very small numbers
     - Solution: take the log (who would have thought?)
         - Added bonus: Now our multiplication becomes a sum (remember that from calculus?)
-          $log\;likelihood = \sum_{i = 1}^N Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi)$
+          $log\;likelihood = \sum_{i = 1}^N Y_i\cdot ln(\pi) + (1-Y_i)\cdot ln(1-\pi)$
 - Now we can simply try different values of $\pi$ until we find the one with the maximum likelihood
-    - Remember that in logistic regression, $\pi$ is defined by our regression equation: $\pi = \frac{1}{1 + e^{-(\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$ 
+    - Remember that in logistic regression, $\pi$ is defined by our regression equation: $\pi = \frac{1}{1 + e^{-(\alpha + \beta x_{i1} + \epsilon_i)}}$ 
     - Instead of simply trying different values of $\pi$, we have to try different values for $\alpha$, $\beta_1$, etc. and compute $\pi$. This gets to be quite a lot of work.
-    - Trying different values might not seem particularly elegant, but this is essentially what R or SPSS do -- no simple solution like with least-squares regression or ANOVA exists
-      - This is (relatively) processing-intensive. One reason why psychologists didn't use logistic regression in the statistics-by-hand era.
+    
+Fitting the model through an iterative process
+=======================================================
+- Trying different values might not seem particularly elegant, but this is essentially what R or SPSS do -- no simple solution like with least-squares regression or ANOVA exists
+- This is (relatively) processing-intensive, which is one reason why psychologists didn't use logistic regression in the statistics-by-hand era.
       
 Log likelihood as an indicator of model fit
 =======================================================
-- The log likelihood (LL) of the final model is an indicator of how well the model fit the data, just like $R^2$.
+- The log likelihood ($LL$) of the final model is an indicator of how well the model fit the data, just like $R^2$.
     - In fact, there are several ways to estimate $R^2$ from the log likelihood
 - Log likelihood also enables us to make model comparisons
     - The test statistic in that case is $\chi^2$ -- more about that later
-- Another measure is *deviance*, which is simply $-2$*LL
+- Another measure is *deviance*, which is simply $-2\cdot LL$
     - Conceptually, deviance is like the residual variance.
         - In the case of deviance, lower is better, of course.
-- Closely related to this is Akaike's Information Criterion (AIC), which is -2LL+2*number of parameters (lower is better, so adding parameters makes the AIC worse)
+- Closely related to this is Akaike's Information Criterion (AIC), which is $-2\cdot LL + 2\cdot \text{number of parameters}$ (lower is better, so adding parameters makes the AIC worse)
 
-Enough maths, let's just run this model
-=======================================================
-- These are our data (first 6 rows):
-```{r, results='asis', echo =FALSE}
-driving_tests <- read.csv("driving_tests.csv")
-kable(head(driving_tests))
+How to fit the model in SPSS
+========================================================
+- You can't do this in Excel anymore.
+
+```{r, echo = FALSE}
+driving_tests$Emergency.Stop <- factor(driving_tests$Emergency.Stop, levels = c(1,0), labels = c("Yes", "No"))
+
+#driving_tests$Cold.Remedy <- factor(driving_tests$Cold.Remedy)
+
 driving_glm <- glm(data = driving_tests, 
                    formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + Cold.Remedy, 
                    family = binomial(link = "logit"))
 ```
 
-How to fit the model in SPSS
-========================================================
-- Watch Andy Johnson's video on myBU
+- To see how it works, watch Andy Johnson's video on myBU.
 
 Model summary
-========================================================
-```{r, echo = FALSE}
-kable(coef(summary(driving_glm)))
-```
-
-Model summary explained
-========================================================
-- Deviance residuals:
-    - For these, we calculate the deviance separately for each case and then take the square root. We also change the sign depending on whether the observed case was 1 or 0:
-    - $d_i = s_i \sqrt{-2(Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi))}$
-        - with $s_i = 1$ if $Y_i = 1$ and $s_i = -1$ if $Y_i = 0$
-
-How to interpret logistic regression residuals
-========================================================
-- Can't test if they are normally distributed (because they are not)
-- But look out for very large residuals
-- You can get still get standardised residuals.
-    - Look out for cases that are far away from 0.
-```{r, results='asis'}
-driving_residuals <- rstandard(driving_glm)
-plot(driving_residuals)
-```
-
-Model summary explained (2)
 ==========================================================
 - The coefficients
 
@@ -225,10 +305,12 @@ Model summary explained (2)
 kable(coef(summary(driving_glm)))
 ```
 
+Significance tests for coefficients
+=============================================================
 - Analogous to linear regression: *b* value, *SE*, significance test
 - Using the **Wald** statistic instead of *t* tests
     - $z = \frac{b}{SE_b}$
-    - We can use *z*-values because our dependent variable comes from the binomial distribution. In the binomial distribution, the variance is always a function of the mean, so we don't have to estimate it from the sample (and since we're not using the sample variance to estimate the population variance, we don't needto use a t-test).
+    - We can use *z*-values because our dependent variable comes from the binomial distribution. In the binomial distribution, the variance is always a function of the mean, so we don't have to estimate it from the sample (and since we're not using the sample variance to estimate the population variance, we don't need to use a t-test).
 
 Interpreting the b values
 ==========================================================
@@ -238,12 +320,6 @@ Interpreting the b values
     - e.g. if the odds were even (1/1) for X hours of practice, they would be slightly better than even (1.138/1) for X+1 hours of practice
 - On the other hand, each "unit" of examiner difficulty decreases the odds of passing the test by a factor of $e^{-0.03485} = `r exp(-.03485)`$
     - e.g. if the odds were even (1/1) for an instructor with a difficulty of X, they would be slightly worse than even (0.9658/1) for an instructor with a difficulty of X+1
-
-Model summary explained (2)
-==========================================================
-- Null deviance: deviance from a model that estimates all values using the overall probability of passing the test (without taking into account the 4 predictors)
-- Residual deviance: deviance from the current model (note that we're losing 4 df due to the 4 predictors)
-- AIC: residual deviance + 2*model df (note that the model has 5 df, including one for the intercept)
 
 Model comparisons (LRT)
 ==========================================================
@@ -263,6 +339,7 @@ Model comparisons
 - $df = k_{null} - k_{model} = 89 - 85 = 4$ 
 - $p(\chi^2(4) \geq 41.794) < .01$
 - This is equivalent to the overall *F*-test for the model.
+- SPSS calls this the "Omnibus test"
 
 Model comparisons (2)
 ========================================================
@@ -283,11 +360,26 @@ Diagnostics and assumption tests
 - We do not assume normality (so nothing to test for that one)
 - All the influence measures from linear regression work in logistic regression as well
 - Multicollinearity:
-- You can get Variance Inflation Factors (VIFs)
+  - You can get Variance Inflation Factors (VIFs) and Tolerance etc. in SPSS if you fit the standard linear model first
+    - Of course, don't interpret the coefficients that you get!
+- You can also take a look at the Hosmer-Lemeshow test (see Andy Johnson's video)
+
+
+Looking at logistic regression residuals
+========================================================
+- Can't test if they are normally distributed (because they are not)
+- But look out for very large residuals
+- You can get still get standardised residuals.
+    - Look out for cases that are far away from 0.
+```{r, results='asis', echo = FALSE}
+driving_residuals <- rstandard(driving_glm)
+plot(driving_residuals)
+```
+
 
 Reporting it
 =============================================================
-A logistic regression was conducted where the dependent variable was passing a driving test and the predictor variables were hours of practice, whether an emergency stop was successfully executed, how much the examiner was difficult, and amount of 'cold remedy drinks' consumed.  90 cases were examined and the model was found to significantly predict whether the test was passed (omnibus chi-square = 41.79, df=4, p<.001). that practice and examiner were the only two variables that reliably predicted if the driving test was passed. Increases in practice was associated with increased rate of passing (odds of passing increased by 1.14 per hour of practice, *b* = .130, SE = .03, *z* = 4.28, *p* < .01). Increases in the examiner being an difficult reduced the rate of passing (odds of passing decreased by 0.96 per unit of difficulty rating, *b* = -.00349, SE = .013, *z* = -2.679, *p* < .01). None of the other predictors reached significance (all *p*s > .05). There were no issues due to multicollinearity or influential cases.
+A logistic regression was conducted where the dependent variable was passing a driving test and the predictor variables were hours of practice, whether an emergency stop was successfully executed, how much the examiner was difficult, and amount of 'cold remedy drinks' consumed.  90 cases were examined and the model was found to significantly predict whether the test was passed (omnibus chi-square = 41.79, df=4, p<.001). that practice and examiner were the only two variables that reliably predicted if the driving test was passed. Increases in practice was associated with increased rate of passing (odds of passing increased by 1.14 per hour of practice, *b* = .130, SE = .03, *z* = 4.28, *p* < .01). Increases in the examiner difficulty reduced the rate of passing (odds of passing decreased by 0.96 per unit of difficulty rating, *b* = -.00349, SE = .013, *z* = -2.679, *p* < .01). None of the other predictors reached significance (all *p*s > .05). There were no issues due to multicollinearity or influential cases.
 
 Linear mixed models (LMMs)
 ============================================================
@@ -349,6 +441,8 @@ Example Data
 - Scene Type: within-item factor ("no people" vs. "people")
 - Mood: between-subject factor (scale from 0--100)
 - Rating: Dependent variable (scale from 0 to 20)
+- For these kinds of data, R has a massive advantage over SPSS in terms of usability.
+  - But you can still get the same results in SPSS!
 - Don't be scared, I'll be walking you through this with R first and then show you how to do it in SPSS.
 ```{r}
 # Start by loading the data
@@ -365,7 +459,7 @@ Looking at the data (2)
 =========================================================
 ```{r}
 str(scene_liking)
-# We should set subject and item to be factors
+# We should set subject and item to be 0 (nominal scale)
 scene_liking$subject <- factor(scene_liking$subject)
 scene_liking$item <- factor(scene_liking$item)
 ```
@@ -390,7 +484,7 @@ Calculating means (2)
 head(scene_liking.c)
 ```
 
-Calculating means (2)
+Calculating means (3)
 =========================================================
 - Now we can use this to calculate our means for the scene condition
 ```{r}
@@ -427,6 +521,7 @@ qplot(data = scene_liking, y = rating, x = mood, colour = scene, geom = "smooth"
 
 Plotting the interaction (2)
 =========================================================
+- Look at how amazingly pretty that is. You just can't do stuff like that with SPSS.
 - Looks like the student was right!
 - Also looks like the effect is not really completely linear
     - Maybe this is due to the subject and item effects in the data?
@@ -654,6 +749,10 @@ kable(coef(summary(scene_lmm_mood)))
 Writing it up
 ==========================================================
 - See the exercise!
+
+Summary
+==========================================================
+- We can do repeated-measures analyses as well as more complex hierarchical models (e.g. students within classrooms within schools) using linear mixed models (LMMs)
 
 Thank you!
 ==========================================================

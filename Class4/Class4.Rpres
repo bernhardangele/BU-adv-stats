@@ -71,7 +71,7 @@ Fitting a line to the data
   - There are lots of possible lines to draw for data like these
       - What is the best line to describe these data?
       - Remember (from school) that a line is (exhaustively) described by an equation such as $$y = a+b\cdot x$$
-          - $a$ is called the *intercept*. It describes where the line intersects the $y$-axis
+          - $a$ is called the *intercept*. It describes where the line intersects the $x$-axis
           - $b$ is called the *slope*. It describes by how many units $y$ changes when $x$ changes
           - You may have learned this as $y = mx + c$ depending on where you went to school
 
@@ -116,14 +116,14 @@ Sums of squares
 - The total sums of squares is simply the numerator of the variance of $y$ (just like in the ANOVA): ${SS}_{total} = \sum\limits_{i=1}^{n}(y_i - \bar{y})^2$
 - The **regression** or model sums of squares is the variance explained by the regression model: ${SS}_{model} = \sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2$
 - The residual sums of squares is the squared differences $e_i$ between the actual $y$-values and the predicted $\hat{y}$-values: ${SS}_{residual} =  \sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2$
-- Of course, these add up just like in the ANOVA: $SS_{total} = {SS}_{model} + {SS}_{residual}$
+- Of course, these add up just like in the ANOVA: $SS_{total} = {SS}_{model} + {SS}_residual$
 
 
 Coefficient of determination
 ============================================================
 - Remember $\eta^2$ for the ANOVA? We can do the same thing for the sums of squares in the regression:
-$$r^2 = \frac{{SS}_{model}}{{SS}_{total}}$$
-- $\frac{{SS}_{model}}{{SS}_{total}}$ is the same as the square of the correlation coefficient $r$.
+$$r^2 = \frac{{SS}_{model}}{{SS}_{residual}}$$
+- $\frac{{SS}_{model}}{{SS}_{residual}}$ is the same as the square of the correlation coefficient $r$.
     - Fun activity at home: Work out why!
 - In multiple regression, we call the coefficient of determination $R^2$ instead of $r^2$. Here, we have multiple predictors and multiple correlations, so $R^2$ doesn't correspond to the square of any one of them. It still tells you how much variance your model explains, though.
 - In our example: $r^2 = `r cor(catfood$CatWeight, catfood$FoodEaten)^2`$
@@ -139,11 +139,11 @@ Hypothesis tests
 
 Assumptions
 ==========================================================
-- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma_{x,y}$.
+- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma^2_{x,y}$.
 - The bivariate (or, more generally, multivariate) normal distribution assumes that:
     - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are normally distributed: $\epsilon \sim N(0, \sigma_{\epsilon}^2$)
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon}^2$
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon_i$ are independent)
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon_i}^2$
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon$s are independent)
 - Pretty similar to the ANOVA assumptions, actually. I wonder why?
 
 Distribution of the coefficient estimates
@@ -152,14 +152,14 @@ Distribution of the coefficient estimates
 - What do their distributions look like?
 - What about the means (or rather, the expected values?): $E(a) = \alpha$; $E(b) = \beta$ (no derivations here, just the end results)
 - What about the variance?
-  - We don't really care about $a$, but $b$ is important: $$\sigma^2_b = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
+  - We don't really care about $a$, but $b$ is important: $$\sigma_b = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
 - This means that the sampling variance of our estimate of $\beta$ will be smaller when:
     - the overall error variance is small
     - our $x$-values are spread out (covering a wide range)
 
 Doing a hypothesis test on b
 ==========================================================
-- We now know the sampling distribution of $b$: $$ b \sim N\left(\beta, \frac{\sigma_{\epsilon}}{\sqrt{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2}}\right)$$
+- We now know the sampling distribution of $b$: $$ b \sim N\left(\beta, \frac{\sigma_{\epsilon}^2}{\sqrt{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2}}\right)$$
 - All we need to do is find an estimate for $\sigma_{\epsilon}$
 - We can get this by calculating the variance of the residuals (the error): $$s^2_e = \frac{\sum\limits_{i = 1}^{n} e_i^2}{n-2} = \frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}$$
     - Why divide by $n-2$? So we get an unbiased estimator of the error. Not showing you the derivation of why it has to be $n-2$.
@@ -169,7 +169,7 @@ Testing coefficients
 ===========================================================
 - Our null hypothesis is usually $H_0: \beta = 0$
     - i.e. there is no systematic relationship between $x$ and $y$; you can't predict $y$ from $x$
-- We calculate a *t*-value for our observed $b$ just like we do when we're comparing means: $$t = \frac{b - \beta_0}{\sqrt{\hat{\sigma_b}^2}}$$ where $\beta_0$ is the value of $\beta$ assumed by the null hypothesis. In our case, $\beta_0 = 0$, to we can rewrite this as $t = \frac{b}{\sqrt{\hat{\sigma_b}^2}}$
+- We calculate a *t*-value for our observed $b$ just like we do when we're comparing means: $$t = \frac{b - \alpha}{\sqrt{\hat{\sigma_b}^2}}$$ where $\alpha$ is the value of $/beta$ assumed by the null hypothesis. In our case, $\alpha = 0$, to we can rewrite this as $t = \frac{b}{\sqrt{\hat{\sigma_b}^2}}$
 - As always, this *t*-value has as many degrees of freedom as the estimated variance, i.e. $n-2$ in the case of the error variance.
 - We can also get confidence intervals, just like when comparing means: $CI: b \pm t_{\alpha/2}\cdot\hat{\sigma_b}$. We reject the $H_0$ if the CI doesn't include 0.
 
@@ -283,45 +283,54 @@ Now let's add the interaction term
 kable(summary((lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)))$coef)
 ```
 - Now nothing is significant! What is going on?
-- Important: these *t*-tests test the null hypothesis that each individual coefficient is 0 **given that all the other predictors are in the model as well**.
+- Important: these *t*-tests test the null hypothesis that each individual **given that all the other predictors are in the model as well**.
 
 Why do we get conflicting results?
 =================================================================
 - This is weird: We didn't have an effect for CatAge when we looked at the *t*-values, but we have when doing F-tests?
 
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 kable(anova(lm_catfood_interaction))
 ```
 
 - The answer lies in **what each test compares**. This may sound nitpicky, but it's really important!
 
-Types of sums of squares for the F-test
+Model comparisons
+=================================================================
+- The *t*-values compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question.
+- The `anova` command compares a model containing the predictor **and all other predictors** entered *so far* with a model only containing the predictors entered **so far**
+    - This means that **order matters**. In this case, the CatWeight by CatAge interaction isn't entered yet.
+    - This is called **Type I sums of squares**
+- The `anova` command is dumb and can only do Type I SS, but there is an alternative in the `car` package, cleverly labeled `Anova`
+  - Use `install.packages("car")` to get the `car` package if you don't have it already
+
+Sums of squares
 =================================================================
 - Type I: Compare a model containing the predictor **and all other predictors** entered *so far* with a model only containing the predictors entered **so far** (order matters).
-    - This is what the `anova` command in R does.
-- Type II: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question **and its interactions**.
-    
-- Type III: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question, but **including its interactions**.
+    - This is what the `anova` command does.
+- Type II: The *t*-values compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question **and its interactions**.
+    - This is the standard in ezANOVA.
+- Type III: The *t*-values compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question, but **including its interactions**.
     - This is the equivalent of the *t*-tests.
     - This is the standard in SPSS.
 
 
 Example: Type I sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 kable(anova(lm_catfood_interaction))
 ```
 
 Example: Type II sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 library(car)
 kable(Anova(lm_catfood_interaction,type = "II"))
 ```
 
 Example: Type III sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 library(car)
 kable(Anova(lm_catfood_interaction,type = "III"))
 ```
@@ -370,8 +379,7 @@ Interpreting the VIF
     - The largest VIF is greater than 10 and/or
     - The average VIF is substantially greater than 1
 - Multicollinearity seriously affects the interpretability of your model
-  - In practice, it increases the estimate of the standard error of your coefficients $\sigma_{\beta}$
-  - This reduces the power of the significance test
+  - This is a problem 
 
 Where does the multicollinearity come from?
 ==================================================================
@@ -797,27 +805,29 @@ Trying different contrasts
 
 Using contrasts in SPSS
 ==========================================================
-- To be honest, SPSS is terrible with contrasts -- it's really inconsistent
-- You can specify your own contrasts using the Univariate ANOVA module, but you can't do that for the General Linear Model module
-    - Instead, you have to pick a number of standard contrasts
-- In theory, you could define your own contrasts, but it's a bit tricky
+- Either make your own by recoding the variables
+- Or use the `Analyze` --> `General Linear Model` --> `Univariate...` module
+- In the latter case, you can only pick from a number of standard contrasts offered by SPSS
 
 Standard contrasts
 ========================================================
-- Simple
+- Simple (sum)
   - Compares each level to the reference level, the intercept is the grand mean
 - Deviation
   - Compares each level to the overall mean of the dependent variable (the reference level is not compared)
-- Helmert
-  - Compares each level to the mean of the subsequent ones
-- Difference (reverse Helmert)
-  - Compares each level to the mean of the previous ones
-- Repeated (successive differences)
-  - Compares each level to the subsequent level 
+- 
 
-Applying deviation contrasts
+```{r, echo = FALSE}
+
+```
+- Sum/deviation contrasts
+- (Reverse) Helmert contrasts
+- many more
+- Make your own!
+
+Sum (or deviation) contrasts
 ==========================================================
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 contrasts(dogs$breed) <- contr.sum
 kable(coef(summary(lm(data = dogs, objects ~ breed))))
 ```
@@ -830,9 +840,9 @@ Interpreting sum/deviation contrasts
 - Terrier is never explicitly compared to the grand mean.
 - In general: each level (except for the last level) is compared to the grand mean.
 
-Applying difference (reverse Helmert) contrasts
+(Reverse) Helmert contrasts
 ==========================================================
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 contrasts(dogs$breed) <- contr.helmert
 kable(coef(summary(lm(data = dogs, objects ~ breed))))
 ```
@@ -844,11 +854,817 @@ Interpreting (reverse) Helmert contrasts
 - $beta_2$ is half of the difference between the joint mean of Beagle and Border Collie and the mean of Terrier ($(15 - (60+10)/2)/2 = -10$)
 - In general: each level is compared to the mean of the previous levels
 
-Make your own contrasts?
+Make your own contrasts
 ==========================================================
-- **DANGER**: If you apply your contrasts directly as dummy variables, you must use the **inverse** of your contrast matrix
-- If your contrasts are not orthogonal, and you don't use the inverse of your matrix, you won't be comparing what you think you're comparing.
-- If you don't know what this means, don't use your own contrasts until you do. Check Chapter 6 of 
+- General rules: You have one contrast per degree of freedom
+- The dummy values in each contrast should sum to 0 (so that your intercept will be the grand mean)
+- The sum of the absolute values of the dummy values in each contrast should be 2
+- If you want to compare two levels, set one to be -1 and the other to be 1
+- Factor levels that you don't want to compare should be set to 0
 
->Fox, J. (2008). Applied regression analysis and generalized linear models.
 
+Example
+==========================================================
+- I want to compare level 1 (Beagle) to level 3 (Terrier):
+
+|             | x1 | x2|
+|------------:|---:|--:|
+|Beagle       |   1|TBD|
+|Border Collie|   0|TBD|
+|Terrier      |  -1|TBD|
+
+- This contrast sums to 0, so the intercept should be the grand mean (unless the other contrast is something really crazy)
+- The absolute values sum to 2
+- The coefficient will be $Mean(Terrier) - Mean(Beagle)$, so it will be positive if the mean for Terrier is greater than that for Beagle and negative if $Mean(Beagle) > Mean(Terrier)$
+
+More complex comparisons
+==========================================================
+- To compare a mean of two factor levels to the mean of another factor (e.g. the mean of Beagle and Terrier vs. the mean of Border Collie), split them up: 
+    - Set the two levels that you want to take the mean of both to .5 or -.5
+    - Then set the third level to -1 or 1, respectively
+    - The rules still hold:
+        - The dummy values in each contrast should sum to 0 (so that your intercept will be the grand mean)
+        - The absolute values should sum to 2
+        - Factor levels that you don't want to compare should be set to 0
+
+Example (continued)
+==========================================================
+- I want to compare level 1 (Beagle) to level 3 (Terrier):
+
+|             | x1 | x2|
+|------------:|---:|--:|
+|Beagle       |   1|-.5|
+|Border Collie|   0|  1|
+|Terrier      |  -1|-.5|
+
+- Both contrasts sum to 0, so the intercept should be the grand mean
+- The absolute values sum to 2
+- The coefficient for x2 will be $Mean(Terrier) - Mean(Beagle)$, so it will be positive if the mean for Terrier is greater than that for Beagle and negative if $Mean(Beagle) > Mean(Terrier)$
+
+Defining your own contrast coding
+========================================================
+- You'll need the library "MASS"
+    - If you don't have it yet, install it: `install.packages("MASS")`
+- Put together the contrast matrix:
+```{r, echo = FALSE}
+x1 <- c(1, 0, -1)
+x2 <- c(-.5, 1 , -.5)
+# cbind: bind the vectors together as columns in a matrix
+my_contrasts <- cbind(x1, x2)
+```
+
+Defining your own contrast coding (2)
+========================================================
+- Now you can assign the contrasts
+- Important: you don't actually assign your home-made contrast matrix itself, but rather the transposed generalised inverse of the matrix
+    - Why? That's just how R expects to get the contrasts...
+- The only thing you need to be aware of is that `ginv` requires the `MASS` package to be loaded:
+```{r, echo = FALSE}
+library(MASS)
+contrasts(dogs$breed) <- t(ginv(my_contrasts))
+```
+
+Interpreting the results
+=======================================================
+```{r, results='asis'}
+kable(coef(summary(lm(data = dogs, objects ~ breed))))
+```
+
+- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
+- $\beta_1$ is the difference between the mean of Beagle and the mean of Terrier ($10 - 15 = -5$)
+- $\beta_2$ is the difference between the mean of Beagle and Terrier together and the mean of Border Collie ($60 - (10+15)/2 = 47.5$)
+- Once again, notice that the sample coefficients $b_0$, $b_1$, and $b_2$ are not *exactly* the same as the population coefficients $\alpha$, $\beta_1$, and $\beta_2$.
+
+Orthogonality of contrasts
+=======================================================
+- If contrasts are orthogonal, that means they do not share any variance
+    - i.e. they are not correlated
+- You can find out if your hand-made contrasts are orthogonal:
+- Calculate the product of each row
+- If the row products sum up to 0, the contrast is orthogonal:
+
+
+|             | x1 | x2| x1 $\times$ x2|
+|------------:|---:|--:|--------------:|
+|Beagle       |   1|-.5|            -.5|
+|Border Collie|   0|  1|              0|
+|Terrier      |  -1|-.5|             .5|
+|Total        |   0|  0|              0|
+
+
+- Are our contrasts orthogonal? Yes!
+
+Orthogonality of contrasts (2)
+=======================================================
+- Contrasts do not have to be orthogonal (also known as *independent*).
+- But be aware that correlated contrasts may cause multicollinearity issues
+    - Especially if you have an unbalanced design
+    - Especially if you have an interaction design
+- As long as you are aware of what exactly you are doing, you'll be fine
+- As soon as you no longer know what you're doing, ask for help!
+
+Transformations
+========================================================
+- In some cases, our dependent variable will not be normally distributed
+- Example: reaction times -- you get a long right tail of slow responses
+    - Fixation times in eye movements are very similar
+
+Example
+========================================================
+- For example, the probability density function for fixation durations might look like this:
+
+```{r, echo = FALSE}
+curve(dlnorm(x, 5.5, .3), from = 0.1, to = 1000)
+```
+
+Example data
+========================================================
+- Example experiment: how long do people look at swear words vs. non-swear words?
+    - Let's assume that the true means are 250 ms for non swear words and 300 ms for swear words
+- Let's generate data based on this assumption
+```{r, echo = FALSE}
+set.seed("11233")
+# 60 subjects
+word_condition <- factor(c(rep("swear word", 30), rep("non swear word", 30)))
+# rlnorm: Generate random samples from the lognormal distribution
+fixation_time <- c(rlnorm(n = 30, 
+                          mean = log(250), 
+                          sd = .3), 
+                   rlnorm(n = 30,
+                          mean = log(265), 
+                          sd = .3))
+swear_exp <- data.frame(word_condition, fixation_time)
+```
+
+Running a linear model
+========================================================
+```{r, echo = FALSE}
+linear_model <- lm(data = swear_exp, fixation_time ~ word_condition)
+summary(linear_model)
+```
+
+Assumption test
+========================================================
+```{r, echo = FALSE}
+shapiro.test(resid(linear_model))
+```
+- Clearly not normal!
+- But notice how robust the analysis is. We still find the effect!
+- Nevertheless, better to run a proper model with log transformed values as the dependent vairable
+
+
+Running a log model
+========================================================
+```{r, echo = FALSE}
+log_model <- lm(data = swear_exp, log(fixation_time) ~ word_condition)
+summary(log_model)
+```
+
+Assumption test
+========================================================
+```{r, echo = FALSE}
+shapiro.test(resid(log_model))
+```
+
+How to interpret a log model
+========================================================
+- Formula: $ln(y_{i}) = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
+- Let's rewrite that: $y_{i} = e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i} = e^{\alpha} \times e^{\beta_1x_{i1}} \times e^{\beta_2x_{i2}}$
+    - If this confuses you: we are using the natural logarithm ($ln$; R somewhat confusingly calls it `log`) here. This is a logarithm to the base $e = `r exp(1)`$. Maybe you'll remember that $e^{ln(x)} = x$
+- Log models are *multiplicative* rather than *additive*
+
+How to interpret a log model (2)
+========================================================
+- Example: Our swear word fixation time study
+    - Fitted model: $ln(y_{i}) = 5.683 - .195 \times x_i$
+    - Remember: We're using treatment contrasts. $x_i$ is 0 for non swear words and 1 for swear words
+    - Predicted value for non swear words: $e^{5.683} \times e^{-.195 \times 0} = e^{5.683} =  293.82$
+    - Predicted value for swear words: $e^{5.683} \times e^{-.195 \times 1} = 293.82 \times e^{-.195} = 293.82 * .823 = 241.81$
+- Conclusion: Fixation times on swear words were 17.7% lower than fixation times on non swear words (*b* = -.195, *SE* = .074, *t* = -2.63, *p* = .011).
+
+Logistic regression
+========================================================
+- What if we have a dichotomous dependent variable?
+    - Yes vs. no, error vs. no error, alive vs. dead, pregnant vs. not pregnant
+- Our example (from A. Johnson): Factors that make (or don't make) you fail your driving test
+- 90 candidates
+- Dependent variable: `Driving.Test`
+- Predictor variables:
+    - `Practice`: in hours
+    - `Emergency.Stop`: Whether the candidate performed the emergency stop (yes or no)
+    - `Examiner`: How difficult the examiner is (on a scale from 0 = easy to 100 = extremely difficult)
+    - `Cold.Remedy`: How many doses of cold remedy the candidate had before the test
+
+Where to start?
+=========================================================
+- We would like to use our standard regression model $y_{i} = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
+- But our data are definitely not normally distributed (they aren't even continuous)
+- First step: represent the data as probabilities rather than Yes or No
+    - What's the probability of passing the test given that I've had (at most) 20 hours of practice, did my emergency stop, had at most an average examiner (50) and had only one cup of cold remedy?
+    - Probabilities are still weird: They only go from 0 to 1, and they also aren't great for linear relationships
+    - Let's try something else: odds
+    
+Probability and odds
+========================================================
+- Very popular in betting, since they make it easy to estimate the payout
+- $Odds = \frac{P}{1-P}$
+- For example: 
+      - $P = .5$ gives you even odds $\frac{.5}{.5} = 1/1$
+      - $P = .25$ gives you $\frac{.25}{.75} = 1/3$
+      - $P = .75$ gives you $\frac{.75}{.25} = 3/1$
+- Odds are nice because they aren't bounded, but for high probabilities they get very large very quickly ($P = .99 \Leftrightarrow Odds = 99/1$) and for small probabilities, they get very small very quickly ($P = .01 \Leftrightarrow Odds = 1/99$)
+- What to do?
+
+Log odds (logits)
+=========================================================
+- Just transform our odds (just like we did with our continuous fixation time variable earlier) by taking the natural logarithm: $logit = ln(Odds) = ln(\frac{P}{1-P})$
+- Now we have a dependent measure that is suitable for linear relationships
+- Our new logistic regression model is $ln(\frac{P}{1-P}) = \alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i$
+- If we want to get back to probabilities, we can exponentiate both sides of the equation: $\frac{P}{1-P} = e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}$
+- Solving this for $P$: $P = \frac{e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}}{1 + e^{\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i}} = \frac{1}{1 + e^{-(\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$
+
+How do you fit a logistic regression line?
+=========================================================
+- Least squares won't work
+- We can evaluate the **likelihood** of the parameters instead
+- Probability: observations given parameters
+- Likelihood: parameters given observations
+
+Calculating likelihood
+========================================================
+- Very simple example: Let's assume we have the following data from flipping a coin: $Y = (H H H T H T H H)$
+- Likelihood is the product of all the probabilities given a certain parameter value. In this case, we are trying different parameter values for the probability: 
+    - We usually call the observed probability $p$, but since we are trying different population parameters, we'll give it a greek letter and call our population probability of observing "heads" (ignoring order) $\pi$ (that is, pi)
+- $\pi = .5$: $L(Y|\pi = .5) = .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 \times .5 = .5^8 = .00039$
+- $\pi = .25$: $L(Y|\pi = .35) = .25 \times .25 \times .25 \times .75 \times .25 \times .75 \times .25 \times .25 = .25^6 \times .75^2 = .00014$
+    - $\pi = .25$ has a lower likelihood than $\pi = .5$.
+- Let's try $\pi = .75$: $L(Y|\pi = .75) = .75 \times .75 \times .75 \times .25 \times .75 \times .25 \times .75 \times .75 = .75^6 \times .25^2 = .00111$
+    - This is the highest one yet.
+
+The likelihood function for logistic regression
+========================================================
+- Do you see a pattern here? For each element $Y_i$ in $Y$, the likelihood of $\pi$ is either
+    - $L(Y_i|\pi) = \pi$ if $Y_i = H$, (e.g. $.75$ for $\pi = .75$), or
+    - $L(Y_i|\pi) = 1 - \pi$ if $Y_i = T$, (e.g. $.25$ for $\pi = .75$)
+- Then you get the likelihood for the full data set $Y$ by multiplying all the individual likelihoods
+    - $L(Y|\pi) = \prod_{i = 1}^N{L(Y_i|\pi)}$
+- You can simplify this a bit if you replace H with 1 and T with 0:
+    -  $L(Y_i|\pi) = \pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+    - And combining the two equations above:
+        - $L(Y|\pi) = \prod_{i = 1}^N\pi^{Y_i} \times (1-\pi)^{(1-Y_i)}$
+
+Maximum likelihood
+========================================================
+- Likelihood gets a little unwieldy -- lots of very small numbers
+    - Solution: take the log (who would have thought?)
+        - Added bonus: Now our multiplication becomes a sum (remember that from calculus?)
+          $log\;likelihood = \sum_{i = 1}^N Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi)$
+- Now we can simply try different values of $\pi$ until we find the one with the maximum likelihood
+    - Remember that in logistic regression, $\pi$ is defined by our regression equation: $\pi = \frac{1}{1 + e^{-(\alpha + \beta_1 x_{i1} + \beta_2 x_{i2} + \epsilon_i)}}$ 
+    - Instead of simply trying different values of $\pi$, we have to try different values for $\alpha$, $\beta_1$, etc. and compute $\pi$. This gets to be quite a lot of work.
+    - Trying different values might not seem particularly elegant, but this is essentially what R or SPSS do -- no simple solution like with least-squares regression or ANOVA exists
+      - This is (relatively) processing-intensive. One reason why psychologists didn't use logistic regression in the statistics-by-hand era.
+      
+Log likelihood as an indicator of model fit
+=======================================================
+- The log likelihood (LL) of the final model is an indicator of how well the model fit the data, just like $R^2$.
+    - In fact, there are several ways to estimate $R^2$ from the log likelihood
+- Log likelihood also enables us to make model comparisons
+    - The test statistic in that case is $\chi^2$ -- more about that later
+- Another measure is *deviance*, which is simply $-2$*LL
+    - Conceptually, deviance is like the residual variance.
+        - In the case of deviance, lower is better, of course.
+- Closely related to this is Akaike's Information Criterion (AIC), which is -2LL+2*number of parameters (lower is better, so adding parameters makes the AIC worse)
+
+Enough maths, let's just run this model
+=======================================================
+- These are our data (first 6 rows):
+```{r, results='asis'}
+driving_tests <- read.csv("driving_tests.csv")
+kable(head(driving_tests))
+```
+
+Fitting the model
+========================================================
+- We use `glm` instead of `lm` (short for generalised linear model)
+- We tell `glm` that our data are binomial and we want to use the logit function as the link
+- Note that, for simplicity, we're not investigating interactions here (let's assume that in this example we simply aren't interested in them)
+```{r, echo = FALSE}
+driving_glm <- glm(data = driving_tests, 
+                   formula = Driving.Test ~ Practice + Emergency.Stop + Examiner + Cold.Remedy, 
+                   family = binomial(link = "logit"))
+```
+
+Model summary
+========================================================
+```{r, echo = FALSE}
+summary(driving_glm)
+```
+
+Model summary explained
+========================================================
+- Deviance residuals:
+    - For these, we calculate the deviance separately for each case and then take the square root. We also change the sign depending on whether the observed case was 1 or 0:
+    - $d_i = s_i \sqrt{-2(Y_i\times ln(\pi) + (1-Y_i)\times ln(1-\pi))}$
+        - with $s_i = 1$ if $Y_i = 1$ and $s_i = -1$ if $Y_i = 0$
+
+How to interpret logistic regression residuals
+========================================================
+- Can't test if they are normally distributed (because they are not)
+- But look out for very large residuals
+- You can get standardised residuals using `rstandard`.
+    - Look out for cases that are far away from 0.
+```{r, results='asis'}
+driving_residuals <- rstandard(driving_glm)
+plot(driving_residuals)
+```
+
+Model summary explained (2)
+==========================================================
+- The coefficients
+
+```{r, echo=FALSE, results='asis'}
+kable(coef(summary(driving_glm)))
+```
+
+- Analogous to linear regression: *b* value, *SE*, significance test
+- Using the **Wald** statistic instead of *t* tests
+    - $z = \frac{b}{SE_b}$
+    - Can be interpreted like *z* values from a standard normal distribution (that's how the *p*-value is computed)
+
+Interpreting the b values
+==========================================================
+- If you take the exponential of the coefficients (using `exp()` or `e^` in R), you get an **odds ratio**
+- Odds ratio = Odds after a unit change in the predictor divided by the original odds
+- Example: According to our model, each hour of practice increases the odds of passing the test by a factor of $e^{0.12959} = `r exp(.12959)`$
+    - e.g. if the odds were even (1/1) for X hours of practice, they would be slightly better than even (1.138/1) for X+1 hours of practice
+- On the other hand, each "unit" of examiner difficulty decreases the odds of passing the test by a factor of $e^{-0.03485} = `r exp(-.03485)`$
+    - e.g. if the odds were even (1/1) for an instructor with a difficulty of X, they would be slightly worse than even (0.9658/1) for an instructor with a difficulty of X+1
+
+Model summary explained (2)
+==========================================================
+- Null deviance: deviance from a model that estimates all values using the overall probability of passing the test (without taking into account the 4 predictors)
+- Residual deviance: deviance from the current model (note that we're losing 4 df due to the 4 predictors)
+- AIC: residual deviance + 2*model df (note that the model has 5 df, including one for the intercept)
+
+Model comparisons (LRT)
+==========================================================
+- Deviance has some neat properties
+    - We can compare likelihoods just like we compared mean squares in the *F*-test: by dividing them
+    - That is, we compute a likelihood ratio: $LR = \frac{L_{baseline}}{L_{new}}$, where *baseline* is the simpler model and *new* the more complex model.
+    - Now we can convert this likelihood ratio into a deviance: $deviance_{LR} = -2\frac{ln(L_{baseline})}{ln(L_{new})} = deviance_{baseline} - deviance_{new}$
+    - And now the most fun part: If the $H_0$ that the two models explain the data equally well is true, this likelihood-ratio deviance is distributed according to a $\chi^2$ distribution.
+    - The $\chi^2$ distribution has one parameter, degrees of freedom
+    - $df = k_{new}$ - $k_{baseline}$, where $k$ is the number of parameters (including the intercept)
+
+Model comparisons
+==========================================================
+- Now we can get a *p*-value! This is called the **Likelihood ratio test (LRT)**
+- So, if we want to test if the model is better than a model with just the intercept, we can do an LRT
+- $\chi^2 = deviance_{null} - deviance_{model} = 124.366 - 82.572 = 41.794$
+- $df = k_{null} - k_{model} = 89 - 85 = 4$ 
+- $p(\chi^2(4) \geq 41.794) < .01$
+- This is equivalent to the overall *F*-test for the model.
+
+Model comparisons (2)
+========================================================
+- We can use model comparisons to test how specific predictors contribute to the whole model (analogous to the *F*-tests in linear regression)
+- For this, you can use the `Anova` command from the `car` package:
+```{r, echo = FALSE}
+library(car)
+Anova(driving_glm)
+```
+
+Model comparisons (3)
+========================================================
+- This analysis of deviance follows the same logic as the ANOVA in the linear regression case
+- You can do Type I, Type II, and Type III LRT tests (they are not sums of squares in this case)
+- The LRTs are better tests than the Wald tests, since the Wald tests might be prone to overinflating the SE, leading to Type II error.
+- You can also use the LRT to directly compare a model to another (just like in the linear regression case). For this, you can use the `anova` command (lower case `a`).
+
+Diagnostics and assumption tests
+========================================================
+- We do not assume normality (so nothing to test for that one)
+- All the influence measures from linear regression work in logistic regression as well
+    - See Class 5 notes for explanations and criteria
+    
+```{r,results='asis'}
+kable(head(influence.measures(driving_glm)$infmat))
+```
+
+Diagnostics and assumption tests (2)
+========================================================
+- Multicollinearity:
+- You can get Variance Inflation Factors (VIFs)
+    - Again, see Class 5 notes for explanations and criteria
+```{r, echo = FALSE}
+vif(driving_glm)
+```
+
+Linearity
+=============================================================
+- This is a new one: Test if the effects of the predictors on the logits are actually linear
+- How to do it: run a model that includes interactions between each *continuous* predictor and its logarithm
+- Test each interaction in a separate model
+- If you have 0s in your data, you might need to replace them by a very small value since log(0) = -Inf
+- If the interaction is significant, linearity is violated
+
+Linearity (2)
+=============================================================
+```{r, results='asis'}
+# remove 0s by adding a very small number to Cold.Remedy
+# test each factor in a separate model
+driving_tests$Cold.Remedy_no_0 <- driving_tests$Cold.Remedy + 1
+driving_glm_linearity <- glm(data = driving_tests, 
+                             formula = Driving.Test ~ Practice + Emergency.Stop + 
+                               Examiner + Cold.Remedy_no_0 +
+                               Practice:log(Practice) + Examiner:log(Examiner) +
+                               Cold.Remedy_no_0:log(Cold.Remedy_no_0), 
+                             family = binomial(link = "logit"))
+```
+
+
+Linearity(3)
+=============================================================
+```{r, results='asis'}
+kable(coef(summary(driving_glm_linearity)))
+```
+
+- There is an issue with the linearity of `Cold.Remedy`, suggesting that this variable might have to be transformed/coded as a factor/etc.
+    - Maybe this is why we don't see a significant effect?
+
+Reporting it
+=============================================================
+A logistic regression was conducted where the dependent variable was passing a driving test and the predictor variables were hours of practice, whether an emergency stop was successfully executed, how much the examiner was difficult, and amount of 'cold remedy drinks' consumed.  90 cases were examined and the model was found to significantly predict whether the test was passed (omnibus chi-square = 41.79, df=4, p<.001). that practice and examiner were the only two variables that reliably predicted if the driving test was passed. Increases in practice was associated with increased rate of passing (odds of passing increased by 1.14 per hour of practice, *b* = .130, SE = .03, *z* = 4.28, *p* < .01). Increases in the examiner being an difficult reduced the rate of passing (odds of passing decreased by 0.96 per unit of difficulty rating, *b* = -.00349, SE = .013, *z* = -2.679, *p* < .01). None of the other predictors reached significance (all *p*s > .05). There were no issues due to multicollinearity or influential cases, however, the linearity assumption was violated for the cold remedy drinks predictor. 
+
+Linear mixed models (LMMs)
+============================================================
+- The final step to greatness!
+    - Note that we can really only scratch the surface here.
+- Main issue:
+    - We know how to to regressions for continuous and discrete DVs now
+    - We know what the regression equivalent of a between-subjects ANOVA is and we can take the regression analysis much further than an ANOVA or ANCOVA would let us
+    - However: 
+    - What if we have a within-subject or repeated measures design?
+    - What if there is some other underlying correlation in the data 
+    - e.g. data collected from students in different classes in different schools
+    - Surely the classes and schools share some variance -- how to account for that?
+                
+Moving from linear regression to linear mixed models
+=============================================================
+- In repeated-measures ANOVA, we've dealt with within-subjects effects by removing the variance due to subject differences from the error
+    - Essentially, we have added a "subject" factor to the model
+    - Linear mixed models enable us to do the same thing for regression analyses
+
+Problem: how to add subject as a factor
+=============================================================
+- We could simply add a "subject" factor to the predictors
+    - This would reflect the systematic differences between subjects
+        - But that's not quite right: how do we deal with a factor with 40 levels?
+        - Also, we want to generalise our model to more than those 40 subjects that are in the analysis
+        - How do we do that?
+    - Subject is really like a random variable: we get a different set each time we run the experiment
+    - Instead of analysing the subject effect in a generalisable way, we really just want to get rid of the subject variance in the most efficient way possible
+
+Problem: how to add subject as a factor (2)
+=============================================================
+- Fixed effects vs. random effects
+    - Fixed effects: repeatable, generalisable (e.g. experiment condition)
+    - Random effects: non-repeatable, sampled from a general population
+    - Mixed effects models include both fixed and random effects
+- Another issue with including subject as a fixed effect:
+    - Each subject would take up a degree of freedom
+    - That would majorly impact the power of our analysis
+    - LMMs solve this issue by a procedure called **shrinkage**
+    
+Shrinkage
+===============================================================
+- Conceptually, LMMs allow subjects to have individual effects (e.g. in an eye-tracking experiment subject 1 might have an intercept of 200 ms, while subject 2 might have an intercept of 210 ms), but they pull each subject's effects
+towards an underlying distribution of subject effects
+- This reflects the idea that if 20 other subjects have intercepts between 180 and 220 ms, the current subject is unlikely to have an intercept of 400 ms, even though it looks like that from the data
+- Shrinkage also helps majorly with missing data issues (although it won't fix them for you!)
+- The downside of shrinkage is that it isn't clear what the df_{Error} should be
+    - This leads to some issues later on.
+    
+Example
+==============================================================
+A PhD student wants to investigate whether our mood affects how we react to visual scenes. In order to do this, she showed 40 subjects a total of 40 scenes. There are two version of each scene: one contains people, the other one doesn't -- everything else is identical. The PhD student spent a considerable amount of time taking photos to ensure this (until her supervisor got a bit impatient). Before the experiment, all subjects were asked to rate their current mood on a scale from 0 (very sad) to 100 (very happy). They then looked at each scene and rated how much they liked it on a scale from 0 (hate it) to 20 (love it). The student's hypothesis is that if you are happy, you should want to see scenes with people. If you are unhappy, you should prefer scenes without people. The data are given below. Will the student find what she is looking for? Or will she have to start from scratch and be in even more trouble with her supervisor?
+
+Example Data
+==============================================================
+- Subject: Subject ID (1-40)
+- Item: Item ID (1-40)
+- Scene Type: within-item factor ("no people" vs. "people")
+- Mood: between-subject factor (scale from 0--100)
+- Rating: Dependent variable (scale from 0 to 20)
+```{r, echo = FALSE}
+# Start by loading the data
+scene_liking <- read.csv("Class 6 exercise data.csv")
+```
+
+Looking at the data
+=========================================================
+```{r, results='asis'}
+kable(head(scene_liking))
+```
+
+Looking at the data (2)
+=========================================================
+```{r, echo = FALSE}
+str(scene_liking)
+# We should set subject and item to be factors
+scene_liking$subject <- factor(scene_liking$subject)
+scene_liking$item <- factor(scene_liking$item)
+```
+
+Calculating means
+=========================================================
+- Let's get condition means for scene type
+- We can't really use `ez` for this, since we have two random variables
+- In theory, we could report means by subject or means by item
+- Either one would be fine, but usually people report subject means.
+    - We use `melt` and `cast` from the `reshape` package to calculate the means
+```{r, echo = FALSE}
+library(reshape)
+# set rating as the dependent (measure) variable
+scene_liking.m <- melt(scene_liking, measure = "rating")
+# collapse over item; calculate means
+scene_liking.c <- cast(scene_liking.m, subject + mood + scene ~ variable, mean)
+```
+
+Calculating means (2)
+=========================================================
+```{r, echo = FALSE}
+head(scene_liking.c)
+```
+
+Calculating means (2)
+=========================================================
+- Now we can use this to calculate our means for the scene condition
+```{r, echo = FALSE}
+(mean_people <- mean(subset(scene_liking.c, scene == "people")$rating))
+(mean_no_people <- mean(subset(scene_liking.c, scene == "no people")$rating))
+```
+
+Calculating means (3)
+=========================================================
+- Let's also get sd, N, and SE
+```{r, echo = FALSE}
+(sd_people <- sd(subset(scene_liking.c, scene == "people")$rating))
+(sd_no_people <- sd(subset(scene_liking.c, scene == "no people")$rating))
+(N_people <- length(subset(scene_liking.c, scene == "people")$rating))
+(N_no_people <- length(subset(scene_liking.c, scene == "no people")$rating))
+(SE_people <- sd_people/sqrt(N_people))
+(SE_no_people <- sd_no_people/sqrt(N_no_people))
+```
+
+Plotting the interaction
+==========================================================
+- We're really interested in the interaction between `scene` and `mood`.
+    - Unfortunately, mood is a continuous variable
+    - How to plot this?
+- Use `qplot` from `ggplot2` with `geom = "smooth"`
+    - This will give you a plot showing a smoothed conditional mean for each value of mood
+
+Plotting the interaction (2)
+=========================================================
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+qplot(data = scene_liking, y = rating, x = mood, colour = scene, geom = "smooth")
+```
+
+Plotting the interaction (2)
+=========================================================
+- Looks like the student was right!
+- Also looks like the effect is not really completely linear
+    - Maybe this is due to the subject and item effects in the data?
+    - Let's find out!
+
+Start with linear regression
+=========================================================
+- Let's check our contrasts for `scene`
+```{r, echo = FALSE}
+contrasts(scene_liking$scene)
+```
+- Are we happy with this?
+    - Sure -- we just have to be aware of the coding when we interpret the coefficients
+
+Run the model
+=========================================================
+```{r, results='asis'}
+scene_lm <- lm(data = scene_liking, rating ~ mood * scene)
+kable(coef(summary(scene_lm)))
+```
+
+- Where did the interaction go?
+- Let's do some quick diagnostics
+
+Regression diagnostics
+=========================================================
+- Multicollinearity?
+```{r, echo = FALSE}
+vif(scene_lm)
+```
+- Aha! Those VIFs are quite  a bit larger than 1. That spells trouble.
+- What is wrong?
+
+Addressing multicollinearity
+=========================================================
+- What is wrong?
+- We forgot to center the continuous predictor `mood`
+- Let's fix this:
+```{r, echo = FALSE}
+scene_liking$mood <- scale(scene_liking$mood, scale = FALSE) # See Class 5
+```
+
+Run the model again
+=========================================================
+```{r, results='asis'}
+scene_lm <- lm(data = scene_liking, rating ~ mood * scene)
+kable(coef(summary(scene_lm)))
+```
+
+- Still not quite there...
+- Let's do more diagnostics
+
+Regression diagnostics -- again
+=========================================================
+- Multicollinearity?
+```{r, echo = FALSE}
+vif(scene_lm)
+```
+- The VIFs are fine now.
+
+Influential cases
+=========================================================
+```{r, results='asis'}
+kable(head(influence.measures(scene_lm)$infmat))
+```
+
+- Any Cook's d greater than 1?
+
+```{r, echo = FALSE}
+sum(cooks.distance(scene_lm) > 1 )
+```
+
+- Doesn't look like it, so we should be fine here.
+
+Normality
+=========================================================
+```{r, echo = FALSE}
+shapiro.test(resid(scene_lm))
+```
+- Whoa! But we saw this in the plot already
+
+Q-Q Plots
+===========================================================
+- Here's a visual way to assess normality
+- Quantile-Quantile Plot: Split data into a number of quantiles and plot them against the quantiles of a hypothetical normal distribution
+
+```{r, echo = FALSE}
+qqnorm(resid(scene_lm))
+# if the distribution is normal, the points should be on this line
+qqline(resid(scene_lm))
+```
+
+How to fix this?
+===========================================================
+- As a first step, remember that there are subject and item effects in these data
+- `lm` can't account for them, so we need something more powerful
+- Linear Mixed Models!
+- We use the function `lmer` ("Linear mixed effects regression") from the `lme4` package
+- If you don't have `lme4` yet, install it by typing `install.packages("lme4")` in the Console
+
+Adding random subject and item effects
+===========================================================
+- As a first step, we want our model to allow subjects and items to have different intercepts
+    - For example, Subject 1 might just really dislike the whole experiment and rate all scenes lower
+    - Or Item 33 might be particularly ugly and be disliked by all subjects
+- Formally, our model will look like this: $y_{ij} = \alpha + \beta_1 x_{1} + \beta_2 x_{2} + \gamma_{0i} + \gamma_{0j} + \epsilon_{ij}$, where $y_{ij}$ is the response of subject $i$ to item $j$, $\gamma_{0i}$ is the intercept for subject $i$ and $\gamma_{0j}$ is the intercept for item $j$
+
+Running the model
+============================================================
+- In `lmer`, we specify the model in a formula just like in `lm`, but we add random effects terms, e.g. `(1|subject)`
+    - The left side of the pipe stands for the random effect, the right side stands for the group for which we want to define the random effect
+    - `1` stands for the intercept. It is implicitly added, *except* when there is no other predictor
+```{r, echo = FALSE}
+library(lme4)
+scene_lmm <- lmer(data = scene_liking, rating ~ scene * mood + (1|subject) + (1|item))
+```
+
+Examining the model
+============================================================
+```{r, echo = FALSE}
+summary(scene_lmm)
+```
+
+Understanding the model output
+===========================================================
+- Just like in logistic regression, LMMs are fitted in an iterative procedure using Maximum Likelihood (ML)
+    - Actually, `lmer` uses a slightly modified criterion called Restricted Maximum Likelihood (REML)
+- Residuals can be interpreted just like in a regular linear model
+- Random effects: Here we get an estimate of the variance (and standard deviation) explained by the random intercepts
+    - We also get an estimate of the residual variance
+- Check the number of observations to see if there are any missing that shouldn't be missing
+
+Coefficients
+===========================================================
+```{r, results='asis'}
+kable(coef(summary(scene_lmm)))
+```
+
+- First thing you notice: There's no *p* value!
+- That's because, due to the shrinkage procedure, it isn't clear what the df of that *t*-value should be
+- In general, if the number of subjects is > 30, we should be able to interpret the *t* value like a *z* value, meaning that any *t* > 2 or < -2 should be significant
+
+Correlation of fixed effects
+==========================================================
+- These are the estimated correlations of the fixed effects
+    - If any of these is > .8, you're in multicollinearity trouble!
+    
+Model comparisons
+==========================================================
+- Unfortunately, *F*-tests won't work, because we don't know what the $df_{Error}$ would be
+- But we can do the likelihood ratio test (LRT)
+- As always, we use `Anova` from `car`. This one gives us *p* values!
+```{r, echo = FALSE}
+library(car)
+Anova(scene_lmm)
+```
+
+More model diagnostics
+=========================================================
+- Something still seems to be wrong with this model. How about testing the normality assumption again?
+```{r, echo = FALSE}
+shapiro.test(resid(scene_lmm))
+```
+- Still significant? Maybe there still is a random effect that we haven't accounted for.
+
+Random slopes
+=========================================================
+- We can also allow the regression slopes to vary by subject or item.
+- What are possible random slopes that we could consider?
+    - Important: in theory, you could add random slopes for all fixed effects, but in practice, your data might not have enough information to fit these
+    - In this case, there simply isn't enough data to fit random slopes for the interaction
+      - How do you know this?
+      - Well, your model will simply fail to converge if there is not enough data for a solution!
+      - Even if there *is* enough data, multicollinearity can cause convergence failures, too.
+    - In our case, some reasonable random slopes would be `scene` for subjects (do some people react more strongly to scenes with people than others) and `mood` for items (are some items really hated by people in a bad mood?)
+    
+Random slopes (2)
+=========================================================
+- If we include a random slope for subjects for $beta_1$, our model looks like this:
+$y_{ij} = \alpha + \beta_1 x_{1} + \beta_2 x_{2} + \gamma_{0i} + \gamma_{1i} x_{1} + \gamma_{0j} + \epsilon_{ij}$
+- We can tell `lmer` to fit such models like this (note that the intercept is implicit again in `(mood|item)` and `(scene|subject)`.
+    - Note that we don't have enough data to include both random effects in one model.
+```{r, echo = FALSE}
+scene_lmm_mood <- lmer(data = scene_liking, 
+                       rating ~ scene * mood + (1|subject) + (mood|item))
+scene_lmm_scene <- lmer(data = scene_liking, 
+                        rating ~ scene * mood + (scene|subject) + (1|item))
+```
+
+Testing the effect of random slopes
+===========================================================
+- We can use the LRT to test whether the slopes actually improve the models.
+    - We use the `anova` command (lower case `a`) to compare each random slope model with the random intercept model we fitted earlier
+```{r, echo = FALSE}
+anova(scene_lmm, scene_lmm_mood)
+```
+- Seems to improve the model! (Note that R automatically uses ML instead of REML for model comparison)
+
+Testing the effect of random slopes
+===========================================================
+```{r, echo = FALSE}
+anova(scene_lmm, scene_lmm_scene)
+```
+- No improvement here.
+
+Diagnostics -- yet again!
+==========================================================
+```{r, echo = FALSE}
+shapiro.test(resid(scene_lmm_mood))
+```
+- Looks like adding a random slope for `mood` also (mostly) fixed our normality problem
+
+Interpreting the coefficients
+==========================================================
+```{r, results='asis'}
+kable(coef(summary(scene_lmm_mood)))
+```
+
+- Now we have significant effects!
+- Remember that scene was coded as 0 = no people, 1 = people
+    - Looks like, on average, subjects gave the scene a rating that was -.26 lower when it contained people than when it didn't.
+- The interaction is also significant. When the scene contained no people, there was a very weak, non-significant negative effect of mood. 
+    - When the scene did contain people, there was a significant change in the effect of mood (with each point on the mood scale increasing the picture rating by -.007 + .0101 = .0031). Not a huge effect, but significant.
+
+Writing it up
+==========================================================
+- See the exercise!
+
+Thank you!
+==========================================================
+- I know this was (and still is) a massive effort
+- Thank you for staying motivated and engaging with the material.
+- As always, come see me if you have questions!
