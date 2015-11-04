@@ -1,0 +1,125 @@
+---
+title: "Assignment 1 - Worked example"
+output: pdf_document
+---
+
+```{r, echo = FALSE}
+# echo = FALSE will keep the code and its output from appearing in the final document.
+# don't forget to replace the \ backslashes with forward slashes / if you're on Windows
+library(ez)
+library(knitr)
+
+# round all numbers to the 2nd digit
+options(digits = 2)
+
+#setwd("C:/replace_this_with_your_actual_working_directory/")
+
+a1 <- read.csv("Assignment1_data.csv")
+
+# add a subject column for ezANOVA
+# very simple: each observation is a different person
+# "subject" is a discrete variable, so make it a factor()
+a1$subject <- factor(a1$subject)
+
+a1_stats <- ezStats(data = a1, 
+                       dv = time, 
+                       wid = subject, 
+                       between =  programme,
+                       within = .(caffeine, alcohol))
+
+
+a1_stats_collapsed <- ezStats(data = a1, 
+                       dv = time, 
+                       wid = subject, 
+                       between_full =  programme,
+                       within = .(caffeine, alcohol))
+```
+
+In order to evaluate the effect of study programme, caffeine content, and alcohol content on cognitive performance, we performed a 3x2x2 between-subjects ANOVA with exercise completion time as the dependent variable and study programme (Psychology vs. Games Technology vs. Archaeology), caffeine content of the energy drink (caffeine vs. no caffeine), and alcohol content of the energy drink (alcohol vs. no alcohol) as independent variables. Table 1 and Figure 1 show the condition means.
+
+*Table 1. Means, sample sizes (N), standard deviations (SD), and standard errors (SE) for the swear word usage conditions.*
+```{r, results='asis', echo=FALSE}
+# need results = "asis" so that the table is drawn properly
+# get rid of the last column of a1_stats (you don't need Fisher's LSD in a results section)
+a1_stats <- a1_stats[,-length(a1_stats)]
+# Rename the first column to make the table look more professional
+colnames(a1_stats)[1:3] <- c("Programme", "Caffeine", "Alcohol")
+# instead, add a standard error column
+a1_stats$SE <- a1_stats$SD/sqrt(a1_stats$N)
+# make a nice-looking table  
+kable(a1_stats)
+```
+
+*Figure 1. Condition means. Error bars denote 95% confidence intervals based on Fisher's Least Significant Difference.*
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+# calculate upper and lower bounds of 95% CIs around the condition means for error bars
+a1_stats$upper <- a1_stats$Mean + 1.96 * a1_stats$SE
+a1_stats$lower <- a1_stats$Mean - 1.96 * a1_stats$SE
+
+
+ezPlot(data = a1, 
+  dv = time, 
+  wid = subject, 
+  between =  programme,
+  within = .(caffeine, alcohol),
+  x = caffeine,
+  split = alcohol,
+  row = programme,
+  x_lab = "Caffeine",
+  y_lab = "Mean time to complete exercise",
+  split_lab = "Alcohol")
+```
+
+```{r, echo=FALSE}
+# perform the actual ANOVA so we can use the results when writing our report
+a1_anova <- ezANOVA(data = a1, 
+                      dv = time,
+                      wid = subject, 
+                      between = programme,
+                      within = .(caffeine, alcohol),
+                      return_aov = TRUE)
+
+# get the residuals for normality check
+#a1_anova_resid <- resid(a1_anova$aov)
+
+# Can't perform the Shapiro-Wilk test, since it's a repeated measures analysis
+a1_anova_shapiro <- shapiro.test(a1$time)
+
+#a1$alcohol_caffeine <- factor(paste(a1$caffeine, a1$alcohol))
+
+library(lme4)
+contrasts(a1$caffeine) <- contr.helmert(2)
+contrasts(a1$alcohol) <- contr.helmert(2)
+contrasts(a1$programme) <- contr.helmert(3)
+#a1_lmm <- lmer(data = a1, formula = time ~ caffeine * alcohol * programme + (1|subject))
+#shapiro.test(resid(a1_lmm))
+
+#a1_lmm <- lmer(data = a1, formula = time ~ caffeine * alcohol + (1|subject))
+
+#a1_anova_pairwise <- pairwise.t.test(x = a1$time, g = a1$alcohol_caffeine, paired = TRUE)
+
+# here's a little helper function to get the p-values printed right
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", round(p)))
+  if(p > .05) return("*p* > .05")
+}
+
+# and a simple function to report F values
+print_f_results <- function(ANOVA, effect_name){
+  with(ANOVA[ANOVA$Effect == effect_name,], paste0("*F*(", DFn, ", ", DFd,") = ", round(F,2), " $\\eta_G^2$ = ", round(ges,2),", ", print_p(p)))
+}
+
+
+```
+
+The ANOVA showed that overall, there was a significant main effect of caffeine content, `r print_f_results(a1_anova$ANOVA, "caffeine")`. There also was a significant main effect of alcohol content `r print_f_results(a1_anova$ANOVA, "alcohol")`, but no significant effect of programme (p> .05). The caffeine and alcohol main effects were modulated by a significant two-way interaction, `r print_f_results(a1_anova$ANOVA, "caffeine:alcohol")`. This interaction showed that, when no alcohol was involved, participants performed a little better under the caffeine condition (mean time to completion = 99 s) than under the no caffeine condition (mean time = 107 s). When the drink also contained alcohol, subjects did worse both in the caffeine condition (mean time = 112 s) and in the no caffeine condition (mean time = 110 s).
+
+The Shapiro-Wilk test revealed no deviations from normality in the dependent variable (`r print_p(a1_anova_shapiro$p.value)`).
+
+### Summary
+
+Based on the results of our analyses, we can conclude that consuming a caffeinated beverage seemed to help cognitive performance a little if the beverage did not also contain alcohol. If alcohol was involved, participants did not do well regardless of whether the beverage contained caffeine or no caffeine. It seems that using caffeinated energy drinks might be a good idea on a maths test, but drinking alcohol definitely isn't.

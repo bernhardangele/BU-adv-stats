@@ -1,0 +1,187 @@
+---
+title: "Advanced Statistics Practice Test"
+author: "Bernhard Angele"
+subtitle: Model solution
+output: pdf_document
+---
+
+```{r, echo=FALSE, results='asis', warning=FALSE}
+rm(list = ls())
+library(knitr)
+
+n_participants <- 30#15
+
+set.seed("12355")
+
+overall_intercept <- 70
+
+subject <- rep(1:n_participants, each = 3)
+pet <- rep(1:3, len = 3*n_participants)
+
+subject_intercept <- rnorm(length(subject), mean = 0, sd = 1)
+
+pet_mean <- c(0, 0, 0)
+
+random_error <- rnorm(length(subject), mean = 0, sd = 2)
+
+df <- data.frame(subject, pet)
+
+df$pet <- factor(df$pet, labels = c("Cat","Dog","No animal"))
+
+df$stress <- round(with(df, overall_intercept + subject_intercept[subject] + pet_mean[pet] + random_error),0)
+
+df$subject <- factor(df$subject)
+
+SS_tot = sum((df$stress - mean(df$stress)) ^ 2)
+
+subject_means <- tapply(df$stress, df$subject, mean)
+
+pet_means <- tapply(df$stress, df$pet, mean)
+pet_sd <- tapply(df$stress, df$pet, sd)
+pet_n <- tapply(df$stress, df$pet, length)
+
+pet_table <- data.frame(pet = names(pet_means), Mean = pet_means, SD = pet_sd, N = pet_n)
+
+calc_differences <- function(Condition1 = "Dog", Condition2 = "Cat", data = df, digits = 3){
+  differences <- subset(df, pet == as.character(Condition1))$stress - subset(df, pet == as.character(Condition2))$stress
+  data.frame(m_diff = signif(mean(differences), digits), sd_diff = signif(sd(differences), digits))
+}
+
+differences_table <- data.frame(L1 = c("Cat", "Dog", "Cat"), L2 = c("No animal", "No animal", "Dog"))
+
+differences_table <- cbind(differences_table,t(with(differences_table, mapply(calc_differences, L1, L2))))
+
+SS_S = length(unique(df$pet)) * sum((subject_means - mean(df$stress))^2)
+
+SS_A = length(unique(df$subject)) * sum((pet_means - mean(df$stress))^2)
+
+SS_AxS <- SS_tot - SS_A - SS_S
+
+SS_WS <- SS_A+SS_AxS
+
+df_tot <- length(unique(df$pet)) * length(unique(df$subject)) - 1
+
+df_A <- length(unique(df$pet)) - 1
+
+df_S <- length(unique(df$subject)) - 1
+
+df_AxS <- df_A * df_S
+
+df_WS <- df_A + df_AxS
+
+MS_A <- SS_A/df_A
+MS_S <- SS_S/df_S
+MS_AxS <- SS_AxS/df_AxS
+MS_WS <- SS_WS/df_WS
+
+F_A <- MS_A/MS_AxS
+options(digits = 3)
+
+library(ez)
+df.aov <- ezANOVA(data = df, dv = stress, wid = subject, within = (pet), return_aov = TRUE)
+
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", round(p)))
+  if(p > .05) return("*p* > .05")
+}
+```
+
+This is a variation of the practice test with different data. The solutions are below.
+
+# Part 1 -- Data analysis (50 %)
+
+## Scenario
+The university wants to find out whether therapy animals are useful in lowering student stress ahead of exams. In order to test this, they asked `r n_participants` students to each have three different exam revision sessions: one with no therapy animals present, one with a therapy cat, and one with a therapy dog. The students were then asked to report their stress levels on a scale from 0 to 100, where 0 is no stress at all and 100 is extreme stress.
+
+## Assignment
+Conduct the appropriate ANOVA and the corresponding post-hoc *t*-tests comparing all three factor levels to each other (assume all assumptions are met). In order to help you with this, a number of intermediate values have already been computed for you below. Report the results of the ANOVA and *t*-tests as one would in the results section of an academic manuscript (using APA style). Finally, in layperson (non-academic) language describe the results and summarise what you can conclude about the effect of therapy dogs and cats. There is no word limit, but the whole report should be rather brief. You may use a calculator, Microsoft Excel, or any other computer programme, as well as your pet notes and any other offline resources you wish to bring to the test. Your test must be your own work and you may not collaborate with anyone else. Show your work so you can get partial credit in case you make small calculation mistakes.
+
+## Data
+
+In order to save you time, part of the ANOVA table is provided below, as well as the group means and standard deviations and the means and standard deviations of the differences between factor levels for each student.
+
+### Means table
+```{r, echo=FALSE}
+
+ kable(pet_table, row.names = F, col.names = c("Condition", "Mean", "SD", "N"))
+```
+
+### Differences between groups
+```{r, echo = FALSE}
+kable(differences_table, col.names = c("$Condition_1$", "$Condition_2$", "$Mean(Condition_1 - Condition_2)$", "$SD(Condition_1 - Condition_2)$"), align = c('l','l','r','r'))
+
+```
+
+## Task
+
+### ANOVA Table
+
+|Source            |SS            |df              |MS    |*F*   |*p* |
+|:-----------------|:-------------|:---------------|:-----|:-----|:---|
+|Between Subjects  |`r SS_S`      |______          |______|      |    |
+|Within Subjects   |______        |______          |______|      |    |
+|--Animal condition|`r SS_A`      |______          |______|______|____|
+|--Residual        |______        |______          |______|      |    |
+|**Total**         |**`r SS_tot`**|**`r df_tot`**  |      |      |    |
+
+
+### Paired t-tests
+
+$t_{Dog-Cat} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}} =$ _____
+
+
+
+$t_{Dog-No animal} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}}$ = _____
+
+
+
+$t_{Cat-No animal} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}}$ = _____
+
+Solutions on the next page.
+
+\newpage
+
+## Solution
+
+### ANOVA Table
+
+|Source            |SS            |df              |MS        |*F*    |*p* |
+|:-----------------|:-------------|:---------------|:---------|:------|:---|
+|Between Subjects  |`r SS_S`      |`r df_S`        |`r MS_S`  |       |    |
+|Within Subjects   |`r SS_WS`     |`r df_WS`       |`r MS_WS` |       |    |
+|--Animal condition|`r SS_A`      |`r df_A`        |`r MS_A`  |`r F_A`|`r print_p(pf(q = F_A, df1 = df_A, df2 = df_AxS, lower.tail = FALSE))`|
+|--Residual        |`r SS_AxS`    |`r df_AxS`      |`r MS_AxS`|       |    |
+|**Total**         |**`r SS_tot`**|**`r df_tot`**  |          |       |    |
+
+
+### Paired t-tests (post-hoc)
+```{r, echo = FALSE}
+t_cat_dog <- t.test(subset(df, pet == "Cat")$stress, subset(df, pet == "Dog")$stress, paired = TRUE)
+t_dog_noanimal <- t.test(subset(df, pet == "Dog")$stress, subset(df, pet == "No animal")$stress, paired = TRUE)
+t_cat_noanimal <- t.test(subset(df, pet == "Cat")$stress, subset(df, pet == "No animal")$stress, paired = TRUE)
+
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", round(p, 3)))
+  if(p > .05) return("*p* > .05")
+}
+
+n <- length(unique(df$subject))
+```
+
+Remember, for the paired t-test, we calculate the differences between the means for each participant and use a t-test to determine whether we can reject the $H_0$ that the true population mean of these differences is 0 ($H_0: \mu_{d0} = 0$)
+
+If the $H_0$ is true, the t-value is calculated as follows: $t_{n-1} = \frac{\bar{d} - \mu_{d0}}{\hat{\sigma}_{\bar{d}}} = \frac{\bar{d} - 0}{\hat{\sigma}_{\bar{d}}} = \frac{\bar{d}}{\hat{\sigma}_{\bar{d}}}$
+
+We can estimate the standard error of the difference mean $\hat{\sigma}_{\bar{d}}$ from the standard deviation of the difference: $$\hat{\sigma}_{\bar{d}} = \frac{s_d}{\sqrt{n}}$$
+
+Plugging this into the equation for *t*, we get: $$t_{n-1} =  \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
+
+$t_{Dog-Cat} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}} = \frac{`r subset(differences_table, L1 == "Cat" & L2 == "Dog")$m_diff`}{\frac{`r subset(differences_table, L1 == "Cat" & L2 == "Dog")$sd_diff`}{\sqrt{`r n`}}} = `r (t_dc <- subset(differences_table, L1 == "Cat" & L2 == "Dog")$m_diff[[1]] / (subset(differences_table, L1 == "Cat" & L2 == "Dog")$sd_diff[[1]]/sqrt(n)))`$
+
+$t_{Dog-No animal} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}} = \frac{`r subset(differences_table, L1 == "Dog" & L2 == "No animal")$m_diff`}{\frac{`r subset(differences_table, L1 == "Dog" & L2 == "No animal")$sd_diff`}{\sqrt{`r n`}}} = `r (t_dn <- subset(differences_table, L1 == "Dog" & L2 == "No animal")$m_diff[[1]] / (subset(differences_table, L1 == "Dog" & L2 == "No animal")$sd_diff[[1]]/sqrt(n)))`$
+
+$t_{Cat-No animal} = \frac{\bar{d}}{\frac{s_{d}}{\sqrt{n}}} = \frac{`r subset(differences_table, L1 == "Cat" & L2 == "No animal")$m_diff`}{\frac{`r subset(differences_table, L1 == "Cat" & L2 == "No animal")$sd_diff`}{\sqrt{`r n`}}} = `r (t_cn <- subset(differences_table, L1 == "Cat" & L2 == "No animal")$m_diff[[1]] / (subset(differences_table, L1 == "Cat" & L2 == "No animal")$sd_diff[[1]]/sqrt(n)))`$
+
+The df for each of these t-values is $`r df_S`$. When determining *p*-values, you must correct for multiple comparisons by either multiplying the observed *p*-value by the number of comparisons or dividing the critical *p*-value ($\alpha = .05$) by the number of comparisons (in this case, 3).
