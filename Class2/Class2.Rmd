@@ -1,11 +1,9 @@
 ---
+title: "Advanced Statistics"
+author: "Bernhard Angele"
+subtitle: "Lecture 2"
 output: pdf_document
 ---
-Advanced Statistics
-========================================================
-author: Bernhard Angele 
-date: Lecture 2
-
 
 What have we learned last time?
 ========================================================
@@ -761,6 +759,7 @@ $t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
 - We could just use the lower of the sample sizes, but this will cost us power
 - This was actually a big problem in statistics, but B. L. Welch found an approximate solution (called *Welch's t-test*)
 - You can look the details up on Wikipedia, but SPSS knows them and will apply them automatically.
+kipedia, but SPSS knows them and will apply them automatically.
 
 The dependent t-test for paired samples
 ==========================================================
@@ -768,8 +767,10 @@ The dependent t-test for paired samples
 - First, we calculate the mean and the standard deviation of our sample of $n$ difference values $d_i = x_{i1}-x_{i2}$:
 $$ 
 \begin{aligned}
-\hat{\mu}_d = \bar{x}_d &= \frac{\sum\limits_{i=1}^{n}d_i}{n}\\
-\hat{\sigma}_d = s_d &= \sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{x}_d)^2}{n-1}}
+\hat{\mu}_d = \bar{d} &= \frac{\sum\limits_{i=1}^{n}d_i}{n}\\
+\hat{\sigma}_d = s_d &= \sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{d})^2}{n-1}} \\
+\hat{\sigma}_{\bar{d}} &= \frac{\hat{\sigma}_d}{\sqrt{n}} = \frac{\hat{s}_d} {\sqrt{n}}\\
+                      &= \frac{\sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{d})^2}{n-1}}}{\sqrt{n}}
 \end{aligned}
 $$
 - Here, $n$ is the number of sample *pairs*
@@ -778,7 +779,9 @@ $$
 The dependent t-test for paired samples (2)
 ==========================================================
 - Then we can calculate the *t*-value:
-$$t = \frac{\bar{x}_d - \mu_d}{\hat{\sigma}_d}$$, where $\mu_d$ is the population mean for the difference given that the $H_0$ is true. If the $H_0$ is that both samples are the same ($\mu_d = 0$), this simplifies to
-$$t = \frac{\bar{x}_d}{\hat{\sigma}_d}$$
+$$t = \frac{\bar{d} - \mu_d}{\hat{\sigma}_d}$$, where $\mu_d$ is the population mean for the difference given that the $H_0$ is true. If the $H_0$ is that both samples are the same ($\mu_d = 0$), this simplifies to
+$$t = \frac{\bar{d}}{\hat{\sigma}_d}$$
+-We can estimate the standard error of the difference mean $\hat{\sigma}_{\bar{d}}$ from the standard deviation of the difference: $$\hat{\sigma}_{\bar{d}} = \frac{s_d}{\sqrt{n}}$$
+    -Plugging this into the equation for *t*, we get: $$t_{n-1} =  \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
 - The resulting *t*-value will have a df of $n-1$, where $n$ is the number of sample pairs.
 - Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.

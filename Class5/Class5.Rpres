@@ -43,6 +43,13 @@ linear_model <- lm(data = swear_exp, fixation_time ~ word_condition)
 summary(linear_model)
 ```
 
+Plotting the fitted line
+========================================================
+```{r, echo = FALSE}
+with(swear_exp, plot.default(y = fixation_time, x = word_condition))
+abline(linear_model)
+```
+
 Histogram of the residuals
 ========================================================
 ```{r, echo = FALSE}
@@ -50,12 +57,30 @@ hist(resid(linear_model), 10)
 ```
 - Clearly not normal - it's right-skewed!
 - But notice how robust the analysis is. We still find the effect!
-- Nevertheless, better to run a proper model with log transformed values as the dependent vairable
 
+Logarithmic transformations
+=========================================================
+- Better to run a proper model where the values as the dependent variable
+  - This is our first step into the world of generalised linear models (GLM)
+- The most common transformation uses the logarithm
+  - Remember the logarithm from school? 
+    - I hope you remember exponentiation: $x \cdot x \cdot x \cdot x = x^4$
+    - Every logarithm has a base
+      - The logarithm of a number is the exponent to which the base needs to be raised to produce that number
+      - For example, the base $x$ logarithm of $x^4$ is $4$, since $x$ needs to be raised to the 4th power to produce $x^4$: $log_x(x^4) = 4$
+
+The natural logarithm
+==========================================================
+- It doesn't really matter which base you use for your logarithm
+- In mathematics, the algorithm to the base $e = `r round(exp(1),3)`$ called the *natural logarithm*. It is used frequently, since it has some very convenient properties. The logarithm to the base $e$ is called $log_e$ or $ln$.
+- Just remember that $ln(e^x) = x$ and $e^{ln(x)} = x$.
+- Also, remember that $x^{a+b} = x^a \cdot x^b$
+    - Because of this, $e^{ln(x) + ln(y)} = x\cdot y$
+    - And, the other way around, $ln(e^x \cdot e^y) = x+y$
 
 Running a log model
 ========================================================
-- Use `Compute` to transform the predicted variable
+- Use `Compute` in SPSS to transform the predicted variable
 
 ```{r, echo = FALSE}
 log_model <- lm(data = swear_exp, log(fixation_time) ~ word_condition)
@@ -89,6 +114,13 @@ How to interpret a log model (2)
     - Predicted value for swear words: $e^{5.683} \cdot e^{-.195 \cdot 1} = 293.82 \cdot e^{-.195} = 293.82 * .823 = 241.81$
 - Conclusion: Fixation times on swear words were 17.7% lower than fixation times on non swear words (*b* = -.195, *SE* = .074, *t* = -2.63, *p* = .011).
 
+Summary
+========================================================
+- If our data aren't normally distributed, we can sometimes transform them to get them closer to normality.
+- A very common transformation uses the logarithm (usually the natural logarithm with base $e$, but others can be used to)
+- You can't log-transform negative or zero values, so if your data contain any of those, you have to remove them or transform them (e.g. by adding a constant value) before doing the log-transformation
+- The regression equation of a log-model is additive in its log format, but multiplicative when transformed back into raw values     - e.g. $log(y) = \alpha + \beta X_i \leftrightarrow y = e^{\alpha + \beta X_i} = e^{\alpha} * e^{\beta X_i}$
+
 Logistic regression
 ========================================================
 - What if we have a dichotomous dependent variable?
@@ -107,6 +139,7 @@ Examining the data
 - These are our data (first 6 rows):
 
 ```{r, results='asis', echo =FALSE}
+library(knitr)
 driving_tests <- read.csv("driving_tests.csv")
 kable(head(driving_tests))
 ```
@@ -151,7 +184,7 @@ Predicting probabilities
 - This would be our model then: $P(Y_i = 1) = \alpha + \beta X_{i} + \epsilon_i$
 
 ```{r, echo = FALSE}
-plot(x = driving_tests$Practice, y = jitter(driving_tests$Driving.Test, factor = .25))
+plot(x = driving_tests$Practice, y = jitter(driving_tests$Driving.Test, factor = .25), ylab = "Driving Test (+ jitter)",  xlab = "Practice (in hours)")
 lines(abline(lm(data = driving_tests, Driving.Test ~ Practice)))
 ```
 
@@ -165,9 +198,9 @@ Problems with a linear prediction
 Using a different regression function
 =========================================================
 - We would like a function that makes sure our linear predictor $\alpha + \beta x_i$ stays between 0 and 1
- - This function $P$ would apply to our linear predictor and transform it into a probability: $\pi_i = P(\alpha + \beta x_i)$
-- If the function is monotone, meaning that it consistently increases as $\alpha + \beta x_i$ gets larger, that would be advantageous, since then we can use the inverse of the function $P^{-1}$ to transform the probability into the linear predictor: $P^{-1}(\pi_i) =\alpha + \beta x_i$
-- There are two functions that are most commonly used: the cumulative probability function of the normal distribution and the logistic function
+ - This **link function** $P$ would apply to our linear predictor and transform it into a probability: $\pi_i = P(\alpha + \beta x_i)$
+- If the function is monotone, meaning that it consistently increases as $\alpha + \beta x_i$ gets larger, that would be advantageous, since the inverse of the function $P^{-1}$ then links each value predicted by the linear model with the probability  $P^{-1}(\pi_i) =\alpha + \beta x_i$
+- There are two link functions that are most commonly used: the cumulative probability function of the normal distribution and the logistic function
 
 The cumulative probability function of the normal distribution
 =========================================================
@@ -186,7 +219,7 @@ The logistic distribution function
 curve(plogis(x), -3,3)
 ```
 
-Applying the functions
+Applying the link functions
 ========================================================
 - Applying the cumulative normal distribution function gives you the **linear probit model**.
 - Applying the logistic distribution gives you the **linear logit model**, also called **linear logistic regression**:
@@ -208,7 +241,7 @@ Log odds (logits)
 =========================================================
 - Just transform our odds (just like we did with our continuous fixation time variable earlier) by taking the natural logarithm: $logit = ln(Odds) = ln(\frac{P}{1-P})$
 - Now we have a dependent measure that is suitable for linear relationships
-- Log odds is just what we happen to get if we take the natural logarithm (log to the base of $e$, short $ln$) on both sides of our logistic regression equation from earlier:
+- Log odds is just what we happen to get if we apply the natural logarithm on both sides of our logistic regression equation from earlier:
 $$
 \begin{aligned}
 \frac{\pi_i}{1-\pi_i} &= e^{\alpha+\beta x_i}\\
@@ -297,6 +330,13 @@ driving_glm <- glm(data = driving_tests,
 
 - To see how it works, watch Andy Johnson's video on myBU.
 
+Plotting the model fit
+==========================================================
+```{r, echo = FALSE}
+plot(x = driving_tests$Practice, y = jitter(driving_tests$Driving.Test, factor = .25), ylab = "Driving Test (+ jitter)",  xlab = "Practice (in hours)")
+curve(predict(driving_glm, newdata = data.frame(Practice = x, Emergency.Stop = driving_tests$Emergency.Stop[1], Examiner = mean(driving_tests$Examiner), Cold.Remedy = mean(driving_tests$Cold.Remedy)), type="resp"),add=TRUE)
+```
+
 Model summary
 ==========================================================
 - The coefficients
@@ -381,24 +421,36 @@ Reporting it
 =============================================================
 A logistic regression was conducted where the dependent variable was passing a driving test and the predictor variables were hours of practice, whether an emergency stop was successfully executed, how much the examiner was difficult, and amount of 'cold remedy drinks' consumed.  90 cases were examined and the model was found to significantly predict whether the test was passed (omnibus chi-square = 41.79, df=4, p<.001). that practice and examiner were the only two variables that reliably predicted if the driving test was passed. Increases in practice was associated with increased rate of passing (odds of passing increased by 1.14 per hour of practice, *b* = .130, SE = .03, *z* = 4.28, *p* < .01). Increases in the examiner difficulty reduced the rate of passing (odds of passing decreased by 0.96 per unit of difficulty rating, *b* = -.00349, SE = .013, *z* = -2.679, *p* < .01). None of the other predictors reached significance (all *p*s > .05). There were no issues due to multicollinearity or influential cases.
 
+Summary: Logistic regression
+===============================================================
+- If you have a dichotomous outcome variable (e.g. Yes vs. No, Heads vs. Tails, etc.), you cannot use standard linear regression
+- Instead, you must use a $link function$ to convert your predicted values into probabilities and vice versa. The most commonly used are the cumulative distribution function (CDF) of the normal distribution and the CDF of the logistic distribution
+    - if you use the CDF of the normal distribution, you are fitting a **probit** model
+    - if you use the CDF of the logistic distribution, you are fitting a **logit** or logistic regression model
+- The logit model has the advantage that you can interpret the coefficients directly as changes in log odds $= ln(frac{\pi_i}{1-\pi_1})$
+- Just like when you are using a log transformation, the coefficients are additive as far as log odds are concerned, but multiplicative when you convert the log odds into odds.
+- In both cases, you use the Wald test as a significance test for coefficients (analogous to *t*-tests in standard linear regression) and the likelihood ratio test (LRT, analogous to *F*-tests in standard linear regression) in order to test the significance of predictors.
+    - Since we don't have to estimate the error variance from the data, the Wald statistic is $z$-distributed and the LRT statistic is $\chi^2$ distributed.
+    - Just like the standard oneway/multiway ANOVA is a special case of linear regression with only categorical predictors, the $\chi^2$-test is a special case of logistic regression with only categorical predictors.
+
 Linear mixed models (LMMs)
 ============================================================
 - The final step to greatness!
     - Note that we can really only scratch the surface here.
 - Main issue:
     - We know how to to regressions for continuous and discrete DVs now
-    - We know what the regression equivalent of a between-subjects ANOVA is and we can take the regression analysis much further than an ANOVA or ANCOVA would let us
+    - We know what the regression equivalent of a between-subjects ANOVA is and we can take the regression analysis much further than an ANOVA or traditional ANCOVA would let us
     - However: 
-    - What if we have a within-subject or repeated measures design?
-    - What if there is some other underlying correlation in the data 
-    - e.g. data collected from students in different classes in different schools
-    - Surely the classes and schools share some variance -- how to account for that?
-                
+        - What if we have a within-subject or repeated measures design?
+        - What if there is some other underlying correlation in the data 
+        - e.g. data collected from students in different classes in different schools
+        - Surely the classes and schools share some variance -- how to account for that?
+                    
 Moving from linear regression to linear mixed models
 =============================================================
 - In repeated-measures ANOVA, we've dealt with within-subjects effects by removing the variance due to subject differences from the error
     - Essentially, we have added a "subject" factor to the model
-    - Linear mixed models enable us to do the same thing for regression analyses
+    - Linear mixed models enable us to do the same thing for all kinds of regression analyses
 
 Problem: how to add subject as a factor
 =============================================================
@@ -596,13 +648,6 @@ sum(cooks.distance(scene_lm) > 1 )
 
 - Doesn't look like it, so we should be fine here.
 
-Normality
-=========================================================
-```{r}
-shapiro.test(resid(scene_lm))
-```
-- Whoa! But we saw this in the plot already
-
 Q-Q Plots
 ===========================================================
 - Here's a visual way to assess normality
@@ -648,7 +693,7 @@ summary(scene_lmm)
 Understanding the model output
 ===========================================================
 - Just like in logistic regression, LMMs are fitted in an iterative procedure using Maximum Likelihood (ML)
-    - Actually, `lmer` uses a slightly modified criterion called Restricted Maximum Likelihood (REML)
+    - Actually, `lmer` by default uses a slightly modified criterion called Restricted Maximum Likelihood (REML)
 - Residuals can be interpreted just like in a regular linear model
 - Random effects: Here we get an estimate of the variance (and standard deviation) explained by the random intercepts
     - We also get an estimate of the residual variance
@@ -660,9 +705,10 @@ Coefficients
 kable(coef(summary(scene_lmm)))
 ```
 
-- First thing you notice: There's no *p* value!
+- First thing you notice: There's no *p* value, even though the Wald statistic should follow a *t*-distribution
 - That's because, due to the shrinkage procedure, it isn't clear what the df of that *t*-value should be
 - In general, if the number of subjects is > 30, we should be able to interpret the *t* value like a *z* value, meaning that any *t* > 2 or < -2 should be significant
+- SPSS uses a procedure called the Satterthwaite approximation for coming up with degrees of freedom for the *t*-values
 
 Correlation of fixed effects
 ==========================================================
@@ -750,9 +796,14 @@ Writing it up
 ==========================================================
 - See the exercise!
 
-Summary
+Summary: Linear mixed models
 ==========================================================
 - We can do repeated-measures analyses as well as more complex hierarchical models (e.g. students within classrooms within schools) using linear mixed models (LMMs)
+- Such models combine fixed effects (where we test all possible factor levels or predictor values, e.g. condition) and random effects (where we can only test a subset of a population of factor levels, e.g. participant, or school, or county, or sentence)
+- Usually, you start with a fixed-effects model and then add random intercepts and slopes.
+    - Random effects are always centered around the corresponding fixed effects. For example, we might have a fixed intercept of 50, with a random intercept for Subject 1 of 50-10 = 40 and a random intercept for Subject 2 of 50+10 = 60.
+- Model fitting is iterative and can be tricky. Overspecified models often end up failing to converge.
+- Which random effects to include? Figuring out which random effects actually explain variance can take awhile.
 
 Thank you!
 ==========================================================
