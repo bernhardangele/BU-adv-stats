@@ -1,0 +1,147 @@
+---
+title: "Advanced Statistics Practice Test"
+author: "Bernhard Angele"
+subtitle: Model solution
+output: pdf_document
+---
+
+# Part 1 -- Data analysis (50 %)
+
+## Scenario
+The university wants to find out whether therapy animals are useful in lowering student stress ahead of exams. In order to test this, they asked 24 students to have four different exam revision sessions: one with no therapy animals present, one with a therapy cat, and one with a therapy dog. The students were then asked to report their stress levels on a scale from 0 to 100, where 0 is no stress at all and 100 is extreme stress.
+
+## Assignment
+Conduct the appropriate ANOVA and the corresponding post-hoc *t*-tests comparing all three factor levels to each other (assume all assumptions are met). In order to help you with this, a number of intermediate values have already been computed for you below. Report the results of the ANOVA and *t*-tests as one would in the results section of an academic manuscript (using APA style). Finally, in layperson (non-academic) language describe the results and summarise what you can conclude about the effect of therapy dogs and cats. There is no word limit, but the whole report should be rather brief. You may use a calculator, Microsoft Excel, or any other computer programme, as well as your pet notes and any other offline resources you wish to bring to the test. Your test must be your own work and you may not collaborate with anyone else. Show your work so you can get partial credit in case you make small calculation mistakes.
+
+## Data
+
+In order to save you time, part of the ANOVA table is provided below, as well as the group means and standard deviations and the means and standard deviations of the differences between factor levels for each student [Note: nope, not in the practice assignment].
+
+```{r, echo=FALSE, results='asis'}
+rm(list = ls())
+library(knitr)
+df <- read.csv("Practice_assignment_data.csv")[,-1]
+
+SS_tot = sum((df$stress - mean(df$stress)) ^ 2)
+
+subject_means <- tapply(df$stress, df$subject, mean)
+
+pet_means <- tapply(df$stress, df$pet, mean)
+pet_sd <- tapply(df$stress, df$pet, sd)
+pet_n <- tapply(df$stress, df$pet, length)
+
+pet_table <- data.frame(pet = names(pet_means), Mean = pet_means, SD = pet_sd, N = pet_n)
+
+calc_differences <- function(Condition1 = "Puppies", Condition2 = "Research", data = df){
+  differences <- subset(df, pet == as.character(Condition1))$stress - subset(df, pet == as.character(Condition2))$stress
+  data.frame(m_diff = mean(differences), sd_diff = sd(differences))
+}
+
+differences_table <- data.frame(L1 = c("Cat", "Dog", "Cat"), L2 = c("No animal", "No animal", "Dog"))
+
+differences_table <- cbind(differences_table,t(with(differences_table, mapply(calc_differences, L1, L2))))
+
+SS_S = length(unique(df$pet)) * sum((subject_means - mean(df$stress))^2)
+
+SS_A = length(unique(df$subject)) * sum((pet_means - mean(df$stress))^2)
+
+SS_AxS <- SS_tot - SS_A - SS_S
+
+SS_WS <- SS_A+SS_AxS
+
+df_tot <- length(unique(df$pet)) * length(unique(df$subject)) - 1
+
+df_A <- length(unique(df$pet)) - 1
+
+df_S <- length(unique(df$subject)) - 1
+
+df_AxS <- df_A * df_S
+
+df_WS <- df_A + df_AxS
+
+MS_A <- SS_A/df_A
+MS_S <- SS_S/df_S
+MS_AxS <- SS_AxS/df_AxS
+MS_WS <- SS_WS/df_WS
+
+F_A <- MS_A/MS_AxS
+options(digits = 3)
+
+library(ez)
+df.aov <- ezANOVA(data = df, dv = stress, wid = subject, within = (pet), return_aov = TRUE)
+
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", round(p)))
+  if(p > .05) return("*p* > .05")
+}
+```
+
+### Means table
+```{r, echo=FALSE}
+
+ kable(pet_table, row.names = F, col.names = c("Condition", "Mean", "SD", "N"))
+```
+
+### Differences between groups
+```{r, echo = FALSE}
+kable(differences_table, col.names = c("$Condition_1$", "$Condition_2$", "$Mean(Condition_1 - Condition_2)$", "$SD(Condition_1 - Condition_2)$"), align = c('l','l','r','r'))
+
+```
+
+### ANOVA Table
+
+|Source            |SS            |df              |MS        |*F*    |*p* |
+|:-----------------|:-------------|:---------------|:---------|:------|:---|
+|Between Subjects  |`r SS_S`      |`r df_S`        |`r MS_S`  |       |    |
+|Within Subjects   |`r SS_WS`     |`r df_WS`       |`r MS_WS` |       |    |
+|--Animal condition|`r SS_A`      |`r df_A`        |`r MS_A`  |`r F_A`|`r print_p(pf(q = F_A, df1 = df_A, df2 = df_AxS, lower.tail = FALSE))`|
+|--Residual        |`r SS_AxS`    |`r df_AxS`      |`r MS_AxS`|       |    |
+|**Total**         |**`r SS_tot`**|**`r df_tot`**  |          |       |    |
+
+# Part 2: Questions (50 %)
+Please answer the following questions. Your answers should not be longer than a few sentences or a paragraph and should be comprehensible to a layperson who does not know anything about hypothesis testing but is familiar with general concepts such as sample, population, probability, probability distribution, degrees of freedom, mean, standard deviation, effect, predictor, variance, continuous and discrete variables, correlation, etc. If it helps, feel free to use concrete examples to aid your explanation.
+
+**Example question** *(from last year's take-home test -- questions in the in-class test will be a little shorter and less detailed)***:** In a non-technical manner, explain the concept of "Type I", "Type II", and "Type III" sums of squares in multiway ANOVA and multiple regression. Under which circumstances will the different sums of squares tests yield different results?
+
+**Answer:** All sums of squares and the resulting F-values are model comparisons. They differ with regard to which models are compared. Type I sums of squares for a factor compare a model with all previously entered factors with a model containing all previously entered factors and the factor in question. They are order-sensitive. Type II sums of squares for a factor compare a model with all other factors except the factor in question *and its interactions* to a model with with all other factors plus the factor in question, but none of its interactions. Type III sums of squares for a factor compare a model with all other factors except the factor in question (but including its interactions) to a model with with all other factors (including interactions with the factor in question) plus the factor in question itself. The different sums of squares will yield different results if there is multicollinearity, i.e. if any of the factors are correlated. In an ANOVA design, multicollinearity can occur if the design is unbalanced (i.e. group sizes are not even).
+
+## Questions you should be able to answer:
+
+1. Why do we do hypothesis tests?
+2. What is the difference between a sample and a population?
+3. What is a random variable?
+4. Why do we care about theoretical distributions (e.g. the normal distribution)?
+5. When can we assume that a random variable is normally distributed?
+6. What is a *z*-value, and how is it related to the normal distribution?
+7. What is a $\chi^2$-value, and how is it related to the normal distribution?
+8. What is a *t*-value, and how is it related to the normal distribution?
+9. What is an *F*-value, and how is it related to the normal distribution?
+10. What is null hypothesis significance testing?
+11. What is a *p*-value?
+12. What does a *p*-value tell us about the sample?
+13. What does a *p*-value tell us about the population?
+14. What does it mean if an effect is "significant"?
+15. What is a Type I error (and what is the $\alpha$-rate)?
+16. What is a Type II error (and what is the $\beta$-rate)?
+17. What is the relationship between $\alpha$-rate and $\beta$-rate?
+18. What is statistical power?
+19. How can we increase statistical power?
+20. What is an unbiased estimator?
+21. What are the assumptions we are making for the *z*-test?
+22. What are the assumptions we are making for the *t*-test?
+23. What are the assumptions we are making for the *ANOVA* (between subjects)?
+24. What are the assumptions we are making for the repeated measured *ANOVA*?
+25. Why is it a problem when assumptions aren't met? What can happen?
+26. What is a "robust" statistical test?
+27. Which practices can lead to an inflated $\alpha$-rate?
+28. Why is an inflated $\alpha$-rate a problem?
+29. What is a one-tailed/two-tailed test?
+30. How can the experimenter's intentions determine the outcome of a null-hypothesis significance test?
+31. Why is this dependence on experimenters' intentions a problem?*
+32. What is a stopping rule?
+33. Why shouldn't you use stopping rules?
+34. Why is everybody using them anyway?*
+35. What are "experimenter degrees of freedom"?*
+
+* These questions are intended to make you think and the answers may be highly subjective depending on who you ask. I will obviously not ask questions phrased like that on the test!
