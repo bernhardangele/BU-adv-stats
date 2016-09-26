@@ -33,18 +33,13 @@ Make a plot
 ========================================================
 - Always a good idea! A quick sketch is all it takes.
 
-```{r, echo = F}
-cord.x <- c(2.2,seq(2.2,3,0.01),3)
-cord.y <- c(0,dnorm(seq(2.2,3,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
+![plot of chunk unnamed-chunk-1](Class3-figure/unnamed-chunk-1-1.png)
 
 Get the p-value
 ==========================================================
 - Get Excel (or another software) to give you the area under the curve.
 - $p(z > 2.2) = 1 - p(z < 2.2)$, so `=1-NORM.S.DIST(2.2,TRUE)`
-- Result: `r 1-pnorm(2.2)`
+- Result: 0.0139034
 - The prisoner is in the extreme 5% of the distribution.
 - Maybe you should be concerned?
 
@@ -58,45 +53,11 @@ Use the EasyStats excel spreadsheet to run many simulations
 
 What changes when we re-run the simulation?
 ========================================================
-```{r, echo = FALSE}
-run_one_sample <- function(sample_size = 100, population_mean = 0, population_sd = 1)
-{
-  sample_means <- rnorm(n = sample_size, mean = population_mean, sd = population_sd) 
-  data.frame(mean = mean(sample_means), variance = var(sample_means))
-}
-
-run_simulation <- function(sample_size = 100, 
-                           number_of_simulations = 1000, 
-                           population_mean = 0, 
-                           population_sd = 1)
-  {
-require(data.table)
-rbindlist(replicate(number_of_simulations, 
-  list(run_one_sample(sample_size = sample_size, 
-  population_mean = population_mean, 
-  population_sd = population_sd))))
-
-}
-make_hist_and_plot <- function(sample_means){
-  par(mfrow=c(2,2)) # 
-  hist(sample_means$mean,freq=F, breaks = 30, main = "Sample Mean")
-  plot(density(sample_means$mean), 
-       main = paste("Mean = ", round(mean(sample_means$mean),2) , 
-                    "SD = ", round(sd(sample_means$mean),2)))
-  hist(sample_means$variance,freq=F, breaks = 30, main = 'Sample variance')
-  plot(density(sample_means$variance), 
-       main = paste("Mean = ", round(mean(sample_means$variance),2) , 
-                    "SD = ", round(sd(sample_means$variance),2)))} 
-make_hist_and_plot(
-  run_simulation(10,1000,20,5))
-```
+![plot of chunk unnamed-chunk-2](Class3-figure/unnamed-chunk-2-1.png)
 
 What changes when we re-run the simulation?
 ========================================================
-```{r, echo = FALSE}
-make_hist_and_plot(
-  run_simulation(10,1000,20,5))
-```
+![plot of chunk unnamed-chunk-3](Class3-figure/unnamed-chunk-3-1.png)
 
 What changes when we re-run the simulation?
 ========================================================
@@ -114,7 +75,7 @@ Confidence intervals
 =========================================================
 - A different way of using the normal distribution to express our null hypotheses
 - If the distribution of sample means is normal, that means we can say something about the relationship between sample mean and population mean.
-- Let's say the population mean $\mu$ is `r (pop.mean <- 0)` and the population sd $\sigma$ is `r (pop.sd <- 1)`.
+- Let's say the population mean $\mu$ is 0 and the population sd $\sigma$ is 1.
 - What is the sample mean going to be?
 - Think: what is the answer to this going to look like?
   - $\mu_{\bar{x}}$ is a random variable, so it doesn't make sense to give a point estimate
@@ -126,12 +87,7 @@ Confidence intervals (2)
 - So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
 - We want something like this:
 
-```{r, echo = F}
-cord.x <- c(-3,seq(-1.96,1.96,0.01),1.96)
-cord.y <- c(-3,dnorm(seq(-1.96,1.96,0.01)),0)
-curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
-polygon(cord.x,cord.y,col='skyblue')
-```
+![plot of chunk unnamed-chunk-4](Class3-figure/unnamed-chunk-4-1.png)
 
 Confidence intervals (3)
 =========================================================
@@ -140,13 +96,13 @@ Confidence intervals (3)
   - That means we need to take off 2.5% on every side
   - For the left interval boundary, we want the x value that is greater than or equal to 2.5% of x values
   - ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.025)`
-  - Result: `r qnorm(.025)`
+  - Result: -1.959964
 
 Confidence intervals (4)
 =========================================================
 - For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values.
 - ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.975)`
-  - Result: `r qnorm(.975)`
+  - Result: 1.959964
 - If you've done statistics before, these numbers should be pretty familiar to you.
 - Generalising this to other normal distributions is easy:
 $\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
@@ -167,33 +123,21 @@ Solution
   - How hungry? Mean = 2 cans/day, sd = .5 cans/day
   - I want a 90% CI for the mean of that sample
 - Get the *z*-scores for the lower and the upper bound:
-    - lower: `=NORM.S.INV(.05)` = `r qnorm(.05)`
-    - upper: `=NORM.S.INV(.95)` = `r qnorm(.95)`
+    - lower: `=NORM.S.INV(.05)` = -1.6448536
+    - upper: `=NORM.S.INV(.95)` = 1.6448536
 
 
 Solution (2)
 =========================================================
 - Calculate the CI:
-  - lower limit: `=2 + NORM.S.INV(.05) * .5/sqrt(2)` = `r 2 + qnorm(.05) * .5/sqrt(2)`
-  - upper limit: `=2 + NORM.S.INV(.95) * .5/sqrt(2)` = `r 2 + qnorm(.95) * .5/sqrt(2)`
+  - lower limit: `=2 + NORM.S.INV(.05) * .5/sqrt(2)` = 1.4184564
+  - upper limit: `=2 + NORM.S.INV(.95) * .5/sqrt(2)` = 2.5815436
 - Those are some hungry cats!
-- I need to plan on buying between `r 2 + qnorm(.05) * .5/sqrt(2)` and `r 2 + qnorm(.95) * .5/sqrt(2)` cans of cat food per day (per cat).
+- I need to plan on buying between 1.4184564 and 2.5815436 cans of cat food per day (per cat).
 
 Plot it!
 =========================================================
-```{r, echo = F}
-plot_normal_shaded_interval <- function(mean = 0, sd = 1, shade_from = -2, shade_to = 2, x_lower = mean - 2*sd, x_upper = mean + 2*sd, title = "Distribution", xlab = "x", ylab = "Density"){
-  cord.x <- c(seq(shade_from, shade_to,0.01))
-  cord.y <- c(dnorm(cord.x, mean = mean, sd = sd))
-  cord.x[1] <- cord.x[2]
-  cord.x[length(cord.x)] <- cord.x[length(cord.x) - 1]
-  cord.y[1] <- 0
-  cord.y[length(cord.y)] <- 0
-  curve(dnorm(x, mean, sd),xlim=c(x_lower,x_upper),main= title,xlab = xlab, ylab = ylab)
-  polygon(cord.x,cord.y,col='skyblue')
-  }
-plot_normal_shaded_interval( mean = 2, sd = .5, shade_from = 2 + qnorm(.05) * .5/sqrt(2), shade_to = 2 + qnorm(.95) * .5/sqrt(2), title = "Distribution of cat hunger", xlab = "Cans per day", ylab = "Probability density") 
-```
+![plot of chunk unnamed-chunk-5](Class3-figure/unnamed-chunk-5-1.png)
 
 Solution (4)
 =========================================================
@@ -201,19 +145,17 @@ Solution (4)
 - I can use a different upper limit to get an interval that delimits 90% of the area under the curve.
     - upper limit: `=2 + NORM.S.INV(.90) * .5/sqrt(2)`
 - Those are still some hungry cats!
-- I need to plan on buying at most `r 2 + qnorm(.90) * .5/sqrt(2)` cans of cat food per day (per cat).
+- I need to plan on buying at most 2.4530969 cans of cat food per day (per cat).
 
 Plot it again!
 =========================================================
-```{r, echo = FALSE}
-plot_normal_shaded_interval(2, .5, 0, 2 + qnorm(.90) * .5/sqrt(2)) 
-```
+![plot of chunk unnamed-chunk-6](Class3-figure/unnamed-chunk-6-1.png)
 
 Solution (5)
 =========================================================
 - What if I'm getting 3 cats?
 - upper limit: `2 + NORM.S.INV(.90) * .5/sqrt(3)`
-- Result: `r 2 + qnorm(.90) * .5/sqrt(3)`
+- Result: 2.3699521
 - Why is it less?
 - The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats (of course, these figures are per cat, so I'll still have to buy a ridiculous amount of food).
 
@@ -221,7 +163,7 @@ Solution (5)
 Now reverse the idea
 =========================================================
 - Usually, we have no other information about a population but the sample we just collected.
-- For example, let's say the sample mean is `r (sample.mean <- 0)` and the sample SD is `r (sample.sd <- 1)`. Apart from this, we know nothing about the population.
+- For example, let's say the sample mean is 0 and the sample SD is 1. Apart from this, we know nothing about the population.
 - Can we compute a CI for the sample mean?
 - Sure enough we can, but it gets a little more complicated.
   - (who would have thought?)
@@ -256,48 +198,27 @@ Population variance and sample variance: plots
 ===========================================================
 - Taking samples of size 2 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
 
-```{r, echo = FALSE}
-nsim = 1000
-run_variance_simulation <- function(sample_size = 2, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
-  {
-
-sample_variances <- replicate(number_of_simulations, var(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
-}
-
-#Define a new plot function so that the plot titles are correct
-make_variance_hist_and_plot <- function(sample_variance){
-  par(mfrow=c(1,2)) # 
-  hist(sample_variance,freq=F, breaks = 30, main = "Sample variance")
-  plot(density(sample_variance), main = paste("Mean = ", round(mean(sample_variance),2) , "SD = ", round(sd(sample_variance),2)))} 
-
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
-```
+![plot of chunk unnamed-chunk-7](Class3-figure/unnamed-chunk-7-1.png)
 
 
 Population variance and sample variance: plots
 ===========================================================
 - Taking samples of size 4 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
 
-```{r, echo = FALSE}
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 4, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
-```
+![plot of chunk unnamed-chunk-8](Class3-figure/unnamed-chunk-8-1.png)
 
 
 Population variance and sample variance: plots
 ===========================================================
 - Taking samples of size 10 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
 
-```{r, echo = FALSE}
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 10, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
-```
+![plot of chunk unnamed-chunk-9](Class3-figure/unnamed-chunk-9-1.png)
 
 Population variance and sample variance: plots
 ===========================================================
 - Taking samples of size 100 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
 
-```{r, echo = FALSE}
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
-```
+![plot of chunk unnamed-chunk-10](Class3-figure/unnamed-chunk-10-1.png)
 
 Sample variance as an estimator of population variance
 ===========================================================
@@ -316,9 +237,7 @@ The chi-square distribution
 ============================================================
 - But there's another striking thing going on here. Look again at the distribution of variances for sample size 2:
 
-```{r, echo = FALSE}
-make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
-```
+![plot of chunk unnamed-chunk-11](Class3-figure/unnamed-chunk-11-1.png)
 - This is definitely not a normal distribution!
 
 The chi-square distribution
@@ -339,16 +258,7 @@ Chi-square distributions
       
 Chi-square distributions plotted
 ===========================================================
-```{r, echo = F}
-library(ggplot2)
-x <- seq(from = 0.1,by = .01,to = 20)
-ggplot(data.frame(x = x), aes(x = x)) + 
-  stat_function(fun = dchisq, args=list(df = 1), aes(linetype = "df = 1")) +
-  stat_function(fun = dchisq, args=list(df = 2), aes(linetype = "df = 2")) +
-  stat_function(fun = dchisq, args=list(df = 4), aes(linetype = "df = 4")) +
-  stat_function(fun = dchisq, args=list(df = 10), aes(linetype = "df = 10")) +
-  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
-```
+![plot of chunk unnamed-chunk-12](Class3-figure/unnamed-chunk-12-1.png)
 
 What can we do with chi-square?
 ============================================================
@@ -366,15 +276,7 @@ The binomial distribution
 
 Plotting the binomial distribution
 ============================================================
-```{r echo = F}
-par(mfcol=c(3, 1))
-p = .5
-for(n in c(5,10,60))
-{
-    x <- dbinom(0:(n), size=n, p=p)
-    barplot(x, names.arg=0:(n), space=0, main=paste('n = ',n,", p = ",p,sep=''), xlab = "Number of successes (X)", ylab = ("p(X)"))
-}
-```
+![plot of chunk unnamed-chunk-13](Class3-figure/unnamed-chunk-13-1.png)
 
 Binomial and normal distribution
 ===========================================================
@@ -395,7 +297,7 @@ The chi-square test (2)
 $$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
 - Plug in our values ($f_{o(1)} = 40$, $f_{o(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
 $$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{(60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
-- We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is `r 1-pchisq(4,1)`
+- We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is 0.0455003
 - Conclusion: if the null hypothesis (fair coin, p(H) = .5) is true, we would expect to find an outcome like H: 40, T:60 in less than 5% of samples.
 
 Degrees of freedom
@@ -418,13 +320,15 @@ $$\chi_{n-1}^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$
 Try it
 =============================================================
 - The following table is from a dice roll experiment. Use the $\chi^2$ test to decide whether the die was fair or not.
-```{r echo = F,results='as.is'}
-library(knitr)
-set.seed(238239)
-dice_table <- data.frame(table(sample(1:6,100,replace = TRUE)))
-names(dice_table) <- c("$x_i$", "$f_{o(i)}$")
-kable(dice_table)
-```
+
+|$x_i$ | $f_{o(i)}$|
+|:-----|----------:|
+|1     |         18|
+|2     |         17|
+|3     |         14|
+|4     |         19|
+|5     |         17|
+|6     |         15|
 
 More fun things to do with chi-square
 ============================================================
@@ -442,41 +346,13 @@ Solution: The t-distribution
 Let's plot some t-distributions
 ==============================================================
 
-```{r, echo = F}
-library(ggplot2)
-x <- seq(from = -5,by = .01,to = 5)
-ggplot(data.frame(x = x), aes(x = x)) + 
-  stat_function(fun = dt, args=list(df = 1), aes(linetype = "df = 1")) +
-  stat_function(fun = dt, args=list(df = 2), aes(linetype = "df = 2")) +
-  stat_function(fun = dt, args=list(df = 4), aes(linetype = "df = 4")) +
-  stat_function(fun = dt, args=list(df = 10), aes(linetype = "df = 10")) +
-  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
-```
+![plot of chunk unnamed-chunk-15](Class3-figure/unnamed-chunk-15-1.png)
 
 The t-distribution vs. the normal distribution
 ============================================================
 - Solid = normal distribution, dashed = *t*-distribution
 
-```{r, echo = F}
-## plot multiple figures:
-## replace ugly par... specification with 
-## something easier to remember:
-multiplot <- function(row,col){
-     par(mfrow= c(row,col), pty = "s")
-   }
-
-range <- seq(-4,4,.01)  
- 
-multiplot(2,2)
-
- for(i in c(2,5,15,20)){
-   plot(range,dnorm(range),type="l",lty=1,
-        xlab="",ylab="",
-        cex.axis=1)
-   lines(range,dt(range,df=i),lty=2,lwd=1)
-   mtext(paste("df=",i),cex=1.2)
- }
-```
+![plot of chunk unnamed-chunk-16](Class3-figure/unnamed-chunk-16-1.png)
 
 The t-test
 ===============================================================
@@ -501,9 +377,9 @@ Computing the 95% CI
 ===========================================================
 - Using the *t*-distribution, we can compute CIs from samples as follows: get the lower and upper bounds from the *t*-distribution (which one depends on the sample size, e.g. in this we have $n = 10$, so we will use a *t*-distribution with $df = n-1 = 9$):
 - Lower bound (remember, we want to exclude the extreme low 2.5%): `=T.INV(0.025, 9)` (where 9 is the df)
-    - Result: `r qt(.025, 9)`
+    - Result: -2.2621572
 - Upper bound (remember, we want to exclude the extreme high 2.5%): `=T.INV(0.975, 9)` (where 9 is the df)
-    - Result: `r qt(.975, 9)`
+    - Result: 2.2621572
 - No surprise: the *t*-distribution is symmetrical
     
 Computing CIs
@@ -561,14 +437,14 @@ Example
 Two-tailed t-tests
 ============================================================
 - Instead of computing the CI from the *t*-value, we can also just take the *t*-value itself as a measure of how far the sample mean is away from the mean specified in the null hypothesis.
-- We can determine a critical *t*-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is `=T.INV(.975,9)`, which gives us`r qt(.975, df = 9)` and $t_{crit}$ for the lower bound is `=T.INV(.025,9)`, which gives us`r qt(.025, df = 9)`
+- We can determine a critical *t*-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is `=T.INV(.975,9)`, which gives us2.2621572 and $t_{crit}$ for the lower bound is `=T.INV(.025,9)`, which gives us-2.2621572
 - Note that the *t*-distribution is symmetrical
 In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
 
 What about one-tailed t-tests?
 ===========================================================
 - If we are absolutely sure of the direction of the effect, then we could use a *t*-test that only rejects the null hypothesis when the *t*-value is greater than $t_{crit}$ or if it is smaller than $t_{crit}$ (depending on what direction we want to test for).
-- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only: `=T.INV(.95,9)`, which gives us `r qt(.95, df = 9)`.
+- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only: `=T.INV(.95,9)`, which gives us 1.8331129.
 - But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
 - This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
 
@@ -576,16 +452,32 @@ Example
 ===========================================================
 > I'm trying a new type of medication to help insomniac patients sleep better. Each of my 5 patients reports how much longer (or shorter) they have been sleeping (in hours) after taking the medication compared to before. The numbers are below. Based on this, can I conclude that the medication has changed my patients' sleep? Or are the variations that the patients observed random and unrelated to the intervention?
 
-```{r, echo = FALSE}
-(sleep_times <- round(rnorm(5,1,1),2))
+
+```
+[1]  2.35 -0.22  2.44  0.19  1.43
 ```
 Your turn. What is the null hypothesis?
 
 Example solution
 ===========================================================
 The $H_0$ is that the true mean of the population is 0.
-```{r}
+
+```r
 t.test(sleep_times)
+```
+
+```
+
+	One Sample t-test
+
+data:  sleep_times
+t = 2.2712, df = 4, p-value = 0.08561
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ -0.2753893  2.7513893
+sample estimates:
+mean of x 
+    1.238 
 ```
 -If p $\le$ .05: reject the null hypothesis.
 - Try this in SPSS!
@@ -598,15 +490,9 @@ Power simulations
 
 Power simulations plot
 ==========================================================
-- Remember, $t_{crit} = `r qt(.975, 4)`$
+- Remember, $t_{crit} = 2.7764451$
 
-```{r, echo = FALSE}
-t_test_sim <- function(n, mean = 1, sd = 1){
-  t_results <- t.test(rnorm(n, mean, sd))
-  t_results$statistic}
-simulation_results <- replicate(1000, t_test_sim(5, 1, 1))
-hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
-```
+![plot of chunk unnamed-chunk-19](Class3-figure/unnamed-chunk-19-1.png)
 
 Not so great!
 
@@ -614,31 +500,21 @@ How to increase power
 =======================================================
 - Let's try a higher true mean ($\mu = 2$):
 
-```{r, echo =F}
-simulation_results <- replicate(1000, t_test_sim(5, 2, 1))
-hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
-```
+![plot of chunk unnamed-chunk-20](Class3-figure/unnamed-chunk-20-1.png)
 
 How to increase power (2)
 =======================================================
 - The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
 - Let's try a true value of $\sigma = 0.5$
 
-```{r, echo = F}
-simulation_results <- replicate(1000, t_test_sim(5, 1, .5))
-hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
-
-```
+![plot of chunk unnamed-chunk-21](Class3-figure/unnamed-chunk-21-1.png)
 
 How to increase power (realistically!)
 =======================================================
 - You don't really have any direct control over population mean (i.e. effect size) or sd (i.e. noise). Let's focus on the one variable that you do have control over.
 - The sample size is larger: let's try $n=10$
 
-```{r, echo = F}
-simulation_results <- replicate(1000, t_test_sim(10, 1, 1))
-hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
-```
+![plot of chunk unnamed-chunk-22](Class3-figure/unnamed-chunk-22-1.png)
 
 Double-checking our results
 =========================================================
@@ -665,7 +541,7 @@ $$d = \frac{\mu_1 - \mu_2}{\hat{\sigma}}$$
 In GPower
 ========================================================
 - In GPower, select `t tests` as `Test family` and `Means: Difference from constant (one sample case)` as `Statistical test`. As `Type of power analysis`, select `Sensitivity: Compute required effect size`
-- In the `Input Parameters` area, select `Two` for `Tails`, leave the $\alpha$ at `.05`, set the `Power` to `0.8`, and set the `Total sample size` to `100`. You get an effect size of $d = `r power.t.test(n = 100, sd = 1, power = .8, type = "one.sample", alternative = "two.sided")$delta`$
+- In the `Input Parameters` area, select `Two` for `Tails`, leave the $\alpha$ at `.05`, set the `Power` to `0.8`, and set the `Total sample size` to `100`. You get an effect size of $d = 0.2829125$
 - A difference in as little as $d \cdot \sigma = .283 \cdot 10=  2.83$ friends would be detectable.
 
 Don't cheat!
@@ -677,27 +553,13 @@ Don't cheat!
 - Let's see just what happens to $\alpha$ if you do that.
 - Run a simulation where there is no effect (i.e. where we know the $H_0$ is true)
 
-```{r, echo = FALSE}  
-t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
-  samples <- NULL
-  significant <- FALSE
-  
-  while(length(samples) <= n_max & significant == FALSE){
-      samples <- c(samples, rnorm(n_increments, mean = 0, sd = sd))
-      significant <- t.test(samples)$p.value <= .05
-    }
-  return(significant)
-  }
-```
+
 
 The consequences of cheating
 ======================================================
 Let's run this simulation 1000 times and make a plot with the results:
 
-```{r, echo = F}
-simulation_results <- replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
-barplot(table(simulation_results), names.arg = c("no","yes"),xlab= "Significant", ylab = "Number of simulations", main = paste0("Proportion of significant results: ", sum(simulation_results)/length(simulation_results)), 100)
-```
+![plot of chunk unnamed-chunk-24](Class3-figure/unnamed-chunk-24-1.png)
 
 The consequences of cheating (2)
 ======================================================

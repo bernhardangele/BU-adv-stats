@@ -436,3 +436,35 @@ Var(\bar{X}) &= \frac{1}{n^2}\cdot(Var(X_1) + Var(X_2) + \dots + Var(X_n)) \\
 \end{aligned}
 $$
 - So, the expected value of the variance of sample means $\sigma_{\bar{x}}^2$ is $\frac{\sigma^2}{n}$ and the expected value of the standard deviation of sample means (also called **standard error**) is $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
+
+
+Please, let's FINALLY finish the dice example
+================================================================
+- OK, OK. We now have everything we need to determine whether our dice roll sample mean is unusual assuming fair dice.
+- More formally, we call this a **Hypothesis Test**
+- We establish a *Null Hypothesis* $H_0$ (e.g. the dice are fair), 
+    - determine a theoretical probability distribution of the random variable (our dice roll means) given that the $H_0$ is true:
+        - a normal distribution with $\mu_{\bar{x}} = 3.5$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{\sqrt{2.9167}}{\sqrt{n}}$, where n is the number of dice rolls in our sample,
+    - and finally we can calculate the probability that you would observe the sample mean you observed given the $H_0$.
+    
+Final steps
+=================================================================
+- So, let's assume you did 10 dice rolls for this example, and that your mean was 4.
+- Since we know that the sample means should be normally distributed, we can transform your mean into a *z*-value: 
+- Since $\mu_{\bar{x}} = 3.5$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}} = \frac{\sqrt{2.9167}}{\sqrt{10}} = 0.5400648$:
+$$ z(4) = \frac{4-3.5}{0.5400648}=0.9258148$$
+- Let's ask Excel what the probability of observing a sample mean this far away (or farther) from the population mean is for the standard normal distribution: `1-NORM.S.DIST(0.9258,TRUE)`
+    - Result: 0.177274964
+    
+Final steps (2)
+=================================================================
+- Fisher (who popularised this sort of hypothesis testing) suggested that we should consider data with a probability of less than 5% (or .05) given the null hypothesis as **significant** evidence for rejecting the null hypothesis.
+- In our case, we are far away from a probability (or short, *p*-value) of .05. So, we can't reject the null hypothesis. Try it for yourselves, though.
+- More on this next week.
+
+Technical note for those who really care
+=================================================================
+- We really don't care about the direction of the effect here, just the absolute distance from the mean (i.e. this is a *two-tailed* test).
+- So, to be absolutely correct, we should ask Excel to give us the probability of z being at least this far away from the mean on either side: $p(z < -.9258 \cup z > .9258) = p(z < -.9258) + (1-p(z < .9258))$. 
+- When we ask Excel for the p-value `=NORM.S.DIST(-0.9258,TRUE)+(1-NORM.S.DIST(0.9258,TRUE))` we get the actual, correct result of $0.3545499$.
+- Good times. Until next week!

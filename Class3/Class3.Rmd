@@ -4,772 +4,783 @@ author: "Bernhard Angele"
 date: "Lecture 3"
 output: pdf_document
 ---
-Comparing multiple groups
-========================================================
-- *t*-tests are nice if you only have two groups that you want to compare.
-- But maybe you have more groups
-- Example:
-> A researcher wants to find out if there is a systematic difference in intelligence between MSc students from different universities. She performs intelligence tests on 10 students each from BU, University of Southampton and Oxford University and records the results.
 
-Making fake data for our example
+What have we learned last time?
 ========================================================
-- Let's assume that the true state of affairs is that there is no difference in intelligence
-  - $H_0: \mu_1 = \mu_2 = \mu_3$
-  - The alternative hypothesis is that the population means differ (but we don't specify a direction, hence we'll do a two-tailed test)
-- In that case, all intelligence scores would come from the same distribution: a normal distribution with mean = 100 and sd = 15
-- Let's generate 3 data sets according to this criterion
-```{r, echo=FALSE}
-# The following line sets the random number generator to a specific state
-# and ensures that you get the same numbers that I did.
-set.seed("16102014")
-bu <- rnorm(n = 10, mean = 100, sd = 15)
-soton <- rnorm(n = 10, mean = 100, sd = 15)
-oxford <- rnorm(n = 10, mean = 100, sd = 15)
-```
+- We figured out that, when we're taking random samples from *any* distribution (with a mean and a variance), the means (and sums) of these samples will approximately follow a **normal distribution** if the sample size is large enough (in general, $n \geq 30$ is a good rule of thumb).
+- We even determined what the mean of this sampling distribution of the mean will be (namely, it will be the same as the mean of the population we're sampling from):
+$$\mu_{\bar{x}} = \mu$$ 
+- We also determined what the variance of the sampling distribution will be. It will be the variance of the population we're sampling from divided by the sample size:
+$$\sigma_{\bar{x}}^2 = \frac{\sigma^2}{n}$$
 
-Simulating data with Excel
-========================================================
-- `=RAND()` will give you a random number between 0 and 1 (continuous uniform distribution, if you must know)
-- `=NORM.INV(probability, mean, sd)` will take a probability (= left tail proportion) and give you the corresponding x-value from the distribution
-- combine the two, and you get random samples from a normal distribution: `=NORM.INV(RAND(), mean, sd)`
 
-Let's make some random samples for our simulation
-========================================================
-- Make a spreadsheet, add three column headers (BU, Soton, Oxford)
-    - Below the group headers, generate 10 samples each using the formula `=NORM.INV(RAND(), 100, 15)`
-- Note that the null hypothesis is true here: all values come from the same normal distribution
-- Let's do *t*-tests first
-  - How many would we need?
-    - 3: BU vs. Soton, BU vs. Oxford, Soton vs. Oxford
-- Let's pretend that we (just like in real life) don't know the true properties of the population (so we use *t*-tests)
+How can we use this?
+=======================================================
+- We can do hypothesis testing with normal distributions:
+  - Let's say we're forensic psychologists trying to screen prisoners for signs of psychopathy.
+  - Let's say that we have a test that's normed for a standard (prison) population. Thanks to the norming, we know that this standard population has a mean psychopathy score of 50 and a standard deviation of 10. The psychopathy scores (the scores themselves, not just their means) are approximately normally distributed.
+  - You see a prisoner with a score of 72. Is this an unusually high score? Should you be concerned?
   
-t-tests in Excel
-========================================================
-- Simple, just follow the formulas
-- First, calculate the mean and standard deviation for each group (using `=AVERAGE` and `=STDEV.S`; the .S stands for the sample variance, essentially meaning that we're using the corrected standard deviation, dividing by $n-1$ instead of $n$)
-- Then calculate the t-value based on the formula I gave you in the last lecture:
-$$t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
-- In this case, the Excel version of the formula above will be `=(MEAN1-MEAN2)/SQRT((SD1^2/10)+(SD2^2/10))`
-      - Replace `MEAN1`, `MEAN2`, `SD1`, and `SD2` with the actual cells that these values are in (e.g. `A12`)
+What do you do now?
+=======================================================
+- Establish null and alternative hypotheses:
+  - Null hypothesis ($H_0$): the prisoner comes from the standard prison population ($E(x) = \mu_{\bar{x}} = \mu$).
+  - Alternative hypothesis ($H_A$): the prisoner's score is higher than that of the standard prison population ($E(x) > \mu$)
+- Convert the score into a *z*-value:
+$$ z(72) = \frac{72-50}{10} = 2.2$$
+- What is the probability of getting a *z*-value of 2.2 given that the null hypothesis is true?
+    - Check the standard normal distribution.
 
-t-tests in Excel (2)
+Make a plot
 ========================================================
-- Now use `=T.DIST.2T(ABS(TVALUE), DF)` to get the p-value for a two-tailed test
-  - Replace `TVALUE` and `DF` with the cells containing those values
-    - What should the DF be? Let's first assume that the population variances are equal (as they should be if these really come from the same population). In that case, the DF should be `n_1+n_2-2`. So, in our example with two groups of 10, it should be 18.
-  - Why `T.DIST.2T`? This will give us the two-tailed p-value (we could also use 1-T.DIST and multiply the result by 2)
-  - Why `ABS(TVALUE)`? If $\bar{x_1} < \bar{x_2}$, the *t*-value will be negative. Since the t-distribution is symmetrical, it's easiest to just use the absolute t-value ($|t|$, i.e. the t-value without the sign) and get the area under the curve in the right tail
+- Always a good idea! A quick sketch is all it takes.
 
-A quick plot to visualise this
-=========================================================
-- The 2.5% lower and upper tails are highlighted. They have exactly the same area, so we could also just use double the area of the upper tail. This is exaclty what `T.DIST.2T` does.
 ```{r, echo = F}
-cord.x <- seq(-3,3,0.01)
-cord.y <- dt(cord.x, df = 18)
-cord.y[cord.x > qt(.025, df =18) & cord.x < qt(.975, df =18)] <- dt(-3, df = 18)
-curve(dt(x, df =18),xlim=c(-3,3),main='t(df=18)')
+cord.x <- c(2.2,seq(2.2,3,0.01),3)
+cord.y <- c(0,dnorm(seq(2.2,3,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
 polygon(cord.x,cord.y,col='skyblue')
 ```
 
-t-tests in Excel (3)
-========================================================
-- Believe it or not, Excel also has its own *t*-test function: `=T.TEST(ARRAY1, ARRAY2, TAILS, TYPE)`
-    - `ARRAY1` is the data from the first group (e.g. A2:A11, if your data are in those cells)
-    - `ARRAY2` is the data from the second group (e.g. A2:A11, if your data are in those cells)
-    - `TAILS`: `1` for a one-tailed test, `2` for a two-tailed test
-    - `TYPE`: `1` for a paired *t*-test, `2` for a two-group *t*-test with equal variances, `3` for a two-group *t*-test with unequal variances
-- The test we just did by hand is a two-tailed test with equal variances
-- Confirm that you get the same result using `T.TEST` as you did by hand. If you don't, you did something wrong.
-
-t-tests in Excel (4)
-========================================================
-- If you set `TYPE` to `3`, you get Welch's *t*-test. This corrects the degrees of freedom to account for unequal variances.
-- Do a Welch's *t*-test on the same data and compare the results with the *t*-test assuming equal variances. What changes?
-
-BU vs Soton
-=========================================================
-- In case you don't have Excel handy, here I'm doing the same tests in R:
-```{r}
-t.test(bu, soton)
-```
-
-BU vs Oxford
-=========================================================
-- In case you don't have Excel handy, here I'm doing the same tests in R:
-```{r}
-t.test(bu, oxford)
-```
-
-Soton vs Oxford
-=========================================================
-- In case you don't have Excel handy, here I'm doing the same tests in R:
-```{r}
-t.test(soton, oxford)
-```
-
-Anything wrong with that?
-========================================================
-- We are doing three independent *t*-tests
-- Each *t*-test has a 5% chance of producing a spurious result ($\alpha$)
-- What is the probability that we get at least one spuriously significant result?
-  - It's 1 - the probability that we get no spurious results
-  - $1 - .95\cdot.95\cdot.95 = .14$
-  - We have a problem: our $\alpha$ is almost three times as high as it should be.
-  - SPSS calls this "correction" (which really isn't one) LSD (least significant differences) - don't use it!
-  
-Just a quick reminder about power
-========================================================
-- Possible outcomes of a hypothesis test (given the true state of the world)
-
-                                             |Null hypothesis is actually **TRUE**    |Null hypothesis is actually **FALSE**
----------------------------------------------|----------------------------------------|-----------------------------------------------------
-Decision from sample is "reject $H_0$"       | **Type I error**. Probability: $\alpha$|Correct rejection. Probability: $1~-~\beta=$**power** 
-Decision from sample is "do not reject $H_0$"| Correct failure to reject: Probability: $1 - \alpha$    |**Type II error**. Probability: $\beta$ 
-
-- Of course, we want to minimise $\alpha$, the probability of a **Type I error**. But we also want to minimise $\beta$, the probability of a **Type II error* (i.e. we want to maximise power). 
-- Lowering $\alpha$ (i.e. making the test more conservative) increases $\beta$. By how much? Dependent on the effect size, the population standard deviation, and the sample size.
-- $\alpha = .05$ is a compromise! Thanks, R.A. Fisher!
-
-Exercise: Give it a try
-=========================================================
-- Instead of running the simulation just my computer, I'll run it on **you**
-- What I mean by that:
-  - Generate three data sets in Excel like I've just shown you
-  - Make sure that all three data sets are samples from the same normal distribution: Same mean and sd, of course same n as well
-  - Run three two-sample *t*-tests (assuming equal variances) comparing the means
-  - Re-generate the random variables 20 times (you can do that by simply double-clicking on any empty cell and changing it)
-  - Afterwards, I will ask you and count how many significant *t*-tests you observed (p < .05).
-  - If the $\alpha$ level isn't inflated, you should not observe much more than 1 (5% is 1 in 20).
-
-Solutions
-=========================================================
-- We can adjust the $\alpha$ level of each *t*-test:
-  - If we divide the alpha level by the number of tests, we get $.05/3 = .0167$
-  - Our total $\alpha$ is then: $1-(1-.05/3)^3 = .049$
-  - This is called a **Bonferroni correction**
-  - Problem solved?
-  - Yes, but this is essentially lowering the $\alpha$ level, leading to lower power.
-- Better ways (but still lowering power):
-  - Holm-Bonferroni (same principle as Bonferroni, but better power)
-  - Tukey's HSD (honestly significant differences)
-- Maybe we just want to know if there is a difference at all between any of these three means
-  - One-way ANOVA
-
-Analysis of Variance
-========================================================
-- The idea behind the analysis of variance is simple: We want to split the total variance in our data into variance explained by our grouping factor and random noise (error) variance.
-- If the grouping factor explains more of the variance than we would expect based on random noise, then we can conclude that the grouping factor *significantly* improves our model (because yes, an ANOVA is a very simple statistical model)
-- In other words, we can conclude that at least two of the factor levels are significantly different
-
-Analysis of Variance (2)
-========================================================
-- How do we compare variances? We divide them!
-- First, a bit of terminology. As you should remember, we can estimate the population variance from the sample variance:
-$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{i = 1}^{n}(x_i - \bar{x})^2}{n-1}$$
-- Let's change the names a little to better fit the ANOVA model: since the data will come in different groups (factor levels), let's use the index $i$ to denote the factor level and the index $m$ to denote the $m^{th}$ observation (e.g. the $m^{th}$ person) within each factor level
-- Let's also call the number of factor levels $p$ and the number of observations per level $n$ (this is different from the way we have used $n$ so far).
-
-Data matrix
-========================================================
-- Columns are factor levels, rows are observations within a level
-- $i$ = factor level, $p$ = number of factor levels
-- $m$ = observation, $n$ = number of observations per factor level
-
-$$
-\begin{matrix}
-x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
-x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
-\end{matrix}
-$$
-
-Analysis of Variance (2)
-========================================================
-- With this new terminology, our formula looks like this (remember the double sum operator!):
-$$ \hat{\sigma}^2 = s^2 = \frac{\sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2}{n\cdot p-1}$$
-- In ANOVA terminology, we call the **numerator** of this equation the **sum of squares of the total variance** or ${SS}_{total}$ for short.
-- So, ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
-- We call the **denominator** of this equation the **degrees of freedom of the total variance** or ${df}_{total}$ for short.
-- So, ${df}_{total} = n\cdot p-1$
-
-Partitioning the variance
-=======================================================
-- Now we can start the interesting part of actually dividing up the variance into variance explained by the factor and unexplained error variance:
-- First, we compute the estimate of the variance explained by our factor. We call the corresponding sum of squares ${SS}_{model}$ (remember, an ANOVA is a simple statistical model. We'll deal with more complicated models later).
-
-The model variance
-========================================================
-- Some textbooks also call this the **treatment** variance.
-- In ANOVA terminology, we call the means of the observations in each level of our factor $\bar{A}_i$. (Why $A$? Well, in more complex designs, there might be a Factor $B$). $${SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
-- This gives us the variance that we would get if each observation were exactly equal to the group (factor level) mean
-    - i.e. if all the variance were **between** groups, and none **within**
-
-The error variance
-========================================================
-- Now get an estimate of the variance that is *not* explained by `group`, i.e. the error.
-- ${SS}_{error}$ is the sum of the squares of the differences between each observation $x_{mi}$ and its group mean $\bar{A}_m$:
-$${SS}_{error} = \sum\limits_{i=1}^{p}\sum\limits_{m = 1}^{n}(x_{mi} - \bar{A}_i)^2$$
-- As you may have guessed (or not) from the sums: ${SS}_{total} = {SS}_{model} + {SS}_{error}$
-- So, we can take a shortcut for calculating ${SS}_{error}$. Just subtract ${SS}_{model}$ from ${SS}_{total}$.
-- ${SS}_{error} = {SS}_{total} - {SS}_{model}$
-
-Degrees of freedom
-========================================================
-- With ${SS}_{model}$ and ${SS}_{error}$, we can compute the ratio of explained variance to error (or unexplained) variance.
-- First, we need to take into account the number of measurements which went into each SS (i.e. actually compute the variance)
-- Again, the denominator of each variance term is called the **degrees of freedom** of that variance
-- ${df}_{total} = n \cdot p-1$
-- ${df}_{model} = p-1$, where $p$ is the number of groups.
-- ${df}_{error} = {df}_{total} - {df}_{model} = n \cdot p - p$
-
-Mean squares and F-value
-========================================================
-- Now we compute our sample variances, called mean squares (MS) in the ANOVA terminology.
-  - ${MS}_{model} = \frac{{SS}_{model}}{{df}_{model}}$
-  - ${MS}_{error} = \frac{{SS}_{error}}{{df}_{error}}$
-- Finally, we take the ratio of the two.
-  - $F_({df}_{model}, {df}_{error}) = \frac{{MS}_{model}}{{MS}_{error}}$
-
-What is an F-value?
-========================================================
-- If you have followed our discussion of how **variance estimates** of random variables that come from a normal distribution are always $\chi^2$ distributed, you may not be too surprised by this.
-- An *F*-value is the *quotient* of two random variables following the $\chi^2$ distribution, each divided by their degrees of freedom:
-$$ F_{(n_1, n_2)} = \frac{\chi_{n_1}^2/n_1}{\chi_{n_2}^2/n_2} = \frac{\chi_{n_1}^2}{\chi_{n_2}^2}\cdot\frac{n_2}{n_1}$$
-  - *F*-values inherit both of the $\chi^2$'s degrees of freedom, so that they have both a numerator and a denominator degree of freedom.
-
-(You remember that a quotient -- or a ratio--is the result of a division, right?)
-
-The F distribution
-========================================================
-- It turns out that the ratio between model and error variance follows a specific distribution
-  - If there is no actual effect (i.e. the groups are just assigned at random) and
-  - As long as certain assumptions are valid (more on that later)
-- This distribution is called the F-distribution
-- Occasionally you will get a high ${MS}_{model}$ simply by chance, but such occurrences are quite rare
-- The F-distribution is the probability density function for different values of the variance ratio, i.e. the F-value.
-- We essentially want to test if the F-value we get is extreme enough that it could only have occurred by chance 5% of the time (our $\alpha$ level)
-
-The F-distribution
-=========================================================
-- Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
-- Remember that F is the *ratio* of two variances (both $chi^2$-distributed).
-  - Because of this, the F distribtion has *two* degrees of freedom parameters
-    - ${df}_1$, also called ${df}_{numerator}$
-    - ${df}_2$, also called ${df}_{denominator}$
-  
-Plotting the F distribution (1)
+Get the p-value
 ==========================================================
-- Let's take a look:
+- Get Excel (or another software) to give you the area under the curve.
+- $p(z > 2.2) = 1 - p(z < 2.2)$, so `=1-NORM.S.DIST(2.2,TRUE)`
+- Result: `r 1-pnorm(2.2)`
+- The prisoner is in the extreme 5% of the distribution.
+- Maybe you should be concerned?
+
+
+Use the EasyStats excel spreadsheet to run many simulations
+========================================================
+- This is a more intuitive way to do the same thing we did analytically last time.
+- Observe:
+    - What changes on each run?
+    - What stays the same?
+
+What changes when we re-run the simulation?
+========================================================
+```{r, echo = FALSE}
+run_one_sample <- function(sample_size = 100, population_mean = 0, population_sd = 1)
+{
+  sample_means <- rnorm(n = sample_size, mean = population_mean, sd = population_sd) 
+  data.frame(mean = mean(sample_means), variance = var(sample_means))
+}
+
+run_simulation <- function(sample_size = 100, 
+                           number_of_simulations = 1000, 
+                           population_mean = 0, 
+                           population_sd = 1)
+  {
+require(data.table)
+rbindlist(replicate(number_of_simulations, 
+  list(run_one_sample(sample_size = sample_size, 
+  population_mean = population_mean, 
+  population_sd = population_sd))))
+
+}
+make_hist_and_plot <- function(sample_means){
+  par(mfrow=c(2,2)) # 
+  hist(sample_means$mean,freq=F, breaks = 30, main = "Sample Mean")
+  plot(density(sample_means$mean), 
+       main = paste("Mean = ", round(mean(sample_means$mean),2) , 
+                    "SD = ", round(sd(sample_means$mean),2)))
+  hist(sample_means$variance,freq=F, breaks = 30, main = 'Sample variance')
+  plot(density(sample_means$variance), 
+       main = paste("Mean = ", round(mean(sample_means$variance),2) , 
+                    "SD = ", round(sd(sample_means$variance),2)))} 
+make_hist_and_plot(
+  run_simulation(10,1000,20,5))
+```
+
+What changes when we re-run the simulation?
+========================================================
+```{r, echo = FALSE}
+make_hist_and_plot(
+  run_simulation(10,1000,20,5))
+```
+
+What changes when we re-run the simulation?
+========================================================
+It turns out the mean of the distribution of sample means varies around the population mean. The sd also varies, but a lot less. It varies around
+$$
+\begin{aligned} \label{sigmabar}
+\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}
+\end{aligned}
+$$
+So, to sum up:
+The distribution of sample means is (roughly) normal, with $\mu_{\bar{x}} = \mu$ and $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$.
+This means we can apply our knowledge about the normal distribution to find out the theoretical probability of our result given the $H_0$ (*p*-values).
+
+Confidence intervals
+=========================================================
+- A different way of using the normal distribution to express our null hypotheses
+- If the distribution of sample means is normal, that means we can say something about the relationship between sample mean and population mean.
+- Let's say the population mean $\mu$ is `r (pop.mean <- 0)` and the population sd $\sigma$ is `r (pop.sd <- 1)`.
+- What is the sample mean going to be?
+- Think: what is the answer to this going to look like?
+  - $\mu_{\bar{x}}$ is a random variable, so it doesn't make sense to give a point estimate
+  - Instead, we can give an interval.
+
+    
+Confidence intervals (2)
+=========================================================
+- So, let's get the interval that $\mu_{\bar{x}}$ is going to be in 95% of the time.
+- We want something like this:
+
+```{r, echo = F}
+cord.x <- c(-3,seq(-1.96,1.96,0.01),1.96)
+cord.y <- c(-3,dnorm(seq(-1.96,1.96,0.01)),0)
+curve(dnorm(x,0,1),xlim=c(-3,3),main='Standard Normal')
+polygon(cord.x,cord.y,col='skyblue')
+```
+
+Confidence intervals (3)
+=========================================================
+- Let's start with the standard normal distribution (**z-scores**)
+- We want to get an interval that includes 95% of the area under the curve
+  - That means we need to take off 2.5% on every side
+  - For the left interval boundary, we want the x value that is greater than or equal to 2.5% of x values
+  - ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.025)`
+  - Result: `r qnorm(.025)`
+
+Confidence intervals (4)
+=========================================================
+- For the right interval boundary, we want the x value that is greater than or equal to 97.5% of x values.
+- ask Excel for the *z*-value: For this, we use the *inverse* of the standard normal distribution: `=NORM.S.INV(0.975)`
+  - Result: `r qnorm(.975)`
+- If you've done statistics before, these numbers should be pretty familiar to you.
+- Generalising this to other normal distributions is easy:
+$\bar{x} = \mu \pm 1.96 \times \sigma_{\bar{x}}$
+- Replacing $\sigma_{\bar{x}}$ with the expression based on the population SD:
+$\bar{x} = \mu \pm 1.96 \times \frac{\sigma}{\sqrt{n}}$
+
+Exercise
+=========================================================
+- It is (for some strange reason) well-known that the amount of cat food a cat needs per day is normally distributed with a mean of 2 cans per day and an sd of .5. I'm planning to adopt two (completely random) cats and need to plan this move financially. 
+- What's the maximum and the minimum amount of cat food cans I must expect to buy every day?
+- This estimate should be fairly accurate and should only have a 10% chance of being wrong.
+- Suppose I don't care about the minimum amount, I just want to know the maximum -- does that change anything?
+- Suppose I'm adopting 3 cats instead of 2 -- does that change anything about my estimate?
+
+Solution
+=========================================================
+- I'm drawing a random sample of hungry cats (sample size 2) from the population of hungry cats
+  - How hungry? Mean = 2 cans/day, sd = .5 cans/day
+  - I want a 90% CI for the mean of that sample
+- Get the *z*-scores for the lower and the upper bound:
+    - lower: `=NORM.S.INV(.05)` = `r qnorm(.05)`
+    - upper: `=NORM.S.INV(.95)` = `r qnorm(.95)`
+
+
+Solution (2)
+=========================================================
+- Calculate the CI:
+  - lower limit: `=2 + NORM.S.INV(.05) * .5/sqrt(2)` = `r 2 + qnorm(.05) * .5/sqrt(2)`
+  - upper limit: `=2 + NORM.S.INV(.95) * .5/sqrt(2)` = `r 2 + qnorm(.95) * .5/sqrt(2)`
+- Those are some hungry cats!
+- I need to plan on buying between `r 2 + qnorm(.05) * .5/sqrt(2)` and `r 2 + qnorm(.95) * .5/sqrt(2)` cans of cat food per day (per cat).
+
+Plot it!
+=========================================================
+```{r, echo = F}
+plot_normal_shaded_interval <- function(mean = 0, sd = 1, shade_from = -2, shade_to = 2, x_lower = mean - 2*sd, x_upper = mean + 2*sd, title = "Distribution", xlab = "x", ylab = "Density"){
+  cord.x <- c(seq(shade_from, shade_to,0.01))
+  cord.y <- c(dnorm(cord.x, mean = mean, sd = sd))
+  cord.x[1] <- cord.x[2]
+  cord.x[length(cord.x)] <- cord.x[length(cord.x) - 1]
+  cord.y[1] <- 0
+  cord.y[length(cord.y)] <- 0
+  curve(dnorm(x, mean, sd),xlim=c(x_lower,x_upper),main= title,xlab = xlab, ylab = ylab)
+  polygon(cord.x,cord.y,col='skyblue')
+  }
+plot_normal_shaded_interval( mean = 2, sd = .5, shade_from = 2 + qnorm(.05) * .5/sqrt(2), shade_to = 2 + qnorm(.95) * .5/sqrt(2), title = "Distribution of cat hunger", xlab = "Cans per day", ylab = "Probability density") 
+```
+
+Solution (4)
+=========================================================
+- If I only care about the maximum, I don't need the lower limit.
+- I can use a different upper limit to get an interval that delimits 90% of the area under the curve.
+    - upper limit: `=2 + NORM.S.INV(.90) * .5/sqrt(2)`
+- Those are still some hungry cats!
+- I need to plan on buying at most `r 2 + qnorm(.90) * .5/sqrt(2)` cans of cat food per day (per cat).
+
+Plot it again!
+=========================================================
+```{r, echo = FALSE}
+plot_normal_shaded_interval(2, .5, 0, 2 + qnorm(.90) * .5/sqrt(2)) 
+```
+
+Solution (5)
+=========================================================
+- What if I'm getting 3 cats?
+- upper limit: `2 + NORM.S.INV(.90) * .5/sqrt(3)`
+- Result: `r 2 + qnorm(.90) * .5/sqrt(3)`
+- Why is it less?
+- The chances of getting 3 out of 3 very hungry cats are lower than the chances of getting 2 out of 2 very hungry cats (of course, these figures are per cat, so I'll still have to buy a ridiculous amount of food).
+
+
+Now reverse the idea
+=========================================================
+- Usually, we have no other information about a population but the sample we just collected.
+- For example, let's say the sample mean is `r (sample.mean <- 0)` and the sample SD is `r (sample.sd <- 1)`. Apart from this, we know nothing about the population.
+- Can we compute a CI for the sample mean?
+- Sure enough we can, but it gets a little more complicated.
+  - (who would have thought?)
+
+
+What do these numbers mean?
+===========================================================
+- Anything, really.
+- But let's imagine that these numbers are from a survey of student's attitudes towards their Advanced Statistics class.
+  - Imagine that they could give a rating from -3 ("This is the worst class ever and I want the instructor fired!") to 3 ("This is the best class I've ever taken! I'm going to make so much money with my new R skills!"), with 0 representing a neutral feeling ("It's alright. At least it will be over soon").
+  - In this case, most students are pretty neutral about the class, but some really love it and some really hate it. 
+
+Computing a CI from the sample mean (story time)
+==========================================================
+- Consider the following scenario:
+
+> I have collected 10 responses to my class evaluation (the other students never turned their forms back in). The mean of the responses is 0 (apathy) and the sd is 1. Given that these 10 responses are just a small sample of the population, and that the population I'm really interested in is the population of all current and future Adv Stats students, is there anything I can say about the true population mean? Can I at least conclude that students didn't absolutely hate this class?
+
+
+Computing a CI from the sample mean
+==========================================================
+- We'll have to estimate both the population mean and the population variance.
+  - We have already estabished that the sample mean is a good estimator for the population mean.
+- What about the sample sd ($s$)? Is it a good estimator for the population sd ($\sigma$)?
+- Or the equivalent question: is sample variance ($s^2$) a good estimator of population variance ($\sigma^2$)?
+- We just tackled this in the last lecture analytically
+  - Today, we can take it easy and just simulate!
+- If you haven't done it before, now is a really good time to watch (at the very least) the first 7 minutes of [Julian's video](https://www.youtube.com/watch?v=Juo5NJSHlMM) (see myBU).
+
+
+Population variance and sample variance: plots
+===========================================================
+- Taking samples of size 2 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
 
 ```{r, echo = FALSE}
-curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
-```
-- F can't be negative
-  - this makes sense: it's the quotient of two $\chi^2$. You may remember that a square of a number can never be negative!
+nsim = 1000
+run_variance_simulation <- function(sample_size = 2, number_of_simulations = 1000, population_mean = 0, population_sd = 1)
+  {
 
-Plotting the F-distribution (2)
-==========================================================
-```{r, echo = F, fig.height=10, fig.width = 10}
-par(mfrow = c(4,4))
-for(df1 in c(1,2,4,40)){
-  for(df2 in c(1,2,4,40)){
-    curve(df(x, df1 = df1, df2 = df2), from = 0, to = 5, ylab = "f(x)", main = paste0("df1 = ", df1, ", df2 = ", df2))    
-  }
+sample_variances <- replicate(number_of_simulations, var(rnorm(n = sample_size, mean = population_mean, sd = population_sd)))
+}
+
+#Define a new plot function so that the plot titles are correct
+make_variance_hist_and_plot <- function(sample_variance){
+  par(mfrow=c(1,2)) # 
+  hist(sample_variance,freq=F, breaks = 30, main = "Sample variance")
+  plot(density(sample_variance), main = paste("Mean = ", round(mean(sample_variance),2) , "SD = ", round(sd(sample_variance),2)))} 
+
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
+```
+
+
+Population variance and sample variance: plots
+===========================================================
+- Taking samples of size 4 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+
+```{r, echo = FALSE}
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 4, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
+```
+
+
+Population variance and sample variance: plots
+===========================================================
+- Taking samples of size 10 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+
+```{r, echo = FALSE}
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 10, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
+```
+
+Population variance and sample variance: plots
+===========================================================
+- Taking samples of size 100 from the standard normal distribution: $X \sim N(0,1)$ and calculating the variance:
+
+```{r, echo = FALSE}
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 100, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
+```
+
+Sample variance as an estimator of population variance
+===========================================================
+- Looks like sample variance (at least if we calculate it dividing by $n-1$ instead of $n$ is a pretty good estimator (unbiased actually)
+- We can plug the sd of the sample into the equation for the SD of the sampling distribution (or rather, the standard error):
+$$
+\begin{aligned}
+SE_{\bar{x}} = \frac{s}{\sqrt{n}}
+\end{aligned}
+$$
+(Note that we are ignoring the question if the relationship between $s$ and $s^2$ is really the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that, if you are really curious.)
+- But as you saw in Julian's video, the estimate of $\sigma$ from $s$ is sometimes quite far away from the correct $\sigma$, especially for small sample sizes.
+- This means that our estimate for $\sigma$ is going to vary. Its accuracy will depend on the sample size.
+
+The chi-square distribution
+============================================================
+- But there's another striking thing going on here. Look again at the distribution of variances for sample size 2:
+
+```{r, echo = FALSE}
+make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
+```
+- This is definitely not a normal distribution!
+
+The chi-square distribution
+============================================================
+- What is a variance again?
+    - Definition: $s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \mu)^2}{n-1}$
+    - If we have a standard normal distribution ($\mu = 0$ and $\sigma = 1$): $s^2 = \frac{\sum\limits_{i=1}^{n}z_i^2}{n-1}$
+    - If $n = 2$: $s^2 = \sum\limits_{i=1}^{n}z_i^2$
+    - The $\chi_1^2$ distribution is the distribution of the square of a random variable following the standard normal distribution
+        - i.e. squares of *z*-values are $\chi_1^2$ distributed
+        
+Chi-square distributions
+============================================================
+- There is more than one $\chi^2$ distribution:
+    - The sum of the squares of two **independent**, squared random variables following the standard normal distribution (i.e. *z*-values) follows the $\chi_2^2$ distribution: $\chi_2^2 = z_1^2 + z_2^2$
+    - In general, $\chi_n^2 = \sum\limits_{i=1}^{n}z_i^2$
+      - Here, $n$, the number of independent $z^2$ variables is also known as the **degrees of freedom** of the $\chi^2$ distribution.
+      
+Chi-square distributions plotted
+===========================================================
+```{r, echo = F}
+library(ggplot2)
+x <- seq(from = 0.1,by = .01,to = 20)
+ggplot(data.frame(x = x), aes(x = x)) + 
+  stat_function(fun = dchisq, args=list(df = 1), aes(linetype = "df = 1")) +
+  stat_function(fun = dchisq, args=list(df = 2), aes(linetype = "df = 2")) +
+  stat_function(fun = dchisq, args=list(df = 4), aes(linetype = "df = 4")) +
+  stat_function(fun = dchisq, args=list(df = 10), aes(linetype = "df = 10")) +
+  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
+```
+
+What can we do with chi-square?
+============================================================
+- We can approach our dice problem in a different way
+- Instead of looking at the sample means, we can look at the dice roll results directly
+- These come from a distribution called the **multinomial** distribution
+- Let's start with coin flips though, because that way we can use the **binomial** distribution
+
+The binomial distribution
+============================================================
+- This is the distribution of number of successes in a sequence of n independent yes/no experiments
+- Definition: $$f(X = k|n, p) = \binom{n}{k}\cdot p^k\cdot (1-p)^{n-k}$$
+    - Where $k$ is the number of successes (e.g. number of heads), $n$ is the total number of experiments (coin flips), and $p$ is the probability of the success (e.g. 0.5 for a fair coin).
+- You almost definitely did this in school, but we won't go into the details of this distribution much. Instead, we'll just look at what happens when we increase the sample size 
+
+Plotting the binomial distribution
+============================================================
+```{r echo = F}
+par(mfcol=c(3, 1))
+p = .5
+for(n in c(5,10,60))
+{
+    x <- dbinom(0:(n), size=n, p=p)
+    barplot(x, names.arg=0:(n), space=0, main=paste('n = ',n,", p = ",p,sep=''), xlab = "Number of successes (X)", ylab = ("p(X)"))
 }
 ```
 
-
-The F distribution and the t distribution
-=========================================================
-- For ${df}_1 = 1$, the *F* distribution is the same as the distribution of the square of the *t* distribution with the same ${df}_2$
-- Remember, $t_{df} = \frac{z}{\sqrt{\chi_{df}^2}/df}$
-    - So, $t^2_{df} = \frac{z^2}{\chi_{df}^2/df}$. A $z^2$ value is $\chi^2$ distributed with $df = 1$, so that $t^2_{df} = F_{(1, df)}=\frac{\chi_1^2}{\chi_{df}^2/df}$
-- You can literally take the square root of the *F*-value of a two-level one-way ANOVA and get the corresponding *t*-value.
-- Of course, if you have more than two factor levels, then this doesn't work anymore because ${df}_1 > 0$ (but you can't analyse a design like that with a *t*-test anyway.)
-
-Let's do an ANOVA by hand
-==========================================================
-- Use the same spreadsheet with fake values that we used for the *t*-tests
-- For this, let's assume that you have 3 groups ($p=3$) with 10 participants each ($n=10$) and that your data are in `A2:A11` for Group 1, `B2:B11` for Group 2, and `C2:C11` for Group 3. `A12`, `B12`, and `C12` contain your group means (`=AVERAGE(A2:A11)` etc.) and `A13`, `B13`, and `C13` contain your group standard deviations (`=STDEV.S(A2:A11)` etc.)
-
-Calculate sums of squares in Excel
-==========================================================
-- ${SS}_{model} = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$
-    - In Excel: `=10*((A12-AVERAGE(A2:C11))^2+(B12-AVERAGE(A2:C11))^2+(C12-AVERAGE(A2:C11))^2)`
-- ${SS}_{error} = \sum\limits_{i=1}^{p}\sum\limits_{m = 1}^{n}(x_{mi} - \bar{A}_i)^2$. 
-    - Excel has a useful function called `DEVSQ` which gives you the sum of squares of deviations of data points from their sample mean
-    - So: `=DEVSQ(A2:A11)+DEVSQ(B2:B11)+DEVSQ(C2:C11)`
-- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
-  - Thanks to DEVSQ, this is really easy: `=DEVSQ(A2:C11)`
-
-Calculate degrees of freedom and mean squares
-============================================================
-- ${df}_{model} = p - 1 = 3 - 1= 2$
-- ${df}_{error} = n\cdot p - p = 10\cdot3-3 = 27$
-- ${df}_{total} = n\cdot p-1 = 10\cdot3-1 = 29$
-- Let's assume that your sums of squares are in `B20`, `B21`, `B22` for model, error, and total, respectively. Then your means squares are
-    - ${MS}_{model} = \frac{{SS}_{model}}{{df}_{model}}$; `=B20/2` in Excel.
-    - ${MS}_{error} = \frac{{SS}_{error}}{{df}_{error}}$; `=B21/27` in Excel.
-    - ${MS}_{total}$: We don't actually need that!
-    
-Compute your F-value and the corresponding p-value
-=============================================================
-- Our *F*-value: $F_({df}_{model}, {df}_{error}) = \frac{{MS}_{model}}{{MS}_{error}}$
-- Assuming that you've stored ${MS}_{model}$ in `D17` and ${MS}_{error}$ in `D18`: `=C=D17/D18`
-  - Easy!
-- Assuming that you put the *F*-value in `E17`, we can get the *p*-value using `=F.DIST.RT(E17,2,27)`, where 2 is ${df}_{model}$ and 27 is ${df}_{error}$.
-
-Example data set
-==============================================================
-- If you don't have Excel handy to generate your own or if you want to compare your calculations to mine.
-
-         BU|    Soton |    Oxford|
-|---------:|---------:|---------:|
-| 101.37080| 112.28569| 105.39426|
-|  98.90038|  92.33469| 102.64322|
-|  99.35124| 110.97803|  85.54996|
-| 110.41595| 121.00897|  85.18428|
-| 113.22132| 114.35717| 121.77122|
-|  95.67537| 126.07178|  95.09605|
-| 113.69695| 110.15121|  86.46963|
-| 114.53939|  96.40311|  77.37942|
-|  98.88912| 126.64088| 111.85448|
-|  55.56055| 114.37858|  94.99734|
-
-```{r echo = F}
-my_data <- c(101.37080, 98.90038, 99.35124, 110.41595, 113.22132, 95.67537, 113.69695, 114.53939, 98.88912, 55.56055, 112.28569, 92.33469, 110.97803, 121.00897, 114.35717, 126.07178, 110.15121, 96.40311, 126.64088, 114.37858, 105.39426, 102.64322, 85.54996, 85.18428, 121.77122, 95.09605, 86.46963, 77.37942, 111.85448, 94.99734)
-```
-
-ANOVA table
-==========================================================
-```{r echo = F, results="as.is"}
-library(knitr)
-my_df <- data.frame(Group = factor(rep(c("BU", "Soton", "Oxford"))), IQ = my_data)
-my_aov <- aov(data = my_df, formula = IQ ~ Group)
-my_aov_sum <- summary(my_aov)[[1]]
-my_aov_sum <- rbind(my_aov_sum, c(sum(my_aov_sum$Df), sum(my_aov_sum$`Sum Sq`), NA, NA, NA))
-row.names(my_aov_sum)[2:3] <- c("Error", "Total")
-kable(my_aov_sum)
-```
-
-Effect size
+Binomial and normal distribution
 ===========================================================
-- Just like for *t*-tests, we can get an estimate of effect sizes (called $\eta^2$, "eta-squared")
-- $\eta^2 = \frac{{SS}_{model}}{{SS}_{total}}$
-- $\eta^2$ is an estimate of the relationship between variance explained by the ANOVA model and total variance in the data
-- You can use $\eta^2$ for power estimates with GPower.
-- Compare this to Cohen's $d$, another estimate of effect size that we used for *t*-tests:
-  - $d$ = $\frac{\bar{x_1} - \bar{x_2}}{s}$
-  - Cohen's $d$ is an estimate of how large a difference in means is (in sample standard deviations)
-  
-ANOVA assumptions (1)
+- For large sample sizes, the binomial distribution approximates the normal distribution
+- Because of this, there is an easy way of calculating a *z*-value (or rather, the square of a *z*-value -- I'll spare you the proof, but ask me if you're interested): 
+    - First, get the frequencies of successes $f_{o(1)}$ and non-successes $f_{o(2)}$.
+        - For example, if you had $f_{o(1)} = 40$ times Heads and $f_{o(2)} = 60$ times Tails, can we conclude that the coin is not fair?
+    - Then get the expected frequencies given the null hypothesis. If we have a fair coin, our p(Heads) should be .5, so we're expecting $f_{e(1)}=50$ times Heads and $f_{e(2)}=50$ times tails.
+
+The chi-square test
 ===========================================================
-- **Normality**. The observed test statistic ($\frac{{MS}_{model}}{{MS}_{error}}$) can only be assumed to come from an *F*-distribution if:
-  - The error variance (i.e. all the variance not explained by the group factors) is normally distributed
-    - This is because the $\chi^2$-values are assumed to come from a standard normal distribution
+- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distributions and the squared differences between the observed ($f_{o(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
+$$z^2 = \chi_1^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$
 
-ANOVA assumptions (2)
+The chi-square test (2)
 ===========================================================
-- **Homogeneity of variances** (also known as **homoscedasticity**). The variances within each group are similar.
-      - This is because of the way we add up the variances in each group to get an estimate of the total error variance ${SS}_{error}$:
-      $${SS}_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
-      - You can only do this if the variances in each group are roughly similar.
-        - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
-  - If you have more than two groups, SPSS will automatically run Levene's test, which compares the group variances
-    - What's the test statistic for a test that compares variances? Of course, it's *F* again!
-    - The p-value tells you if the variances are significantly different between groups.
+- In this case, we have two groups (Heads and Tails), so $n = 2$. We can rewrite the sum as:
+$$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- Plug in our values ($f_{o(1)} = 40$, $f_{o(2)} = 60$, $f_{e(1)} = f_{e(2)} = 50$):
+$$z^2 = \chi_1^2 = \frac{(40-50)^2}{50} + \frac{(60-50)^2}{50} = \frac{100}{50} + \frac{100}{50} = 4$$
+- We can look up the probability of getting a value this extreme based on the $\chi^2$-value: `=1-CHISQ.DIST(4,1,TRUE)`, which is `r 1-pchisq(4,1)`
+- Conclusion: if the null hypothesis (fair coin, p(H) = .5) is true, we would expect to find an outcome like H: 40, T:60 in less than 5% of samples.
 
-Levene's test for homogeneity of variances
-===========================================================
-- You could do Levene's test by hand, but if you actually need it, chances are that your design is too complicated to do by hand anyway.
-- If Levene's test is not significant, all is well.
-- If Levene's test is significant, you're violating the homogeneity of variance assumption.
-  - Not a big issue if the sample sizes are equal for all groups (balanced design).
-  - If sample sizes aren't equal (unbalanced design) and the larger groups have higher variance, your ANOVA loses power.
-  - If sample sizes aren't equal and the larger groups have lower variance, your ANOVA becomes anti-conservative ($\alpha$ increases).
-
-What to do if Levene's tests is significant?
-============================================================
-- If your group sizes are equal, nothing to worry about. The ANOVA is robust in this regard.
-- If not:
-  - Calculate the variance for each group and see if you're dealing with just a power issue or an $\alpha$ issue
-  - If the largest group variance is less than 4 times the smallest group variance, you may have a power issue, but the test is not anticonservative.
-  - If you have huge variance differences and there might be an $\alpha$ issue:
-    - Easiest solution: Fix the sample size issue (e.g. run more participants)
-    - Use linear mixed models (LMMs; more on that later)
-    - Use specialised tests (this is the approach preferred in most SPSS textbooks):
-      - Welch's *t*-test
-      - Brown-Forsythe (uses median instead of mean)
-      - Post-hoc tests:
-          - Games-Howell for unequal variance
-          - Hochberg's GT2 for non-equal sample sizes
-
-The SPSS (or rather, SPSS textbook) approach to statistics
-============================================================
-- Throw as many obscure tests at the problem as you can
-  - This is a sales strategy: "We need to buy SPSS since no other program has the Games-Howell test!"
-- In reality, the standard ANOVA is remarkably robust to all but the most extreme violations of its assumptions
-- Specialised tests often come at a huge cost in terms of power
-- This doesn't mean that you shouldn't test the assumptions
-  - But a simplistic strategy where you run one type of test if the assumption test is significant and another one if it isn't is not helpful
-  - Take a good look at your data
-    - Be aware of potential issues
-    - Interpret the data accordingly.
-    - Only use specialised and non-parametric tests as a last resort if your data massively violate the assumptions
-
-Just so we're clear
-============================================================
-- Inflated $\alpha$ is not harmless
-- But "researcher degrees of freedom" inflate $\alpha$ much more than all but the most extreme assumption violations
-  - Stopping rules (test after every X participants, then stop as soon as you have a significant result)
-  - Failing to report non-significant conditions
-  - Failing to correct for multiple comparisons
-- Don't let over-cautious textbooks discourage you from running plain, simple ANOVAs
-- Be honest and transparent about your data and how you collected them and you'll be fine.
-
-ANOVA assumptions (3)
-===========================================================
-- **Independence of variances** The variances within each group are independent.
-      - There are no systematic relatioships between measurements in each group
-      - Most commonly violated by within-participants (repeated measures) designs
-        - Participants are tested in multiple conditions
-        - This can be addressed by using a repeated-measures ANOVA or Linear Mixed Models.
-      
-Using SPSS to perform a one-way ANOVA
-============================================================
-- I took this data set from Andy Johnson, since he has made a great video explaining exactly how to analyse it. 
-- We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
-- Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
-- Get the SPSS data file `Swearing and Pain Data.sav` from myBU.
-- Watch Andy Johnson's video and follow along.
-
-Multiway ANOVA
-=========================================================
-- What if we have two independent variables, $A$ and $B$?
-- We can still split the total variance into ${SS}_{total} = {SS}_{model} + {SS}_{error}$
-  - But now ${SS}_{model}$ is composed of multiple terms: ${SS}_{model} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B}$, so that ${SS}_{total} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B} + {SS}_{Error}$
-  - Each of these terms has degrees of freedom: ${df}_{Total} = {df}_A + {df}_B + {df}_{A \times B} + {df}_{Error}$
-  - For each term, you can compute mean squares and F values, e.g. $F_A = \frac{{MS}_A}{{MS}_{Error}}$
-  - What is ${SS}_{A \times B}$? It's the **interaction** between A and B
-      - A *main effect* (A or B) is a difference between means
-      - An *interaction* is a difference between differences
-
-Multiway ANOVA (2)
-==========================================================
-- At this point, doing the analysis by hand is getting really tedious. Leave this to SPSS!
-- As a little taster, I'll show you the formula for the total sums of squares: $${SS}_{total} = \sum\limits_{i = 1}^{p}\sum\limits_{j = 1}^{q}\sum\limits_{m = 1}^{n}(x_{ijm} - \bar{x})^2,$$ where $i$ is the level of factor A, $p$ is the total number of levels of factor A, $j$ is the level of factor B, $q$ is the total number of levels of factor B, $m$ denotes the current observation number within its cell (i.e. the $m^{th}$ observation within that combination of A and B), $n$ is the total number of observations within each cell, and the mean is $\bar{x} = \frac{\sum\limits_{i = 1}^{p}\sum\limits_{j = 1}^{q}\sum\limits_{m = 1}^{n}x_{ijm}}{p\cdot q \cdot n}$
-- Nice and simple, right? This is why people started writing software to do this!
-
-Multiway ANOVA (2)
-==========================================================
-- How to compute the dfs:
-    - For main effects, just like in the oneway ANOVA: ${df}_A = k_{A} - 1$, where $k_A$ is the number of groups or *levels* of that variable
-    - For interactions, it's the product of the dfs of the corresponding main effects:
-      - ${df}_{A \times B} = {df}_A \cdot {df}_B$
-    - Just as a reminder: ${df}_{Total}$ is still $N - 1$, where $N = p\cdot q \cdot n$ is the total number of subjects or observations in your study (across all variables)
-    - And as before, if you subtract all the other dfs from ${df}_{Total}$, you get ${df}_{Error}$ 
-    - ${df}_{Error} = {df}_{Total} - {df}_A - {df}_B - {df}_{A \times B}$ 
-
-Interactions
-==========================================================
-- Main effects are additive
-- For example, this table shows the (fictional) total calories that you might have for lunch given two different food choices and two different drink choices:
-
-```{r, echo = FALSE, results='asis'}
-library(knitr)
-food_example <- data.frame(Food = c(rep("Pizza",2),rep("Salad",2)), Drink = rep(c("Water","Cola"), 2), Calories = c(800, 1100, 200, 500))
-kable(food_example)
-```
-
-Additive effects
-=========================================================
-```{r, echo=FALSE}
-options(digits = 3, scipen = 5)
-library(ggplot2)
-qplot(data = food_example, geom = c("point","line"), x = Food, fill = Drink, colour = Drink, group = Drink, y = Calories)
-```
-
-Non-additive effects
-==========================================================
-- Example: Animal and maximum movement speed (meters/s) on land and in water (mostly non-fictional, based on a very quick Wikipedia search)
-
-```{r, echo = FALSE, results='asis'}
-move_example <- data.frame(Where = c(rep("Land",2),rep("Water",2)), Animal = rep(c("Dog","Dolphin"), 2), Speed = c(15, 0, .4, 11))
-kable(move_example)
-```
-
-Non-additive effects (2)
-==========================================================
-```{r, echo=FALSE}
-library(ggplot2)
-qplot(data = move_example, geom = c("point","line"), x = Where, fill = Animal, colour = Animal, group = Animal, y = Speed, ylab = "Maximum speed in m/s")
-```
-- Crossover interaction
-
-Marginal effects
-==========================================================
-- In the presence of a significant interaction, main effects are much harder to interpret
-    - Better to call them marginal effects (although few people do, even in publications!)
-- What does it mean that the marginal speed of a dolphin is 7.5 m/s (when averaging over the water and land conditions)?
-    - Not much! The mean is nearly meaningless here...
-  
-Marginal effects (2)
-=========================================================
-- In some cases, you will still be interested in the marginal effects
-    - For example, your anxiety treatment might differ in its effectiveness for male and female participants, but the marginal effects show that overall, everyone benefits from it at least a little.
-    - Of course, if males get a little more anxious and females get a lot less anxious (a crossover interaction), the positive marginal effect still doesn't mean you should give males this treatment!
-  
-How to do a multiway ANOVA
-==========================================================
-- Example data: Attractiveness, music, and alcohol
-- Again, we have a video made by Andy Johnson on how this works in SPSS
-- Download the SPSS data file (`Music, beer, and courting.sav`) and follow along with the video.
-
-```{r, echo = FALSE, results='asis'}
-attract <- read.csv("attract.csv")
-# by default, R will sort factor levels alphabetically
-# the following line will make "No alcohol" the baseline level for the "Alcohol" factor
-attract$Alcohol <- relevel(attract$Alcohol, ref = "No alcohol")
-
-# Now we make the "subject" column that ezANOVA needs
-# Every row gets a different subject number
-# The subject column is discrete, so we make it a factor
-attract$subject <- factor(1:nrow(attract))
-```
-
-Make a means table
-=========================================================
-```{r, echo = FALSE, results='asis'}
-library(ez)
-library(knitr)
-attract_stats <- ezStats(data = attract, 
-                         dv = Attractiveness.Rating, 
-                         wid = subject, 
-                         between = .(Music, Alcohol))
-kable(attract_stats[,-ncol(attract_stats)])
-```
-
-Do the ANOVA
-===========================================================
-```{r echo = FALSE}
-attract_anova <- ezANOVA(data = attract, 
-                          dv = Attractiveness.Rating, 
-                          wid = subject, 
-                          between = .(Music, Alcohol))
-kable(attract_anova$ANOVA, col.names = c("Effect", "${df}_n$", "${df}_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta_P^2$"))
-```
-
-- All three terms are significant.
-    - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
-- Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$
-
-Assumption tests:
-===========================================================
-- Levene's test:
-
-```{r echo=FALSE}
-kable(attract_anova$"Levene's Test for Homogeneity of Variance", col.names = c("${df}_n$", "${df}_d$", "${SS}_n$","${SS}_d$","$F$", "$p$", "$p < 0.5$"))
-```
-
-- No problems with homogeneity of variances
-
-Pairwise comparisons
-============================================================
-- Easiest way: Use Tukey's HSD (I'll explain that with SPSS, since the output is a bit complicated)
-
-Writing it up
-============================================================
-A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). There was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_G^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_P^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
-
-Writing it up (2)
-=============================================================
-The music by alcohol interaction was also significant, *F*(2,54) = 3.24, *p* = .047, $\eta_G^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M = 49.30, SD = 5.50) and no music (M = 47.90, SD = 4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M = 52.20, SD = 5.88) and no music (M = 52.30, SD = 5.77). However, following 4-pints attractiveness ratings were higher with music (M = 70.40, SD = 5.04) than without music (M = 62.30, SD = 5.36). This effect was significant (*p* = .018).
-
-Repeated measures
-=============================================================
-- Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
-- This is bad, because we violate the independence assumption in the standard ANOVA.
-- This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
-- ${SS}_{total} = {SS}_{betweenParticipants} + {SS}_{withinParticipants}$
-- ${SS}_{withinParticipants} = {SS}_{model} + {SS}_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
-- Result: Less unexplained variance and higher power.
-- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
-- In the repeated measures ANOVA, we can separate them!
-
-Repeated measures data matrix
-=============================================================
-- Almost the same as for the standard one-way ANOVA
-  - Columns are factor levels, rows are **participants**
-- $i$ = factor level, $p$ = number of factor levels
-- $m$ = **participant**, $n$ = number of **participants**
-
-$$
-\begin{matrix}
-x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
-x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
-\end{matrix}
-$$
-
-Calculating the sums of squares
-=============================================================
-- The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
-- ${df}_{total} = n\cdot p-1$
-- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
-where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
-- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
-where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
-
-Calculating the sums of squares (2)
-=============================================================
-- Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
-- The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
-  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
-  
 Degrees of freedom
 ============================================================
-- ${df}_{total} = p\cdot n - 1$
-- ${df}_{betweenParticipants} = n - 1$
-- ${df}_{withinParticipants} = n \cdot (p - 1)$
-- ${df}_{model} = p - 1$
-- ${df}_{residual} = (n-1) \cdot (p - 1)$
-  - Where $p$ is the number of factor levels and $n$ is the number of participants
+- Wait, what is the `1` in `=1-CHISQ.DIST(4,1,TRUE)`?
+    - That's the degrees of freedom. Remember, the degrees of freedom are the number of independent $z^2$ variables we are summing up.
+    - Why only one, when we are summing two terms?
+$$z^2 = \chi_1^2 = \frac{(f_{o(1)}-f_{e(1)})^2}{f_{e(1)}} + \frac{(f_{o(2)}-f_{e(2)})^2}{f_{e(2)}}$$
+- In this expression, the second term is determined by the first, since $f_{o(2)} = n - f_{o(1)}$.
+    - There is only one term that can vary freely, hence $df(\chi^2) = 1$.
+    
+Generalising the chi-square test
+============================================================
+- Why use $\chi^2$ here at all, when we could just take the square root and do a *z*-test?
+- The answer is that this whole principle generalises to the **multinomial** distribution, i.e. cases where we have more than two groups.
+- In the multinomial distribution, we have more than $n=2$ groups, but the general equation stays the same:
+$$\chi_{n-1}^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$    
+- Our $\chi^2$ is distributed with $n-1$ degrees of freedom, where $n$ is the group size.
 
-Test statistic
-==============================================================
-- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
-- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
-
-Quick example by hand
+Try it
 =============================================================
-- 10 cats were asked to try 3 different brands of cat food: Whiskers, Paws, and Industrial Waste. They received the same amount of each food after not having eaten for 8 hours. The dependent variable amount of food (in grammes) that they ate of each brand. Do cats prefer one or more brands over others or do they eat the same amount of each?
-
-Copy this table into Excel (or SPSS)
-==============================================================
-```{r echo = F}
-set.seed("3")
-n_participants <- 10
-overall_intercept <- 100
-
-Subject <- rep(1:n_participants, each = 3)
-Brand <- rep(1:3)
-
-subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
-
-brand_means <- c(25, 25, -50)
-
-random_error <- rnorm(length(Subject), mean = 0, sd = 10)
-
-df <- data.frame(Subject, Brand)
-
-df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
-
-df$Subject <- factor(df$Subject, labels = c("Cali",
-	"Callie",
-	"Casper",
-	"Charlie",
-	"Chester",
-	"Chloe",
-	"Cleo",
-	"Coco",
-	"Cookie",
-	"Cuddles"))
-
-df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
-
-library(reshape)
-df_m <- melt(df, measure = "eaten")
-df_c <- cast(df_m, Subject ~ Brand)
-kable(df_c)
+- The following table is from a dice roll experiment. Use the $\chi^2$ test to decide whether the die was fair or not.
+```{r echo = F,results='as.is'}
+library(knitr)
+set.seed(238239)
+dice_table <- data.frame(table(sample(1:6,100,replace = TRUE)))
+names(dice_table) <- c("$x_i$", "$f_{o(i)}$")
+kable(dice_table)
 ```
 
-Doing the ANOVA in Excel
+More fun things to do with chi-square
+============================================================
+- Remember, we still have the issue of usually not knowing anything at all about the true population mean $\mu$ and the true population standard deviation $\sigma$
+- Instead, we have to estimate them using the sample mean $\bar{x}$ and the sample standard deviation $s$.
+    - Both of this is not a problem at high sample sizes (as you can see very clearly in Julian's video and in our simulations here)
+    - But we need a way to account for $s$ being less accurate at low sample sizes.
+    
+Solution: The t-distribution
+=============================================================
+- If we divide a *z*-value by the square root of an *independent* $\chi^2$ value divided by n, we get a *t*-value: $$t_n = \frac{z}{\sqrt{\chi_n^2/n}}$$
+- The *t*-value has **degrees of freedom** as well -- it inherits them from the $\chi^2$ value in its denominator.
+- Practically, the denominator makes the distribution have "heavier" tails -- exactly what we need for our problem.
+
+Let's plot some t-distributions
 ==============================================================
-- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
-- Calculate your Sums of Squares
-  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
-    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
-  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
-  
-Sums of squares (continued)
+
+```{r, echo = F}
+library(ggplot2)
+x <- seq(from = -5,by = .01,to = 5)
+ggplot(data.frame(x = x), aes(x = x)) + 
+  stat_function(fun = dt, args=list(df = 1), aes(linetype = "df = 1")) +
+  stat_function(fun = dt, args=list(df = 2), aes(linetype = "df = 2")) +
+  stat_function(fun = dt, args=list(df = 4), aes(linetype = "df = 4")) +
+  stat_function(fun = dt, args=list(df = 10), aes(linetype = "df = 10")) +
+  scale_linetype_discrete(limits = paste("df", "=", c(1,2,4,10)))+ labs(linetype = NULL, y = "f(x)")
+```
+
+The t-distribution vs. the normal distribution
+============================================================
+- Solid = normal distribution, dashed = *t*-distribution
+
+```{r, echo = F}
+## plot multiple figures:
+## replace ugly par... specification with 
+## something easier to remember:
+multiplot <- function(row,col){
+     par(mfrow= c(row,col), pty = "s")
+   }
+
+range <- seq(-4,4,.01)  
+ 
+multiplot(2,2)
+
+ for(i in c(2,5,15,20)){
+   plot(range,dnorm(range),type="l",lty=1,
+        xlab="",ylab="",
+        cex.axis=1)
+   lines(range,dt(range,df=i),lty=2,lwd=1)
+   mtext(paste("df=",i),cex=1.2)
+ }
+```
+
+The t-test
 ===============================================================
-- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
-- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
-- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
-- Then calculate the degrees of freedom and the MS as shown earlier
-- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+- Solution: assume that the sample means aren't normally distributed, but rather *t*-distributed
+- Why *t*?
+  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about the name yet).
+  - The higher df, the closer the *t*-distribution is to the standard normal distribution
+  - For lower df, the *t*-distribution has "heavy tails", meaning that it's wider
+    - This reflects greater uncertainty.
 
-Final step
-==============================================================
-- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
-- For comparison: ANOVA output form R
+t as a test statistic
+==========================================================
+- Once again, the mathematical proof of this would take too long, but you can show that $$t_{n-1} = \frac{\bar{x} - \mu_0}{\hat{\sigma}_{\bar{x}}}$$, where $\mu_0$ is the mean according to the null hypothesis and $\hat{\sigma}_{\bar{x}}$ is the estimate of the standard error of the mean (based on the sample standard deviation) is *t*-distributed with $df = n-1$ degrees of freedom.
+
+Back to my little example
+==========================================================
+- Consider the following scenario:
+
+> I have collected 10 responses to my class evaluation (the other students never turned their forms back in). The mean of the responses is 0 (apathy) and the sd is 1. Given that these 10 responses are just a small sample of the population, and that the population I'm really interested in is the population of all current and future Adv Stats students, is there anything I can say about the true population mean? Can I at least conclude that students didn't absolutely hate this class?
+
+Computing the 95% CI
+===========================================================
+- Using the *t*-distribution, we can compute CIs from samples as follows: get the lower and upper bounds from the *t*-distribution (which one depends on the sample size, e.g. in this we have $n = 10$, so we will use a *t*-distribution with $df = n-1 = 9$):
+- Lower bound (remember, we want to exclude the extreme low 2.5%): `=T.INV(0.025, 9)` (where 9 is the df)
+    - Result: `r qt(.025, 9)`
+- Upper bound (remember, we want to exclude the extreme high 2.5%): `=T.INV(0.975, 9)` (where 9 is the df)
+    - Result: `r qt(.975, 9)`
+- No surprise: the *t*-distribution is symmetrical
+    
+Computing CIs
+==========================================================
+- Then take the upper and lower bounds and compute the CIs as follows:
+$\bar{x} = \mu_{\bar{x}} \pm 2.262 \cdot \frac{s}{\sqrt{n}}$
+- Remember, we estimated $\mu_{\bar{x}}$ using the sample mean (in our example, $\bar{x} = 0$) and the population variance $\sigma$ using the sample standard deviation (in our example, $s = 1$).
+- CI: $0 \pm 2.262 \cdot \frac{1}{\sqrt{10}} = 0 \pm .7153$
+- Lower bound: -.7153
+- Upper bound: .7153
+
+Back to our example
+===========================================================
+- Hey, there is a good chance that my current and future students don't absolutely hate me (yet)! 
+  - The lowest mean in the CI is -.7153, which maybe translates to "apathetic but slightly worried."
+- But they don't love me either:
+  - The highest mean in the CI is .7153, which maybe translates to "apathetic but slightly hopeful."
+- Of course, the true mean is actually outside 5% of the intervals calculated like this.
+
+What does the CI of the sample mean mean? (sorry)
+===========================================================
+- Remember, we are reversing the idea that the sample mean has a 95% probability to be within the 95% confidence interval around the population mean.
+- When we calculate a 95% CI from a *sample* this **DOES NOT MEAN** that there is a 95% probability that the population mean is within this 95% CI.
+- The true mean either is or is not in this particular CI.
+- Rather, it means that if you take a lot of samples and compute the CI around the sample mean, 95% of those CIs will contain the true population mean.
+- In other words, the CI bounds are random variables, but the population mean isn't.
+- (In Bayesian statistics, you can actually get something equivalent to the first definition -- a 95% credible interval.)
+
+Let's test this
+==========================================================
+- Let's get 10 samples from a normal distribution, then get CIs from them and see how often they contain the true mean.
+- We'll do this in class.
+- Spoiler:
+  - The proportion of CIs that does not contain the true mean is larger than 5%! This is because the normal distribution is narrower than the *t*-distribution at low dfs.
+  - Be **very** careful! If you *think* you have a 95% CI, but you actually have a 90% CI or worse, you are prone to making errors in interpreting the results.
+    - Horrible, money-wasting, science-distorting, extermely expensive errors!
+
+Hypothesis tests
+=========================================================
+- In a way, by calculating the CI we already have a way to test hypotheses
+- Let's say we got a 95% CI from our sample with a lower bound of 2 and an upper bound of 3.
+- Let's use the simplest null hypothesis possible
+  - Null hypothesis: the mean of the population that the sample came from is 0
+  - $H_0: \mu = 0$
+  - Given the 95% CI above, can we reject the null hypothesis?
+    - And if so, what is the chance that we're wrong?
+  - Answer: Yes, we can, since 0 is not part of the CI.
+    - There is the possibility that we are wrong, though, since only 95% of the CIs will contain the true population mean.
+    - This is called the type I error, and its probability here (called $\alpha$)is 5%.
+
+Example
+===========================================================
+- Remember my survey? The CI did not contain -3, so I can conclude (with an $\alpha$ of 5%), that the average member of the population of current and future Adv Stats students attitude towards me is not intense hatred. Relief!
+
+Two-tailed t-tests
+============================================================
+- Instead of computing the CI from the *t*-value, we can also just take the *t*-value itself as a measure of how far the sample mean is away from the mean specified in the null hypothesis.
+- We can determine a critical *t*-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 9, $t_{crit}$ for the upper bound is `=T.INV(.975,9)`, which gives us`r qt(.975, df = 9)` and $t_{crit}$ for the lower bound is `=T.INV(.025,9)`, which gives us`r qt(.025, df = 9)`
+- Note that the *t*-distribution is symmetrical
+In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
+
+What about one-tailed t-tests?
+===========================================================
+- If we are absolutely sure of the direction of the effect, then we could use a *t*-test that only rejects the null hypothesis when the *t*-value is greater than $t_{crit}$ or if it is smaller than $t_{crit}$ (depending on what direction we want to test for).
+- In this case, our $t_{crit}$ can be a little closer to 0, since the entire 5% rejection area is in one tail only: `=T.INV(.95,9)`, which gives us `r qt(.95, df = 9)`.
+- But be careful, if the effect is in the wrong direction (even if it's ridiculously strong in the wrong direction), we can't reject the null hypothesis with that test.
+- This is one of the weird cases in null hypothesis significance testing (NHST) where our intentions can determine the results of the test. Bayesian statisticians are right to complain about this.
+
+Example
+===========================================================
+> I'm trying a new type of medication to help insomniac patients sleep better. Each of my 5 patients reports how much longer (or shorter) they have been sleeping (in hours) after taking the medication compared to before. The numbers are below. Based on this, can I conclude that the medication has changed my patients' sleep? Or are the variations that the patients observed random and unrelated to the intervention?
+
 ```{r, echo = FALSE}
-summary(ezANOVA(data = df, wid = Subject, within = Brand, dv = eaten, return_aov = TRUE)$aov)
+(sleep_times <- round(rnorm(5,1,1),2))
+```
+Your turn. What is the null hypothesis?
+
+Example solution
+===========================================================
+The $H_0$ is that the true mean of the population is 0.
+```{r}
+t.test(sleep_times)
+```
+-If p $\le$ .05: reject the null hypothesis.
+- Try this in SPSS!
+
+Power simulations
+==========================================================
+- For simple (and even more complex) designs, you can compute power analytically. I will show you how to do this using a program called GPower.
+- But simulations are a lot more intuitive!
+- Let's go back to the sleep example and assume that the true mean was 1 (that means that on average, people get one hour more sleep when using the medication) and the sd was 1.
+
+Power simulations plot
+==========================================================
+- Remember, $t_{crit} = `r qt(.975, 4)`$
+
+```{r, echo = FALSE}
+t_test_sim <- function(n, mean = 1, sd = 1){
+  t_results <- t.test(rnorm(n, mean, sd))
+  t_results$statistic}
+simulation_results <- replicate(1000, t_test_sim(5, 1, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
 ```
 
-Post-hoc comparisons
-==============================================================
-- Compute pairwise *t*-tests
-  - For each subject, calculate the differences between the conditions
-  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
-  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
-  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
-  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
+Not so great!
 
-One-way repeated measures ANOVA in SPSS
-==============================================================
-- Watch Andy Johnson's video on myBU and follow along with the data set (`Badger art identification.sav`).
+How to increase power
+=======================================================
+- Let's try a higher true mean ($\mu = 2$):
 
-Assumptions
-==============================================================
-- Essentially the same as for the independent ANOVA
-    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
-    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
+```{r, echo =F}
+simulation_results <- replicate(1000, t_test_sim(5, 2, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
+```
 
-What is sphericity?
-==============================================================
-- The variances of the differences between treatment levels should be roughly equal ("spherical")
-- For example, it could be that all cats react similarly to the first two brands
-    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
-- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
-    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
-- This could make the ANOVA anticonservative ($\alpha$ is inflated)
+How to increase power (2)
+=======================================================
+- The standard deviation (i.e. the noise) in the population is lower (people don't vary as much in their response to the medication)
+- Let's try a true value of $\sigma = 0.5$
 
-Testing for sphericity violations
-=================================================================
-- Mauchly's Test for Sphericity
-- Performed automatically by SPSS
-- If it's significant, sphericity is violated.
-- In this case, we're OK
-- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
-- If you only have two levels, there is only one difference, so differences can't be unequal
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_sim(5, 1, .5))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
 
-Dealing with sphericity violations
-==================================================================
-- Good news: It's easy. 
-- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
-    - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
-- You do this by multiplying the ${df}_{Model}$ and ${df}_{Error}$ by a correction factor $\epsilon$
-- Two ways to calculate $\epsilon$:
-    - Greenhouse-Geisser
-    - Huynh-Feldt
-- Recommendation: If Greenhouse-Geisser $\epsilon < .75$, use it. Otherwise, use Huynh-Feldt.
-   - Of course, if Mauchly's test is not significant, use neither!
-- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
+```
 
-Testing for normality
-===================================================================
-- You can do the Shapiro-Wilk test in SPSS
-- Normality isn't usually *much* of an issue, especially if your group sizes are equal
-  - The **ANOVA is robust**
+How to increase power (realistically!)
+=======================================================
+- You don't really have any direct control over population mean (i.e. effect size) or sd (i.e. noise). Let's focus on the one variable that you do have control over.
+- The sample size is larger: let's try $n=10$
 
-Post-hoc tests
-===================================================================
-- You can again use paired *t*-tests to compare factor levels
-- Remember to do Bonferroni corrections if you do these tests by hand
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_sim(10, 1, 1))
+hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 4),2), ": ", sum(abs(simulation_results) > qt(.975, 4),2)/length(simulation_results)), 100)
+```
+
+Double-checking our results
+=========================================================
+- Let's just check analytically that we have this correctly: If we want to show in the one-sample *t*-test that a mean of 1 is different from 0 (when $sd = 1$), we need about 10 subjects. I will show you how to use GPower for that.
+
+Setting yourself up for success (or failure)
+=========================================================
+- You don't want to run an underpowered study. Most likely, you'll get a null result that tells you nothing about the true state of the world.
+- How can you avoid this? 
+  - Run a realistic number of participants so you reach acceptable power (the APA recomments .8).
+
+
+Exercise
+========================================================
+>An experimenter knows for a fact that the average number of friends people have on Facebook is 70, with an sd of 10. She knows this because she works for Facebook and has access to all your personal data. The experimenter wants to know if people who post lots of photos of cats have more or fewer friends than the average Facebook user. Automatically tagging cat photos is hard, so our experimenter just asks an unpaid intern to compile a sample of 100 cat-posting people and find out their friend numbers. How big does the effect (in friends gained/lost) have to be so it would be detectable at an acceptable power level of .8?
+
+Solution
+========================================================
+- Effect size is defined as
+$$d = \frac{\mu_1 - \mu_2}{\hat{\sigma}}$$
+- We're doing a t-test where we want to know if the group mean (for a group size of $n=100$) comes from a known population ($\mu = 70, \sigma = 10$)
+- We want to find the necessary effect size given the sample size and the standard error of the mean. The test would be two-tailed, since we don't know the direction of the effect. The power we want is $(1-\beta) = .8$
+
+In GPower
+========================================================
+- In GPower, select `t tests` as `Test family` and `Means: Difference from constant (one sample case)` as `Statistical test`. As `Type of power analysis`, select `Sensitivity: Compute required effect size`
+- In the `Input Parameters` area, select `Two` for `Tails`, leave the $\alpha$ at `.05`, set the `Power` to `0.8`, and set the `Total sample size` to `100`. You get an effect size of $d = `r power.t.test(n = 100, sd = 1, power = .8, type = "one.sample", alternative = "two.sided")$delta`$
+- A difference in as little as $d \cdot \sigma = .283 \cdot 10=  2.83$ friends would be detectable.
+
+Don't cheat!
+========================================================
+- How about the following strategy? 
+
+> Just run the hypothesis test on the data after every new sample and stop as soon as you get a significant result.
+
+- Let's see just what happens to $\alpha$ if you do that.
+- Run a simulation where there is no effect (i.e. where we know the $H_0$ is true)
+
+```{r, echo = FALSE}  
+t_test_cheating_sim <- function(n_max = 30, n_increments = 2, sd = 1){
+  samples <- NULL
+  significant <- FALSE
+  
+  while(length(samples) <= n_max & significant == FALSE){
+      samples <- c(samples, rnorm(n_increments, mean = 0, sd = sd))
+      significant <- t.test(samples)$p.value <= .05
+    }
+  return(significant)
+  }
+```
+
+The consequences of cheating
+======================================================
+Let's run this simulation 1000 times and make a plot with the results:
+
+```{r, echo = F}
+simulation_results <- replicate(1000, t_test_cheating_sim(n_max = 30, n_increments = 2, sd = 1))
+barplot(table(simulation_results), names.arg = c("no","yes"),xlab= "Significant", ylab = "Number of simulations", main = paste0("Proportion of significant results: ", sum(simulation_results)/length(simulation_results)), 100)
+```
+
+The consequences of cheating (2)
+======================================================
+- Holy inflated Type I error rate, Batman!
+  - $\alpha$ is at 25%, instead of 5% where it should be.
+- Unfortunately, this strategy of using stopping rules ("data peeking") is quite common.
+  - Solution: do a power analysis, set your sample size beforehand, and stick to it!
+
+Testing more interesting hypotheses
+==========================================================
+- So far, we have been testing the null hypothesis that our sample mean is 0.
+- This is not what we usually do in Psychology.
+- Instead, we want to know if there is a significant difference between the means of two (or more) samples.
+  - For example, you might give only one group an intervention against anxiety, with the other one serving as the control.
+    - Does the intervention work? 
+      - Do people in the treatment group report lower anxiety? 
+      - Can we generalise this to the population?
+      - Should we use this intervention in clinical practice?
+  - A lot of effort and money may be wasted if you get these questions wrong.
+  
+The two-sample t-test
+==========================================================
+- Remember, we are comparing two samples now. We'll call the sample means $\mu_1$ and $\mu_2$.
+- Our null hypothesis is $H_0: \mu_1 = \mu_2$
+- We can rephrase this as $H_0: \mu_1 - \mu_2 = \delta = 0$
+- We already know the logic of this: we just want to find out if $d$ ($\delta$ = true population difference, $d$ = sample difference)is extreme enough so we can reject the $H_0$.
+- Let's see how $\delta$ is distributed.
+- We could do this analytically, using the things we've learned about expected values, but I'll leave that to those of you who are really really interested and just give you the end results.
+
+The two-sample t-test (4)
+=========================================================
+- We're looking for the distribution of sample differences $x_1 - x_2$:
+- If we knew the population standard deviation, we could use the following formulas:
+$$
+\begin{aligned}
+\mu_{\bar{x}_1 - \bar{x}_2} &= \mu_1 - \mu_2\\
+\hat{\sigma}_{\bar{x}_1 - \bar{x}_2} &= \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}
+\end{aligned}
+$$
+- Based on this, we could calculate CIs or just a *z*-value
+- Remember our $H_0: \mu_1 - \mu_2 = 0$ 
+- The *z*-value would then be:
+$z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1- \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}} = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}$
+
+- (since our null hypothesis is that $\mu_1 - \mu_2 = 0$)
+
+The two-sample t-test (5)
+==========================================================
+- Of course, in real life we don't know the population sd
+- So we have to estimate it using $s^2$
+- This would be a *t*-value, not a *z*-value
+
+$t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
+
+- Only problem: what is the df of that test? If the variances are equal, it's easy: $df = n_1+n_2-2$
+  - There are some shortcuts that we can take if the sample sizes and population variances are the same, but is there a general solution?
+- We could just use the lower of the sample sizes, but this will cost us power
+- This was actually a big problem in statistics, but B. L. Welch found an approximate solution (called *Welch's t-test*)
+- You can look the details up on Wikipedia, but SPSS knows them and will apply them automatically.
+
+The dependent t-test for paired samples
+==========================================================
+- This is actually a lot easier. Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample *t*-test to check if they are 0.
+- First, we calculate the mean and the standard deviation of our sample of $n$ difference values $d_i = x_{i1}-x_{i2}$:
+$$ 
+\begin{aligned}
+\hat{\mu}_d = \bar{d} &= \frac{\sum\limits_{i=1}^{n}d_i}{n}\\
+\hat{\sigma}_d = s_d &= \sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{d})^2}{n-1}} \\
+\hat{\sigma}_{\bar{d}} &= \frac{\hat{\sigma}_d}{\sqrt{n}} = \frac{\hat{s}_d} {\sqrt{n}}\\
+                      &= \frac{\sqrt{\frac{\sum\limits_{i=1}^{n}(d_i - \bar{d})^2}{n-1}}}{\sqrt{n}}
+\end{aligned}
+$$
+- Here, $n$ is the number of sample *pairs*
+
+
+The dependent t-test for paired samples (2)
+==========================================================
+- Then we can calculate the *t*-value:
+$$t = \frac{\bar{d} - \mu_d}{\hat{\sigma}_d}$$, where $\mu_d$ is the population mean for the difference given that the $H_0$ is true. If the $H_0$ is that both samples are the same ($\mu_d = 0$), this simplifies to
+$$t = \frac{\bar{d}}{\hat{\sigma}_d}$$
+-We can estimate the standard error of the difference mean $\hat{\sigma}_{\bar{d}}$ from the standard deviation of the difference: $$\hat{\sigma}_{\bar{d}} = \frac{s_d}{\sqrt{n}}$$
+    -Plugging this into the equation for *t*, we get: $$t_{n-1} =  \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
+- The resulting *t*-value will have a df of $n-1$, where $n$ is the number of sample pairs.
+- Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.

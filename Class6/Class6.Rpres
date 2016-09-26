@@ -771,7 +771,6 @@ Post-hoc tests
 - You can again use paired *t*-tests to compare factor levels
 - Remember to do Bonferroni corrections if you do these tests by hand
 
-
 Transformations
 ========================================================
 - In some cases, our dependent variable will not be normally distributed

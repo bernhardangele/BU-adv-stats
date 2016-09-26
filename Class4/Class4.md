@@ -16,52 +16,32 @@ Linear regression
     
 Cat food and weight
 =========================================================
-```{r, echo=FALSE}
-library(knitr)
-n <- 30
-intercept <- 100
-options(digits = 3, scipen = 4)
 
-set.seed("126")
-cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
-cat_age <- rnorm(n, mean = 60, sd = 24) # cat age in months
-cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
-
-food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
-catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
-catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
-
-
-print_p <- function(p){
-  if(p < .01) return("*p* < .01")
-  if(p <= .05) return(paste("*p* =", p))
-  if(p > .05) return("*p* > .05")
-}
-```
 
 - This table actually has 30 rows, but I'm just showing you the first 6.
 - You can find the full data set on myBU.
 - You have cat weight in kg and cat food eaten in g.
 - Looks like there might be a positive relationship here.
 
-```{r, results='asis', echo = FALSE}
-kable(head(catfood))
-```
+
+| CatWeight| FoodEaten|
+|---------:|---------:|
+|      5.37|      96.8|
+|      5.40|      97.9|
+|      4.27|      96.7|
+|      5.95|     102.5|
+|      4.47|      79.6|
+|      4.93|      71.6|
 
 Let's plot it
 ==========================================================
-```{r, echo = FALSE}
-plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
-```
+![plot of chunk unnamed-chunk-3](Class4-figure/unnamed-chunk-3-1.png)
 
 Fitting a line to the data
 ==========================================================
 - Let's put a line through it
 
-```{r, echo = FALSE}
-plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
-abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
-```
+![plot of chunk unnamed-chunk-4](Class4-figure/unnamed-chunk-4-1.png)
 
 - Looks like we have a strong positive relationship:
     - The heavier the cat (variable $x$), the more food eaten (variable $y$).
@@ -89,12 +69,7 @@ The Least-Squares regression line
 =========================================================
 - Here, I've plotted the deviations of the predicted values (on the line) from the actual values. These are also called the **residuals**.
 
-```{r echo = FALSE}
-plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
-abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
-pre <- predict(mod1) # plot distances between points and the regression line
-segments(catfood$CatWeight, catfood$FoodEaten, catfood$CatWeight, pre, col = "red")
-```
+![plot of chunk unnamed-chunk-5](Class4-figure/unnamed-chunk-5-1.png)
 
 - For the simple case where all we do is predict one $y$ from one $x$ variable, the $b$ value is really easy to calculate. We start with the covariance.
 
@@ -127,7 +102,7 @@ $$r^2 = \frac{{SS}_{model}}{{SS}_{total}}$$
 - $\frac{{SS}_{model}}{{SS}_{total}}$ is the same as the square of the correlation coefficient $r$.
     - Fun activity at home: Work out why!
 - In multiple regression, we call the coefficient of determination $R^2$ instead of $r^2$. Here, we have multiple predictors and multiple correlations, so $R^2$ doesn't correspond to the square of any one of them. It still tells you how much variance your model explains, though.
-- In our example: $r^2 = `r cor(catfood$CatWeight, catfood$FoodEaten)^2`$
+- In our example: $r^2 = 0.154$
 
 Hypothesis tests
 ==========================================================
@@ -176,47 +151,42 @@ Testing coefficients
 
 Back to our example
 =============================================================
-```{r, echo = FALSE}
-plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
-abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
-pre <- predict(mod1) # plot distances between points and the regression line
-segments(catfood$CatWeight, catfood$FoodEaten, catfood$CatWeight, pre, col = "red")
-```
+![plot of chunk unnamed-chunk-6](Class4-figure/unnamed-chunk-6-1.png)
 - We can calculate $b$ from the data by first getting the covariance:
-    - $cov(CatWeight,FoodEaten) = \frac{\sum\limits_{i = 1}^n {(CatWeight_i - \bar{CatWeight})\cdot(FoodEaten_i - \bar{FoodEaten})}}{n-1} = `r with(catfood, cov(CatWeight, FoodEaten))`$
-- Then $$b = \frac{cov(CatWeight, CatFood)}{s_{CatWeight}^2} = \frac{`r with(catfood, cov(CatWeight, FoodEaten))`}{`r var(catfood$CatWeight)`} = `r (b <- with(catfood, cov(CatWeight, FoodEaten))/var(catfood$CatWeight))`$$
+    - $cov(CatWeight,FoodEaten) = \frac{\sum\limits_{i = 1}^n {(CatWeight_i - \bar{CatWeight})\cdot(FoodEaten_i - \bar{FoodEaten})}}{n-1} = 3.766$
+- Then $$b = \frac{cov(CatWeight, CatFood)}{s_{CatWeight}^2} = \frac{3.766}{0.367} = 10.261$$
 
 Back to our example (2)
 ===============================================================
-- Now calculate the standard error of $b$ (replacing $CatWeight$ with $x$ for better readability: $$\hat{\sigma_b^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}} = \frac{\frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}}{(n-1)\cdot s^2_{x}} = \frac{\frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2}}{(`r nrow(catfood)` - 1)\cdot `r var(catfood$CatWeight)`} = `r (var_b <- sum(resid(mod1)^2)/(nrow(catfood)-2)/((nrow(catfood) - 1)*var(catfood$CatWeight)))`$$
-- And the $t$-value: $$t_{`r nrow(catfood)-2`} = \frac{b}{\sqrt{\hat{\sigma_b}^2}} = \frac{`r b`}{\sqrt{`r var_b`}} = \frac{`r b`}{`r sqrt(var_b)`} = `r b/sqrt(var_b)`$$
-- And the *p*-value (look it up in Excel): $p(|t_{`r nrow(catfood)-2`}| = `r b/sqrt(var_b)`) = `r format(pt(b/sqrt(var_b), nrow(catfood)-2, lower.tail = FALSE),digits = 2)`$
-- Remember, we are doing a two-tailed test, so we have to multiply the p-value by 2 if we want to compare it to $\alpha = .05$: $p =`r format(2*pt(b/sqrt(var_b), nrow(catfood)-2, lower.tail = FALSE),digits = 2)`$ 
+- Now calculate the standard error of $b$ (replacing $CatWeight$ with $x$ for better readability: $$\hat{\sigma_b^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}} = \frac{\frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}}{(n-1)\cdot s^2_{x}} = \frac{\frac{6146.544}{30 - 2}}{(30 - 1)\cdot 0.367} = 20.626$$
+- And the $t$-value: $$t_{28} = \frac{b}{\sqrt{\hat{\sigma_b}^2}} = \frac{10.261}{\sqrt{20.626}} = \frac{10.261}{4.542} = 2.259$$
+- And the *p*-value (look it up in Excel): $p(|t_{28}| = 2.259) = 0.016$
+- Remember, we are doing a two-tailed test, so we have to multiply the p-value by 2 if we want to compare it to $\alpha = .05$: $p =0.032$ 
 - Looks like we can reject the $H_0$ this time: Heavier cats tend to eat more.
 
 Can we also do an F-test?
 ================================================================
 - Of course we can!
-- $MS_{model} = \frac{SS_{model}}{df_{model}} = \frac{\sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2}{1} = `r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`$
+- $MS_{model} = \frac{SS_{model}}{df_{model}} = \frac{\sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2}{1} = 1120.577$
   - $df_{model}$ is the number of slopes that we're estimating.
-- $MS_{residual} = \frac{SS_{residual}}{df_{residual}} = \frac{\sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2}{n-2} = \frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2} = `r sum(resid(mod1)^2)/(nrow(catfood) - 2)`$
-- $F_{(1, `r nrow(catfood) - 2`)} = \frac{MS_{model}}{MS_{residual}} = \frac{`r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`}{`r sum(resid(mod1)^2)/nrow(catfood) - 2`} = `r (my_f <- sum((predict(mod1)-mean(catfood$FoodEaten))^2)/(sum(resid(mod1)^2)/(nrow(catfood) - 2)))`$
-- $p(F_{(1, `r nrow(catfood) - 2`)} = `r my_f`) = `r format(pf(my_f, 1, nrow(catfood) - 2, lower.tail = FALSE), digits = 2)`$ 
-- Guess what? The square root of the *F*-value is our *t*-value. Again, this only works if we have one single predictor: $\sqrt{F_{(1,28)}} = t_{28} = `r sqrt(my_f)`$
+- $MS_{residual} = \frac{SS_{residual}}{df_{residual}} = \frac{\sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2}{n-2} = \frac{6146.544}{30 - 2} = 219.519$
+- $F_{(1, 28)} = \frac{MS_{model}}{MS_{residual}} = \frac{1120.577}{202.885} = 5.105$
+- $p(F_{(1, 28)} = 5.105) = 0.032$ 
+- Guess what? The square root of the *F*-value is our *t*-value. Again, this only works if we have one single predictor: $\sqrt{F_{(1,28)}} = t_{28} = 2.259$
 
 Summary: What did we find?
 ============================================================
-- The best fitting line for the cat food data intersects the $y$-axis at the point (0, `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]`).
+- The best fitting line for the cat food data intersects the $y$-axis at the point (0, 51.885).
   - (We never bothered to estimate $a$ by hand, but that's what you would get.)
-  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` g of food makes no sense, since a cat with 0 kg weight is not a cat.
+  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat 51.885 g of food makes no sense, since a cat with 0 kg weight is not a cat.
   - The linear function doesn't care, of course. It knows nothing about our data and just specifies a line.
-- The slope might be more useful: It says that for each kg of extra weight, a cat will eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` more grammes of food.
-    - Using this information, we can predict that a giant 8 kg cat would eat $`r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` + `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` \cdot 8 = `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8`$ g of food.
+- The slope might be more useful: It says that for each kg of extra weight, a cat will eat 10.261 more grammes of food.
+    - Using this information, we can predict that a giant 8 kg cat would eat $51.885 + 10.261 \cdot 8 = 133.973$ g of food.
     
 Summary: Predictions and residual errors
 ===============================================================
 - Of course, our prediction is likely to be at least a little off.
-- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of $e_i = `r 170 - (lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8)`$.
+- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of $e_i = 36.027$.
   - This is called the residual error.
 - More formally, the **population** regression equation looks like this (where $x_i$ are the individual values for the $x$ variable, and $y_i$ are the corresponding values for the $Y$ variable):
     - $y_i = \alpha + \beta_1 x_i + \epsilon_i$
@@ -249,10 +219,15 @@ Example
 ==================================================================
 - Let's assume that, apart from each cat's weight in kg, we also have its age in months:
 
-```{r, results='asis', echo = FALSE}
-kable(head(catfood_age))
-write.csv(catfood_age, file = "catfood_age.csv")
-```
+
+| CatWeight| CatAge| FoodEaten|
+|---------:|------:|---------:|
+|      5.37|  25.84|      96.8|
+|      5.40|  18.77|      97.9|
+|      4.27|  62.42|      96.7|
+|      5.95|  30.85|     102.5|
+|      4.47|  21.75|      79.6|
+|      4.93|   9.02|      71.6|
 - Does adding age  to the model improve it?
 - Open the file `catfood_age.csv` from myBU in SPSS
 
@@ -262,17 +237,39 @@ The regression output
 - First, let's fit the model without the interaction.
 - For your convenience (and to make sure you got things right), here's the output from R
 
-```{r, echo = FALSE}
-summary((lm_catfood <- lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age)))
+
+```
+
+Call:
+lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-20.81  -5.41   1.49   4.46  27.94 
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -10.4377    19.7290   -0.53      0.6    
+CatWeight    17.7645     3.5024    5.07 0.000025 ***
+CatAge        0.4555     0.0847    5.38 0.000011 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 10.5 on 27 degrees of freedom
+Multiple R-squared:  0.592,	Adjusted R-squared:  0.562 
+F-statistic: 19.6 on 2 and 27 DF,  p-value: 0.00000557
 ```
 
 Interpreting the coefficients
 =================================================================
 - Let's look at just the coefficients:
 
-```{r, results='asis', echo = FALSE}
-kable(summary(lm_catfood)$coefficients)
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |  -10.438|     19.729|  -0.529|              0.601|
+|CatWeight   |   17.765|      3.502|   5.072|              0.000|
+|CatAge      |    0.456|      0.085|   5.381|              0.000|
 
 - Looks like both the coefficient for CatWeight and the coefficient for CatAge are significantly different from 0
 
@@ -280,9 +277,13 @@ Now let's add the interaction term
 =================================================================
 - Note that SPSS is a bit annoying about this, making you calculate the interaction term yourself
 
-```{r, echo = FALSE}
-kable(summary((lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)))$coef)
-```
+
+|                 | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:----------------|--------:|----------:|-------:|------------------:|
+|(Intercept)      |   22.568|     46.302|   0.487|              0.630|
+|CatWeight        |   11.357|      8.853|   1.283|              0.211|
+|CatAge           |   -0.067|      0.668|  -0.101|              0.920|
+|CatWeight:CatAge |    0.103|      0.131|   0.789|              0.437|
 - Now nothing is significant! What is going on?
 - Important: these *t*-tests test the null hypothesis that each individual coefficient is 0 **given that all the other predictors are in the model as well**.
 
@@ -290,9 +291,13 @@ Why do we get conflicting results?
 =================================================================
 - This is weird: We didn't have an effect for CatAge when we looked at the *t*-values, but we have when doing F-tests?
 
-```{r, results='asis', echo = FALSE}
-kable(anova(lm_catfood_interaction))
-```
+
+|                 | Df| Sum Sq| Mean Sq| F value| Pr(>F)|
+|:----------------|--:|------:|-------:|-------:|------:|
+|CatWeight        |  1| 1120.6|  1120.6|  10.058|  0.004|
+|CatAge           |  1| 3180.4|  3180.4|  28.546|  0.000|
+|CatWeight:CatAge |  1|   69.4|    69.4|   0.623|  0.437|
+|Residuals        | 26| 2896.7|   111.4|      NA|     NA|
 
 - The answer lies in **what each test compares**. This may sound nitpicky, but it's really important!
 
@@ -309,23 +314,34 @@ Types of sums of squares for the F-test
 
 Example: Type I sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
-kable(anova(lm_catfood_interaction))
-```
+
+|                 | Df| Sum Sq| Mean Sq| F value| Pr(>F)|
+|:----------------|--:|------:|-------:|-------:|------:|
+|CatWeight        |  1| 1120.6|  1120.6|  10.058|  0.004|
+|CatAge           |  1| 3180.4|  3180.4|  28.546|  0.000|
+|CatWeight:CatAge |  1|   69.4|    69.4|   0.623|  0.437|
+|Residuals        | 26| 2896.7|   111.4|      NA|     NA|
 
 Example: Type II sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
-library(car)
-kable(Anova(lm_catfood_interaction,type = "II"))
-```
+
+|                 | Sum Sq| Df| F value| Pr(>F)|
+|:----------------|------:|--:|-------:|------:|
+|CatWeight        | 2826.2|  1|  25.367|  0.000|
+|CatAge           | 3180.4|  1|  28.546|  0.000|
+|CatWeight:CatAge |   69.4|  1|   0.623|  0.437|
+|Residuals        | 2896.7| 26|      NA|     NA|
 
 Example: Type III sum of squares
 =================================================================
-```{r, results='asis', echo = FALSE}
-library(car)
-kable(Anova(lm_catfood_interaction,type = "III"))
-```
+
+|                 |  Sum Sq| Df| F value| Pr(>F)|
+|:----------------|-------:|--:|-------:|------:|
+|(Intercept)      |   26.47|  1|   0.238|  0.630|
+|CatWeight        |  183.36|  1|   1.646|  0.211|
+|CatAge           |    1.14|  1|   0.010|  0.920|
+|CatWeight:CatAge |   69.39|  1|   0.623|  0.437|
+|Residuals        | 2896.73| 26|      NA|     NA|
 
 Summary: Sums of square types
 ==================================================================
@@ -360,9 +376,10 @@ Diagnosing Multicollinearity
 - Now it will print out something called Variance Inflation Factors (VIFs)
 - For your convenience, the VIFs for this model are printed below
 
-```{r, echo = FALSE}
-library(car)
-vif(lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age))
+
+```
+       CatWeight           CatAge CatWeight:CatAge 
+            7.49            72.98            62.16 
 ```
 
 Interpreting the VIF
@@ -381,34 +398,39 @@ Where does the multicollinearity come from?
   - If we **center** both variables (i.e. subtract the mean from each observation), the correlation will disappear
   - You can center variables using `Transform` --> `Compute Variable...`
   - Get the **mean** using `Analyze` --> `Descriptives...`, then subtract it from each observation of both variables:
-    - $CatWeight - `r mean(catfood_age$CatWeight)`$; $CatAge - `r mean(catfood_age$CatAge)`$
+    - $CatWeight - 4.935$; $CatAge - 55.52$
   - Save the new variables as `CatWeight_centered` and `CatAge_centered`
 
 Does this help?
 ===================================================================
-```{r, echo = FALSE}
-catfood_age2 <- catfood_age
-catfood_age2$CatWeight_centered <- scale(catfood_age$CatWeight, scale = FALSE)
-catfood_age2$CatAge_centered <- scale(catfood_age$CatAge, scale = FALSE)
-# re-fit the model
-lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight_centered * CatAge_centered, data = catfood_age2)
-lm_catfood_interaction_table <- coef(summary(lm_catfood_interaction))
-rownames(lm_catfood_interaction_table) <- c("(Intercept)", "Cat Weight", "Cat Age", "Cat Weight by Cat Age")
-kable(lm_catfood_interaction_table)
-vif_table <- data.frame(vif(lm_catfood_interaction))
-colnames(vif_table) <- "VIF"
-rownames(vif_table) <-  c("Cat Weight", "Cat Age", "Cat Weight by Cat Age")
-kable(vif_table)
-```
+
+|                      | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:---------------------|--------:|----------:|-------:|------------------:|
+|(Intercept)           |  103.128|      2.073|  49.751|              0.000|
+|Cat Weight            |   17.082|      3.632|   4.704|              0.000|
+|Cat Age               |    0.441|      0.087|   5.069|              0.000|
+|Cat Weight by Cat Age |    0.103|      0.131|   0.789|              0.437|
+
+
+
+|                      |  VIF|
+|:---------------------|----:|
+|Cat Weight            | 1.26|
+|Cat Age               | 1.24|
+|Cat Weight by Cat Age | 1.07|
 
 - Yes, it does 
 
 Let's look at the coefficients again
 ===================================================================
 
-```{r, results='asis', echo = FALSE}
-kable(summary(lm_catfood_interaction)$coefficients)
-```
+
+|                                   | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:----------------------------------|--------:|----------:|-------:|------------------:|
+|(Intercept)                        |  103.128|      2.073|  49.751|              0.000|
+|CatWeight_centered                 |   17.082|      3.632|   4.704|              0.000|
+|CatAge_centered                    |    0.441|      0.087|   5.069|              0.000|
+|CatWeight_centered:CatAge_centered |    0.103|      0.131|   0.789|              0.437|
 
 - Look at that: Now CatAge is significant, too!
 - We would have made a Type II error if we hadn't centered the variables.
@@ -423,19 +445,7 @@ Why you always need to look at your data
 ======================================================================
 - These datasets all have the same regression line, but they look very different:
 
-```{r, echo=FALSE}
-library(ggplot2)
-library(gridExtra)
-
-data(anscombe)
-
-p1 <- ggplot(anscombe) + geom_point(aes(x1, y1), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 1")
-p2 <- ggplot(anscombe) + geom_point(aes(x2, y2), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 2")
-p3 <- ggplot(anscombe) + geom_point(aes(x3, y3), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 3")
-p4 <- ggplot(anscombe) + geom_point(aes(x4, y4), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 4")
-
-grid.arrange(grobs = list(p1, p2, p3, p4), main = "Anscombe's Quartet")
-```
+![plot of chunk unnamed-chunk-18](Class4-figure/unnamed-chunk-18-1.png)
 
 Diagnosing influential cases (2)
 ======================================================================
@@ -458,7 +468,7 @@ Diagnosing influential cases (4)
         - Values > 1 are possibly problematic
   - Hat = leverage
       - How strongly does this case influence the prediction?
-      - Average value is $p/n$, where $p$ is the number of predictors (including the intercept, so 4 for our model) and $n$ is the number of observations(`r nrow(catfood)` for our model, so our average should be `r 4/nrow(catfood)`)
+      - Average value is $p/n$, where $p$ is the number of predictors (including the intercept, so 4 for our model) and $n$ is the number of observations(30 for our model, so our average should be 0.133)
       - Values over 2 or 3 times the average should be cause for concern
 
 General strategy for diagnosing influential cases
@@ -475,9 +485,7 @@ Testing the regression assumptions
   - Make a histogram of the standardised residuals (`Plot...` button in the `Linear Regression` module)
     - Does it look roughly normal?
     
-```{r, echo = FALSE}
-hist(scale(resid(lm_catfood_interaction)), xlab = "Regression Standardized Residual", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
-```
+![plot of chunk unnamed-chunk-19](Class4-figure/unnamed-chunk-19-1.png)
 
 More assumption tests (3)
 ===========================================================================
@@ -486,24 +494,25 @@ More assumption tests (3)
       - In the `Plot...` window, choose ZPRED as the y-value and ZRESID as the x-value
       - Does it look like there is more variance for certain predicted values?
       
-```{r, echo = FALSE}
-plot(x = scale(predict(lm_catfood_interaction)), y = scale(resid(lm_catfood_interaction)), xlab = "Regression Standardized Residual", ylab = "Regression Standardized Predicted Variable", main = "Dependent Variable: Food Eaten")
-```
+![plot of chunk unnamed-chunk-20](Class4-figure/unnamed-chunk-20-1.png)
 
 Reporting the regression results
 ===================================================================
-```{r, results='asis', echo = FALSE}
-lm_catfood_interaction_table <- coef(summary(lm_catfood_interaction))
-kable(lm_catfood_interaction_table)
-```
+
+|                                   | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:----------------------------------|--------:|----------:|-------:|------------------:|
+|(Intercept)                        |  103.128|      2.073|  49.751|              0.000|
+|CatWeight_centered                 |   17.082|      3.632|   4.704|              0.000|
+|CatAge_centered                    |    0.441|      0.087|   5.069|              0.000|
+|CatWeight_centered:CatAge_centered |    0.103|      0.131|   0.789|              0.437|
 
 1. Make a table with the model coefficients (see above.)
-2. Introductory paragraph: In order to test the hypothesis that cat weight and cat age can predict how much food a cat eats, we performed a multiple regression analysis  with food eaten (in g) as the dependent variable and cat weight and cat age (both mean-centered) as well aas their interactions as continuous independent variables. The model explained a very high amount of the variance in the dependent variable, with an adjusted $R^2$ of `r summary(lm_catfood_interaction)$adj.r.squared`.
+2. Introductory paragraph: In order to test the hypothesis that cat weight and cat age can predict how much food a cat eats, we performed a multiple regression analysis  with food eaten (in g) as the dependent variable and cat weight and cat age (both mean-centered) as well aas their interactions as continuous independent variables. The model explained a very high amount of the variance in the dependent variable, with an adjusted $R^2$ of 0.555.
 
 
 Reporting the regression results: Coefficients
 ===================================================================
-Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight_centered","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight_centered","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight_centered","t value"]`, `r print_p(lm_catfood_interaction_table["CatWeight_centered","Pr(>|t|)"])`) and cat age (b = `r lm_catfood_interaction_table["CatAge_centered","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge_centered","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge_centered","t value"]`, `r print_p(lm_catfood_interaction_table["CatAge_centered","Pr(>|t|)"])`)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of `r lm_catfood_interaction_table["CatWeight_centered","Estimate"]` g. Similarly, an increase in age by one month went along with an increase in food eaten of `r lm_catfood_interaction_table["CatAge_centered","Estimate"]` g.
+Our results show that both cat weight (b = 17.082, SE = 3.632, t = 4.704, *p* < .01) and cat age (b = 0.441, SE = 0.087, t = 5.069, *p* < .01)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of 17.082 g. Similarly, an increase in age by one month went along with an increase in food eaten of 0.441 g.
 
 There was no significant interaction between cat weight and cat age (p > .05), suggesting that the effects of cat weight and cat age were additive. Assumption tests and visual inspection of residual plots showed that there was no evidence of violations of normality, independence, or homoscedasticity. [If you removed influential cases, say this here.]
 
@@ -519,30 +528,48 @@ Discrete variables
       
 Example
 =================================================================
-```{r, echo=FALSE}
-catfood_breed <- with(catfood_age2, data.frame(CatWeight = CatWeight_centered, CatAge = CatAge_centered, CatBreed = cat_breed, FoodEaten = food_eaten))
-catfood_breed$FoodEaten <- catfood_breed$FoodEaten + ifelse(cat_breed == "Manx", 15, -15)
-```
+
 - Let's just stay with the cat data for a little bit longer
 - Let's say our cats came from two breeds, shorthair and manx.
     - Does breed have an influence on food eaten?
     - The corresponding file is on myBU (`catfood_breed.sav`; first 6 rows of the table shown)
     
-```{r, results='asis', echo = FALSE}
-kable(head(catfood_breed))
-write.csv(catfood_breed, file = "catfood_breed.csv")
-```
+
+| CatWeight| CatAge|CatBreed  | FoodEaten|
+|---------:|------:|:---------|---------:|
+|     0.432|  -29.7|Shorthair |      81.8|
+|     0.461|  -36.7|Shorthair |      82.9|
+|    -0.667|    6.9|Shorthair |      81.7|
+|     1.011|  -24.7|Shorthair |      87.5|
+|    -0.467|  -33.8|Shorthair |      64.6|
+|    -0.008|  -46.5|Shorthair |      56.6|
 
 We could do a t-test
 =================================================================
-```{r, echo = FALSE}
-t.test(formula = FoodEaten ~ CatBreed, data = catfood_breed, var.equal = TRUE)
+
+```
+
+	Two Sample t-test
+
+data:  FoodEaten by CatBreed
+t = 6, df = 30, p-value = 0.000005
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 20.9 44.9
+sample estimates:
+     mean in group Manx mean in group Shorthair 
+                  119.0                    86.1 
 ```
 
 Or an ANOVA
 ==================================================================
-```{r, echo = FALSE}
-summary(aov(formula = FoodEaten ~ CatBreed, data = catfood_breed))
+
+```
+            Df Sum Sq Mean Sq F value    Pr(>F)    
+CatBreed     1   8124    8124    31.6 0.0000051 ***
+Residuals   28   7204     257                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 Or we could assign dummy values and do a regression
@@ -552,18 +579,15 @@ Or we could assign dummy values and do a regression
     - We recode our cat breed variable into a variable called `dummy`, containing 0s and 1s
 
 ## Dummy analysis
-```{r, echo = FALSE}
-# assign 0 to all shorthairs and 1 to all manxs
-catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
-kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |     86.1|       4.14|   20.78|                  0|
+|dummy       |     32.9|       5.86|    5.62|                  0|
 
 Let's plot the situation
 =================================================================
-```{r, echo = FALSE}
-plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten, xlab = "Dummy variable", ylab = "Food Eaten")
-abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
-```
+![plot of chunk unnamed-chunk-27](Class4-figure/unnamed-chunk-27-1.png)
 
 Interpreting dummy variables
 =================================================================
@@ -577,21 +601,21 @@ Different dummy values
 - Nobody forces us to set the values to 0 and 1
 - We could use any values we want, e.g. 99 and 23419 (although have fun interpreting *that* equation)
 - -1 and 1 might be reasonable. We use `Data` --> `Recode into Different Variables...` to make a new dummy variable containing -1s for Shorthair and 1s for Manxes.
-```{r, echo = FALSE}
-catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
-```
+
 
 Re-run the analysis
 ================================================================
 
-```{r, results='asis', echo = FALSE}
-kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |    102.5|       2.93|   35.01|                  0|
+|dummy       |     16.5|       2.93|    5.62|                  0|
 
 - Note that the numbers are different: now the intercept represents the grand (overall) mean.
 - The slope tells you how far the means of shorthair and manx are from the grand mean.
-     - The prediction for shorthair is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` - `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] - coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
-     - The prediction for manx is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` + `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] + coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
+     - The prediction for shorthair is $102.525 - 16.456 = 86.069$
+     - The prediction for manx is $102.525 + 16.456 = 118.981$
     - The *t* and *p* values are exactly the same.
 
 Analysis of Covariance (ANCOVA)
@@ -608,10 +632,13 @@ Analysis of Covariance (ANCOVA)
 
 Use the Linear Regression module
 ================================================================
-```{r, echo = FALSE}
-catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + dummy)
-kable(coef(summary(catfood_breed_lm)))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |  102.525|      1.932|   53.06|                  0|
+|CatWeight   |   17.794|      3.537|    5.03|                  0|
+|CatAge      |    0.477|      0.091|    5.24|                  0|
+|dummy       |   13.560|      2.080|    6.52|                  0|
 
 - We can reject the null hypothesis. Cat Breed (represented by our dummy variable) does indeed have a significant effect on food eaten.
 - Note that, since we are coding Cat Breed as -1 and 1 , our intercept is still the grand mean of FoodEaten. Our dummy variable tells us the distance between the mean of the Shorthair group and the grand mean (on the left) and the distance between the Manx group and the grand mean (on the right)
@@ -619,8 +646,19 @@ kable(coef(summary(catfood_breed_lm)))
 Using the General Linear Model (Univariate) module
 ================================================================
 - We can do an F-test by using the `Univariate` test from the `General Linear Model` module (in the `Analyze` menu)
-```{r, echo = FALSE}
-Anova(catfood_breed_lm, type = "III")
+
+```
+Anova Table (Type III tests)
+
+Response: FoodEaten
+            Sum Sq Df F value     Pr(>F)    
+(Intercept) 315343  1  2815.2    < 2e-16 ***
+CatWeight     2835  1    25.3 0.00003097 ***
+CatAge        3074  1    27.4 0.00001794 ***
+dummy         4763  1    42.5 0.00000065 ***
+Residuals     2912 26                       
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
 
 Assumption tests: Homogeneity of regression slopes
@@ -632,11 +670,17 @@ Assumption tests: Homogeneity of regression slopes
 
 Assumption tests: Homogeneity of regression slopes (2)
 ===============================================================
-```{r, echo = FALSE}
-catfood_breed_interact_lm <- lm(data = catfood_breed, 
-                                formula = FoodEaten ~ CatWeight * CatAge * dummy)
-kable(coef(summary(catfood_breed_interact_lm)))
-```
+
+|                       | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:----------------------|--------:|----------:|-------:|------------------:|
+|(Intercept)            |  103.314|      2.372|  43.558|              0.000|
+|CatWeight              |   14.632|      4.967|   2.946|              0.007|
+|CatAge                 |    0.457|      0.099|   4.620|              0.000|
+|dummy                  |   14.176|      2.372|   5.977|              0.000|
+|CatWeight:CatAge       |    0.128|      0.179|   0.715|              0.482|
+|CatWeight:dummy        |   -1.156|      4.967|  -0.233|              0.818|
+|CatAge:dummy           |   -0.048|      0.099|  -0.486|              0.632|
+|CatWeight:CatAge:dummy |    0.159|      0.179|   0.892|              0.382|
 
 - No evidence for any interaction. (Check multicollinearity, of course!)
 
@@ -679,23 +723,7 @@ Example (2)
 - Let's see how the contrasts reflect these comparisons
      - But remember -- we can only make 2.
   
-```{r, echo = FALSE}
-# Seed for random number generators, so that we all get the same results
-set.seed("6")
-# Column 1: Breed - repeat each breed name 15 times, then combine
-breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15))
-# Column 2: Objects - repeat each true group mean 15 times, then combine
-objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
 
-# Add random noise to the objects scores
-objects <- objects + rnorm(n = 45, mean = 0 , sd = 6)
-# for more realism, round the objects scores to full integers
-# (what does it mean if a dog knows a fraction of an object?)
-objects <- round(objects, digits = 0)
-# Combine into data frame
-dogs <- data.frame(breed, objects)
-write.csv(dogs, "dogs.csv")
-```
 
 The data
 ========================================================
@@ -703,32 +731,41 @@ The data
 - Let's calculate the means:
 
 ## Means table
-```{r, echo = FALSE}
-# get the means for each breed
-means_table <- data.frame(tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean))
-colnames(means_table) <- c("Mean number of objects known")
-kable(means_table)
-```
+
+|              | Mean number of objects known|
+|:-------------|----------------------------:|
+|Beagle        |                         10.4|
+|Border Collie |                         61.8|
+|Terrier       |                         13.9|
 
 Comparing the means
 ========================================================
 - We can always do pairwise *t*-tests. Those give us all the comparisons, but at the cost of making multiple comparisons.
 
-```{r, echo = FALSE}
-pairwise.t.test(x = dogs$objects, g = dogs$breed)
+
+```
+
+	Pairwise comparisons using t tests with pooled SD 
+
+data:  dogs$objects and dogs$breed 
+
+              Beagle Border Collie
+Border Collie <2e-16 -            
+Terrier       0.1    <2e-16       
+
+P value adjustment method: holm 
 ```
 
 Adding contrasts
 ========================================================
 - Let's make two dummy variables, called `x1` and `x2`:
 
-```{r, results='asis', echo=FALSE}
-library(knitr)
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
+
+|              | x1| x2|
+|:-------------|--:|--:|
+|Beagle        |  0|  0|
+|Border Collie |  1|  0|
+|Terrier       |  0|  1|
 
 - $x_1$ will be 1 for all "Border Collie" cases, and 0 otherwise
 - $x_2$ will be 1 for all "Terrier" cases, and 0 otherwise
@@ -740,12 +777,12 @@ How contrasts work
 - $y_{i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2} + \epsilon_i$
 - i.e. the predicted value for $y_i$ is $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
 - Now let's substitute in the values from the table if breed is "Beagle":
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
+
+|              | x1| x2|
+|:-------------|--:|--:|
+|Beagle        |  0|  0|
+|Border Collie |  1|  0|
+|Terrier       |  0|  1|
 
 - $\hat{y_{i}} = \alpha + \beta_1 \times 0 + \beta_2 \times 0 = \alpha$
 - The predicted value for the Beagle group is $\alpha$, the intercept
@@ -756,12 +793,12 @@ How contrasts work (2)
 - The predicted value for $y_i$ is still $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
 - Now let's substitute in the values from the table if breed is "Border Collie":
 
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
+
+|              | x1| x2|
+|:-------------|--:|--:|
+|Beagle        |  0|  0|
+|Border Collie |  1|  0|
+|Terrier       |  0|  1|
 
 - $\hat{y_{i}} = \alpha + \beta_1 \times 1 + \beta_2 \times 0 = \alpha + \beta_1$
 - The predicted value for the Border Collie group is $\alpha + \beta_1$, i.e. the sum of the intercept and the first slope $\beta_1$
@@ -771,12 +808,12 @@ How contrasts work (2)
 =========================================================
 - The predicted value for $y_i$ is still $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
 - Now let's substitute in the values from the table if breed is "Terrier":
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
+
+|              | x1| x2|
+|:-------------|--:|--:|
+|Beagle        |  0|  0|
+|Border Collie |  1|  0|
+|Terrier       |  0|  1|
 
 - $\hat{y_{i}} = \alpha + \beta_1 \times 0 + \beta_2 \times 1 = \alpha + \beta_2$
 - The predicted value for the Border Collie group is $\alpha + \beta_2$, i.e. the sum of the intercept and the second slope $\beta_2$
@@ -784,17 +821,22 @@ kable(contrast_matrix)
 
 Let's run the regression analysis
 ==========================================================
-```{r, echo = FALSE}
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
+
+|                   | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:------------------|--------:|----------:|-------:|------------------:|
+|(Intercept)        |    10.40|       1.65|    6.31|              0.000|
+|breedBorder Collie |    51.40|       2.33|   22.05|              0.000|
+|breedTerrier       |     3.53|       2.33|    1.52|              0.137|
 
 - Looks just about right (remember, the means differ from the true population means because this is a -- simulated -- sample and contains random error)
 
 We can also do a standard ANOVA
 ==========================================================
-```{r, echo = FALSE}
-kable(anova(lm(data = dogs, objects ~ breed)))
-```
+
+|          | Df| Sum Sq| Mean Sq| F value| Pr(>F)|
+|:---------|--:|------:|-------:|-------:|------:|
+|breed     |  2|  24728| 12364.2|     304|      0|
+|Residuals | 42|   1711|    40.7|      NA|     NA|
 
 - Note that the contrasts give us more information: they tell us which of the factor levels differ from the "Beagle" baseline
     - These are not multiple comparisons -- the ANOVA F-test simply compares a model without any of the contrasts (just the intercept) to a model with all the contrasts, while the *t*-tests compare the coefficient for each contrast to 0.
@@ -850,10 +892,12 @@ Standard contrasts
 
 Applying deviation contrasts
 ==========================================================
-```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.sum
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |     28.7|      0.951|    30.2|                  0|
+|breed1      |    -18.3|      1.346|   -13.6|                  0|
+|breed2      |     33.1|      1.346|    24.6|                  0|
 
 Interpreting sum/deviation contrasts
 ===========================================================
@@ -865,10 +909,12 @@ Interpreting sum/deviation contrasts
 
 Applying difference (reverse Helmert) contrasts
 ==========================================================
-```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.helmert
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |    28.71|      0.951|    30.2|                  0|
+|breed1      |    25.70|      1.165|    22.1|                  0|
+|breed2      |    -7.39|      0.673|   -11.0|                  0|
 
 Interpreting (reverse) Helmert contrasts
 ========================================================
