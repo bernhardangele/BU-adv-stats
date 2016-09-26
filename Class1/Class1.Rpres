@@ -1,0 +1,262 @@
+Lecture 1: Foundations of Advanced Statistics
+==================================================================================
+author: Bernhard Angele
+date: 22 September 2016
+
+What is advanced about these statistics?
+========================================================
+
+- Goal is for you to understand the principles, not just the steps.
+- Simulation approach:
+  - If you don't know how something about a statistical test, simulate it!
+  - Example questions you might ask:
+    - What is the power of this test?
+    - What happens if I violate the normality assumption for an ANOVA?
+    - What happens if I don't correct for multiple comparisons?
+  
+
+How do I run simulations?
+========================================================
+- Not very easy in SPSS
+- But Excel can help (to some degree..)
+- For more detailed simulations, you'll have to use a programming language such as R, Python, C++, etc.
+
+Introduction
+========================================================
+- Let's start with a quick review of some of the maths foundations you just encountered on the test.
+- Then I will give you a problem to solve in groups. Be warned, it's a fairly big one!
+
+Maths basics: Variable names
+========================================================
+- A variable like $x$ can stand for a single number, but also multiple numbers joined together in arrays.
+- One very common convention is to use roman letters (e.g. $a$, $b$) for values that are known or determined by the data and greek letters (e.g. $\alpha$, $\beta$) for theoretical parameter values that have to be estimated and cannot be directly measured.
+
+Maths basics: Order of operations
+========================================================
+- Remember PEMDAS
+  - Parentheses, Exponents, Multiply/Divide, Add/Subtract
+  - For Multiply/Divide and Add/Subtract, go from left to right
+- Example:
+$$
+\begin{aligned}
+(2+3)^2 \cdot 5 + 6 \cdot 7 \\
+= 6^2 \cdot 5 + 42 \\
+= 36 \cdot 5 + 42 \\
+= 180 + 42 \\
+= 222
+\end{aligned}
+$$
+
+Maths basics: Arrays
+=========================================================
+- For statistics, it can be useful to organise numbers in arrays
+  - For example, these could be all the measurements in an experiment:
+$$\left(\begin{array}{}
+    2.3 & 4.5 & 6.8 & 1.3 & 7.5 & 8.6
+    \end{array}\right)$$
+  - Let's call the array *x*. It's a useful convention to use *boldface* for arrays
+  - If we want to talk about a specific element of our array, we can use subscripts:
+  $$\textbf{x} = \left(\begin{array}{} 
+                  x_{1} & x_{2} & x_{3} & x_{4} & x_{5} & x_{6}
+                  \end{array}\right)$$
+
+Maths basics: Vectors and Matrices
+=========================================================
+- An array with one dimension is called a *vector*
+- An array with more dimensions than one is called a *matrix*. By convention, matrices often have uppercase variable names.
+  - Sometimes it can be useful to organise experiment data in a matrix, for example if you have multiple conditions
+$$\textbf{X} = \left(\begin{array}{}
+    2.3 & 4.5 & 6.8 \\
+    1.3 & 7.5 & 8.6 \\
+    6.6 & 7.2 & 1.2 
+    \end{array}\right)$$
+- If we want to talk about a specific element of our matrix, we can use *double* subscripts: rows first, columns second:
+  $$\textbf{X} = \left(\begin{array}{} 
+                  x_{11} & x_{12} & x_{13} \\
+                  x_{21} & x_{22} & x_{23} \\
+                  x_{31} & x_{32} & x_{33}
+                  \end{array}\right)$$
+
+
+Maths basics: Summation
+========================================================
+- The summation operator $\Sigma$:
+$$x_1 + x_2 + x_3 + x_4 + x_5 = \sum\limits_{i=1}^5{x_i}$$
+- This means: beginning with $i=1$ and ending with $i=5$ sum over the variables $x_i$.
+    - This can save a lot of space if you are summing over lots of variables
+    - $i$ is called the *index* over which you are summing, and $1$ and $5$ are the limits.
+- If the limits are clear from the context, you can also write this as
+
+$$\sum\limits_{i}{x_i}$$
+
+Maths basics: Summation (2)
+========================================================
+- You can have multiple multiple indices and sum over them (e.g. if you have multiple people in multiple groups, which is something that happens in Psychology *ALL THE TIME*). For example:
+
+Group 1 (females): $x_{11},  x_{12},  x_{13},  x_{14}$
+
+Group 2 (males):  $x_{21},  x_{22},  x_{23},  x_{24}$
+
+Sum of all the individuals in all the groups:
+
+$$
+\begin{aligned}
+\sum\limits_{m=1}^{2}\sum\limits_{i=1}^{4}{x_{mi}} = x_{11}+x_{12}+x_{13}+x_{14} \\
+  + x_{21} + x_{22} + x_{23} + x_{24}
+\end{aligned}
+$$
+
+Maths basics: Multiplication
+========================================================
+- The product operator $\Pi$:
+- Works just like the sum operator:
+$$x_1 \cdot x_2 \cdot x_3 \cdot x_4 \cdot x_5 = \prod\limits_{i=1}^5{x_i}$$
+- This means: beginning with $i=1$ and ending with $i=5$ calculate the product over the variables $x_i$.
+
+$$
+\begin{aligned}
+\prod\limits_{m=1}^{2}\prod\limits_{i=1}^{4}{x_{mi}} = x_{11}\cdot x_{12}\cdot x_{13}\cdot x_{14} \\
+  \cdot x_{21} \cdot x_{22} \cdot x_{23} \cdot x_{24}
+\end{aligned}
+$$
+
+Maths basics: Functions
+========================================================
+- A function is essentially a mapping between an input and an output.
+  - For example, for every input $x$ the function $f(x) = 2x$ defines an output, which is exactly twice the value of the input $x$.
+- You can plot functions by putting the output $f(x)$ on the y-axis and the input $x$ on the x-axis:
+```{r, echo=FALSE}
+f <- function(x) 2*x
+plot(f, from = -5, to = 5, ylab = "f(x)", main = "f(x) = 2x", axes = "FALSE")
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -5:5)
+axis(2, pos = 0, at = seq(from = -10, to = 10, by = 2))
+```
+
+Maths basics: Linear functions
+========================================================
+- Often, we write y instead of f(x) (since it's plotted on the y-axis)
+- Linear functions have the form $y = ax + b$, where $a$ is called the *slope* and $b$ is called the intercept.
+- The slope determines how "steep" the line is and the intercept determines where it crosses the y-axis
+
+```{r, echo=FALSE}
+f <- function(x) 1.5*x + 1
+plot(f, from = -5, to = 5, ylab = "y", main = "y = 1.5x + 1", axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -5:5)
+axis(2, pos = 0, at = seq(from = -10, to = 10, by = 2))
+```
+
+Maths basics: Nonlinear functions
+=========================================================
+- Functions do not necessarily have to be linear.
+$$f(x) = 1.5x^2+1$$
+
+```{r, echo=FALSE}
+f <- function(x) 1.5*x^2 + 1
+plot(f, from = -5, to = 5, ylab = "y", main = "y = 1.5x^2 + 1", axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -5:5)
+axis(2, pos = 0, at = seq(from = 0, to = 50, by = 2))
+```
+
+Maths basics: Nonlinear functions
+=========================================================
+- Do you know this function?
+$$f(x) = \frac{e^{- \frac{\scriptscriptstyle 1}{\scriptscriptstyle 2} x^2}}{\sqrt{2\pi}}$$
+
+```{r, echo=FALSE}
+plot(dnorm, from = -3, to = 3, ylab = "y", axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -3:3)
+axis(2, pos = 0, at = seq(from = 0, to = 1, by = 0.1))
+```
+
+Maths basics: Nonlinear functions
+=========================================================
+- Do you know this function?
+$$f(x) = \frac{e^{- \frac{\scriptscriptstyle 1}{\scriptscriptstyle 2} x^2}}{\sqrt{2\pi}}$$
+
+```{r, echo=FALSE}
+plot(dnorm, from = -3, to = 3, ylab = "y", axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -3:3)
+axis(2, pos = 0, at = seq(from = 0, to = 1, by = 0.1))
+```
+
+Maths basics: Nonlinear functions
+=========================================================
+- This function is also known as the probability density function of the standard normal distribution.
+  - We'll talk about why that is later in the course.
+  - But there's really nothing "special" about it in principle. It's just a function assigning a *y* value to each *x* value, like any other function.
+$$f(x) = \frac{e^{- \frac{\scriptscriptstyle 1}{\scriptscriptstyle 2} x^2}}{\sqrt{2\pi}}$$
+
+```{r, echo=FALSE}
+plot(dnorm, from = -3, to = 3, ylab = "y", axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -3:3)
+axis(2, pos = 0, at = seq(from = 0, to = 1, by = 0.1))
+```
+
+
+Maths basics: Probability
+========================================================
+- Basic rules:
+    - All probabilities are between 0 and 1: $P(A)\in[0,1]$
+    - The complementary probability of an event (i.e. the probability that an event will NOT happen) is 1-the probability of the event: $P(A^c)=1-P(A)$
+    - A probability can be interpreted as the number of outcomes that form an event (e.g. the outcome "Heads" when flipping a coin) over the total number of outcomes (e.g. "Heads" and "Tails")
+    $$ p(A) = \frac{n_A}{n}$$
+    - But note that a probability of .5 (e.g. for getting "Heads" on a coin flip) doesn't mean that you will get "Heads" on exactly 50% of coin flips.
+    
+Maths basics: Probability (2)
+========================================================
+- Basic rules:
+    - What is the probability that Event A and Event B will happen together?
+$$\begin{aligned}
+P(A\cap B) & = P(A|B)P(B) = P(B|A)P(A)\\
+P(A\cap B) &  = P(A)P(B) \qquad\\&\mbox{if A and B are independent}\\
+\end{aligned}$$
+
+- What is the probability that either Event A OR Event B will happen?
+$$\begin{aligned}
+P(A\cup B) & = P(A)+P(B)-P(A\cap B) \\
+P(A\cup B) & = P(A)+P(B) \\\qquad&\mbox{if A and B are mutually exclusive} \\
+\end{aligned}$$
+
+Maths basics: Conditional probability
+==========================================================
+- What is the probability of Event A *GIVEN THAT* Event B happened?
+    - Divide the number of outcomes where A and B happen together by the number of all outcomes where B happens (regardless of whether A happened, too).
+    - If we divide both nominator and denominator by $n$, we can convert this into probabilities:
+$$P(A \mid B) = \frac{n_{AB}}{n_B} = \frac{n_{AB}/n}{n_B/n} = \frac{P(A \cap B)}{P(B)}$$
+- Now plug in our definition of joint probability (see last slide):
+$$P(A \mid B) = \frac{P(A \cap B)}{P(B)} = \frac{P(B|A)P(A)}{P(B)}$$
+- This is known as *Bayes' theorem*. Keep it in mind for later!
+
+
+
+Your task for today
+========================================================
+- Split up in groups (ca. 3-5 people per group).
+
+- I bought some dice from a more or less dodgy place on the Internet. 
+  - I have the suspicion that they are not very good dice. 
+  - Specifically, I wonder whether they are all fair (i.e. they have the same probability to land on any of the sides). 
+  - Maybe the colour of the dice plays a role?
+- I want you to find out whether the results of rolling one of the dice are different depending on the colour of the die.
+  - How you do this is up to you, but you should try to do it in the most efficient and most convincing way possible.
+  - You have until 12 pm.
+  
+What you need to prepare for next week
+========================================================
+- Watch the videos for Lecture 2 on myBU
+- Do the practice test.
+- Take some notes of how you solved the task for today.
+- During the first 30 minutes of next week's lecture, you will take a short test. This test will contain 5-10 questions on Lecture 2.
+  - One of the questions will ask you to write down how you solved the task. If you got the correct result, you will get some extra credit!
