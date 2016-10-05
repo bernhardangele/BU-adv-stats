@@ -386,7 +386,7 @@ Binomial and normal distribution
 
 The chi-square test
 ===========================================================
-- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distributions and the squared differences between the observed ($f_{o(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
+- If the sample size is large enough (more than 10 per category), the binomial distribution approximates the normal distribution and the squared differences between the observed ($f_{o(j)}$) and the expected ($f_{e(j)}$) are $z^2$-values (again, if you want to know why, I can tell you).
 $$z^2 = \chi_1^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$
 
 The chi-square test (2)

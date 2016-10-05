@@ -4,15 +4,25 @@ author: Bernhard Angele
 date: Lecture 4
 
 
+Where we are so far
+========================================================
+- We have talked about some very basic tests so far.
+- We can test how unlikely it is to observe a sample mean given a simple null hypothesis (e.g. that the mean is 0) -- the t-test.
+- We can also test how much the distribution of the levels a discrete variable differs from the predictions made by a theoretical distribution -- the chi-square test. If it differs too much, we can reject the null hypothesis!
+
 Linear regression
 ========================================================
-- So far, we've figured out how to test if a *discrete* predictor (e.g. treatment group) can explain the variance in a *continuous* variable.
-- What if our predictor is also *continuous*?
+- What if we have a more complex hypothesis?
+  - Does X predict Y?
+  - Does the amount of cat food eaten predict the weight of my cat? (Probably!)
+  - Does the size of your forehead predict your conscientousness? (Probably not!)
+  - These questions involve *continuous* predictors (independent variables) and a *continuous* predicted (dependent) variable.
 
 - Example:
-    - More exciting data about cats and cat food!
+    - More exciting data about cats and cat foood!
     - Is the amount of cat food a cat eats related to its weight?
     - In other words, do heavy cats eat more?
+      - (are cats who eat more heavier???)
     
 Cat food and weight
 =========================================================
@@ -39,7 +49,7 @@ print_p <- function(p){
 }
 ```
 
-- This table actually has 30 rows, but I'm just showing you the first 6.
+- This table (with completely ficticious cat data) actually has 30 rows, but I'm just showing you the first 6.
 - You can find the full data set on myBU.
 - You have cat weight in kg and cat food eaten in g.
 - Looks like there might be a positive relationship here.
@@ -54,10 +64,16 @@ Let's plot it
 plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
 ```
 
+How can we describe these data?
+==========================================================
+- There is a lot of variability.
+  - But the heavier cats do seem to eat a little bit more.
+    - That's not a terribly precise statement
+    - Can we use maths to make a better one?
+      - Maybe we could draw a line through the points and then describe the line?
+
 Fitting a line to the data
 ==========================================================
-- Let's put a line through it
-
 ```{r, echo = FALSE}
 plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
 abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
@@ -65,6 +81,7 @@ abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
 
 - Looks like we have a strong positive relationship:
     - The heavier the cat (variable $x$), the more food eaten (variable $y$).
+- But how do we come up with this line?
 
 Fitting a line to the data
 ==========================================================
@@ -76,18 +93,34 @@ Fitting a line to the data
           - $b$ is called the *slope*. It describes by how many units $y$ changes when $x$ changes
           - You may have learned this as $y = mx + c$ depending on where you went to school
 
-The Least-Squares regression line
+Errors
+=======================================================
+- No line will ever fit the data perfectly (i.e. go through all the points)
+  - The difference between what the line predicts for a certain Y value (the predition is called $\hat{y}$and what it actually is can be called the error $E$:
+  - For point i: $$E_i = Y_i - a + b\cdot X_i = Y_i - \hat{Y}$$
+
+The "best" line?
 =========================================================
-- How do we find the best $a$ and $b$ for the data?
-  - Since we are (as always) taking samples from a larger population, no line will ever fit the data perfectly (i.e. go through all the points), even if there is a perfect linear relationship in the population
-  - We can determine the line that best estimates the actual data points, though
-      - What does "best" mean?
-        - We want the line that minimises the deviations of the values predicted by the equation ($\hat{y}$) from the actual $y$ values
-          - Actually, we want to penalise large deviations, so we use the square: $$\sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2 =min$$
+- How do we find the best $a$ and $b$ (i.e. the best line) for the data?
+  - Errors should sum to 0 (otherwise we are way off!)
+      - This means the line should go through the point $(\bar{X}|\bar{Y})$
+  - Smallest errors?
+  - The errors are the difference between the values predicted by the line and the actual values:
+          - We want the line that minimises all the deviations (in both directions) of the values predicted by the equation ($\hat{Y}$) from the actual $y$ values
+        
+Minimising the errors
+==============================================================
+- Two possibilities here:
+  - We could just minimise the *absolute value* of the deviations: 
+  $$\sum\limits_{i=1}^{n} \left|E_i\right| = \sum\limits_{i=1}^{n}\left|Y_i - \hat{Y}_i\right| =min$$
+      - This is called *least absolute values regression*, but it is quite mathematically complex, so it's rarely used and we won't talk about it in this unit.
+  - It's much easier to use squares instead of absolute values, so that is what almost everyone uses. Also, this puts a special penalty on large deviations, which is nice.
+  $$\sum\limits_{i=1}^{n} E_i^2 = \sum\limits_{i=1}^{n}(Y_i - \hat{Y}_i)^2 =min$$
+      - This is called *least squares regression*.
 
 The Least-Squares regression line
 =========================================================
-- Here, I've plotted the deviations of the predicted values (on the line) from the actual values. These are also called the **residuals**.
+- Here, I've plotted the errors, i.e. the deviations of the predicted values (on the line) from the actual values. These are also called the **residuals**.
 
 ```{r echo = FALSE}
 plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
@@ -105,786 +138,59 @@ Covariance
       - if $x$-values that are far away from the mean co-occur with $y$ values that are also far from the mean, we get a large absolute covariance (it can be either positive or negative, depending on which way the relationship between $x$ and $y$ goes)
       - if $x$-values that are far away from the mean co-occur with $y$ values that are close to the mean (and vice-versa), we get a small absolute covariance (i.e. $x$ and $y$ don't change together)
 
+
+
 Covariance, the regression slope, and correlation
 ======================================================
-- In the simple regression case, we can compute the regression slope from the covariance: $$b = \frac{cov(x, y)}{s_x^2}$$
-- Why? The explanation would involve derivatives, which you may not want to deal with right now.
-- We get the **correlation** $r$ if we standardise the covariance by dividing it by the product of the standard deviations ($s_x \cdot s_y$). In short, $r = \frac{cov(x, y)}{s_x \cdot s_y}$.
+- Let's see if this is useful for our goal of getting a least-squares line:
+    - We're still trying to minimise $\sum\limits_{i=1}^{n} E_i^2 = \sum\limits_{i=1}^{n}(Y_i - A - B \cdot X_i )^2$
+        - To minimise we'll have to use derivatives of this function. See the Fox (2013) book if you are truely interested.
+  - In any case, it turns out that if we only have on independent (predictor) variable, we can compute the regression slope from the covariance: $$b = \frac{cov(x, y)}{s_x^2}$$
+  - We can then get the intercept using the means of X and Y:
+  $$a = \bar{Y} - b\cdot\bar{X}$$
+- That's it -- we have the function for our least squares regression line.
 
-Sums of squares
+Evaluating the linear model
+=======================================================
+- What we really want to know: How closely are the predictor variable and the predicted variable related?
+    - Two ways to think about this.
+        - First way: Think about the two coefficients in the linear model: the intercept $a$ and the slope $b$
+        - Which one is indicative of the relationship between predictor and predicted variables?
+            - The slope of course!
+            
+Interpreting the slope
+========================================================
+- Can we interpret $b$ directly?
+    - Clearly, the larger $b$ is the better the prediction
+    - But $b$ depends on the scales of predicted and predictor variables
+        - Tricky to compare!
+        - Can we standardise somehow?
+            - Yes! We get the **correlation** $r$ if we standardise the covariance by dividing it by the product of the standard deviations ($s_x \cdot s_y$). In short, $r = \frac{cov(x, y)}{s_x \cdot s_y}$.
+            
+
+Other approach: Sums of squares
 ===========================================================
 - We can also express how well our model predicts the data as **sums of squares**
-- The total sums of squares is simply the numerator of the variance of $y$ (just like in the ANOVA): ${SS}_{total} = \sum\limits_{i=1}^{n}(y_i - \bar{y})^2$
+- The total sums of squares is simply the numerator of the variance of $y$: ${SS}_{total} = \sum\limits_{i=1}^{n}(y_i - \bar{y})^2$
 - The **regression** or model sums of squares is the variance explained by the regression model: ${SS}_{model} = \sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2$
 - The residual sums of squares is the squared differences $e_i$ between the actual $y$-values and the predicted $\hat{y}$-values: ${SS}_{residual} =  \sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2$
-- Of course, these add up just like in the ANOVA: $SS_{total} = {SS}_{model} + {SS}_{residual}$
 
 
 Coefficient of determination
 ============================================================
-- Remember $\eta^2$ for the ANOVA? We can do the same thing for the sums of squares in the regression:
+- How much of the variance of the data is determined (explained) by the model?
 $$r^2 = \frac{{SS}_{model}}{{SS}_{total}}$$
 - $\frac{{SS}_{model}}{{SS}_{total}}$ is the same as the square of the correlation coefficient $r$.
     - Fun activity at home: Work out why!
 - In multiple regression, we call the coefficient of determination $R^2$ instead of $r^2$. Here, we have multiple predictors and multiple correlations, so $R^2$ doesn't correspond to the square of any one of them. It still tells you how much variance your model explains, though.
 - In our example: $r^2 = `r cor(catfood$CatWeight, catfood$FoodEaten)^2`$
 
-Hypothesis tests
-==========================================================
-- We assume that there is the following linear relationship in our population: $$Y_i = \alpha + \beta\cdot x_i + \epsilon_i$$
-  - $\alpha$ and $\beta$ are our population coefficients. $\epsilon_i$ is the error for this particular observation.
-- We will need to estimate our regression equation based on our sample, so that $a$ and $b$ are estimates of the population coefficients $\alpha$ and $\beta$.
-- $\epsilon$ is the **error**. It represents all the influences (random or not) that we are not considering in the linear relationship.
-    - If the relationship is actually linear, then $E(\epsilon) = 0$
-- How can we interpret these estimated coefficients? Mostly, we care about whether $\beta$ is 0, i.e. whether there is a significant relationship between $x$ and $y$ in the population.
-
-Assumptions
-==========================================================
-- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma_{x,y}$.
-- The bivariate (or, more generally, multivariate) normal distribution assumes that:
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are normally distributed: $\epsilon \sim N(0, \sigma_{\epsilon}^2$)
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon}^2$
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon_i$ are independent)
-- Pretty similar to the ANOVA assumptions, actually. I wonder why?
-
-Distribution of the coefficient estimates
-===========================================================
-- If our assumptions are met, our coefficient estimates $a$ and $b$ will be themselves normally distributed
-- What do their distributions look like?
-- What about the means (or rather, the expected values?): $E(a) = \alpha$; $E(b) = \beta$ (no derivations here, just the end results)
-- What about the variance?
-  - We don't really care about $a$, but $b$ is important: $$\sigma^2_b = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
-- This means that the sampling variance of our estimate of $\beta$ will be smaller when:
-    - the overall error variance is small
-    - our $x$-values are spread out (covering a wide range)
-
-Doing a hypothesis test on b
-==========================================================
-- We now know the sampling distribution of $b$: $$ b \sim N\left(\beta, \frac{\sigma_{\epsilon}}{\sqrt{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2}}\right)$$
-- All we need to do is find an estimate for $\sigma_{\epsilon}$
-- We can get this by calculating the variance of the residuals (the error): $$s^2_e = \frac{\sum\limits_{i = 1}^{n} e_i^2}{n-2} = \frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}$$
-    - Why divide by $n-2$? So we get an unbiased estimator of the error. Not showing you the derivation of why it has to be $n-2$.
-- Since we are *estimating* the error variance, we need to use the *t*-distribution instead of the standard normal distribution.
-
-Testing coefficients
-===========================================================
-- Our null hypothesis is usually $H_0: \beta = 0$
-    - i.e. there is no systematic relationship between $x$ and $y$; you can't predict $y$ from $x$
-- We calculate a *t*-value for our observed $b$ just like we do when we're comparing means: $$t = \frac{b - \beta_0}{\sqrt{\hat{\sigma_b}^2}}$$ where $\beta_0$ is the value of $\beta$ assumed by the null hypothesis. In our case, $\beta_0 = 0$, to we can rewrite this as $t = \frac{b}{\sqrt{\hat{\sigma_b}^2}}$
-- As always, this *t*-value has as many degrees of freedom as the estimated variance, i.e. $n-2$ in the case of the error variance.
-- We can also get confidence intervals, just like when comparing means: $CI: b \pm t_{\alpha/2}\cdot\hat{\sigma_b}$. We reject the $H_0$ if the CI doesn't include 0.
-
-Back to our example
-=============================================================
-```{r, echo = FALSE}
-plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
-abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
-pre <- predict(mod1) # plot distances between points and the regression line
-segments(catfood$CatWeight, catfood$FoodEaten, catfood$CatWeight, pre, col = "red")
-```
-- We can calculate $b$ from the data by first getting the covariance:
-    - $cov(CatWeight,FoodEaten) = \frac{\sum\limits_{i = 1}^n {(CatWeight_i - \bar{CatWeight})\cdot(FoodEaten_i - \bar{FoodEaten})}}{n-1} = `r with(catfood, cov(CatWeight, FoodEaten))`$
-- Then $$b = \frac{cov(CatWeight, CatFood)}{s_{CatWeight}^2} = \frac{`r with(catfood, cov(CatWeight, FoodEaten))`}{`r var(catfood$CatWeight)`} = `r (b <- with(catfood, cov(CatWeight, FoodEaten))/var(catfood$CatWeight))`$$
-
-Back to our example (2)
-===============================================================
-- Now calculate the standard error of $b$ (replacing $CatWeight$ with $x$ for better readability: $$\hat{\sigma_b^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}} = \frac{\frac{\sum\limits_{i = 1}^{n} (y_i - \hat{y}_i)^2}{n-2}}{(n-1)\cdot s^2_{x}} = \frac{\frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2}}{(`r nrow(catfood)` - 1)\cdot `r var(catfood$CatWeight)`} = `r (var_b <- sum(resid(mod1)^2)/(nrow(catfood)-2)/((nrow(catfood) - 1)*var(catfood$CatWeight)))`$$
-- And the $t$-value: $$t_{`r nrow(catfood)-2`} = \frac{b}{\sqrt{\hat{\sigma_b}^2}} = \frac{`r b`}{\sqrt{`r var_b`}} = \frac{`r b`}{`r sqrt(var_b)`} = `r b/sqrt(var_b)`$$
-- And the *p*-value (look it up in Excel): $p(|t_{`r nrow(catfood)-2`}| = `r b/sqrt(var_b)`) = `r format(pt(b/sqrt(var_b), nrow(catfood)-2, lower.tail = FALSE),digits = 2)`$
-- Remember, we are doing a two-tailed test, so we have to multiply the p-value by 2 if we want to compare it to $\alpha = .05$: $p =`r format(2*pt(b/sqrt(var_b), nrow(catfood)-2, lower.tail = FALSE),digits = 2)`$ 
-- Looks like we can reject the $H_0$ this time: Heavier cats tend to eat more.
-
-Can we also do an F-test?
-================================================================
-- Of course we can!
-- $MS_{model} = \frac{SS_{model}}{df_{model}} = \frac{\sum\limits_{i=1}^{n}(\hat{y}_i - \bar{y})^2}{1} = `r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`$
-  - $df_{model}$ is the number of slopes that we're estimating.
-- $MS_{residual} = \frac{SS_{residual}}{df_{residual}} = \frac{\sum\limits_{i=1}^{n}e_i = \sum\limits_{i=1}^{n}(y_i - \hat{y}_i)^2}{n-2} = \frac{`r sum(resid(mod1)^2)`}{`r nrow(catfood)` - 2} = `r sum(resid(mod1)^2)/(nrow(catfood) - 2)`$
-- $F_{(1, `r nrow(catfood) - 2`)} = \frac{MS_{model}}{MS_{residual}} = \frac{`r sum((predict(mod1)-mean(catfood$FoodEaten))^2)`}{`r sum(resid(mod1)^2)/nrow(catfood) - 2`} = `r (my_f <- sum((predict(mod1)-mean(catfood$FoodEaten))^2)/(sum(resid(mod1)^2)/(nrow(catfood) - 2)))`$
-- $p(F_{(1, `r nrow(catfood) - 2`)} = `r my_f`) = `r format(pf(my_f, 1, nrow(catfood) - 2, lower.tail = FALSE), digits = 2)`$ 
-- Guess what? The square root of the *F*-value is our *t*-value. Again, this only works if we have one single predictor: $\sqrt{F_{(1,28)}} = t_{28} = `r sqrt(my_f)`$
-
-Summary: What did we find?
-============================================================
-- The best fitting line for the cat food data intersects the $y$-axis at the point (0, `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]`).
-  - (We never bothered to estimate $a$ by hand, but that's what you would get.)
-  - Not all x-values are sensible for all data. Saying that a cat with 0 kg weight would eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` g of food makes no sense, since a cat with 0 kg weight is not a cat.
-  - The linear function doesn't care, of course. It knows nothing about our data and just specifies a line.
-- The slope might be more useful: It says that for each kg of extra weight, a cat will eat `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` more grammes of food.
-    - Using this information, we can predict that a giant 8 kg cat would eat $`r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1]` + `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2]` \cdot 8 = `r lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8`$ g of food.
-    
-Summary: Predictions and residual errors
-===============================================================
-- Of course, our prediction is likely to be at least a little off.
-- If we had an 8 kg cat in our data and its actual amount of food consumed was 170 g, we'd have an error of $e_i = `r 170 - (lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[1] + lm(formula = FoodEaten ~ CatWeight, data = catfood)$coefficients[2] * 8)`$.
-  - This is called the residual error.
-- More formally, the **population** regression equation looks like this (where $x_i$ are the individual values for the $x$ variable, and $y_i$ are the corresponding values for the $Y$ variable):
-    - $y_i = \alpha + \beta_1 x_i + \epsilon_i$
-    - Here, we've simply renamed the intercept to $\alpha$ and the slope to $\beta_1$.
-    - $\epsilon_i$ is the residual error for each data point.
-    - Important: $\epsilon_i$ is assumed to be normally distributed
-      - This doesn't matter for the line fitting, but it does for the hypothesis tests!
-      
-Summary: Hypothesis testing
-=================================================================
-- Important: Note that the $\beta$ variables are greek letters, which means they are the *population parameters*
-- For each $\beta$ coefficient in the regression formula, we can propose the $H_0$ that the true value of that $\beta$ coefficient is 0
-- The $\beta$ that are estimated from our sample are simply called $b$
-- We can once again test if our $b$ values are extreme enough so they would only occur 5% of the time or less given the $H_0$.
-- We test this separately for each $b$ value. Guess what, it's a *t*-test!
-- We also test whether the intercept is 0
-    - This is usually not particularly interesting unless you have a very specific hypothesis about the intercept.
-
 Multiple regression
 =================================================================
-- Unlike simply running a hypothesis test on a correlation, we can easily add another predictor to a linear model, making it a multiple regression model, where $x_{1i}$ is observation *i* on the first predictor and $x_{2i}$ is observation *i* on the second predictor:
+- We can easily add another predictor to a linear model, making it a multiple regression model, where $x_{1i}$ is observation *i* on the first predictor and $x_{2i}$ is observation *i* on the second predictor:
     - $y_i = \alpha + \beta_1 x_{1i} + \beta_2 x_{2i} + \beta_3 x_{1,i} \cdot x_{2,i} + \epsilon_i$
     - Note that we have an interaction term in this equation: $\beta_3 x_{1,i} \cdot x_{2,i}$
       - We could also specify the model without the interaction if we think there might be a possibility that the effects are just additive:
           - $y_i = \alpha + \beta_1 x_{1i} + \beta_2 x_{2i} + \epsilon_i$
     - Which of the models is better?
-      - That's exactly what we want to find out!
-      
-Example
-==================================================================
-- Let's assume that, apart from each cat's weight in kg, we also have its age in months:
-
-```{r, results='asis', echo = FALSE}
-kable(head(catfood_age))
-write.csv(catfood_age, file = "catfood_age.csv")
-```
-- Does adding age  to the model improve it?
-- Open the file `catfood_age.csv` from myBU in SPSS
-
-The regression output
-==================================================================
-- Multiple regression gets computationally intense, so let's leave this to SPSS
-- First, let's fit the model without the interaction.
-- For your convenience (and to make sure you got things right), here's the output from R
-
-```{r, echo = FALSE}
-summary((lm_catfood <- lm(formula = FoodEaten ~ CatWeight + CatAge, data = catfood_age)))
-```
-
-Interpreting the coefficients
-=================================================================
-- Let's look at just the coefficients:
-
-```{r, results='asis', echo = FALSE}
-kable(summary(lm_catfood)$coefficients)
-```
-
-- Looks like both the coefficient for CatWeight and the coefficient for CatAge are significantly different from 0
-
-Now let's add the interaction term
-=================================================================
-- Note that SPSS is a bit annoying about this, making you calculate the interaction term yourself
-
-```{r, echo = FALSE}
-kable(summary((lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)))$coef)
-```
-- Now nothing is significant! What is going on?
-- Important: these *t*-tests test the null hypothesis that each individual coefficient is 0 **given that all the other predictors are in the model as well**.
-
-Why do we get conflicting results?
-=================================================================
-- This is weird: We didn't have an effect for CatAge when we looked at the *t*-values, but we have when doing F-tests?
-
-```{r, results='asis', echo = FALSE}
-kable(anova(lm_catfood_interaction))
-```
-
-- The answer lies in **what each test compares**. This may sound nitpicky, but it's really important!
-
-Types of sums of squares for the F-test
-=================================================================
-- Type I: Compare a model containing the predictor **and all other predictors** entered *so far* with a model only containing the predictors entered **so far** (order matters).
-    - This is what the `anova` command in R does.
-- Type II: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question **and its interactions**.
-    
-- Type III: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question, but **including its interactions**.
-    - This is the equivalent of the *t*-tests.
-    - This is the standard in SPSS.
-
-
-Example: Type I sum of squares
-=================================================================
-```{r, results='asis', echo = FALSE}
-kable(anova(lm_catfood_interaction))
-```
-
-Example: Type II sum of squares
-=================================================================
-```{r, results='asis', echo = FALSE}
-library(car)
-kable(Anova(lm_catfood_interaction,type = "II"))
-```
-
-Example: Type III sum of squares
-=================================================================
-```{r, results='asis', echo = FALSE}
-library(car)
-kable(Anova(lm_catfood_interaction,type = "III"))
-```
-
-Summary: Sums of square types
-==================================================================
-- ANOVA results (both classic ANOVA and regression model tests) can vary depending on which SS you use
-    - Make sure that you know which ones you are using
-    - If you are using SPSS, the answer is *probably* III.
-- In standard ANOVA (with only discrete predictors), all SS types give the same result *as long as your design is balanced*
-    - An unbalanced design will lead to differing sums of squares.
-- In multiple regression, all SS types give the same result *as long as your predictor variables are not correlated*
-
-Back to the current model
-=================================================================
-- **Important**: The above model has a **critical flaw**, so read on before you run off and perform multiple regressions.
-- The flaw is related to correlations between predictors (multicollinearity).
-- Specifically, we seem to have the issue that CatAge is significant on its own, but loses significance if the interaction CatWeight:CatAge is already in the model
-- Can we test this idea in a more formal way?
-
-Our problem
-=================================================================
-- This model is really hard to interpret
-    - CatWeight or CatAge would have a strong effect individually
-    - But neither predictor adds anything if the interaction is already in the model
-    - Why? Because the interaction is strongly correlated with both of them!
-- Make sure to check for correlations between predictors before running a regression
-    - `Part- and partial correlations` in the `Statistics...` menu of the Linear Regression module
-- Important: Some multicollinearity is unavoidable, but the more strongly your predictors are correlated, the more problems you get
-
-
-Diagnosing Multicollinearity
-================================================================
-- Ask SPSS to give you collinearity diagnostics (in the `Statistics...` menu of the Linear Regression module).
-- Now it will print out something called Variance Inflation Factors (VIFs)
-- For your convenience, the VIFs for this model are printed below
-
-```{r, echo = FALSE}
-library(car)
-vif(lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age))
-```
-
-Interpreting the VIF
-=================================================================
-- You have a problem with mulitcollinearity if
-    - The largest VIF is greater than 10 and/or
-    - The average VIF is substantially greater than 1
-- Multicollinearity seriously affects the interpretability of your model
-  - In practice, it increases the estimate of the standard error of your coefficients $\sigma_{\beta}$
-  - This reduces the power of the significance test
-
-Where does the multicollinearity come from?
-==================================================================
-- Here's the problem: The interaction effect is equivalent to $CatWeight \cdot CatAge$
-- What to do? Luckily, there is an easy solution to this particular issue:
-  - If we **center** both variables (i.e. subtract the mean from each observation), the correlation will disappear
-  - You can center variables using `Transform` --> `Compute Variable...`
-  - Get the **mean** using `Analyze` --> `Descriptives...`, then subtract it from each observation of both variables:
-    - $CatWeight - `r mean(catfood_age$CatWeight)`$; $CatAge - `r mean(catfood_age$CatAge)`$
-  - Save the new variables as `CatWeight_centered` and `CatAge_centered`
-
-Does this help?
-===================================================================
-```{r, echo = FALSE}
-catfood_age2 <- catfood_age
-catfood_age2$CatWeight_centered <- scale(catfood_age$CatWeight, scale = FALSE)
-catfood_age2$CatAge_centered <- scale(catfood_age$CatAge, scale = FALSE)
-# re-fit the model
-lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight_centered * CatAge_centered, data = catfood_age2)
-lm_catfood_interaction_table <- coef(summary(lm_catfood_interaction))
-rownames(lm_catfood_interaction_table) <- c("(Intercept)", "Cat Weight", "Cat Age", "Cat Weight by Cat Age")
-kable(lm_catfood_interaction_table)
-vif_table <- data.frame(vif(lm_catfood_interaction))
-colnames(vif_table) <- "VIF"
-rownames(vif_table) <-  c("Cat Weight", "Cat Age", "Cat Weight by Cat Age")
-kable(vif_table)
-```
-
-- Yes, it does 
-
-Let's look at the coefficients again
-===================================================================
-
-```{r, results='asis', echo = FALSE}
-kable(summary(lm_catfood_interaction)$coefficients)
-```
-
-- Look at that: Now CatAge is significant, too!
-- We would have made a Type II error if we hadn't centered the variables.
-- Lesson of this story: When testing for interactions with continuous variables, **always center the continuous variables**.
-
-Diagnosing influential cases
-======================================================================
-- Occasionally, you get **outliers** in your data. These are cases that differ quite a bit from the rest of the data. Often (but not always) outliers are caused by an error in measurement or coding. Outliers definitely merit closer attention.
-- In SPSS, you can get a number of diagnostic values for each observation. You can save these to the Data Editor using the `Save...` button in the Linear Regression module.
-
-Why you always need to look at your data
-======================================================================
-- These datasets all have the same regression line, but they look very different:
-
-```{r, echo=FALSE}
-library(ggplot2)
-library(gridExtra)
-
-data(anscombe)
-
-p1 <- ggplot(anscombe) + geom_point(aes(x1, y1), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 1")
-p2 <- ggplot(anscombe) + geom_point(aes(x2, y2), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 2")
-p3 <- ggplot(anscombe) + geom_point(aes(x3, y3), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 3")
-p4 <- ggplot(anscombe) + geom_point(aes(x4, y4), color = "darkgrey", size = 3) + theme_bw() + scale_x_continuous(breaks = seq(0, 20, 2)) + scale_y_continuous(breaks = seq(0, 12, 2)) + geom_abline(intercept = 3, slope = 0.5) + expand_limits(x = 0, y = 0) + labs(title = "dataset 4")
-
-grid.arrange(grobs = list(p1, p2, p3, p4), main = "Anscombe's Quartet")
-```
-
-Diagnosing influential cases (2)
-======================================================================
-- Diagnostic values you can save:
-      - DFBetas (one for each predictor, including the intercept) 
-          - Difference between the parameter when this case is excluded and when it is included
-          - Should not be much larger than that of the other cases
-          - Absolute value should not be > 1
-      - DFFit
-          - Difference between the predicted value for a case when this case is excluded and when it is included
-          - Should not be much larger than that of the other cases
-      - Covariance ratio
-          - The farther it is from 1 and the smaller it is the more this case increases the error variance
-
-Diagnosing influential cases (4)
-========================================================================
-- More diagnostic values you can save to the Data Editor:
-  - Cook's distance
-      - Measure of the overall influence of a case on the model
-        - Values > 1 are possibly problematic
-  - Hat = leverage
-      - How strongly does this case influence the prediction?
-      - Average value is $p/n$, where $p$ is the number of predictors (including the intercept, so 4 for our model) and $n$ is the number of observations(`r nrow(catfood)` for our model, so our average should be `r 4/nrow(catfood)`)
-      - Values over 2 or 3 times the average should be cause for concern
-
-General strategy for diagnosing influential cases
-==========================================================================
-- Check if any cases have a Cook's distance of > 1
-  - Then check if they have an undue effect on the model using the other statistics
-  - SPSS can also give you standardised residuals (i.e. residuals transformed into *z*-values) above a certain cutoff (e.g. 3 standard deviations).
-    - You can get these from `Statistics...` under `Casewise diagnostics` in the Linear Regression module
-  - Outliers outside 3 standard deviations are potentially problematic
-  
-Testing the regression assumptions
-===========================================================================
-- Normality of the residuals:
-  - Make a histogram of the standardised residuals (`Plot...` button in the `Linear Regression` module)
-    - Does it look roughly normal?
-    
-```{r, echo = FALSE}
-hist(scale(resid(lm_catfood_interaction)), xlab = "Regression Standardized Residual", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
-```
-
-More assumption tests (3)
-===========================================================================
-- Heteroskedasticity
-  - Make a plot of *z*-transformed predicted values against *z*-transformed residuals
-      - In the `Plot...` window, choose ZPRED as the y-value and ZRESID as the x-value
-      - Does it look like there is more variance for certain predicted values?
-      
-```{r, echo = FALSE}
-plot(x = scale(predict(lm_catfood_interaction)), y = scale(resid(lm_catfood_interaction)), xlab = "Regression Standardized Residual", ylab = "Regression Standardized Predicted Variable", main = "Dependent Variable: Food Eaten")
-```
-
-Reporting the regression results
-===================================================================
-```{r, results='asis', echo = FALSE}
-lm_catfood_interaction_table <- coef(summary(lm_catfood_interaction))
-kable(lm_catfood_interaction_table)
-```
-
-1. Make a table with the model coefficients (see above.)
-2. Introductory paragraph: In order to test the hypothesis that cat weight and cat age can predict how much food a cat eats, we performed a multiple regression analysis  with food eaten (in g) as the dependent variable and cat weight and cat age (both mean-centered) as well aas their interactions as continuous independent variables. The model explained a very high amount of the variance in the dependent variable, with an adjusted $R^2$ of `r summary(lm_catfood_interaction)$adj.r.squared`.
-
-
-Reporting the regression results: Coefficients
-===================================================================
-Our results show that both cat weight (b = `r lm_catfood_interaction_table["CatWeight_centered","Estimate"]`, SE = `r lm_catfood_interaction_table["CatWeight_centered","Std. Error"]`, t = `r lm_catfood_interaction_table["CatWeight_centered","t value"]`, `r print_p(lm_catfood_interaction_table["CatWeight_centered","Pr(>|t|)"])`) and cat age (b = `r lm_catfood_interaction_table["CatAge_centered","Estimate"]`, SE = `r lm_catfood_interaction_table["CatAge_centered","Std. Error"]`, t = `r lm_catfood_interaction_table["CatAge_centered","t value"]`, `r print_p(lm_catfood_interaction_table["CatAge_centered","Pr(>|t|)"])`)) had a significant effect on the food eaten. On average, an increase in weight by one kg went along with an increase in food eaten of `r lm_catfood_interaction_table["CatWeight_centered","Estimate"]` g. Similarly, an increase in age by one month went along with an increase in food eaten of `r lm_catfood_interaction_table["CatAge_centered","Estimate"]` g.
-
-There was no significant interaction between cat weight and cat age (p > .05), suggesting that the effects of cat weight and cat age were additive. Assumption tests and visual inspection of residual plots showed that there was no evidence of violations of normality, independence, or homoscedasticity. [If you removed influential cases, say this here.]
-
-Discrete variables
-==================================================================
-- Is it possible to perform a regression analysis with discrete (instead of continuous) variables?
-  - **Yes!**
-  - In fact, when you ask SPSS or R to perform an ANOVA, what it does behind the scenes is run a linear model and then do model comparisons using the F-Test
-      - Minds blown (maybe)!
-  - How can we put discrete (that is, non-numerical) variables into the regression model?
-      - We make up numbers, of course.
-      - This is called *dummy coding*.
-      
-Example
-=================================================================
-```{r, echo=FALSE}
-catfood_breed <- with(catfood_age2, data.frame(CatWeight = CatWeight_centered, CatAge = CatAge_centered, CatBreed = cat_breed, FoodEaten = food_eaten))
-catfood_breed$FoodEaten <- catfood_breed$FoodEaten + ifelse(cat_breed == "Manx", 15, -15)
-```
-- Let's just stay with the cat data for a little bit longer
-- Let's say our cats came from two breeds, shorthair and manx.
-    - Does breed have an influence on food eaten?
-    - The corresponding file is on myBU (`catfood_breed.sav`; first 6 rows of the table shown)
-    
-```{r, results='asis', echo = FALSE}
-kable(head(catfood_breed))
-write.csv(catfood_breed, file = "catfood_breed.csv")
-```
-
-We could do a t-test
-=================================================================
-```{r, echo = FALSE}
-t.test(formula = FoodEaten ~ CatBreed, data = catfood_breed, var.equal = TRUE)
-```
-
-Or an ANOVA
-==================================================================
-```{r, echo = FALSE}
-summary(aov(formula = FoodEaten ~ CatBreed, data = catfood_breed))
-```
-
-Or we could assign dummy values and do a regression
-==================================================================
-- Let's recode our variable and assign "0" to all Shorthairs and "1" to all Manxes
-- We can do this in SPSS under `Data` --> `Recode into Different Variables...`
-    - We recode our cat breed variable into a variable called `dummy`, containing 0s and 1s
-
-## Dummy analysis
-```{r, echo = FALSE}
-# assign 0 to all shorthairs and 1 to all manxs
-catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
-kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
-```
-
-Let's plot the situation
-=================================================================
-```{r, echo = FALSE}
-plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten, xlab = "Dummy variable", ylab = "Food Eaten")
-abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
-```
-
-Interpreting dummy variables
-=================================================================
-- Now, the intercept is the mean for group "shorthair" and the slope gives the difference between group "shorthair" and group "manx"
-- Remember the regression equation: $y_i = \alpha + \beta_1 x_{i} + \epsilon_i$
-- If $x_i$ is 0 (shorthair group), the predicted value y is the intercept ($\alpha$)
-- If $x_i$ is 1 (manx group), the predicted value is the sum of the intercept ($\alpha$) and the slope ($\beta_1$). 
-
-Different dummy values
-================================================================
-- Nobody forces us to set the values to 0 and 1
-- We could use any values we want, e.g. 99 and 23419 (although have fun interpreting *that* equation)
-- -1 and 1 might be reasonable. We use `Data` --> `Recode into Different Variables...` to make a new dummy variable containing -1s for Shorthair and 1s for Manxes.
-```{r, echo = FALSE}
-catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
-```
-
-Re-run the analysis
-================================================================
-
-```{r, results='asis', echo = FALSE}
-kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
-```
-
-- Note that the numbers are different: now the intercept represents the grand (overall) mean.
-- The slope tells you how far the means of shorthair and manx are from the grand mean.
-     - The prediction for shorthair is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` - `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] - coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
-     - The prediction for manx is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` + `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] + coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
-    - The *t* and *p* values are exactly the same.
-
-Analysis of Covariance (ANCOVA)
-=================================================================
-- Now we have all the elements in place to perform a simple ANCOVA
-- The idea behind the ANCOVA is that sometimes our dependent variable in the ANOVA is influenced by non-discrete covariates
-- For example, someone's IQ might influence their performance in a memory experiment
-- By including the covariate in the model, we can explain more variance (and take it out of the error variance)
-
-Analysis of Covariance (ANCOVA)
-=================================================================
-- Still with the cats! Sorry, I'm just too lazy to make up a new data set...
-- Let's see if there is an effect of cat breed if we enter cat age and cat weight into the analysis as covariates (we don't care about their interaction, which we have shown to not be significant in the first place).
-
-Use the Linear Regression module
-================================================================
-```{r, echo = FALSE}
-catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + dummy)
-kable(coef(summary(catfood_breed_lm)))
-```
-
-- We can reject the null hypothesis. Cat Breed (represented by our dummy variable) does indeed have a significant effect on food eaten.
-- Note that, since we are coding Cat Breed as -1 and 1 , our intercept is still the grand mean of FoodEaten. Our dummy variable tells us the distance between the mean of the Shorthair group and the grand mean (on the left) and the distance between the Manx group and the grand mean (on the right)
-
-Using the General Linear Model (Univariate) module
-================================================================
-- We can do an F-test by using the `Univariate` test from the `General Linear Model` module (in the `Analyze` menu)
-```{r, echo = FALSE}
-Anova(catfood_breed_lm, type = "III")
-```
-
-Assumption tests: Homogeneity of regression slopes
-===============================================================
-- This is an ANCOVA-specific assumption: is there an interaction between the covariate(s) and the discrete factor(s)?
-- If there is, you can still use the linear model, but you can't call it an "ANCOVA" anymore
-    - Also, the interpretation of the results will be much more complicated
-- How to check this? Use `Transform` --> `Compute Variable...` to make a interaction terms for the dummy variable and the covariates, then fit a new model using the `Linear Regression` module and see if the interaction terms reach siugnificance.
-
-Assumption tests: Homogeneity of regression slopes (2)
-===============================================================
-```{r, echo = FALSE}
-catfood_breed_interact_lm <- lm(data = catfood_breed, 
-                                formula = FoodEaten ~ CatWeight * CatAge * dummy)
-kable(coef(summary(catfood_breed_interact_lm)))
-```
-
-- No evidence for any interaction. (Check multicollinearity, of course!)
-
-Summary: Contrasts
-========================================================
-- The link between multiple regression and ANOVA
-- Using dummy coding to turn a discrete variable into a number of "continuous" contrasts
-- Many possible contrasts -- you can make your own!
-    - Not very many *sensible* contrasts.
-- Basic principles: A factor with $k$ levels gets split into $k-1$ contrasts.
-    - i.e. one contrast per degree of freedom
-- Contrasts can be, but don't have to be, **orthogonal**
-    - orthogonal contrasts don't share any variance
-    - non-orthogonal contrasts are fine to use, but they may be correlated
-        - remember the pitfalls of multicollinearity!
-        
-Example
-========================================================
-- Enough about cats, let's talk about dogs!
-- In this ficticious example, let's assume we are testing 45 dogs to see how many object names they know (e.g. when you tell them to bring you a "ball", "stick", etc., do they bring you the correct object or a random one?)
-- Our sample contains 15 beagles, 15 border collies, and 15 terriers.
-- Let's assume that the true means for each breed are:
-
-| Breed        | Number of object names known|
-|-------------:|----------------------------:|
-| Beagle       |                           10|
-| Border Collie|                           60|
-| Terrier      |                           15|
-
-Example (2)
-========================================================
-- With 3 means, there are (at least) 3 comparisons we can make
-
-| Comparison              | Difference                  |
-|------------------------:|----------------------------:|
-| Border Collie -- Beagle |                           50|
-| Border Collie -- Terrier|                           35|
-| Terrier -- Beagle       |                            5|
-
-- Let's see how the contrasts reflect these comparisons
-     - But remember -- we can only make 2.
-  
-```{r, echo = FALSE}
-# Seed for random number generators, so that we all get the same results
-set.seed("6")
-# Column 1: Breed - repeat each breed name 15 times, then combine
-breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15))
-# Column 2: Objects - repeat each true group mean 15 times, then combine
-objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
-
-# Add random noise to the objects scores
-objects <- objects + rnorm(n = 45, mean = 0 , sd = 6)
-# for more realism, round the objects scores to full integers
-# (what does it mean if a dog knows a fraction of an object?)
-objects <- round(objects, digits = 0)
-# Combine into data frame
-dogs <- data.frame(breed, objects)
-write.csv(dogs, "dogs.csv")
-```
-
-The data
-========================================================
-- The data are in the file `dogs.sav` on myBU
-- Let's calculate the means:
-
-## Means table
-```{r, echo = FALSE}
-# get the means for each breed
-means_table <- data.frame(tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean))
-colnames(means_table) <- c("Mean number of objects known")
-kable(means_table)
-```
-
-Comparing the means
-========================================================
-- We can always do pairwise *t*-tests. Those give us all the comparisons, but at the cost of making multiple comparisons.
-
-```{r, echo = FALSE}
-pairwise.t.test(x = dogs$objects, g = dogs$breed)
-```
-
-Adding contrasts
-========================================================
-- Let's make two dummy variables, called `x1` and `x2`:
-
-```{r, results='asis', echo=FALSE}
-library(knitr)
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
-
-- $x_1$ will be 1 for all "Border Collie" cases, and 0 otherwise
-- $x_2$ will be 1 for all "Terrier" cases, and 0 otherwise
-- This will make "Beagle" the baseline
-
-How contrasts work
-=========================================================
-- Remember the linear regression equation:
-- $y_{i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2} + \epsilon_i$
-- i.e. the predicted value for $y_i$ is $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
-- Now let's substitute in the values from the table if breed is "Beagle":
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
-
-- $\hat{y_{i}} = \alpha + \beta_1 \times 0 + \beta_2 \times 0 = \alpha$
-- The predicted value for the Beagle group is $\alpha$, the intercept
-- That means that in this analysis, the intercept will reflect the mean for the Beagle group (10)
-
-How contrasts work (2)
-=========================================================
-- The predicted value for $y_i$ is still $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
-- Now let's substitute in the values from the table if breed is "Border Collie":
-
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
-
-- $\hat{y_{i}} = \alpha + \beta_1 \times 1 + \beta_2 \times 0 = \alpha + \beta_1$
-- The predicted value for the Border Collie group is $\alpha + \beta_1$, i.e. the sum of the intercept and the first slope $\beta_1$
-- That means that in this analysis, the slope $\beta_1$ will reflect the difference between the mean for the Border Collie group and the mean for the Beagle group ($60 - 10 = 50$)
-
-How contrasts work (2)
-=========================================================
-- The predicted value for $y_i$ is still $\hat{y_i} = \alpha + \beta_1 x_{1} + \beta_2 x_{2}$
-- Now let's substitute in the values from the table if breed is "Terrier":
-```{r, results='asis', echo=FALSE}
-contrast_matrix <- contr.treatment(3)
-colnames(contrast_matrix) <- c("x1","x2")
-rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
-kable(contrast_matrix)
-```
-
-- $\hat{y_{i}} = \alpha + \beta_1 \times 0 + \beta_2 \times 1 = \alpha + \beta_2$
-- The predicted value for the Border Collie group is $\alpha + \beta_2$, i.e. the sum of the intercept and the second slope $\beta_2$
-- That means that in this analysis, the slope $\beta_1$ will reflect the difference between the mean for the Terrier group and the mean for the Beagle group ($15 - 10 = 5$)
-
-Let's run the regression analysis
-==========================================================
-```{r, echo = FALSE}
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
-
-- Looks just about right (remember, the means differ from the true population means because this is a -- simulated -- sample and contains random error)
-
-We can also do a standard ANOVA
-==========================================================
-```{r, echo = FALSE}
-kable(anova(lm(data = dogs, objects ~ breed)))
-```
-
-- Note that the contrasts give us more information: they tell us which of the factor levels differ from the "Beagle" baseline
-    - These are not multiple comparisons -- the ANOVA F-test simply compares a model without any of the contrasts (just the intercept) to a model with all the contrasts, while the *t*-tests compare the coefficient for each contrast to 0.
-        - The classic ANOVA is simply a regression with (implicit) standard contrasts.
-     - As a consequence, we get the contrasts "for free", but we can only have as many contrasts as the factor has degrees of freedom (i.e. $k-1$, where $k$ is the number of factor levels)
-
-Interpreting the hypothesis tests
-========================================================
-- Note that we are testing the $H_0$ that $\alpha$, $\beta_1$, $\beta_2$ are 0.
-- In this examples, we call the observed coefficients $b_1$ `breedBorder Collie` and $b_2$ `breedTerrier`.
-- Remember what we said about the coefficients?
-- $\alpha$ (the intercept) reflects the mean for the Beagle group
-- If the intercept is significantly different from 0, that's not that interesting (but at least it is evidence that the beagles can learn more than 0 object names)
-- The first slope $\beta_1$ reflects the difference between the Border Collie group and the Beagle group
-- If this difference is significant, it means that there is evidence that Border Collies know more object names than Beagles
-
-Interpreting the hypothesis tests (2)
-========================================================
-- The second slope $\beta_2$ reflects the difference between the Terrier group and the Beagle group
-- If this difference is significant, it means that there is evidence that Terriers know more object names than Beagles
-- Looking at the *t*-test results, $b_1$ is significantly different from 0, but $b_2$ isn't.
-- There's a significant difference in terms of object names known between Beagles and Border Collies, but not between Beagles and Terriers
-- Note that we are only doing two comparisons -- that's all we can do.
-
-Trying different contrasts
-=========================================================
-- We can try some different contrast coding schemes to see how they work
-- We can do this here because there are fake data and we know the actual means
-- With real data, you need to plan your contrasts **before** you analyse your data (ideally, before you even collect them)
-    - That's why they are called **planned** contrasts as opposed to **post hoc**.
-- You can't even look at the means first!
-- Otherwise, you're cheating. This is far worse than a small violation of normality or homoscedasticity!
-
-Using contrasts in SPSS
-==========================================================
-- To be honest, SPSS is terrible with contrasts -- it's really inconsistent
-- You can specify your own contrasts using the Univariate ANOVA module, but you can't do that for the General Linear Model module
-    - Instead, you have to pick a number of standard contrasts
-- In theory, you could define your own contrasts, but it's a bit tricky
-
-Standard contrasts
-========================================================
-- Simple
-    - Compares each level to the reference level, the intercept is the grand mean
-- Deviation
-    - Compares each level to the overall mean of the dependent variable (the reference level is not compared)
-- Helmert
-    - Compares each level to the mean of the subsequent ones
-- Difference (reverse Helmert)
-    - Compares each level to the mean of the previous ones
-- Repeated (successive differences)
-    - Compares each level to the subsequent level 
-
-Applying deviation contrasts
-==========================================================
-```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.sum
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
-
-Interpreting sum/deviation contrasts
-===========================================================
-- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
-- $\beta_1$ is the difference between the grand mean and the mean of Beagle ($10 - 28.33 = -18.33$)
-- $\beta_2$ is the difference between the grand mean and the mean of Border Collie ($60 - 28.33 = 31.67$)
-- Terrier is never explicitly compared to the grand mean.
-- In general: each level (except for the last level) is compared to the grand mean.
-
-Applying difference (reverse Helmert) contrasts
-==========================================================
-```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.helmert
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
-
-Interpreting (reverse) Helmert contrasts
-========================================================
-- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
-- $beta_1$ is half of the difference between the mean of Beagle and the mean of Border Collie ($(60 - 10)/2 = 25$)
-- $beta_2$ is half of the difference between the joint mean of Beagle and Border Collie and the mean of Terrier ($(15 - (60+10)/2)/2 = -10$)
-- In general: each level is compared to the mean of the previous levels
-
-Make your own contrasts?
-==========================================================
-- **DANGER**: If you apply your contrasts directly as dummy variables, you must use the **inverse** of your contrast matrix
-- If your contrasts are not orthogonal, and you don't use the inverse of your matrix, you won't be comparing what you think you're comparing.
-- If you don't know what this means, don't use your own contrasts until you do. 
-- For more background information on regression and linear models, see John Fox's book below (Warning: it does involve matrix algebra). Check Chapter 6 for information about how the contrasts work and why you need to be careful.
-
->Fox, J. (2008). Applied regression analysis and generalized linear models. 2nd Edition. Sage Publications, Thousand Oaks, CA, USA.
-or the newer version
->Fox, J. (2015). Applied regression analysis and generalized linear models. 3rd Edition. Sage Publications, Thousand Oaks, CA, USA.
-
+      - That's exactly what we want to find out! Next week!
