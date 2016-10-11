@@ -1,0 +1,81 @@
+Regression example plots (in-class)
+==================================================================================
+author: Bernhard Angele
+date: 22 September 2016
+
+Question 4
+========================================================
+
+
+```{r, echo=FALSE}
+x <- seq(-3, 3, .1)
+y <- 1 + x + rnorm(length(x),0,4)
+plot(x, y, axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -5:5)
+axis(2, pos = 0, at = seq(from = -10, to = 10, by = 2))
+abline(0.5, -1, col = "red")
+```
+
+
+Question 5
+========================================================
+
+
+```{r, echo=FALSE}
+x <- seq(-5, 5, .1)
+y <- 1 - 0.25*x + rnorm(length(x),0,2)
+plot(x, y, axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = -5:5)
+axis(2, pos = 0, at = seq(from = -20, to = 20, by = 2))
+abline(lm(y ~ x), col = "red")
+```
+
+
+Question 6
+========================================================
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=8}
+x <- seq(-5, 5, .1)
+y <- 1 - 0.25*x + rnorm(length(x),0,2)
+plot(x, y, axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = seq(-5,5, .5))
+axis(2, pos = 0, at = seq(from = -20, to = 20, by = 1))
+abline(lm(y ~ x), col = "red")
+```
+
+
+Question 7
+========================================================
+
+
+```{r, echo=FALSE, fig.width=10, fig.height=8}
+x <- seq(-5, 5, .1)
+y <- 3 + x + rnorm(length(x),0,4)
+plot(x, y, axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = seq(-5,5, .5))
+axis(2, pos = 0, at = seq(from = -20, to = 20, by = 1))
+abline(lm(y ~ x), col = "red")
+```
+
+Question 8
+========================================================
+```{r, echo=FALSE, fig.width=10, fig.height=8}
+x <- seq(-5, 5, .1)
+y <- 2 + rnorm(length(x),0,4)
+plot(x, y, axes = FALSE)
+grid(col = "lightgray", lty = "dotted",
+     lwd = par("lwd"), equilogs = TRUE)
+axis(1, pos = 0, at = seq(-5,5, .5))
+axis(2, pos = 0, at = seq(from = -20, to = 20, by = 1))
+abline(3,0, col = "red")
+```
+

@@ -1,7 +1,7 @@
 Advanced Statistics
 ========================================================
 author: Bernhard Angele
-date: Lecture 4
+date: Regression basics
 
 
 Where we are so far
@@ -18,12 +18,12 @@ Linear regression
   - Does the size of your forehead predict your conscientousness? (Probably not!)
   - These questions involve *continuous* predictors (independent variables) and a *continuous* predicted (dependent) variable.
 
-- Example:
-    - More exciting data about cats and cat foood!
-    - Is the amount of cat food a cat eats related to its weight?
-    - In other words, do heavy cats eat more?
-      - (are cats who eat more heavier???)
-    
+Example
+======================================================
+- Is the amount of cat food a cat eats related to its weight?
+- In other words, do heavy cats eat more?
+  - (are cats who eat more heavier???)
+
 Cat food and weight
 =========================================================
 ```{r, echo=FALSE}
@@ -78,10 +78,7 @@ Fitting a line to the data
 plot(x = catfood$CatWeight, y = catfood$FoodEaten, xlab = "Cat Weight", ylab = "Food Eaten")
 abline(mod1 <- lm(catfood$FoodEaten ~ catfood$CatWeight))
 ```
-
-- Looks like we have a strong positive relationship:
-    - The heavier the cat (variable $x$), the more food eaten (variable $y$).
-- But how do we come up with this line?
+- Looks like we have a strong positive relationship: The heavier the cat (variable $x$), the more food eaten (variable $y$).
 
 Fitting a line to the data
 ==========================================================
@@ -96,8 +93,8 @@ Fitting a line to the data
 Errors
 =======================================================
 - No line will ever fit the data perfectly (i.e. go through all the points)
-  - The difference between what the line predicts for a certain Y value (the predition is called $\hat{y}$and what it actually is can be called the error $E$:
-  - For point i: $$E_i = Y_i - a + b\cdot X_i = Y_i - \hat{Y}$$
+  - The difference between what the line *predicts* for a certain Y value (the predition is called $\hat{y}$) and what the Y value actually is can be called the error $E$:
+  - For point i: $$E_i = Y_i - a + b\cdot X_i = Y_i - \hat{Y_i}$$
 
 The "best" line?
 =========================================================
@@ -110,15 +107,13 @@ The "best" line?
         
 Minimising the errors
 ==============================================================
-- Two possibilities here:
-  - We could just minimise the *absolute value* of the deviations: 
+- Two possibilities here: We could just minimise the *absolute value* of the deviations: 
   $$\sum\limits_{i=1}^{n} \left|E_i\right| = \sum\limits_{i=1}^{n}\left|Y_i - \hat{Y}_i\right| =min$$
-      - This is called *least absolute values regression*, but it is quite mathematically complex, so it's rarely used and we won't talk about it in this unit.
-  - It's much easier to use squares instead of absolute values, so that is what almost everyone uses. Also, this puts a special penalty on large deviations, which is nice.
+    - This is called *least absolute values regression*, but it is quite mathematically complex, so it's rarely used and we won't talk about it in this unit.
+    - It's much easier to use squares instead of absolute values and perform a *least squares regression*, so that is what almost everyone uses. Also, this puts a special penalty on large deviations, which is nice.
   $$\sum\limits_{i=1}^{n} E_i^2 = \sum\limits_{i=1}^{n}(Y_i - \hat{Y}_i)^2 =min$$
-      - This is called *least squares regression*.
 
-The Least-Squares regression line
+The least-Squares regression line
 =========================================================
 - Here, I've plotted the errors, i.e. the deviations of the predicted values (on the line) from the actual values. These are also called the **residuals**.
 
@@ -145,7 +140,10 @@ Covariance, the regression slope, and correlation
 - Let's see if this is useful for our goal of getting a least-squares line:
     - We're still trying to minimise $\sum\limits_{i=1}^{n} E_i^2 = \sum\limits_{i=1}^{n}(Y_i - A - B \cdot X_i )^2$
         - To minimise we'll have to use derivatives of this function. See the Fox (2013) book if you are truely interested.
-  - In any case, it turns out that if we only have on independent (predictor) variable, we can compute the regression slope from the covariance: $$b = \frac{cov(x, y)}{s_x^2}$$
+
+Estimating the coefficients
+======================================================
+- In any case, it turns out that if we only have on independent (predictor) variable, we can compute the regression slope from the covariance: $$b = \frac{cov(x, y)}{s_x^2}$$
   - We can then get the intercept using the means of X and Y:
   $$a = \bar{Y} - b\cdot\bar{X}$$
 - That's it -- we have the function for our least squares regression line.
