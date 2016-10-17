@@ -1,8 +1,9 @@
-Advanced Statistics
-========================================================
-author: Bernhard Angele
-date: Hypothesis tests for simple and multiple regression
-
+---
+title: "Advanced Statistics"
+subtitle: "Hypothesis tests for simple and multiple regression"
+author: "Bernhard Angele"
+output: pdf_document
+---
 
 Statistical inference for regression
 =========================================================
@@ -318,6 +319,7 @@ Example
 kable(head(catfood_age))
 write.csv(catfood_age, file = "catfood_age.csv")
 ```
+
 - Does adding age to the model improve it?
 - This will be our first adventure in SPSS. Feel free to follow along. The data file is in the lecture module on myBU.
 - Let's open the file `catfood_age.csv` from myBU in SPSS
@@ -426,7 +428,7 @@ kable(summary(lm_catfood_interaction)$coefficients)
 
 Why you always need to look at your data
 ======================================================================
-- These datasets all have the same regression line, but they look very different:
+- These datasets (from Anscombe, 1973) all have the same regression line, but they look very different:
 
 ```{r, echo=FALSE}
 library(ggplot2)
