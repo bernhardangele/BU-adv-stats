@@ -8,11 +8,10 @@ Statistical inference for regression
 =========================================================
 - This lecture corresponds to Chapter 6 in Fox (2013)
   - You can find the more involved details (such as a lot of the derivations) there
-- Goals for this lecture:
       
-Sampling from a population
+Hypothesis tests (for simple regression)
 =========================================================
-- When we do a regression analysis, we _assume_ that there is a true linear relationship in our population : $$Y_i = \alpha + \beta\cdot x_i + \epsilon_i$$
+- We assume that there is the following linear relationship in our population: $$Y_i = \alpha + \beta\cdot x_i + \epsilon_i$$
   - $\alpha$ and $\beta$ are our population coefficients. $\epsilon_i$ is the error for this particular observation.
   
 ```{r, echo=FALSE}
@@ -20,7 +19,7 @@ Sampling from a population
 library(ggplot2)
 set.seed(0)
 dat <- data.frame(x=(x=runif(100, 0, 50)),
-                  y=rnorm(100, 20*x, 100))
+                  y=rnorm(100, 10*x, 100))
 
 ## breaks: where you want to compute densities
 breaks <- seq(0, max(dat$x), len=5)
@@ -52,48 +51,29 @@ ggplot(dat, aes(x, y)) +
   theme_bw() +
   geom_vline(xintercept=breaks, lty=2)
 ```
-
-Necessary assumptions
-==========================================================
-- Linearity (see above): $$E(Y_i) = \alpha + \beta\cdot x_i + E(\varepsilon_i) = \alpha + \beta\cdot x_i$$
-    - The expected value of the random error is always 0!
-- Constant variance
-    - For each $x$-value $x_i$, the corresponding $Y_i$-values have the same standard deviation (homoscedasticity assumption): $$Var(Y_i|x_i) = Var(\varepsilon_i) = \sigma_{\varepsilon}^2$$
-    
-Necessary assumptions (2)
-==========================================================    
-- Normality
-    - The errors are normally distributed: $\varepsilon_i \sim N(0,\sigma_\varepsilon^2)$
-    - As a consequence, the $Y_i$ values are normally distributed around the value predicted by the linear equation: $$Y_i \sim N(\alpha + \beta x_i, \sigma_\varepsilon^2)$$
-- Independence
-  - For each $X_i$-value, the corresponding $Y_i$-values are independent (i.e. $\varepsilon_i$ is independent from all of the other $\varepsilon$)
-  - Not the case for time series: the error at time $x_i$ may well depend on the error at the preceding time $x_{i-1}$.
-- [Also, $X$ values are either fixed or are independent of the error.]
-
-
-Sampling distributions of the coefficients
-=========================================================
 - We will need to estimate our regression equation based on our sample, so that $a$ and $b$ are estimates of the population coefficients $\alpha$ and $\beta$.
 - $\epsilon$ is the **error**. It represents all the influences (random or not) that we are not considering in the linear relationship.
     - If the relationship is actually linear, then $E(\epsilon) = 0$
 - How can we interpret these estimated coefficients? Mostly, we care about whether $\beta$ is 0, i.e. whether there is a significant relationship between $x$ and $y$ in the population.
 
+Assumptions
+==========================================================
+- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma_{x,y}$.
+- The bivariate (or, more generally, multivariate) normal distribution assumes that:
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are normally distributed: $\epsilon \sim N(0, \sigma_{\epsilon}^2$)
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon}^2$
+    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon_i$ are independent)
 
 Distribution of the coefficient estimates
 ===========================================================
 - If our assumptions are met, our coefficient estimates $a$ and $b$ will be themselves normally distributed
 - What do their distributions look like?
-    - Expected values (i.e. means): $E(a) = \alpha$; $E(b) = \beta$
-        - The coefficients are unbiased 
-
-
+- What about the means (or rather, the expected values?): $E(a) = \alpha$; $E(b) = \beta$ (no derivations here, just the end results)
 - What about the variance?
   - We don't really care about $a$, but $b$ is important: $$\sigma^2_b = \frac{\sigma_{\epsilon}^2}{\sum\limits_{i=1}^{n}(x_i-\bar{x})^2} = \frac{\sigma_{\epsilon}^2}{(n-1)\cdot s^2_{x}}$$
 - This means that the sampling variance of our estimate of $\beta$ will be smaller when:
     - the overall error variance is small
     - our $x$-values are spread out (covering a wide range)
-
-
 
 Doing a hypothesis test on b
 ==========================================================
