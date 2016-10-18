@@ -1,8 +1,9 @@
-Advanced Statistics
-========================================================
-author: Bernhard Angele
-date: Hypothesis tests for simple and multiple regression
-
+---
+title: "Advanced Statistics"
+subtitle: "Hypothesis tests for simple and multiple regression"
+author: "Bernhard Angele"
+output: pdf_document
+---
 
 Statistical inference for regression
 =========================================================
@@ -16,7 +17,7 @@ Statistical inference for regression
   - Learn about assumptions that need to be true so you can perform these tests
   - Introduction to the problem of **multicollinearity**
       
-Hypothesis tests (for simple regression)
+Sampling from a population
 =========================================================
 - When we do a regression analysis, we _assume_ that there is a true linear relationship in our population : $$Y_i = \alpha + \beta\cdot x_i + \varepsilon_i$$
   - $\alpha$ and $\beta$ are our population coefficients. $\varepsilon_i$ is the error for this particular observation.
@@ -26,7 +27,7 @@ Hypothesis tests (for simple regression)
 library(ggplot2)
 set.seed(0)
 dat <- data.frame(x=(x=runif(100, 0, 50)),
-                  y=rnorm(100, 10*x, 100))
+                  y=rnorm(100, 20*x, 100))
 
 ## breaks: where you want to compute densities
 breaks <- seq(0, max(dat$x), len=5)
@@ -58,18 +59,32 @@ ggplot(dat, aes(x, y)) +
   theme_bw() +
   geom_vline(xintercept=breaks, lty=2)
 ```
+
+Necessary assumptions
+==========================================================
+- Linearity (see above): $$E(Y_i) = \alpha + \beta\cdot x_i + E(\varepsilon_i) = \alpha + \beta\cdot x_i$$
+    - The expected value of the random error is always 0!
+- Constant variance
+    - For each $x$-value $x_i$, the corresponding $Y_i$-values have the same standard deviation (homoscedasticity assumption): $$Var(Y_i|x_i) = Var(\varepsilon_i) = \sigma_{\varepsilon}^2$$
+    
+Necessary assumptions (2)
+==========================================================    
+- Normality
+    - The errors are normally distributed: $\varepsilon_i \sim N(0,\sigma_\varepsilon^2)$
+    - As a consequence, the $Y_i$ values are normally distributed around the value predicted by the linear equation: $$Y_i \sim N(\alpha + \beta x_i, \sigma_\varepsilon^2)$$
+- Independence
+  - For each $X_i$-value, the corresponding $Y_i$-values are independent (i.e. $\varepsilon_i$ is independent from all of the other $\varepsilon$)
+  - Not the case for time series: the error at time $x_i$ may well depend on the error at the preceding time $x_{i-1}$.
+- [Also, $X$ values are either fixed or are independent of the error.]
+
+
+Sampling distributions of the coefficients
+=========================================================
 - We will need to estimate our regression equation based on our sample, so that $a$ and $b$ are estimates of the population coefficients $\alpha$ and $\beta$.
 - $\varepsilon$ is the **error**. It represents all the influences (random or not) that we are not considering in the linear relationship.
     - If the relationship is actually linear, then $E(\varepsilon) = 0$
 - How can we interpret these estimated coefficients? Mostly, we care about whether $\beta = 0$ or not, i.e. whether there is or isn't a significant relationship between $x$ and $y$ in the population.
 
-Assumptions
-==========================================================
-- First, we need to assume that $x$ and $y$ come from a **bivariate** normal distribution (i.e. that they are both normally distributed) with means $\mu_x$ and $\mu_y$, variances $\sigma^2_x$ and $\sigma^2_y$, and covariance $\sigma_{x,y}$.
-- The bivariate (or, more generally, multivariate) normal distribution assumes that:
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are normally distributed: $\epsilon \sim N(0, \sigma_{\epsilon}^2$)
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values have the same standard deviation (homoscedasticity assumption): $Var(\epsilon_i) = \sigma_{\epsilon}^2$
-    - For each $x$-value $x_j$, the corresponding $y_{(i|x_j)}$-values are independent (i.e. all $\epsilon_i$ are independent)
 
 Distribution of the coefficient estimates: Means
 ===========================================================
@@ -304,6 +319,7 @@ Example
 kable(head(catfood_age))
 write.csv(catfood_age, file = "catfood_age.csv")
 ```
+
 - Does adding age to the model improve it?
 - This will be our first adventure in SPSS. Feel free to follow along. The data file is in the lecture module on myBU.
 - Let's open the file `catfood_age.csv` from myBU in SPSS
@@ -412,7 +428,7 @@ kable(summary(lm_catfood_interaction)$coefficients)
 
 Why you always need to look at your data
 ======================================================================
-- These datasets all have the same regression line, but they look very different:
+- These datasets (from Anscombe, 1973) all have the same regression line, but they look very different:
 
 ```{r, echo=FALSE}
 library(ggplot2)
