@@ -1,46 +1,46 @@
-"","breed","objects"
-"1","Beagle",12
-"2","Beagle",6
-"3","Beagle",15
-"4","Beagle",20
-"5","Beagle",10
-"6","Beagle",12
-"7","Beagle",2
-"8","Beagle",14
-"9","Beagle",10
-"10","Beagle",4
-"11","Beagle",20
-"12","Beagle",3
-"13","Beagle",14
-"14","Beagle",8
-"15","Beagle",6
-"16","Border Collie",60
-"17","Border Collie",70
-"18","Border Collie",53
-"19","Border Collie",58
-"20","Border Collie",73
-"21","Border Collie",63
-"22","Border Collie",52
-"23","Border Collie",72
-"24","Border Collie",53
-"25","Border Collie",61
-"26","Border Collie",53
-"27","Border Collie",60
-"28","Border Collie",74
-"29","Border Collie",68
-"30","Border Collie",57
-"31","Terrier",11
-"32","Terrier",18
-"33","Terrier",8
-"34","Terrier",9
-"35","Terrier",22
-"36","Terrier",14
-"37","Terrier",19
-"38","Terrier",25
-"39","Terrier",14
-"40","Terrier",5
-"41","Terrier",10
-"42","Terrier",12
-"43","Terrier",12
-"44","Terrier",14
-"45","Terrier",16
+"","breed","objects","dog_iq"
+"1","Beagle",7,18.2910287614694
+"2","Beagle",10,-1.86600756647405
+"3","Beagle",5,-14.3624832045595
+"4","Beagle",8,-1.18754270375958
+"5","Beagle",2,-17.1511696690946
+"6","Beagle",11,-15.8578183420442
+"7","Beagle",9,-5.76801506616607
+"8","Beagle",17,9.1251175761886
+"9","Beagle",14,25.0869978302453
+"10","Beagle",7,-23.0594152191784
+"11","Beagle",11,-20.6743783765235
+"12","Beagle",10,7.43146703753001
+"13","Beagle",9,14.0722468260568
+"14","Beagle",0,-5.63602921310964
+"15","Beagle",13,7.59636673028592
+"16","Border Collie",61,-10.6428284132791
+"17","Border Collie",58,-10.7095564122791
+"18","Border Collie",68,1.97389644763484
+"19","Border Collie",55,-8.53347354084776
+"20","Border Collie",52,-1.47803251294599
+"21","Border Collie",51,-25.2685823784061
+"22","Border Collie",65,19.2517516741965
+"23","Border Collie",62,11.9610257662578
+"24","Border Collie",67,19.180483252729
+"25","Border Collie",62,6.56316640116064
+"26","Border Collie",51,-17.3327838706456
+"27","Border Collie",64,-21.342694798483
+"28","Border Collie",69,23.7606589355178
+"29","Border Collie",52,-26.3944468579527
+"30","Border Collie",59,-5.62464571822719
+"31","Terrier",20,8.94219936934828
+"32","Terrier",2,-0.0346015837655206
+"33","Terrier",22,0.717229234194625
+"34","Terrier",10,-26.4248007506464
+"35","Terrier",3,-29.1947158706307
+"36","Terrier",10,15.6386727462593
+"37","Terrier",10,4.48265644242968
+"38","Terrier",8,9.33152749927637
+"39","Terrier",21,16.3720798800929
+"40","Terrier",13,26.330942353763
+"41","Terrier",-1,-10.9773554254656
+"42","Terrier",24,-3.74078263035726
+"43","Terrier",16,-9.9714667647369
+"44","Terrier",12,-0.492960910048558
+"45","Terrier",15,-14.7397214457224

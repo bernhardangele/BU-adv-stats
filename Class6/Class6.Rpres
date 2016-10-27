@@ -130,6 +130,7 @@ kable(coef(summary(catfood_breed_lm)))
 - We can reject the null hypothesis. Cat Breed (represented by our dummy variable) does indeed have a significant effect on food eaten.
 - Note that, since we are coding Cat Breed as -1 and 1 (and the continuous predictors are centred), our intercept is still the grand mean of FoodEaten. Our dummy variable tells us the distance between the mean of the Shorthair group and the grand mean (on the left) and the distance between the Manx group and the grand mean (on the right)
 
+
 Using the General Linear Model (Univariate) module
 ================================================================
 - We can do an F-test by using the `Univariate` test from the `General Linear Model` module (in the `Analyze` menu)
@@ -200,26 +201,18 @@ kable(coef(summary(catfood_breed_weight_interact_lm)))
 
 - In this case, the interaction is not significant. We can't reject the null hypothesis that the slopes are the same for each level of the dichotomous variable (despite the slight strend in the data).
 
+Factors with more than two levels
+=========================================================
+- What if we have three (or more) groups that we want to compare in our regression model?
+    - Let's start with three to keep things simple
 
-Summary: Contrasts
-========================================================
-- The link between multiple regression and ANOVA
-- Using dummy coding to turn a discrete variable into a number of "continuous" contrasts
-- Many possible contrasts -- you can make your own!
-    - Not very many *sensible* contrasts.
-- Basic principles: A factor with $k$ levels gets split into $k-1$ contrasts.
-    - i.e. one contrast per degree of freedom
-- Contrasts can be, but don't have to be, **orthogonal**
-    - orthogonal contrasts don't share any variance
-    - non-orthogonal contrasts are fine to use, but they may be correlated
-        - remember the pitfalls of multicollinearity!
         
 Example
 ========================================================
 - Enough about cats, let's talk about dogs!
 - In this ficticious example, let's assume we are testing 45 dogs to see how many object names they know (e.g. when you tell them to bring you a "ball", "stick", etc., do they bring you the correct object or a random one?)
 - Our sample contains 15 beagles, 15 border collies, and 15 terriers.
-- Let's assume that the true means for each breed are:
+- Let's assume that the true means $\mu_i$ for each breed are:
 
 | Breed        | Number of object names known|
 |-------------:|----------------------------:|
@@ -229,7 +222,9 @@ Example
 
 Example (2)
 ========================================================
-- With 3 means, there are (at least) 3 comparisons we can make
+- In a regression model, we would want get three lines, one per group
+    - Of course, there is no covariate in this model, so the lines should be horizontal
+- The lines should reflect the differences between the means:
 
 | Comparison              | Difference                  |
 |------------------------:|----------------------------:|
@@ -237,30 +232,51 @@ Example (2)
 | Border Collie -- Terrier|                           35|
 | Terrier -- Beagle       |                            5|
 
-- Let's see how the contrasts reflect these comparisons
-     - But remember -- we can only make 2.
-  
+Dummy contrasts for three groups
+====================================================================
+- How do we make contrasts in this situation?
+    - Remember, the dummy contrasts for two groups had one level coded as 0 (the baseline) and one coded as 1
+    - The coefficient for the dummy contrasts then told us how the level coded as 1 differed from the baseline
+    - We can apply the same scheme here. Let's make Beagles the baseline, because they are fantastic dogs:
+    
+| Breed        | X1                          |X2                           |
+|-------------:|----------------------------:|----------------------------:|
+| Beagle       |                            0|                            0|
+| Border Collie|                            1|                            0|
+| Terrier      |                            0|                            1|
+    
+- Note that we need **two** contrasts here to describe **three** regression lines
+    - The baseline is described by the intercept
+
+
 ```{r, echo = FALSE}
 # Seed for random number generators, so that we all get the same results
-set.seed("6")
+set.seed("67")
 # Column 1: Breed - repeat each breed name 15 times, then combine
 breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15))
 # Column 2: Objects - repeat each true group mean 15 times, then combine
 objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
 
+# Add centered covariate
+dog_iq <-rnorm(n = 45, mean = 0, sd = 15)
+
 # Add random noise to the objects scores
-objects <- objects + rnorm(n = 45, mean = 0 , sd = 6)
+objects <- objects + 0.15 * dog_iq + rnorm(n = 45, mean = 0 , sd = 6)
 # for more realism, round the objects scores to full integers
 # (what does it mean if a dog knows a fraction of an object?)
 objects <- round(objects, digits = 0)
+objects[objects < 0] <- 0
 # Combine into data frame
-dogs <- data.frame(breed, objects)
+dogs <- data.frame(breed, objects, dog_iq)
 write.csv(dogs, "dogs.csv")
 ```
 
 The data
 ========================================================
-- The data are in the file `dogs.sav` on myBU
+- We're going to simulate getting a sample from the populations I just described.
+    - Note that sample means are not neccessarily the same as the population means
+        - Which is of course the reason why we do inferential statistics in the first place!
+    - The data are in the file `dogs.sav` on myBU
 - Let's calculate the means:
 
 ## Means table
@@ -271,17 +287,14 @@ colnames(means_table) <- c("Mean number of objects known")
 kable(means_table)
 ```
 
-Comparing the means
-========================================================
-- We can always do pairwise *t*-tests. Those give us all the comparisons, but at the cost of making multiple comparisons.
-
-```{r, echo = FALSE}
-pairwise.t.test(x = dogs$objects, g = dogs$breed)
-```
-
 Adding contrasts
 ========================================================
-- Let's make two dummy variables, called `x1` and `x2`:
+- We can use `Transform -> Recode into Different Variables...` in SPSS to make the contrasts.
+
+    - *x_1* will be 1 for all "Border Collie" cases, and 0 otherwise
+    - * x_2* will be 1 for all "Terrier" cases, and 0 otherwise
+        - This will make "Beagle" the baseline
+
 
 ```{r, results='asis', echo=FALSE}
 library(knitr)
@@ -290,10 +303,6 @@ colnames(contrast_matrix) <- c("x1","x2")
 rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
 kable(contrast_matrix)
 ```
-
-- $x_1$ will be 1 for all "Border Collie" cases, and 0 otherwise
-- $x_2$ will be 1 for all "Terrier" cases, and 0 otherwise
-- This will make "Beagle" the baseline
 
 How contrasts work
 =========================================================
@@ -310,7 +319,7 @@ kable(contrast_matrix)
 
 - $\hat{y_{i}} = \alpha + \beta_1 \times 0 + \beta_2 \times 0 = \alpha$
 - The predicted value for the Beagle group is $\alpha$, the intercept
-- That means that in this analysis, the intercept will reflect the mean for the Beagle group (10)
+- That means that in this analysis, the intercept will reflect the mean for the Beagle group
 
 How contrasts work (2)
 =========================================================
@@ -345,11 +354,53 @@ kable(contrast_matrix)
 
 Let's run the regression analysis
 ==========================================================
+
+- In SPSS: `Analyze -> Regression -> Linear...`, then add x1 and x2 as predictors.
+
 ```{r, echo = FALSE}
 kable(coef(summary(lm(data = dogs, objects ~ breed))))
 ```
 
-- Looks just about right (remember, the means differ from the true population means because this is a -- simulated -- sample and contains random error)
+- Note that `x1` is called `breedBorder Collie` here and `x2` is called `breedTerrier` as a reminder of what they stand for
+
+- Looks just about right in terms of the intercept and the differences (remember, the means differ from the true population means because this is a (simulated) sample and contains random error)
+
+Adding a covariate
+=========================================================
+- Let's assume that we have done a "Doggy IQ" test on each dog (no idea how that would work, but bear with me), and that there are no differences in "Doggy IQ" between breeds
+- Let's fit a model that tests the effect of "Doggy IQ" and breed, assuming that the effect of "Doggy IQ" is the same across breeds (i.e. no interactions).
+    - For our convenience, `dog_iq` is centred already.
+
+```{r, echo = FALSE}
+kable(coef(summary(dogs_iq_lm <- lm(data = dogs, objects ~ breed + dog_iq))))
+```
+
+Plotting this situation
+=========================================================
+```{r, echo = FALSE}
+library(ggplot2)
+intercept <- dogs_iq_lm$coefficients[1]
+border_collie_intercept <- intercept + dogs_iq_lm$coefficients[2]
+terrier_intercept <- intercept + dogs_iq_lm$coefficients[3]
+slope <- dogs_iq_lm$coefficients[4]
+
+
+qplot(data = dogs, y = objects, x = dog_iq, colour = breed) + geom_abline(intercept =  intercept, slope = slope, colour = 5) + geom_abline(intercept =  border_collie_intercept, slope = slope, colour = 2) + geom_abline(intercept =  terrier_intercept, slope = slope, colour = 3)
+```
+
+Contrasts
+========================================================
+- The link between (multiple) regression, t-tests, and ANOVA
+- Using dummy coding to turn a discrete variable into a number of "continuous" contrasts
+- Many possible contrasts -- you can make your own!
+    - Not very many *sensible* contrasts.
+- Basic principles: A factor with $k$ levels gets split into $k-1$ contrasts.
+    - i.e. one contrast per degree of freedom
+- Contrasts can be, but don't have to be, **orthogonal**
+    - orthogonal contrasts don't share any variance
+    - non-orthogonal contrasts are fine to use, but they may be correlated
+        - remember the pitfalls of multicollinearity!
+
 
 We can also do a standard ANOVA
 ==========================================================
