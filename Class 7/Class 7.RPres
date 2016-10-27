@@ -3,6 +3,124 @@ Advanced Statistics
 author: Bernhard Angele
 date: Lecture 5
 
+
+We can also do a standard ANOVA
+==========================================================
+```{r, echo = FALSE}
+kable(anova(lm(data = dogs, objects ~ breed)))
+```
+
+- Note that the contrasts give us more information: they tell us which of the factor levels differ from the "Beagle" baseline
+    - These are not multiple comparisons -- the ANOVA F-test simply compares a model without any of the contrasts (just the intercept) to a model with all the contrasts, while the *t*-tests compare the coefficient for each contrast to 0.
+        - The classic ANOVA is simply a regression with (implicit) standard contrasts.
+     - As a consequence, we get the contrasts "for free", but we can only have as many contrasts as the factor has degrees of freedom (i.e. $k-1$, where $k$ is the number of factor levels)
+
+Interpreting the hypothesis tests
+========================================================
+- Note that we are testing the $H_0$ that $\alpha$, $\gamma_1$, $\gamma_2$ are 0.
+- In this examples, we call the observed coefficients $b_1$ `breedBorder Collie` and $b_2$ `breedTerrier`.
+- Remember what we said about the coefficients?
+- $\alpha$ (the intercept) reflects the mean for the Beagle group
+- If the intercept is significantly different from 0, that's not that interesting (but at least it is evidence that the beagles can learn more than 0 object names)
+- The first slope $\gamma_1$ reflects the difference between the Border Collie group and the Beagle group
+- If this difference is significant, it means that there is evidence that Border Collies know more object names than Beagles
+
+Interpreting the hypothesis tests (2)
+========================================================
+- The second slope $\gamma_2$ reflects the difference between the Terrier group and the Beagle group
+- If this difference is significant, it means that there is evidence that Terriers know more object names than Beagles
+- Looking at the *t*-test results, $b_1$ is significantly different from 0, but $b_2$ isn't.
+- There's a significant difference in terms of object names known between Beagles and Border Collies, but not between Beagles and Terriers
+- Note that we are only doing two comparisons -- that's all we can do.
+
+Trying different contrasts
+=========================================================
+- We can try some different contrast coding schemes to see how they work
+- We can do this here because there are fake data and we know the actual means
+- With real data, you need to plan your contrasts **before** you analyse your data (ideally, before you even collect them)
+    - That's why they are called **planned** contrasts as opposed to **post hoc**.
+- You can't even look at the means first!
+- Otherwise, you're cheating. This is far worse than a small violation of normality or homoscedasticity!
+
+Using contrasts in SPSS
+==========================================================
+- To be honest, SPSS is terrible with contrasts -- it's really inconsistent
+- You can specify your own contrasts using the Univariate ANOVA module, but you can't do that for the General Linear Model module
+    - Instead, you have to pick a number of standard contrasts
+- In theory, you could define your own contrasts, but it's a bit tricky
+
+Standard contrasts
+========================================================
+- Simple
+    - Compares each level to the reference level, the intercept is the grand mean
+- Deviation
+    - Compares each level to the overall mean of the dependent variable (the reference level is not compared)
+- Helmert
+    - Compares each level to the mean of the subsequent ones
+- Difference (reverse Helmert)
+    - Compares each level to the mean of the previous ones
+- Repeated (successive differences)
+    - Compares each level to the subsequent level 
+
+Applying deviation contrasts
+==========================================================
+```{r, results='asis', echo = FALSE}
+contrasts(dogs$breed) <- contr.sum
+kable(coef(summary(lm(data = dogs, objects ~ breed))))
+```
+
+Interpreting sum/deviation contrasts
+===========================================================
+- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
+- $\gamma_1$ is the difference between the grand mean and the mean of Beagle ($10 - 28.33 = -18.33$)
+- $\gamma_2$ is the difference between the grand mean and the mean of Border Collie ($60 - 28.33 = 31.67$)
+- Terrier is never explicitly compared to the grand mean.
+- In general: each level (except for the last level) is compared to the grand mean.
+
+Applying difference (reverse Helmert) contrasts
+==========================================================
+```{r, results='asis', echo = FALSE}
+contrasts(dogs$breed) <- contr.helmert
+kable(coef(summary(lm(data = dogs, objects ~ breed))))
+```
+
+Interpreting (reverse) Helmert contrasts
+========================================================
+- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
+- $gamma_1$ is half of the difference between the mean of Beagle and the mean of Border Collie ($(60 - 10)/2 = 25$)
+- $gamma_2$ is half of the difference between the joint mean of Beagle and Border Collie and the mean of Terrier ($(15 - (60+10)/2)/2 = -10$)
+- In general: each level is compared to the mean of the previous levels
+
+Make your own contrasts?
+==========================================================
+- **DANGER**: If you apply your contrasts directly as dummy variables, you must use the **inverse** of your contrast matrix
+- If your contrasts are not orthogonal, and you don't use the inverse of your matrix, you won't be comparing what you think you're comparing.
+- If you don't know what this means, don't use your own contrasts until you do. 
+- For more background information on regression and linear models, see John Fox's book below (Warning: it does involve matrix algebra). Check Chapter 6 for information about how the contrasts work and why you need to be careful.
+
+>Fox, J. (2008). Applied regression analysis and generalized linear models. 2nd Edition. Sage Publications, Thousand Oaks, CA, USA.
+or the newer version
+>Fox, J. (2015). Applied regression analysis and generalized linear models. 3rd Edition. Sage Publications, Thousand Oaks, CA, USA.
+
+
+Assumption tests: Homogeneity of regression slopes
+===============================================================
+- This is an ANCOVA-specific assumption: is there an interaction between the covariate(s) and the discrete factor(s)?
+- If there is, you can still use the linear model, but you can't call it an "ANCOVA" anymore
+    - Also, the interpretation of the results will be much more complicated
+- How to check this? Use `Transform` --> `Compute Variable...` to make a interaction terms for the dummy variable and the covariates, then fit a new model using the `Linear Regression` module and see if the interaction terms reach siugnificance.
+
+Assumption tests: Homogeneity of regression slopes (2)
+===============================================================
+```{r, echo = FALSE}
+catfood_breed_interact_lm <- lm(data = catfood_breed, 
+                                formula = FoodEaten ~ CatWeight * CatAge * dummy)
+kable(coef(summary(catfood_breed_interact_lm)))
+```
+
+- No evidence for any interaction. (Check multicollinearity, of course!)
+
+
 Why do we get conflicting results?
 =================================================================
 - This is weird: We didn't have an effect for CatAge when we looked at the *t*-values, but we have when doing F-tests?
