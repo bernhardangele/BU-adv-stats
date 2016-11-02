@@ -58,21 +58,26 @@ $${RegSS_0} = \sum\limits_{i=1}^{n}(\hat{Y} - \bar{Y})^2 = n \cdot (\bar{Y} - \b
 Contrasts and means
 ========================================================
 - Now let's plug in ${RegSS_0}$, ${RegSS}_1$, and ${RSS}_1$ into the equation for the *F*-value:
-- We can get ${RSS}_1$ by subtracting ${RegSS}_1$ from the total sum of squares:
-$$
-\begin{aligned}
-{RSS}_1 &= {SS}_{total} - {RSS}_1 = \sum\limits_{i=1}^{n}(Y_i - \bar{Y})^2 - \sum\limits_{j=1}^{m} n_j (\bar{Y}_j - \bar{Y})^2\\
-        &= $$\sum\limits_{i=1}^{n}(Y_i) - n * \bar{Y} - \sum\limits_{j=1}^{m} n_j (\bar{Y}_j
-\end{aligned}
-$$
+- For the error sum of squares ${RSS}_1$, remember that the error is simply the difference between the observed and the predicted Y-values are just the group means $\bar{Y}_{j}$:
+$${RSS}_1 = \sum\limits_{j=1}^{m}\sum\limits_{i=1}^{n_j}(Y_{ij} - \hat{Y}_{ij})^2 = \sum\limits_{j=1}^{m}\sum\limits_{i=1}^{n_j}(Y_{ij} - \bar{Y}_{j})^2$$
 
 $$
 \begin{aligned}
-F_0 &= \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)} = \frac{({SS_model}_1 - 0/q}{{RSS}_1/(n-k-1)} \\
-    &= \frac{{RegSS}_1/q}{{RSS}_1/(n-k-1)}
+F_0 &= \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)}\\
+&= \frac{({RegSS}_1 - 0/k}{{RSS}_1/(n-k-1)} = \frac{{RegSS}_1/k}{{RSS}_1/(n-k-1)}
 \end{aligned}
 $$
-- We can plug in 
+
+- $q$ is the number of extra predictors. In our example with two groups, null model has 0 predictors, and the full model has one dummy predictor, so $q = k- 0 = k$
+    - $k = m -1$ is the number of predictors of the full model (i.e. the number of group means *m* minus 1).
+    - This *F*-value has degrees of freedom of $m-1$ and $n-(m-1)-1= n-m$
+
+Textbook ANOVA
+========================================================
+- In textbooks, you'll see the same sums of squares called ${SS}_{model}$, ${SS}_{error}$, and ${SS}_{total}$:
+$${RegSS}_1 = {SS}_{model} = \sum\limits_{i = 1}^{p}n\cdot(\bar{A}_i - \bar{x})^2 = n\cdot\sum\limits_{i = 1}^{p}(\bar{A}_i - \bar{x})^2$$
+$${SS}_{error} = \sum\limits_{i=1}^{p}\sum\limits_{m = 1}^{n}(x_{mi} - \bar{A}_i)^2$$
+
 
 Analysis of Variance (2)
 ========================================================
