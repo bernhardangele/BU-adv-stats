@@ -6,6 +6,7 @@ date: Analysis of Variance designs
 Goals of this lecture
 ========================================================
 
+
 Dummy-coded variables and ANOVA
 ========================================================
 - Essentially, the Analysis of Variance is simply a multiple regression with only discrete variables coded as dummy contrasts
@@ -17,6 +18,46 @@ Analysis of Variance
 - The idea behind the analysis of variance is simple: We want to split the total variance in our data into variance explained by our grouping factor and random noise (error) variance.
 - If the grouping factor explains more of the variance than we would expect based on random noise, then we can conclude that the grouping factor *significantly* improves our model (because yes, an ANOVA is a very simple statistical model)
 - In other words, we can conclude that at least two of the factor levels are significantly different
+
+Which contrasts should we use?
+========================================================
+- Simplest way: Dummy contrasts (0 vs. 1)
+    - Just like we did last time: 
+        - Here's a regression model with just one discrete predictor (let's assume for now that it has two levels only):
+  
+  $$ Y_i = \alpha + \gamma_1 D_i + \varepsilon_i$$
+
+ANOVA as dummy contrast regression
+========================================================
+- We want to compare the full model to the null model without the discrete predictor (intercept-only)
+    - Full model: $Y_i = \alpha + \gamma_1 D_i + \varepsilon_i$
+    - Null model: $Y_i = \alpha + \varepsilon_i$
+- Remember, we need to get the regression and residual sums of squares for both models:
+$$ F_0 = \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)}$$
+    - Also remember that ${RSS} = SS_{Total} - {RegSS}$
+
+Calculating the sums of squares
+========================================================
+- With a model this simple the sums of squares are easy enough to calculate
+    - These equations are directly taken from our lecture on regression, so they are not new!
+$$SS_{total} = \sum\limits_{i=1}^{n}(Y_i - \bar{Y})^2$$
+
+$$SS_{model_1} = {RegSS_1} = \sum\limits_{i=1}^{n}(\hat{Y}_i - \bar{Y})^2$$
+
+- In a model with just discrete predictors, the predictions are just the group means!
+
+The regression sums of squares
+========================================================
+- Let's call the group means $\bar{A_1}$ and $\bar{A_2}$ and substitute them for $\hat{Y}_i$:
+$${RegSS_1} = \sum\limits_{i=1}^{i}(\hat{Y}_i - \bar{Y})^2 = \sum\limits_{j=1}^{m} n_j (\bar{Y}_j - \bar{Y})^2$$
+- $m$ is the number of levels, so 2 in this case. $j$ is the current level. $n_j$ is the number of observations in the current level. $\bar{Y}_j$ is the mean of $Y$ for the current level. In effect, For each observation, we put in the corresponding group mean and subtract the overall mean.
+      - (actually, we subtract the mean of group means, but that's only important if our groups are of different sizes)
+- The null model predicts every observation with the overall mean $\bar{Y}$, so actually it explains **no** variance (every prediction is the same!)
+$${RegSS_1} = \sum\limits_{i=1}^{k}( - \bar{Y})^2$$
+
+Contrasts and means
+========================================================
+- 
 
 Analysis of Variance (2)
 ========================================================
