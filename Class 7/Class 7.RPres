@@ -53,11 +53,26 @@ $${RegSS_1} = \sum\limits_{i=1}^{i}(\hat{Y}_i - \bar{Y})^2 = \sum\limits_{j=1}^{
 - $m$ is the number of levels, so 2 in this case. $j$ is the current level. $n_j$ is the number of observations in the current level. $\bar{Y}_j$ is the mean of $Y$ for the current level. In effect, For each observation, we put in the corresponding group mean and subtract the overall mean.
       - (actually, we subtract the mean of group means, but that's only important if our groups are of different sizes)
 - The null model predicts every observation with the overall mean $\bar{Y}$, so actually it explains **no** variance (every prediction is the same!)
-$${RegSS_1} = \sum\limits_{i=1}^{k}( - \bar{Y})^2$$
+$${RegSS_0} = \sum\limits_{i=1}^{n}(\hat{Y} - \bar{Y})^2 = n \cdot (\bar{Y} - \bar{Y})^2 = 0$$
 
 Contrasts and means
 ========================================================
-- 
+- Now let's plug in ${RegSS_0}$, ${RegSS}_1$, and ${RSS}_1$ into the equation for the *F*-value:
+- We can get ${RSS}_1$ by subtracting ${RegSS}_1$ from the total sum of squares:
+$$
+\begin{aligned}
+{RSS}_1 &= {SS}_{total} - {RSS}_1 = \sum\limits_{i=1}^{n}(Y_i - \bar{Y})^2 - \sum\limits_{j=1}^{m} n_j (\bar{Y}_j - \bar{Y})^2\\
+        &= $$\sum\limits_{i=1}^{n}(Y_i) - n * \bar{Y} - \sum\limits_{j=1}^{m} n_j (\bar{Y}_j
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+F_0 &= \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)} = \frac{({SS_model}_1 - 0/q}{{RSS}_1/(n-k-1)} \\
+    &= \frac{{RegSS}_1/q}{{RSS}_1/(n-k-1)}
+\end{aligned}
+$$
+- We can plug in 
 
 Analysis of Variance (2)
 ========================================================
