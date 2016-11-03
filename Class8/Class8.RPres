@@ -1,0 +1,266 @@
+Assumptions and dealing with assumption violations
+========================================================
+author: Bernhard Angele
+date: Advanced Statistics
+autosize: true
+
+
+ANOVA assumptions (1)
+===========================================================
+- **Normality**. The observed test statistic ($\frac{{MS}_{model}}{{MS}_{error}}$) can only be assumed to come from an *F*-distribution if:
+  - The error variance (i.e. all the variance not explained by the group factors) is normally distributed
+    - This is because the $\chi^2$-values are assumed to come from a standard normal distribution
+
+ANOVA assumptions (2)
+===========================================================
+- **Homogeneity of variances** (also known as **homoscedasticity**). The variances within each group are similar.
+      - This is because of the way we add up the variances in each group to get an estimate of the total error variance ${SS}_{error}$:
+      $${SS}_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
+      - You can only do this if the variances in each group are roughly similar.
+        - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
+  - If you have more than two groups, SPSS will automatically run Levene's test, which compares the group variances
+    - What's the test statistic for a test that compares variances? Of course, it's *F* again!
+    - The p-value tells you if the variances are significantly different between groups.
+
+Levene's test for homogeneity of variances
+===========================================================
+- You could do Levene's test by hand, but if you actually need it, chances are that your design is too complicated to do by hand anyway.
+- If Levene's test is not significant, all is well.
+- If Levene's test is significant, you're violating the homogeneity of variance assumption.
+  - Not a big issue if the sample sizes are equal for all groups (balanced design).
+  - If sample sizes aren't equal (unbalanced design) and the larger groups have higher variance, your ANOVA loses power.
+  - If sample sizes aren't equal and the larger groups have lower variance, your ANOVA becomes anti-conservative ($\alpha$ increases).
+
+What to do if Levene's tests is significant?
+============================================================
+- If your group sizes are equal, nothing to worry about. The ANOVA is robust in this regard.
+- If not:
+  - Calculate the variance for each group and see if you're dealing with just a power issue or an $\alpha$ issue
+  - If the largest group variance is less than 4 times the smallest group variance, you may have a power issue, but the test is not anticonservative.
+  - If you have huge variance differences and there might be an $\alpha$ issue:
+    - Easiest solution: Fix the sample size issue (e.g. run more participants)
+    - Use linear mixed models (LMMs; more on that later)
+    - Use specialised tests (this is the approach preferred in most SPSS textbooks):
+      - Welch's *t*-test
+      - Brown-Forsythe (uses median instead of mean)
+      - Post-hoc tests:
+          - Games-Howell for unequal variance
+          - Hochberg's GT2 for non-equal sample sizes
+
+The SPSS (or rather, SPSS textbook) approach to statistics
+============================================================
+- Throw as many obscure tests at the problem as you can
+  - This is a sales strategy: "We need to buy SPSS since no other program has the Games-Howell test!"
+- In reality, the standard ANOVA is remarkably robust to all but the most extreme violations of its assumptions
+- Specialised tests often come at a huge cost in terms of power
+- This doesn't mean that you shouldn't test the assumptions
+  - But a simplistic strategy where you run one type of test if the assumption test is significant and another one if it isn't is not helpful
+  - Take a good look at your data
+    - Be aware of potential issues
+    - Interpret the data accordingly.
+    - Only use specialised and non-parametric tests as a last resort if your data massively violate the assumptions
+
+Just so we're clear
+============================================================
+- Inflated $\alpha$ is not harmless
+- But "researcher degrees of freedom" inflate $\alpha$ much more than all but the most extreme assumption violations
+  - Stopping rules (test after every X participants, then stop as soon as you have a significant result)
+  - Failing to report non-significant conditions
+  - Failing to correct for multiple comparisons
+- Don't let over-cautious textbooks discourage you from running plain, simple ANOVAs
+- Be honest and transparent about your data and how you collected them and you'll be fine.
+
+ANOVA assumptions (3)
+===========================================================
+- **Independence of variances** The variances within each group are independent.
+      - There are no systematic relatioships between measurements in each group
+      - Most commonly violated by within-participants (repeated measures) designs
+        - Participants are tested in multiple conditions
+        - This can be addressed by using a repeated-measures ANOVA or Linear Mixed Models.
+      
+
+Repeated measures
+=============================================================
+- Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
+- This is bad, because we violate the independence assumption in the standard ANOVA.
+- This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
+- ${SS}_{total} = {SS}_{betweenParticipants} + {SS}_{withinParticipants}$
+- ${SS}_{withinParticipants} = {SS}_{model} + {SS}_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
+- Result: Less unexplained variance and higher power.
+- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
+- In the repeated measures ANOVA, we can separate them!
+
+Repeated measures data matrix
+=============================================================
+- Almost the same as for the standard one-way ANOVA
+  - Columns are factor levels, rows are **participants**
+- $i$ = factor level, $p$ = number of factor levels
+- $m$ = **participant**, $n$ = number of **participants**
+
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
+x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
+\end{matrix}
+$$
+
+Calculating the sums of squares
+=============================================================
+- The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- ${df}_{total} = n\cdot p-1$
+- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
+- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
+
+Calculating the sums of squares (2)
+=============================================================
+- Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
+- The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
+  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
+  
+Degrees of freedom
+============================================================
+- ${df}_{total} = p\cdot n - 1$
+- ${df}_{betweenParticipants} = n - 1$
+- ${df}_{withinParticipants} = n \cdot (p - 1)$
+- ${df}_{model} = p - 1$
+- ${df}_{residual} = (n-1) \cdot (p - 1)$
+  - Where $p$ is the number of factor levels and $n$ is the number of participants
+
+Test statistic
+==============================================================
+- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
+
+Quick example by hand
+=============================================================
+- 10 cats were asked to try 3 different brands of cat food: Whiskers, Paws, and Industrial Waste. They received the same amount of each food after not having eaten for 8 hours. The dependent variable amount of food (in grammes) that they ate of each brand. Do cats prefer one or more brands over others or do they eat the same amount of each?
+
+Copy this table into Excel (or SPSS)
+==============================================================
+```{r echo = F}
+set.seed("3")
+n_participants <- 10
+overall_intercept <- 100
+
+Subject <- rep(1:n_participants, each = 3)
+Brand <- rep(1:3)
+
+subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
+
+brand_means <- c(25, 25, -50)
+
+random_error <- rnorm(length(Subject), mean = 0, sd = 10)
+
+df <- data.frame(Subject, Brand)
+
+df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
+
+df$Subject <- factor(df$Subject, labels = c("Cali",
+	"Callie",
+	"Casper",
+	"Charlie",
+	"Chester",
+	"Chloe",
+	"Cleo",
+	"Coco",
+	"Cookie",
+	"Cuddles"))
+
+df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
+
+library(reshape)
+df_m <- melt(df, measure = "eaten")
+df_c <- cast(df_m, Subject ~ Brand)
+kable(df_c)
+```
+
+Doing the ANOVA in Excel
+==============================================================
+- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
+- Calculate your Sums of Squares
+  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
+    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
+  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
+  
+Sums of squares (continued)
+===============================================================
+- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
+- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
+- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
+- Then calculate the degrees of freedom and the MS as shown earlier
+- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+
+Final step
+==============================================================
+- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
+- For comparison: ANOVA output form R
+```{r, echo = FALSE}
+summary(ezANOVA(data = df, wid = Subject, within = Brand, dv = eaten, return_aov = TRUE)$aov)
+```
+
+Post-hoc comparisons
+==============================================================
+- Compute pairwise *t*-tests
+  - For each subject, calculate the differences between the conditions
+  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
+  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
+  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
+  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
+
+One-way repeated measures ANOVA in SPSS
+==============================================================
+- Watch Andy Johnson's video on myBU and follow along with the data set (`Badger art identification.sav`).
+
+Assumptions
+==============================================================
+- Essentially the same as for the independent ANOVA
+    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
+    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
+
+What is sphericity?
+==============================================================
+- The variances of the differences between treatment levels should be roughly equal ("spherical")
+- For example, it could be that all cats react similarly to the first two brands
+    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
+- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
+    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
+- This could make the ANOVA anticonservative ($\alpha$ is inflated)
+
+Testing for sphericity violations
+=================================================================
+- Mauchly's Test for Sphericity
+- Performed automatically by SPSS
+- If it's significant, sphericity is violated.
+- In this case, we're OK
+- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
+- If you only have two levels, there is only one difference, so differences can't be unequal
+
+Dealing with sphericity violations
+==================================================================
+- Good news: It's easy. 
+- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
+    - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
+- You do this by multiplying the ${df}_{Model}$ and ${df}_{Error}$ by a correction factor $\varepsilon$
+- Two ways to calculate $\varepsilon$:
+    - Greenhouse-Geisser
+    - Huynh-Feldt
+- Recommendation: If Greenhouse-Geisser $\varepsilon < .75$, use it. Otherwise, use Huynh-Feldt.
+   - Of course, if Mauchly's test is not significant, use neither!
+- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
+
+Testing for normality
+===================================================================
+- You can do the Shapiro-Wilk test in SPSS
+- Normality isn't usually *much* of an issue, especially if your group sizes are equal
+  - The **ANOVA is robust**
+
+Post-hoc tests
+===================================================================
+- You can again use paired *t*-tests to compare factor levels
+- Remember to do Bonferroni corrections if you do these tests by hand

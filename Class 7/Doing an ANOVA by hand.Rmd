@@ -1,0 +1,64 @@
+---
+title: "Doing an ANOVA by hand, in Excel"
+output: pdf_document
+---
+
+```{r, echo=FALSE}
+library(knitr)
+```
+
+Let's do an ANOVA by hand
+==========================================================
+- Open the file 
+- For this, let's assume that you have 3 groups ($m=3$) with 10 participants each ($n_{group}=10$) and that your data are in `A2:A11` for Group 1, `B2:B11` for Group 2, and `C2:C11` for Group 3. `A12`, `B12`, and `C12` contain your group means (`=AVERAGE(A2:A11)` etc.) and `A13`, `B13`, and `C13` contain your group standard deviations (`=STDEV.S(A2:A11)` etc.)
+
+Calculate sums of squares in Excel
+==========================================================
+- ${SS}_{model} = n_{group}\cdot\sum\limits_{j = 1}^{m}(\bar{A}_i - \bar{x})^2$
+    - In Excel: `=10*((A12-AVERAGE(A2:C11))^2+(B12-AVERAGE(A2:C11))^2+(C12-AVERAGE(A2:C11))^2)`
+- ${SS}_{error} = \sum\limits_{j=1}^{m}\sum\limits_{i = 1}^{n_{group}}(x_{ij} - \bar{A}_j)^2$. 
+    - Excel has a useful function called `DEVSQ` which gives you the sum of squares of deviations of data points from their sample mean
+    - So: `=DEVSQ(A2:A11)+DEVSQ(B2:B11)+DEVSQ(C2:C11)`
+- ${SS}_{total} = \sum\limits_{j=1}^{m}\sum\limits_{i = 1}^{n_{group}}(x_{ij} - \bar{x})^2$
+  - Thanks to DEVSQ, this is really easy: `=DEVSQ(A2:C11)`
+
+Calculate degrees of freedom and mean squares
+============================================================
+- ${df}_{model} = m - 1 = 3 - 1= 2$
+- ${df}_{error} = m \cdot n_{group} - m = 10\cdot 3-3 = 27$
+- ${df}_{total} = m\cdot n_{group}-1 = 10\cdot 3-1 = 29$
+- Let's assume that your sums of squares are in `B20`, `B21`, `B22` for model, error, and total, respectively. Then your mean squares are
+    - ${MS}_{model} = \frac{{SS}_{model}}{{df}_{model}}$; `=B20/2` in Excel.
+    - ${MS}_{error} = \frac{{SS}_{error}}{{df}_{error}}$; `=B21/27` in Excel.
+    - ${MS}_{total}$: We don't actually need that!
+    
+Compute your F-value and the corresponding p-value
+=============================================================
+- Our *F*-value: $F_({df}_{model}, {df}_{error}) = \frac{{MS}_{model}}{{MS}_{error}}$
+- Assuming that you've stored ${MS}_{model}$ in `D17` and ${MS}_{error}$ in `D18`: `=C=D17/D18`
+  - Easy!
+- Assuming that you put the *F*-value in `E17`, we can get the *p*-value using `=F.DIST.RT(E17,2,27)`, where 2 is ${df}_{model}$ and 27 is ${df}_{error}$.
+
+Example data set
+==============================================================
+- If you don't have Excel handy to generate your own or if you want to compare your calculations to mine.
+
+
+```{r, echo = F, results="as.is"}
+my_data <- c(101.37080, 98.90038, 99.35124, 110.41595, 113.22132, 95.67537, 113.69695, 114.53939, 98.88912, 55.56055, 112.28569, 92.33469, 110.97803, 121.00897, 114.35717, 126.07178, 110.15121, 96.40311, 126.64088, 114.37858, 105.39426, 102.64322, 85.54996, 85.18428, 121.77122, 95.09605, 86.46963, 77.37942, 111.85448, 94.99734)
+my_df_to_print <- data.frame(matrix(my_data, nrow = 10, ncol = 3))
+colnames(my_df_to_print) <- c("BU", "Soton", "Oxford")
+my_df <- data.frame(Group = factor(rep(c("BU", "Soton", "Oxford"))), IQ = my_data)
+kable(my_df_to_print)
+```
+
+ANOVA table
+==========================================================
+```{r echo = F, results="as.is"}
+my_aov <- aov(data = my_df, formula = IQ ~ Group)
+my_aov_sum <- summary(my_aov)[[1]]
+my_aov_sum <- rbind(my_aov_sum, c(sum(my_aov_sum$Df), sum(my_aov_sum$`Sum Sq`), NA, NA, NA))
+row.names(my_aov_sum)[2:3] <- c("Error", "Total")
+kable(my_aov_sum)
+write.csv(my_df_to_print, file = "anova_by_hand.csv", row.names = FALSE)
+```

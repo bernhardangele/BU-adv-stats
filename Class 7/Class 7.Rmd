@@ -1,11 +1,16 @@
-Advanced Statistics
-========================================================
-author: Bernhard Angele
-date: Analysis of Variance designs
-autosize: true
+---
+title: "Advanced Statistics"
+subtitle: "Analysis of Variance designs"
+author: "Bernhard Angele"
+output: pdf_document
+---
 
 Goals of this lecture
 ========================================================
+```{r, echo = FALSE}
+library(knitr)
+```
+
 - Learn about the relationship between dummy-coding and ANOVA
 - Learn how to perform and report various types of ANOVA analyses
 - Learn about different sum of square types
@@ -162,7 +167,7 @@ curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
 
 Plotting the F-distribution (2)
 ==========================================================
-```{r, echo = F}
+```{r, echo = F, fig.width=20, fig.height=10}
 par(mfrow = c(4,4))
 for(df1 in c(1,2,4,40)){
   for(df2 in c(1,2,4,40)){
@@ -477,6 +482,7 @@ kable(attract_stats[,-ncol(attract_stats)])
 
 Do the ANOVA
 ===========================================================
+
 ```{r echo = FALSE}
 attract_anova <- ezANOVA(data = attract, 
                           dv = Attractiveness.Rating, 
@@ -484,6 +490,7 @@ attract_anova <- ezANOVA(data = attract,
                           between = .(Music, Alcohol))
 kable(attract_anova$ANOVA, col.names = c("Effect", "${df}_n$", "${df}_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta_P^2$"))
 ```
+
 - All three terms are significant.
     - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
 - Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$

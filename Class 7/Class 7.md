@@ -154,22 +154,13 @@ Plotting the F distribution (1)
 ==========================================================
 - Let's take a look:
 
-```{r, echo = FALSE}
-curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
-```
+![plot of chunk unnamed-chunk-1](Class 7-figure/unnamed-chunk-1-1.png)
 - F can't be negative
   - this makes sense: it's the quotient of two $\chi^2$. You may remember that a square of a number can never be negative!
 
 Plotting the F-distribution (2)
 ==========================================================
-```{r, echo = F}
-par(mfrow = c(4,4))
-for(df1 in c(1,2,4,40)){
-  for(df2 in c(1,2,4,40)){
-    curve(df(x, df1 = df1, df2 = df2), from = 0, to = 5, ylab = "f(x)", main = paste0("df1 = ", df1, ", df2 = ", df2))    
-  }
-}
-```
+![plot of chunk unnamed-chunk-2](Class 7-figure/unnamed-chunk-2-1.png)
 
 Effect size
 ===========================================================
@@ -224,11 +215,12 @@ Deviation or sum contrasts
 =============================================================
 - These contrasts are called **deviation** contrasts in SPSS
 
-```{r, echo = FALSE, as.is = TRUE}
-sum_contrasts <- data.frame(contr.sum(3))
-colnames(sum_contrasts) <- c("S1", "S2")
-kable(sum_contrasts)  
-```
+
+| S1| S2|
+|--:|--:|
+|  1|  0|
+|  0|  1|
+| -1| -1|
 
 - Here is how this works for three levels:
 $$\mu_1 = \mu + 1 \times \alpha_1 + 0 \times \alpha_2 = \mu + \alpha_1$$
@@ -288,35 +280,33 @@ Interactions
 - Main effects are additive
 - For example, this table shows the (fictional) total calories that you might have for lunch given two different food choices and two different drink choices:
 
-```{r, echo = FALSE, results='asis'}
-library(knitr)
-food_example <- data.frame(Food = c(rep("Pizza",2),rep("Salad",2)), Drink = rep(c("Water","Cola"), 2), Calories = c(800, 1100, 200, 500))
-kable(food_example)
-```
+
+|Food  |Drink | Calories|
+|:-----|:-----|--------:|
+|Pizza |Water |      800|
+|Pizza |Cola  |     1100|
+|Salad |Water |      200|
+|Salad |Cola  |      500|
 
 Additive effects
 =========================================================
-```{r, echo=FALSE}
-options(digits = 3, scipen = 5)
-library(ggplot2)
-qplot(data = food_example, geom = c("point","line"), x = Food, fill = Drink, colour = Drink, group = Drink, y = Calories)
-```
+![plot of chunk unnamed-chunk-5](Class 7-figure/unnamed-chunk-5-1.png)
 
 Non-additive effects
 ==========================================================
 - Example: Animal and maximum movement speed (meters/s) on land and in water (mostly non-fictional, based on a very quick Wikipedia search)
 
-```{r, echo = FALSE, results='asis'}
-move_example <- data.frame(Where = c(rep("Land",2),rep("Water",2)), Animal = rep(c("Dog","Dolphin"), 2), Speed = c(15, 0, .4, 11))
-kable(move_example)
-```
+
+|Where |Animal  | Speed|
+|:-----|:-------|-----:|
+|Land  |Dog     |  15.0|
+|Land  |Dolphin |   0.0|
+|Water |Dog     |   0.4|
+|Water |Dolphin |  11.0|
 
 Non-additive effects (2)
 ==========================================================
-```{r, echo=FALSE}
-library(ggplot2)
-qplot(data = move_example, geom = c("point","line"), x = Where, fill = Animal, colour = Animal, group = Animal, y = Speed, ylab = "Maximum speed in m/s")
-```
+![plot of chunk unnamed-chunk-7](Class 7-figure/unnamed-chunk-7-1.png)
 - Crossover interaction
 
 Marginal effects
@@ -352,37 +342,17 @@ Summary: Sums of square types
     - An unbalanced design will lead to differing sums of squares.
 - In multiple regression, all SS types give the same result *as long as your predictor variables are not correlated*
 
-```{r, echo = FALSE}
-# Seed for random number generators, so that we all get the same results
-set.seed("67")
-# Column 1: Breed - repeat each breed name 15 times, then combine
-breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15))
-# Column 2: Objects - repeat each true group mean 15 times, then combine
-objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
 
-# Add centered covariate
-dog_iq <-rnorm(n = 45, mean = 0, sd = 15)
-
-# Add random noise to the objects scores
-objects <- objects + 0.15 * dog_iq + rnorm(n = 45, mean = 0 , sd = 6)
-# for more realism, round the objects scores to full integers
-# (what does it mean if a dog knows a fraction of an object?)
-objects <- round(objects, digits = 0)
-objects[objects < 0] <- 0
-# Combine into data frame
-dogs <- data.frame(breed, objects, dog_iq)
-write.csv(dogs, "dogs.csv")
-```
 
 Trying different contrasts
 =========================================================
 - Back to the dog data!
-```{r, echo = FALSE}
-# get the means for each breed
-means_table <- data.frame(tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean))
-colnames(means_table) <- c("Mean number of objects known")
-kable(means_table)
-```
+
+|              | Mean number of objects known|
+|:-------------|----------------------------:|
+|Beagle        |                         8.93|
+|Border Collie |                        59.80|
+|Terrier       |                        12.33|
 
 Trying different contrasts (2)
 =========================================================
@@ -424,10 +394,12 @@ Interpreting sum/deviation contrasts
 Applying difference (reverse Helmert) contrasts
 ==========================================================
 
-```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.helmert
-kable(coef(summary(lm(data = dogs, objects ~ breed))))
-```
+
+|            | Estimate| Std. Error| t value| Pr(>&#124;t&#124;)|
+|:-----------|--------:|----------:|-------:|------------------:|
+|(Intercept) |    27.02|      0.880|    30.7|                  0|
+|breed1      |    25.43|      1.078|    23.6|                  0|
+|breed2      |    -7.34|      0.622|   -11.8|                  0|
 
 Interpreting (reverse) Helmert contrasts
 ========================================================
@@ -450,40 +422,29 @@ How to do a multiway ANOVA
 - Again, we have a video made by Andy Johnson on how this works in SPSS
 - Download the SPSS data file (`Music, beer, and courting.sav`) and follow along with the video.
 
-```{r, echo = FALSE, results='asis'}
-attract <- read.csv("attract.csv")
-# by default, R will sort factor levels alphabetically
-# the following line will make "No alcohol" the baseline level for the "Alcohol" factor
-attract$Alcohol <- relevel(attract$Alcohol, ref = "No alcohol")
 
-# Now we make the "subject" column that ezANOVA needs
-# Every row gets a different subject number
-# The subject column is discrete, so we make it a factor
-attract$subject <- factor(1:nrow(attract))
-```
 
 Make a means table
 =========================================================
 
-```{r, echo = FALSE, results='asis'}
-library(ez)
-library(knitr)
-attract_stats <- ezStats(data = attract, 
-                         dv = Attractiveness.Rating, 
-                         wid = subject, 
-                         between = .(Music, Alcohol))
-kable(attract_stats[,-ncol(attract_stats)])
-```
+
+|Music                  |Alcohol           |  N| Mean|   SD|
+|:----------------------|:-----------------|--:|----:|----:|
+|Generic sexy pop tunes |No alcohol        | 10| 49.3| 5.50|
+|Generic sexy pop tunes |1 Pint of Stella  | 10| 52.2| 5.88|
+|Generic sexy pop tunes |4 pints of Stella | 10| 70.4| 5.04|
+|Quiet                  |No alcohol        | 10| 47.9| 4.91|
+|Quiet                  |1 Pint of Stella  | 10| 52.3| 5.77|
+|Quiet                  |4 pints of Stella | 10| 62.3| 5.36|
 
 Do the ANOVA
 ===========================================================
-```{r echo = FALSE}
-attract_anova <- ezANOVA(data = attract, 
-                          dv = Attractiveness.Rating, 
-                          wid = subject, 
-                          between = .(Music, Alcohol))
-kable(attract_anova$ANOVA, col.names = c("Effect", "${df}_n$", "${df}_d$", "$F$", "$p$", "$p < 0.5$", "$\\eta_P^2$"))
-```
+
+|Effect        | ${df}_n$| ${df}_d$|   $F$|   $p$|$p < 0.5$ | $\eta_P^2$|
+|:-------------|--------:|--------:|-----:|-----:|:---------|----------:|
+|Music         |        1|       54|  5.01| 0.029|*         |      0.085|
+|Alcohol       |        2|       54| 59.79| 0.000|*         |      0.689|
+|Music:Alcohol |        2|       54|  3.24| 0.047|*         |      0.107|
 - All three terms are significant.
     - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
 - Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$
@@ -492,9 +453,10 @@ Assumption tests:
 ===========================================================
 - Levene's test:
 
-```{r echo=FALSE}
-kable(attract_anova$"Levene's Test for Homogeneity of Variance", col.names = c("${df}_n$", "${df}_d$", "${SS}_n$","${SS}_d$","$F$", "$p$", "$p < 0.5$"))
-```
+
+| ${df}_n$| ${df}_d$| ${SS}_n$| ${SS}_d$|   $F$|   $p$|$p < 0.5$ |
+|--------:|--------:|--------:|--------:|-----:|-----:|:---------|
+|        5|       54|      5.8|      412| 0.152| 0.979|          |
 
 - No problems with homogeneity of variances
 
