@@ -423,9 +423,18 @@ Interpreting sum/deviation contrasts
 
 Applying difference (reverse Helmert) contrasts
 ==========================================================
+- The contrasts:
+```{r, results='asis', echo = FALSE}
+sum_contrasts <- data.frame(cbind(c("Beagle", "Border Collie", "Terrier"), contr.helmert(3)))
+colnames(sum_contrasts) <- c("Discrete factor level", "S1", "S2")
+kable(sum_contrasts)  
+contrasts(dogs$breed) <- contr.helmert
+```
+
+- The regression model:
 
 ```{r, results='asis', echo = FALSE}
-contrasts(dogs$breed) <- contr.helmert
+
 kable(coef(summary(lm(data = dogs, objects ~ breed))))
 ```
 
@@ -504,8 +513,8 @@ Pairwise comparisons
 
 Writing it up
 ============================================================
-A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). There was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_G^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_P^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
+A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). There was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_P^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_P^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
 
 Writing it up (2)
 =============================================================
-The music by alcohol interaction was also significant, *F*(2,54) = 3.24, *p* = .047, $\eta_G^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M = 49.30, SD = 5.50) and no music (M = 47.90, SD = 4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M = 52.20, SD = 5.88) and no music (M = 52.30, SD = 5.77). However, following 4-pints attractiveness ratings were higher with music (M = 70.40, SD = 5.04) than without music (M = 62.30, SD = 5.36). This effect was significant (*p* = .018).
+The music by alcohol interaction was also significant, *F*(2,54) = 3.24, *p* = .047, $\eta_P^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M = 49.30, SD = 5.50) and no music (M = 47.90, SD = 4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M = 52.20, SD = 5.88) and no music (M = 52.30, SD = 5.77). However, following 4-pints attractiveness ratings were higher with music (M = 70.40, SD = 5.04) than without music (M = 62.30, SD = 5.36). This effect was significant (*p* = .018).

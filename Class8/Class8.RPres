@@ -4,20 +4,332 @@ author: Bernhard Angele
 date: Advanced Statistics
 autosize: true
 
+```{r, echo = FALSE}
+library(knitr)
+library(ez)
+```
 
-ANOVA assumptions (1)
+Goals for this lecture
 ===========================================================
+- Learn about the different assumptions underlying regression and ANOVA models
+- Explore the effects of outliers and influencial values on regression models
+- Learn about the normality assumption and ways to detect deviations from normality
+- Learn about the homoscedasticity assumption and ways to detect violations of this assumption
+- Explore in more depth the effect of multicollinearity on a regression model
+- Since the ANOVA is one specific kind of regression, of course the assumptions are the same (except where they concern continuous factors, which by definition don't exist in ANOVA)
+
+Outliers and influential values
+============================================================
+- This is an assumption that we are making (not the model): We assume that the model is not unduly influenced by a handful of (perhaps erroneous) data points.
+- Problems: This can really influence our interpretation
+
+Example: Self-reports of Height and Weight (Davis, 1990)
+============================================================
+- These data are from a study on exercise habits.
+- They contain data from 183 men and women, including measured weight and reported weight as well as reported and measured height
+- How accurate are people at reporting their weights?
+
+Can you spot the outlier?
+============================================================
+```{r, echo = FALSE}
+library(car)
+plot(Davis$weight, Davis$repwt)
+```
+- It's the person who reported a weight of about 50 kg but was measured at almost 170 kg!
+    - Delusional? No, it just happens that this person's height (170 cm) was accidentally entered as her weight!
+
+Consequences for regression
+============================================================
+```{r, echo = FALSE}
+library(car)
+lm1 <- lm(data = Davis, repwt ~ weight)
+lm2 <- lm(data = subset(Davis, weight < 160), repwt ~ weight)
+plot(Davis$weight, Davis$repwt)
+abline(lm1, col = "red")
+abline(lm2, col = "green")
+```
+- The red line is the regression line including the outlier, the green line is the regression line when it is removed
+
+Is any kind of outlier a problem?
+==============================================================
+- Do the plot (and the regression) the other way around: Weight predicted by reported weight
+
+```{r, echo = FALSE}
+library(car)
+lm1 <- lm(data = Davis, weight ~ repwt)
+lm2 <- lm(data = subset(Davis, weight < 160), weight ~ repwt)
+plot(Davis$repwt, Davis$weight)
+abline(lm1, col = "red")
+abline(lm2, col = "green")
+```
+- There's hardly any difference! The red and green lines are almost on top of each other.
+
+What makes an outlier influential?
+==============================================================
+1. Leverage
+    - Values that are near the centre of the distribution of the X variable don't have the potential to change the slope much
+    - Values that are far away from the centre of the X distribution can change the slope majorly
+2. Discrepancy
+    - In order to have an influence on the slope, the value has to be out of line with the rest of the data.
+    - The person with a reported and observed weight near 120 has high leverage, but little influence, because they are right in line with the other data
+- Rule of thumb: Influence on coefficients = Leverage $\times$ Discrepancy
+
+Can we calculate leverage?
+==============================================================
+- Hat values
+  - We can express the predicted values $\hat{Y}_j$ as a combination of the observed valuables:
+  $$ \hat{Y}_j = h_{1j} Y_1 + h_{2j} Y_2 + \ldots + h_{ij} Y_i + \ldots + h_{nj} Y_n = \sum\limits_{i=1}^n h_{ij} Y_i $$
+  - These $h_i$ values can range from $1/n$ to $1$, with the average $h_i$ value being $\bar{h} = (k+1)/n$, with $k$ being the number of predictors in the model (without the intercept)
+    - i.e. for a model with a single predictor and 20 observations, the average $h_i$ value is $(1+1)/20 = 0.1$
+    
+Hat values
+==============================================================    
+- For simple regression:
+$$h_i = \frac{1}{n} + \frac{(X_i - \bar{X})^2}{\sum\limits_{j=1}^n(X_j - \bar{X})^2}$$
+- In words: the $h_i$ value is 1/n plus the squared deviation of the corresponding $X_i$ value from the mean over the sum of squares of X
+    - The farther $X_i$ is from the mean of X, the larger this value
+    - This also works with multiple predictors, but gets complicated -- leave it to SPSS
+    
+Detecting outliers
+==============================================================
+- Can we use the residuals to determine which data points are outliers?
+- How would we do that?
+    - Look at those that are far away from the average residual
+    - How do we know if they are far away? Standardise them!
+- Small problem: The variance of each residual $E_i$ depends on its leverage $h_i$:
+
+$$Var(E_i) = \sigma^2_\varepsilon (1-h_i)$$
+
+- High-leverage observations have **small** residuals, because they pull the regression equation towards them
+
+Calculating standardised residuals
+==============================================================
+- We convert each residual $E_i$ into a standardised residual $E'_i$ by dividing it by its standard error. We estimate the standard error $\sigma_\varepsilon$ by substituting the standard error of the regression $S_E$ (i.e. the square root of the error variance).
+$$E'_i = \frac{E_i}{S_E \sqrt{1-h_i}}$$
+
+
+Studentised residuals
+==============================================================
+- Remember what happens when we estimate the error variance using the sample variance?
+    - Right, a t-value!
+    - But not in this case: Remember, a t-value is essentially a z-value divided by an independent chi-square value. But in this case the, two are not independent, because the residual $E_i$ is used to calculate the standard error of the regression:
+$$S_E = \sqrt{\frac{SS_{Error}}{df_{Error}}} = \sqrt{\frac{\sum\limits_{i=1}^n (Y_i - \hat{Y}_i)^2}{n-k-1}} = \sqrt{\frac{\sum\limits_{i=1}^n E_i^2}{n-k-1}}$$
+- What to do? Instead of using the $S_E$ of the model *including* the residual $E_i$, we can refit the model without the *i*th observation and divide $E_i$ by the standard error $S_{E(-i)}$ from that reduced model.
+
+Calculating studentised residuals
+==============================================================
+- Here is what that looks like:
+$$E*_i = \frac{E_i}{S_E \sqrt{1-h_i}}$$
+- These $E*_i$ values are called **studentised** residuals, because if the null hypothesis that there are no outliers is true, they follow the t-distribution. (Remember that the full name of the t-distribution is the *Student*'s t-distribution because Guinness forced its employee William Sealy Gosset to publish his papers on statistical analysis with small sample sizes under a pseudonym.)
+    - Confusingly, SPSS calls these residuals "Studentized deleted" and also has "Studentized" residuals which do not exclude the observation in question when calculating the standard error. However, these will not follow the t-distribution, so they are harder to interpret.
+- The distinction between standardised and studentised residuals is mostly important for smaller sample sizes. For larger sample sizes, standardised and studentised residuals are very similar (just like t-distributions with many degrees of freedom become very similar to the standard normal distribution)
+
+Detecting outliers using studentised residuals
+==============================================================
+- If studentised residuals are t-distributed (with the same df as the $SS_{Error}$ for the model with $E_i$ excluded, i.e. $df = n-k-2$) given that the null hypothesis that there are no outliers is true, we can do a hypothesis test to see if a given value is an outlier.
+- Of course, if we do this with every residual value $E_i$ in the data, that is a case of multiple comparisons.
+- Solution: do a Bonferroni correction
+
+Interpreting studentised residuals: Example
+==============================================================
+- If we perform the regression analysis on Davis' weight and reported weight data in SPSS, we can ask it to give us the "deleted studentized residuals" for the regression. 
+- In the case of the 12th observation (the person whose height and weight were switched), $E*_{12} = -41.914$. We can consider this value to be t-distributed with $df = n - k - 2 = 183 - 1 - 2 = 180$. 
+    - The corresponding p-value is incredibly small: $p = `r 2*pt(-41.914, df = 180, lower.tail = TRUE)`$. 
+- For the Bonferroni correction, we multiply the p-value by the number of comparisons, i.e. 183. This still results in an incredibly low p-value: $p = `r 183*2*pt(-41.914, df = 180, lower.tail = TRUE)`$.
+- We can reject the null hypothesis that there are no outliers, and also the one that observation 12 is not an outlier. We should definitely either exclude it or fix it!
+
+Influential values
+===========================================================
+- How to measure influence?
+- Just compare the coefficients (b-values or $\beta$ values):
+    - $D_{ij} = B_j - B_{j(-i)}$ for $i = 1, \cdots, n$ and $j = 0,1,\cdots, k$
+- You can also scale these by dividing them by the standard errors (with observation $i$ deleted):
+$$ D'_{ij} = \frac{D_{ij}}{SE_{(-i)B_j}}$$
+- The $D_{ij}$ values are often called $DFBETA_{ij}$ and the standardised $D'_{ij}$ values are often called $DFBETAS_{ij}$
+- Problem: If you have a lot of predictors, you get a lot of DFBETA and DFBETAS values.
+
+Influential values (2)
+===========================================================
+- Any way to summarise these in a single value per observation?
+    - Cook's D:
+$$D_i = \frac{{E^{\prime}_{i}}^2}{k+1} \times \frac{h_i}{1-h_i}$$
+- Basically, this corresponds to the idea that influence is discrepancy times leverage.
+- A similar measure is DFFITS:
+$$DFFITS_i = E*_i = \sqrt{\frac{h_i}{1-h_i}}$$
+
+Influence on Standard Errors
+===========================================================
+- Remember that the standard errors of our coefficient estimates are influenced by both the error variance of the regression model and the variance in the predictors:
+    - e.g. for simple regression: $SE(B) = \frac{S_E}{\sqrt{\sum(X_i - \bar{X})^2}}$
+- Observations that increase the error variance (because their Y value is far away from the prediction) will lead to a larger SE(B)
+- Observations that increase the predictor variance (because they are far away from the other preditor values), i.e. high-leverage values, **decrease** SE(B). (Maybe too much?)
+- Can we get a measure for this influence?
+
+COVRATIO
+===========================================================
+- This measure is essentially the ratio between the variance for the coefficient estimates for the model including all observations and the variance for the model excluding observation $i$:
+$$COVRATIO_i = \frac{1}{(1-h_i)\left(\frac{n-k-2+E*_i^2}{n-k-1}\right)^{(k+1)}}$$
+- If $COVRATIO_i$ is greater than 1, that means that observation $i$ improves the precision of the coefficient estimate
+- If $COVRATIO_i$ is smaller than 1, that means that observation $i$ reduces the precision of the coefficient estimate.
+- $COVRATIO$ can also tell us about multicollinearity
+
+Example
+===========================================================
+-Let's get all these measures for observation 12 in the Davis data:
+```{r, echo = FALSE}
+lm1 <- lm(data = Davis, repwt ~ weight)
+```
+- Hat value: $h_{12} = `r hatvalues(lm1)[12]`$
+- Studentised residual: $E*_{12} = `r rstudent(lm1)[12]`$
+- $DFBETA_{12} = `r dfbeta(lm1)[12]`$
+- $DFBETAS_{12} = `r dfbetas(lm1)[12]`$
+- Cook's $D_{12} = `r cookd(lm1)[12]`$
+
+What to do about these values
+===========================================================
+- Numerical rules of thumb: Values to pay attention to
+    - Hat values: Values of twice the average $\bar{h} = (k+1)/n$
+        - In our example, $\bar{h} = (1+1)/183 = `r 2/183`$
+        - So `r hatvalues(lm1)[12]` is definitely noteworthy in terms of leverage!
+    - Studentised residual: See the statistical test approach. For a quick overview of whether anything is problematic, see if there are any $E*_i > 2$ or $< -2$
+    
+More rules of thumb
+===========================================================
+- $DFBETAS$:
+    - Standardised. Changes by more than one or two standard errors (|D'_{ij}| > 2) may be interesting to examine. For very large data sets, few points will get DFBETAS that high, so you might use $2/\sqrt(n)$ as a cutoff instead.
+- $DFFITS$:
+    - You might want to look at an observation if  $|DFFITS_i| > 2 \sqrt{\frac{k+1}{n-k-1}}$
+      - In our example, that would be $|DFFITS_{i}| > 2 \sqrt{\frac{1+1}{183-1-1}} = 2\sqrt{2/181} = `r 2*(sqrt(2/181))`$
+    
+More rules of thumb
+===========================================================    
+- The corresponding value for Cook's D would be $D_i > \frac{4}{n-k-1}$
+    - In our example: $D_i > \frac{4}{n-k-1} = \frac{4}{183-1-1} = 4/181 = `r 4/181`$
+- For COVRATIO:
+$$|COVRATIO_i - 1| > \frac{3(k+1)}{n}$$
+    - In our example:
+    $$|COVRATIO_i - 1| > \frac{3(k+1)}{n} = \frac{3(1+1)}{183} = \frac{6}{183} = `r 6/183`$$
+
+
+Regression (and ANOVA) assumptions: Normality
+===========================================================
+
 - **Normality**. The observed test statistic ($\frac{{MS}_{model}}{{MS}_{error}}$) can only be assumed to come from an *F*-distribution if:
   - The error variance (i.e. all the variance not explained by the group factors) is normally distributed
-    - This is because the $\chi^2$-values are assumed to come from a standard normal distribution
+        - This is because the $\chi^2$-values are assumed to come from a standard normal distribution
+  - The same is true for the *t*-tests for individual coefficients, of course.
 
-ANOVA assumptions (2)
+
+Evaluating the normality assumption
 ===========================================================
-- **Homogeneity of variances** (also known as **homoscedasticity**). The variances within each group are similar.
+- Again, the assumption is not that the **data** are normally distributed, but that the **errors** are.
+- Any systematic effects in the data are of course deviations from normality, so if you just look at the raw data, what you think is a normality assumption violation is actually your effect
+- The errors should be normally distributed, though -- otherwise, there may be an issue with your model.
+
+Consequences of non-normality
+===========================================================
+- The model stays valid!
+- But it becomes inefficient, i.e. its power is reduced.
+- You won't commit a Type I error because of non-normality, but you might commit a type II error
+
+How to diagnose non-normality
+===========================================================
+- Normal textbook solution: Kolmogorov-Smirnov/Shapiro-Wilk tests
+    - Problem: These tests are hypothesis tests and their power depends on the sample size
+    - For small samples: Tests have little power to detect deviations from the normal distribution, so that even major violations of normality might not result in a significant test
+    - For large samples: Tests have high power, so they will become significant even for very small deviations from normality. In data from a sample, there were always be miniscule deviations from normality. Such small deviations don't affect the validity and efficiency of the test!
+    
+How to better diagnose non-normality
+===========================================================
+    
+    
+
+Testing the regression assumptions
+===========================================================================
+- Normality of the residuals:
+  - Make a histogram of the standardised residuals (`Plot...` button in the `Linear Regression` module)
+    - Does it look roughly normal?
+        - Plot histograms and density plots for the studentised residuals
+        - Make Quantile-Quantile plots comparing the observed errors to an ideal normal distribution
+    
+Example: Cat food data
+===========================================================================
+- Histogram
+```{r, echo = FALSE}
+n <- 30
+intercept <- 100
+options(digits = 3, scipen = 4)
+
+set.seed("126")
+cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
+cat_age <- rnorm(n, mean = 60, sd = 24) # cat age in months
+cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
+
+food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
+catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
+catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+
+catfood_age2 <- catfood_age
+catfood_age2$CatWeight_centered <- scale(catfood_age$CatWeight, scale = FALSE)
+catfood_age2$CatAge_centered <- scale(catfood_age$CatAge, scale = FALSE)
+# re-fit the model
+lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight_centered * CatAge_centered, data = catfood_age2)    
+
+hist(rstudent(lm_catfood_interaction), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
+```
+
+Example: Cat food data
+===========================================================================
+- Density plot
+```{r, echo = FALSE}
+plot(density(rstudent(lm_catfood_interaction)), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
+```
+
+Example: Cat food data
+===========================================================================
+- Quantile-Quantile plot 
+    - Multiple ones possible. This one compares the distribution of the studentised residuals to the t distribution
+    - If the distributions are similar, all points should be on the same line
+```{r, echo = FALSE}
+qqPlot(lm_catfood_interaction)
+```
+
+Non-normality: Remedies
+===========================================================================
+- Easiest: Transform the data
+- Add possible confounding variables to the predictors
+
+
+Heteroskedasticity
+===========================================================================
+- Is the error variance the same for all predicted values?
+  - Make a plot of *z*-transformed predicted values against *z*-transformed residuals
+      - In the `Plot...` window, choose ZPRED as the y-value and ZRESID as the x-value
+      - Does it look like there is more variance for certain predicted values?
+      
+```{r, echo = FALSE}
+plot(x = scale(predict(lm_catfood_interaction)), y = scale(resid(lm_catfood_interaction)), xlab = "Regression Standardized Residual", ylab = "Regression Standardized Predicted Variable", main = "Dependent Variable: Food Eaten")
+```
+
+Why homoscedasticity is important
+===========================================================
+- **Homogeneity of variances** (also known as **homoscedasticity**). The variances in the dependent value are the same for each value of the independent variable.
+- For discrete independent variables: The variances in the dependent value are the same for each group
       - This is because of the way we add up the variances in each group to get an estimate of the total error variance ${SS}_{error}$:
       $${SS}_{error} = \sum\limits_{m=1}^{p}\sum\limits_{i = 1}^{n}(x_{mi} - \bar{A}_m)^2$$
       - You can only do this if the variances in each group are roughly similar.
-        - For example, the IQs *within* the BU group should not be more variable than the IQs *within* the Soton and the Oxford groups
+        - For example, the positive feeling ratings *within* the "Cat" group should not be more variable than the IQs *within* the "Dog" group
+            - But in reality they probably will be, since some people really hate cats and 
+          some really love them!
+
+Detecting and fixing heteroscedaticity
+===========================================================================
+- If you have a discrete X value (like in an ANOVA), you can also use Levene's test
+- SPSS calculates it automatically when you run a between-subjects ANOVA with more than two factors.
+- Transformations (e.g. log) can help reduce heteroscedasticity (see next week's lecture)
+           
+Levene's test
+==========================================================
   - If you have more than two groups, SPSS will automatically run Levene's test, which compares the group variances
     - What's the test statistic for a test that compares variances? Of course, it's *F* again!
     - The p-value tells you if the variances are significantly different between groups.
@@ -47,6 +359,14 @@ What to do if Levene's tests is significant?
           - Games-Howell for unequal variance
           - Hochberg's GT2 for non-equal sample sizes
 
+
+
+Sphericity
+===========================================================
+- Like **Homogeneity of variances**, but refers to the equality of variances of the differences between groups in a repeated-measures ANOVA rather than of variances for the group means. 
+    - Advantage: it can easily be controlled mathematically
+- We'll talk about it after we've discussed the repeated measures ANOVA
+
 The SPSS (or rather, SPSS textbook) approach to statistics
 ============================================================
 - Throw as many obscure tests at the problem as you can
@@ -59,6 +379,14 @@ The SPSS (or rather, SPSS textbook) approach to statistics
     - Be aware of potential issues
     - Interpret the data accordingly.
     - Only use specialised and non-parametric tests as a last resort if your data massively violate the assumptions
+
+Multicollinearity
+============================================================
+- We've already talked about how correlations between our predictors can reduce our statistical power, but how do we deal with this?
+    - Best diagnostic: VIFs
+- How to deal with multicollinearity
+    - Respecify your model
+    - Centre predictors (make sure they have a mean of 0)
 
 Just so we're clear
 ============================================================
@@ -78,189 +406,3 @@ ANOVA assumptions (3)
         - Participants are tested in multiple conditions
         - This can be addressed by using a repeated-measures ANOVA or Linear Mixed Models.
       
-
-Repeated measures
-=============================================================
-- Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
-- This is bad, because we violate the independence assumption in the standard ANOVA.
-- This is good, because we can use a repeated-measures ANOVA to remove all between-participant variance
-- ${SS}_{total} = {SS}_{betweenParticipants} + {SS}_{withinParticipants}$
-- ${SS}_{withinParticipants} = {SS}_{model} + {SS}_{residual}$ (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
-- Result: Less unexplained variance and higher power.
-- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
-- In the repeated measures ANOVA, we can separate them!
-
-Repeated measures data matrix
-=============================================================
-- Almost the same as for the standard one-way ANOVA
-  - Columns are factor levels, rows are **participants**
-- $i$ = factor level, $p$ = number of factor levels
-- $m$ = **participant**, $n$ = number of **participants**
-
-$$
-\begin{matrix}
-x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
-x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
-\vdots & \vdots   &       & \vdots  &        &\vdots \\
-x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
-\end{matrix}
-$$
-
-Calculating the sums of squares
-=============================================================
-- The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
-- ${df}_{total} = n\cdot p-1$
-- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
-where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
-- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
-where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
-
-Calculating the sums of squares (2)
-=============================================================
-- Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
-- The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
-  - Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
-  
-Degrees of freedom
-============================================================
-- ${df}_{total} = p\cdot n - 1$
-- ${df}_{betweenParticipants} = n - 1$
-- ${df}_{withinParticipants} = n \cdot (p - 1)$
-- ${df}_{model} = p - 1$
-- ${df}_{residual} = (n-1) \cdot (p - 1)$
-  - Where $p$ is the number of factor levels and $n$ is the number of participants
-
-Test statistic
-==============================================================
-- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
-- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
-
-Quick example by hand
-=============================================================
-- 10 cats were asked to try 3 different brands of cat food: Whiskers, Paws, and Industrial Waste. They received the same amount of each food after not having eaten for 8 hours. The dependent variable amount of food (in grammes) that they ate of each brand. Do cats prefer one or more brands over others or do they eat the same amount of each?
-
-Copy this table into Excel (or SPSS)
-==============================================================
-```{r echo = F}
-set.seed("3")
-n_participants <- 10
-overall_intercept <- 100
-
-Subject <- rep(1:n_participants, each = 3)
-Brand <- rep(1:3)
-
-subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
-
-brand_means <- c(25, 25, -50)
-
-random_error <- rnorm(length(Subject), mean = 0, sd = 10)
-
-df <- data.frame(Subject, Brand)
-
-df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
-
-df$Subject <- factor(df$Subject, labels = c("Cali",
-	"Callie",
-	"Casper",
-	"Charlie",
-	"Chester",
-	"Chloe",
-	"Cleo",
-	"Coco",
-	"Cookie",
-	"Cuddles"))
-
-df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
-
-library(reshape)
-df_m <- melt(df, measure = "eaten")
-df_c <- cast(df_m, Subject ~ Brand)
-kable(df_c)
-```
-
-Doing the ANOVA in Excel
-==============================================================
-- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
-- Calculate your Sums of Squares
-  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
-    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
-  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
-  
-Sums of squares (continued)
-===============================================================
-- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
-- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
-- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
-- Then calculate the degrees of freedom and the MS as shown earlier
-- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
-
-Final step
-==============================================================
-- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
-- For comparison: ANOVA output form R
-```{r, echo = FALSE}
-summary(ezANOVA(data = df, wid = Subject, within = Brand, dv = eaten, return_aov = TRUE)$aov)
-```
-
-Post-hoc comparisons
-==============================================================
-- Compute pairwise *t*-tests
-  - For each subject, calculate the differences between the conditions
-  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
-  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
-  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
-  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
-
-One-way repeated measures ANOVA in SPSS
-==============================================================
-- Watch Andy Johnson's video on myBU and follow along with the data set (`Badger art identification.sav`).
-
-Assumptions
-==============================================================
-- Essentially the same as for the independent ANOVA
-    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
-    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
-
-What is sphericity?
-==============================================================
-- The variances of the differences between treatment levels should be roughly equal ("spherical")
-- For example, it could be that all cats react similarly to the first two brands
-    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
-- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
-    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
-- This could make the ANOVA anticonservative ($\alpha$ is inflated)
-
-Testing for sphericity violations
-=================================================================
-- Mauchly's Test for Sphericity
-- Performed automatically by SPSS
-- If it's significant, sphericity is violated.
-- In this case, we're OK
-- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
-- If you only have two levels, there is only one difference, so differences can't be unequal
-
-Dealing with sphericity violations
-==================================================================
-- Good news: It's easy. 
-- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
-    - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
-- You do this by multiplying the ${df}_{Model}$ and ${df}_{Error}$ by a correction factor $\varepsilon$
-- Two ways to calculate $\varepsilon$:
-    - Greenhouse-Geisser
-    - Huynh-Feldt
-- Recommendation: If Greenhouse-Geisser $\varepsilon < .75$, use it. Otherwise, use Huynh-Feldt.
-   - Of course, if Mauchly's test is not significant, use neither!
-- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
-
-Testing for normality
-===================================================================
-- You can do the Shapiro-Wilk test in SPSS
-- Normality isn't usually *much* of an issue, especially if your group sizes are equal
-  - The **ANOVA is robust**
-
-Post-hoc tests
-===================================================================
-- You can again use paired *t*-tests to compare factor levels
-- Remember to do Bonferroni corrections if you do these tests by hand
