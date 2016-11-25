@@ -1,0 +1,41 @@
+---
+title: "Class 8 in-class exercise"
+author: "Bernhard Angele"
+date: "November 16, 2016"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# The data
+
+##Post traumatic stress disorder in abused adult females
+
+We are going to use some real-world data for this exercise. The data for this example come from a study of the effects of childhood sexual abuse on adult females. 45 women being treated at a clinic, who reported childhood sexual abuse, were measured for post traumatic stress disorder and childhood physical abuse both on standardized scales. 31 women also being treated at the same clinic, who did not report childhood sexual abuse were also measured. The full study was more complex than reported here and so readers interested in the subject matter should refer to the original article (Rodriguez, Ryan, vande Kemp, & Foy, 1997). These data come from the example data set compiled by Julian Faraway (2016).
+
+The variables in the dataset are
+
+- `cpa`: Childhood physical abuse on standard scale
+
+- `ptsd`: Post-traumatic stress disorder on standard scale
+
+- `csa`: Childhood sexual abuse - abused or not abused
+
+Using the appropriate statistical methods, test the hypotheses that:
+1. Childhood physical abuse has an effect on later PTSD
+2. Childhood sexual abuse has an effect on later PTSD
+3. If there is both childhood sexual abuse and childhood physical abuse, does this increase the impact that childhood physical abuse has on later PTSD?
+
+Do the appropriate diagnostic tests for the data and report the results following APA style.
+
+References
+
+N. Rodriguez, N., Ryan, S., Vande Kemp, H., and Foy, D (1997) "Postraumatic stress disorder in adult female survivors of childhood sexual abuse: A comparison study", Journal of Consulting and Clinical Psychology, 65, 53-59
+
+Faraway, J. (2016). faraway: Functions and Datasets for Books by Julian
+  Faraway. R package version 1.0.7. https://CRAN.R-project.org/package=faraway
+
+```{r, echo = FALSE}
+library(faraway)
+write.csv(sexab, "Rodriguez et al.csv", row.names = FALSE)
+```

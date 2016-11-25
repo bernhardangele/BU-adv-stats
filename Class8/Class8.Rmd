@@ -1,8 +1,9 @@
-Assumptions and dealing with assumption violations
-========================================================
-author: Bernhard Angele
-date: Advanced Statistics
-autosize: true
+---
+title: "Advanced Statistics"
+author: "Bernhard Angele"
+date: "Assumptions and dealing with assumption violations"
+output: pdf_document
+---
 
 ```{r, echo = FALSE}
 library(knitr)

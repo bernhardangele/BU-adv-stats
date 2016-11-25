@@ -1,0 +1,130 @@
+---
+title: "Data sets for Class 8 practice test"
+output: html_notebook
+---
+
+Question 7
+
+```{r}
+library(car)
+library(MASS)
+set.seed(2324)
+
+sigma_y <- 20
+sigma_x1 <- 20
+sigma_x2 <- 20
+cov_y_x1 <- 20
+cov_y_x2 <- 20
+cov_x1_x2 <- 20
+mean_y <- 20
+mean_x1 <- 0
+mean_x2 <- 0
+
+#covmatrix <- matrix(c(sigma_y, cov_y_x1, cov_y_x2, 
+#                      cov_y_x1,sigma_x1, cov_x1_x2, 
+#                      cov_y_x2, cov_x1_x2, sigma_x2), 3,3)
+
+covmatrix <- var(Mandel)
+q7 <- mvrnorm(n = 30, mu = c(mean_y, mean_x1, mean_x2), Sigma = covmatrix)
+q7 <- data.frame(q7)
+colnames(q7) <- c("anxiety_score", "stress_scale", "phobia_scale")
+
+q7$anxiety_score[25] <- 50
+lmq7 <- lm(data = q7, anxiety_score ~ stress_scale + phobia_scale)
+qqPlot(lmq7)
+write.csv(x = q7, file = "Class 8 in-class Question 7.csv", row.names = FALSE)
+ctr <- function(x) scale(x, scale = FALSE)
+summary(q7)
+plot(y = rstandard(lmq7), x = predict(lmq7))
+influence.measures(lmq7)
+vif(lmq7)
+summary(lmq7)
+```
+Question 1
+============================================================
+```{r}
+n <- 212
+options(digits = 3, scipen = 4)
+
+set.seed("353")
+
+hours_of_preparation <- round(runif(n, 1,10))
+
+mark <- 10+round(30*(1 + hours_of_preparation * .05 + rgamma(n, shape = .25)),1)
+
+mark <- ifelse(mark < 100, mark, 100)
+
+lmq1 <- lm(mark ~ hours_of_preparation)
+summary(lmq1)
+plot(y = rstandard(lmq1), x = predict(lmq1))
+qqPlot(lmq1)
+plot(density(mark))
+write.csv(data.frame(mark, hours_of_preparation), file = "Class 8 in-class test Question 1.csv", row.names = FALSE)
+```
+
+Question 5
+=========================================
+
+
+```{r, echo = FALSE}
+n <- 30
+intercept <- 100
+options(digits = 3, scipen = 4)
+
+set.seed("1776")
+cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
+cat_age <- rnorm(n, mean = 60, sd = 24) # cat age in months
+cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
+
+food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
+catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
+catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+
+lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)  
+summary(lm_catfood_interaction)
+qqPlot(lm_catfood_interaction)
+hist(rstudent(lm_catfood_interaction), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
+influence.measures(lm_catfood_interaction)
+vif(lm_catfood_interaction)
+write.csv(catfood_age, file = "Q5 Lecture 8 in-class test.csv")
+```
+
+
+Question 3
+=========================================
+Here is a question about dogs and dog food for once!
+
+```{r, echo = FALSE}
+n <- 75
+intercept <- 75
+options(digits = 3, scipen = 4)
+
+set.seed("176")
+course <- factor(c(rep("Psychology",n/3), rep("Business", n/3), rep("Computing", n/3)))
+
+happiness <- rep(intercept, n)
+
+happiness[course == "Psychology"] <- happiness[course == "Psychology"] + rnorm(length(happiness[course == "Psychology"]), 10, 5)
+
+happiness[course == "Business"] <- happiness[course == "Business"] + rnorm(length(happiness[course == "Business"]), -10, 35)
+
+happiness[course == "Computing"] <- happiness[course == "Computing"] + rnorm(length(happiness[course == "Computing"]), 20, 15)
+
+happiness <- round(happiness, 2)
+
+course_happiness <- data.frame(Happiness = happiness, Course = course)
+
+lm_course_happiness <- lm(formula = Happiness ~ Course, data = course_happiness)  
+summary(lm_course_happiness)
+qqPlot(lm_course_happiness)
+hist(rstudent(lm_course_happiness), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Happiness")
+#influence.measures(lm_dogfood)
+#vif(lm_dogfood)
+library(ez)
+course_happiness1 <- cbind(course_happiness, index = 1:nrow(course_happiness))
+ezANOVA(data = course_happiness1, dv = Happiness, wid = index, between = Course)
+write.csv(course_happiness, file = "Lecture 8 in-class test Q3.csv", row.names = FALSE)
+
+
+```
+

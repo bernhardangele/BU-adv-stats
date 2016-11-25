@@ -1,0 +1,36 @@
+---
+title: "Generate practice test data for Class 9"
+output: html_notebook
+---
+
+A researcher presents participants with a visual scene containing various objects, one of which is designated as a target object. At the same time, participants listen to a sentence where the target object is either mentioned or not. The researcher wants to know whether mentioning the target object affects the probability that a participant will look at the target object within the first 2 seconds of the trial. He also wants to include the familiarity of the target object (rated on a scale from not familiar at all = 0 to extremely familiar = 10) as a predictor and wants to test whether participants are more (or less) likely to look at familiar objects than unfamiliar objects, and whether this effect differs between trials where the object was mentioned in the spoken sentence or not. Run an appropriate generalised linear model (assume that there are no systematic differences between participants and items, as we won't learn how to include those in the model until the next lecture) and report the z-value testing whether there was an interaction between whether a word was mentioned and familiarity. Use dummy contrasts for the discrete variable.
+
+```{r}
+# Generate data
+library(car)
+library(gtools)
+set.seed(99)
+n <- 240
+object_mentioned <- factor(rep(c("yes", "no"), each = n/2))
+#contrasts(object_mentioned) <- contr.sum
+contrasts(object_mentioned) <- contr.treatment
+familiarity <- 4+ round(rnorm(n, 2, 2), 0)
+logits <- ifelse(object_mentioned == "yes", -.25,.5) * familiarity
+probs <- inv.logit(logits)
+object_looked_at <- rbinom(n, 1, prob = probs)
+
+glm1 <- glm(object_looked_at ~ familiarity * object_mentioned, family = binomial(link = "logit"))
+summary(glm1)
+df <- data.frame(object_looked_at, familiarity, object_mentioned)
+#influence.measures(glm1)
+vif(glm1)
+write.csv(df, file = "Lecture 9 Practice test data.csv")
+```
+```{r}
+ctr <- function(x) scale(x, scale = FALSE)
+
+contrasts(object_mentioned) <-c(1,0)
+glm2 <- glm(object_looked_at ~ ctr(familiarity) * object_mentioned, family = binomial(link = "logit"))
+summary(glm2)
+vif(glm2)
+```

@@ -1,0 +1,106 @@
+---
+title: "Data sets for Class 8 practice test"
+output: html_notebook
+---
+
+Question 1
+
+```{r}
+library(car)
+q1 <- with(Mandel, data.frame(overall_happiness = y, happiness_with_lecturers = x1, happiness_with_programme = x2))
+lmq1 <- lm(data = q1, overall_happiness ~ happiness_with_programme + happiness_with_lecturers)
+qqPlot(lmq1)
+write.csv(x = q1, file = "Class 8 practice Question 1.csv", row.names = FALSE)
+ctr <- function(x) scale(x, scale = FALSE)
+summary(q1)
+plot(y = rstandard(lmq1), x = predict(lmq1))
+influence.measures(lmq1)
+summary(lmq1)
+```
+Question 3
+============================================================
+```{r}
+n <- 50
+options(digits = 3, scipen = 4)
+
+set.seed("353")
+
+pain_relatedness <- round(runif(n, 1,100))
+
+response_time <- round(500*(1 + pain_relatedness * .01 + rgamma(n, shape = .25)),2)
+
+lmq3 <- lm(response_time ~ pain_relatedness)
+summary(lmq3)
+plot(y = rstandard(lmq3), x = predict(lmq3))
+qqPlot(lmq3)
+plot(density(response_time))
+write.csv(data.frame(response_time, pain_relatedness), file = "Class 8 practice Question 3.csv", row.names = FALSE)
+```
+
+Question 5
+=========================================
+
+
+```{r, echo = FALSE}
+n <- 30
+intercept <- 100
+options(digits = 3, scipen = 4)
+
+set.seed("176")
+cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
+cat_age <- rnorm(n, mean = 60, sd = 24) # cat age in months
+cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
+
+food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
+catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
+catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+
+catfood_age$CatWeight[12] <- 15
+lm_catfood_interaction <- lm(formula = FoodEaten ~ CatWeight * CatAge, data = catfood_age)  
+summary(lm_catfood_interaction)
+qqPlot(lm_catfood_interaction)
+hist(rstudent(lm_catfood_interaction), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Food Eaten")
+influence.measures(lm_catfood_interaction)
+vif(lm_catfood_interaction)
+write.csv(catfood_age, file = "Q5 Lecture 8 Practice test.csv")
+```
+
+
+Question 7
+=========================================
+Here is a question about dogs and dog food for once!
+
+```{r, echo = FALSE}
+n <- 36
+intercept <- 10
+options(digits = 3, scipen = 4)
+
+set.seed("176")
+dog_diet <- factor(c(rep("typical",n/3), rep("vegan", n/3), rep("paleo", n/3)))
+
+dog_weight <- rep(intercept, n)
+
+dog_weight[dog_diet == "typical"] <- dog_weight[dog_diet == "typical"] + rnorm(length(dog_weight[dog_diet == "typical"]), 1, 1)
+
+dog_weight[dog_diet == "vegan"] <- dog_weight[dog_diet == "vegan"] + rnorm(length(dog_weight[dog_diet == "vegan"]), -1, 7)
+
+dog_weight[dog_diet == "paleo"] <- dog_weight[dog_diet == "paleo"] + rnorm(length(dog_weight[dog_diet == "paleo"]), 2, 3)
+
+dog_weight <- round(dog_weight, 2)
+
+dogfood <- data.frame(DogWeight = dog_weight, DogDiet = dog_diet)
+
+lm_dogfood <- lm(formula = DogWeight ~ DogDiet, data = dogfood)  
+summary(lm_dogfood)
+qqPlot(lm_dogfood)
+hist(rstudent(lm_dogfood), xlab = "Studentised Residuals", ylab = "Frequency", main = "Dependent Variable: Dog Weight")
+#influence.measures(lm_dogfood)
+#vif(lm_dogfood)
+library(ez)
+dogfood1 <- cbind(dogfood, index = 1:nrow(dogfood))
+ezANOVA(data = dogfood1, dv = DogWeight, wid = index, between = DogDiet)
+write.csv(dogfood, file = "Q7 Lecture 8 Practice test.csv", row.names = FALSE)
+
+
+```
+
