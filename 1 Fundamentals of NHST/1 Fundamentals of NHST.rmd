@@ -1,0 +1,32 @@
+---
+title: "1 Fundamentals of NHST"
+author: "Bernhard Angele"
+date: "12 January 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+---
+title: "Fundamentals of Null-Hypothesis Significance Testing"
+author: "Bernhard Angele"
+date: "12 January 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Why are we doing this?
+
+Hello everyone and welcome to our first "real" lecture on Advanced Statistics. In our introductory session, I have already explained to you a bit about my idea of what "advanced" means in this context. In our undergraduate statistics units, we try to give students the absolute minimum in statistical education acceptable. This may surprise you, but given the resistance that many undergraduate students have to statistics (I'm not saying that this is the students' fault -- far too many of them -- and you --have internalised the misconception that you can't do maths), the lack of mathematical skills (compounded by the resistance to anything mathematical), and the limited time, this is the best we can do. We give you a small toolkit of step-by-step instructions to perform basic statistical tests without making catastrophic mistakes. If we are really good, we give you some degree of understanding of the basic ideas behind null-hypothesis significance testing (NHST). This is the kind of statistical education I have received myself and that you probably received as well (if you didn't receive any statistical education at all, don't worry: you were spared all the downsides of this type of training and can easily catch up on the practical step-by-step parts).
+This kind of undergraduate education is a necessity -- we have to turn out students who can be trusted to do basic experiments and who can understand the statistical tests reported in research papers. However, I don't consider "advanced" statistics to be a continuation of teaching the "click here in SPSS" ritual for more complex tests that few people ever use (such as MANOVA). If you really understand what statistics is about and why we use them, understanding those complex tests (should you ever need them) will not be too difficult.
+What I want to achieve in this unit is to get you to understand why we do statistics, and how to interpret statistical findings responsibly. This is much more important than knowing how to do a MANOVA in SPSS by heart.
+Indeed, the current replication crisis in Psychology may be rooted in many cases in misunderstandings about statistics that even established psychologists have: misconceptions and confusions that were established in undergraduate education and that were never corrected even during years of postgraduate study and subsequent research work. These individuals certainly are highly skilled at scientific writing, at experiment design, and at using statistical software, but in some cases, they have "painted themselves into a corner" by consistently misinterpreting their results and by engaging in behaviour that (probably unwittingly) increased the probability of false positives. Now they have built a career on theories and findings that are possibly not replicable and for which maybe much less evidence exists than they thought. Note that this is not scientific fraud. I firmly believe that the individuals concerned performed their research to the best of their ability and conscience. However, if we want to move past this issue as a discipline, we have to improve our understanding of what we are doing when we are doing statistical tests. These first lectures will address this question, and in order to do that, we have to start with the Philosopht of Science. This part of the lecture will be following Zoltan Dienes' book "Understanding Psychology as a Science" fairly closely. I highly recommend that you buy it -- it is not very expensive at all.
+
+## Philosophy of Science
+
+What can we know? How can we be sure about something we think we know? We know that our senses and our minds can be tricked, as we have all made errors before. For example, just now I was sure that I had left my phone on the table, when actually it had fallen behind the sofa. If I can be wrong about something this trivial, how can I ever make conclusions about important things, such as how the brain works, or, if you are more practically minded, about whether a patient with anxiety will benefit from a new intervention, or whether a child would be better off being taken out of his or her family? If anything, those latter issues are even more critical than lofty pursuits such as understanding the human mind, as I can always correct a misconception I might have had about the visual system, but a child failed by the system may suffer damage for life.
+Philosophers have been asking themselves these questions for a long time. As this is a class on statistics, and not philosophy, we will jump right into the part about Neyman and Pearson and null-hypothesis significance testing (Chapter 3). I do recommend that you read the first chapters about Popper, Kuhn, and Lakatos as well, as their thinking underlies much of how we think about science.
