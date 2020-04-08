@@ -1,0 +1,13 @@
+knitr::opts_chunk$set(echo = FALSE)
+seed = length("CummingsDancingP-Values")
+power=.20
+low_limit = .000
+up_limit = .10
+p <-(1-pnorm(rnorm(2500,qnorm(.975,0,1)+qnorm(0,0,1),1),0,1))*2
+hist(p,breaks=1000,freq=F,ylim=c(0,100),xlim=c(low_limit,up_limit))
+abline(v=.05,col="red")
+qnorm(.975,0,1)
+qnorm(.20,0,1)
+qnorm(0,0,1)
+qnorm(0,0,1)
+qnorm(0.00001,0,1)

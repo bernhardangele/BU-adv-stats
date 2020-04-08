@@ -1,0 +1,206 @@
+---
+title: "Avoiding an inflated alpha"
+output:
+  powerpoint_presentation: default
+  beamer_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Summary of the first part
+
+- We have spent the last lectures talking about the basics of null-hypothesis significance testing (NHST), including considerations of power and what a _p_-value actually means
+- We have also discussed an alternative statistical approach that does not involve a null hypothesis (Bayesian Statistics)
+-In this last part, I want to introduce you to some approaches to diagnose (and perhaps remedy) an inflated alpha rate and questionable research practices in general
+
+## Checking _p_-values
+- A surprising amount of published articles contains errors in reporting the _p_-value
+    - For example, the _p_-value reported does not correspond to the test statistic and degrees of freedom
+    - [Nuijten, Hartgerink, van Assen, Epskamp, and Wicherts](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5101263/) found that half of psychology papers published between 1985 and 2013 contained at least one incorrect _p_-value. 
+        - They now have [a website](http://statcheck.io/) that can analyse a manuscript automatically and spot problematic p-values
+
+## Analysing digits
+
+- Benford's law:
+    - The first digit of any number is more likely to be 1 than to be any other number
+    - The distribution of numbers for the last digit should be uniform
+    - If this is not true for the data of the experiment,something strange is going on
+        - Not necessarily fraud, but maybe some weird rounding issue?
+        - See [this Datacolada (Simonsohn, Nelson and Simmon's blog) post for an example](http://datacolada.org/74)
+
+## Reporting requirements
+
+- Have authors report the full design that was run, not just the subset that they find interesting
+- Extreme (and artificial) example: Simmon, Nelson, and Simonsohn's [False Positive Psychology paper](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1850704)
+- You can get anything significant if you add enough participants, subconditions, etc. without correcting for multiple comparisons
+- How can you make sure authors tell the truth about their design?
+
+## Preregistration
+
+- Have authors pre-register their study *before* actually running it
+- Either at an independent institution such as the Open Science Foundation (OSF)
+    - Anyone can do it, and even if you can't get the manuscript published elsewhere, you can put it online there
+- Or at a journal
+    - Advantage: The journal commits to publishing the manuscript, even if the tests yield null results
+    - Unfortunately, not all journals offer this option yet (although some big cognitive psychology ones have just started)
+    
+## Open Science
+- Require authors to share their data (that also enables the digit analysis described above)
+- Ideally, data sharing becomes the norm voluntarily
+    - but it may also be mandated by journals and research funders (e.g. UK Research and Innovation)
+- Extra work necessary to prepare the data for publication
+    - Need to safeguard participant privacy
+- Opens authors up to greater scrutiny
+    - But wouldn't you want to know if you had made an error?
+        - Authors should be given opportunity to fix (if possible and error wasn't deliberate)
+
+## Meta-analysis
+- Analyse many studies to get a more consistent picture of the research field
+- Some studies are clearly outliers
+- Bayesian meta-analysis gives posterior estimate of effect size -- very useful
+- However: what to do about the file-drawer problem?
+    - What about all the experiments with null effects that were never published?
+
+## The _p_-curve
+
+- What is the distribution of _p_-values given that the null-hypothesis is true?
+  - You have already seen a bit of this in the "Dance of the _p_-values" video that you watched in KTS.
+  - Try [this visualisation by Kristoffer Magnusson](https://rpsychologist.com/d3/pdist/).
+  
+  
+## The distribution of _p_-values when the null hypothesis is true
+
+
+```{r pnull, echo = FALSE}
+nSims <- 1000000 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
+N<-32 #number of participants
+lowp<-0.04
+highp<-0.05
+
+#set up some variables
+p<-numeric(nSims) 
+p2<-numeric(nSims) 
+obs_pwr<-numeric(nSims) 
+t<-numeric(nSims) 
+d<-numeric(nSims) 
+
+for(i in 1:nSims){ #for each simulated experiment
+  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  y<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  z<-t.test(x,y) #perform the t-test
+  p[i]<-z$p.value #get the _p_-value and store it
+}
+
+#Calculate power in simulation
+#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+
+#Count probability of finding p between boundaries specified above
+
+p2<-p[p>lowp & p<=highp]
+#cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
+
+#now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
+hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+```
+
+  
+## The distribution of _p_-values when the null hypothesis is false 
+- and we have 50% power
+
+
+```{r p50, echo = FALSE}
+#nSims <- 100 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
+N<-32 #number of participants
+lowp<-0.04
+highp<-0.05
+
+#set up some variables
+p<-numeric(nSims) 
+p2<-numeric(nSims) 
+obs_pwr<-numeric(nSims) 
+t<-numeric(nSims) 
+d<-numeric(nSims) 
+
+for(i in 1:nSims){ #for each simulated experiment
+  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  y<-rnorm(n = N, mean = 110, sd = 20) #produce 100 simulated participants
+  z<-t.test(x,y) #perform the t-test
+  p[i]<-z$p.value #get the _p_-value and store it
+}
+
+#Calculate power in simulation
+#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+
+#Count probability of finding p between boundaries specified above
+
+p2<-p[p>lowp & p<=highp]
+#cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
+
+#now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
+hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+```
+
+
+## The distribution of _p_-values when the null hypothesis is false 
+- and we have 80% power
+
+```{r p80, echo = FALSE}
+#nSims <- 100 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
+N<-32 #number of participants
+lowp<-0.04
+highp<-0.05
+
+#set up some variables
+p<-numeric(nSims) 
+p2<-numeric(nSims) 
+obs_pwr<-numeric(nSims) 
+t<-numeric(nSims) 
+d<-numeric(nSims) 
+
+for(i in 1:nSims){ #for each simulated experiment
+  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  y<-rnorm(n = N, mean = 115, sd = 20) #produce 100 simulated participants
+  z<-t.test(x,y) #perform the t-test
+  p[i]<-z$p.value #get the _p_-value and store it
+}
+
+#Calculate power in simulation
+#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+
+#Count probability of finding p between boundaries specified above
+
+p2<-p[p>lowp & p<=highp]
+#cat ("The probability of finding a p-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
+
+#now plot histograms of _p_-values (the most left bar contains all p-values between 0.00 and 0.05)
+hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+```
+
+
+## Using the _p_-curve as a diagnostic tool
+
+* You need a large(r) number of significance tests (e.g. from all the studies on a particular phenomenon such as Power Posing)
+* If there is no effect (or low power), the _p_-curve will be approximately flat.
+* If there is a real effect (and at least medium power), the _p_-curve will be right-skewed, with low _p_-values more likely than high _p_-values
+
+
+## What if a research field systematically neglects to publish significant results? 
++ To the left of .05, the _p_-distribution is the same as it should be (all results with p<.05 are published)
++ To the right of .05, _p_-values get a lot less frequent as they end up in the file drawer
++ There will be a bump in the distribution just below .05
+
+## Try it in Felix Schönbrodt's _p_-hacker simulation
++ [_p_-hacker: Train your _p_-hacking skills!](https://www.shinyapps.org/apps/p-hacker/)
+    + You can run lots of studies without correcting for multiple comparisons
+        + You can also add predictor variables that weren't in your original hypothesis
+        + Eliminate outliers, test more participants, etc. while always checking the p-value after every change
++ You can then send the _p_-values from your simulations to the _p_-checker app to draw a _p_-curve
++ The [_p_-checker app](http://shinyapps.org/apps/p-checker/) also has several other useful tests that are explained on the website
+
+## Lowering the _alpha_
+- This is a fairly extreme proposal, but it has had a lot of support in recent years.
+- Basic idea: since most studies are going to have an inflated false positive rate anyway, let's keep it acceptable as a whole by lowering the alpha level required for calling a result "significant"
+- Is this a good idea? [Lots of researchers think so](https://osf.io/preprints/psyarxiv/mky9j/). [Lots of others don't](https://psyarxiv.com/9s3y6/).
+- Your task for Assignment 2: Come to your own conclusion and describe the debate and your standpoint in your own words.
