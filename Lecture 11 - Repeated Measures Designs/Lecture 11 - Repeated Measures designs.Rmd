@@ -424,7 +424,7 @@ A PhD student wants to investigate whether our mood affects how we react to visu
 
 ```{r, echo = FALSE}
 # Start by loading the data
-scene_liking <- read.csv("Class 10 exercise data.csv")
+scene_liking <- read.csv("Practice exercise data.csv")
 ```
 
 ---
