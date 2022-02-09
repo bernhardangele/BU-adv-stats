@@ -1,0 +1,490 @@
+---
+title: "Repeated measures designs and linear mixed models"
+subtitle: "Advanced Statistics"
+author: "Bernhard Angele"
+institute: "Bournemouth University"
+output:
+  xaringan::moon_reader:
+    css: [default, metropolis, metropolis-fonts]
+    lib_dir: libs
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+library(kableExtra)
+library(tidyverse)
+library(lme4)
+```
+
+---
+# Goals for this lecture
+
+- Learn about independence violations and random effects
+    - Do a repeated-measures ANOVA in order to account for random effects
+    - Do a Linear Mixed Model (LMM) analysis in order to account for random effects
+- Learn how to report these analyses.
+
+---
+# Independence
+
+- The independence assumption says that there should not be any systematic relationships between values in the data except for those that are accounted for in the model.
+- But what if there are?
+    - For example, let's do the cat vs. dog picture rating study again, but this time use multiple pictures from the same cats and dogs.
+    - Clearly, the ratings for photos of the same animal are going to have systematic variance in common
+    
+---
+# Addressing lack of independence
+
+- Solution: Put the systematic effect in the model
+    - What if the systematic effect is related to a factor with a very large number of levels, such as "participant", or "item"?
+    - Model the effect as a random effect!
+
+---
+# Random effects
+
+- Instead of assuming that there are fixed group levels with one true population mean value for each group level, we assume that the groups levels themselves are samples from a larger population
+- Essentially, we are saying that, instead of doing the photo rating experiment with pictures of three pre-determined cats (e.g. Grumpy Cat, Lil Bub, and Maru) and three pre-determined dogs (insert names of famous Internet dogs here), we are randomly choosing the cats and dogs that we are going to include from the population of all cats and dogs
+- If we repeat the experiment with new photos, the dogs and cats involved will be different (but they will still be from the same population)
+
+---
+# The simplest random effects model
+
+- This model only has the intercept and a random effect of subject (e.g. which cat is in the photo)
+$$Y_{ij} = \mu + \alpha_i + \varepsilon_{ij}$$
+- $\alpha_i$ is the random intercept. It is a sample from a normal distribution with a mean of 0:
+$$\alpha_i \sim N(0, \sigma^2_{\alpha})$$
+- $\sigma^2_{\alpha}$ is the population variance of the population of intercepts from different participants.
+
+---
+# A slightly more complex mixed effects model
+
+- This model has the intercept and a random effect of subject (e.g. which cat is in the photo) PLUS a fixed effect (a dummy contrast coding whether the subject is a cat or a dog)
+- Note that this effect is BETWEEN participants
+$$Y_{ij} = \mu + \alpha_i + \beta D_{ij} +\varepsilon_{ij}$$
+- $\alpha_i \sim N(0, \sigma^2_{\alpha})$ is still the random intercept
+- $\beta$ is the coefficient for the dummy contrast. Note that $\beta$ does not have an $i$ index, so it is the **same** for all participants
+
+---
+# An even more complex mixed effects model
+
+- Let's add an additional factor indicating whether the photo was taken from the front or in profile. 
+    - We want to see whether there is an optimal angle overall
+      - But some animals might look cuter from the other angle, or might be equally cute no matter from where we look!
+      - That means we need **BOTH** a fixed and a random effect of angle.
+      - Since angle has two levels, we need a new dummy contrast D2.
+      
+---
+# An even more complex mixed effects model (2)
+
+$$Y_{ij} = \mu + \alpha_i + \beta_1 D1_{ij} + \beta_2 D2_{ij} + \delta_i D2_{ij} +\varepsilon_{ij}$$
+- Note that we have both a fixed coefficient $\beta_2$ and a random coefficient $\delta_i \sim N(0, \sigma^2_{\delta})$
+- $\beta_2$ is the fixed coefficient for the dummy contrast for angle. Note that $\beta_2$ does not have an $i$ index, so it is the **same** for all participants
+- $\delta_i$ is the random coefficient (or **random slope**) for the dummy contrast for angle. It is different for each cat/dog, and it is centred on 0.
+    - Essentially, this is an **interaction** between subject and angle.
+
+---
+# Why so complex?
+
+- Because our data are! If there is a possibility that the angle effect is systematically different between subjects, we need to include this in the model (otherwise we're commiting an independence violation).
+
+---
+# How to fit a model with random effects
+
+- There is an easy way: Repeated measures ANOVA
+    - This is great: We don't need to worry about the random effects, we just eliminate the variance associated with them and we're done.
+    - But it doesn't work when we have multiple random factors, either hierarchical (e.g. students within schools) or crossed (e.g. subjects and items such as words in a language experiment)
+    - Also, you can't include continuous effects
+
+---
+# How to fit a model with random effects (2)
+
+- There is a hard way: Linear Mixed Models
+    - This is great: We can include as many random factors and effects as we like
+        - We can also use and interpret contrasts
+        - LMMs are robust to unbalanced designs (and things like sphericity violations)
+    - But you can't use least squares anymore. Instead, you have to estimate the model iteratively using Maximum Likelihood (ML) or its cousin Restricted Maximum Likelihood (REML). Don't worry about the differences between the two. In general, REML yields better fixed effect estimates, so use it.
+    - The model can fail to converge if there is not enough data
+
+---
+# The easy way
+
+- Remember the paired *t*-tests? We can have the same situation (more than one data point from one participant) in a more complex design.
+$${SS}_{total} = {SS}_{betweenParticipants} + {SS}_{withinParticipants}$$
+
+$${SS}_{withinParticipants} = {SS}_{model} + {SS}_{residual}$$ 
+- (we call this the residual sum of squares rather than the error sum of squares, since technically the variance between participants is also error variance)
+- Result: Less unexplained variance and higher power.
+- In the between-subjects ANOVA the variance between participants is completely confounded with the error variance within participants.
+- In the repeated measures ANOVA, we can separate them!
+
+---
+# Repeated measures data matrix
+.pull-left[
+- Almost the same as for the standard one-way ANOVA
+  - Columns are factor levels, rows are **participants**
+- $i$ = factor level, $p$ = number of factor levels
+- $m$ = **participant**, $n$ = number of **participants**]
+.pull-right[
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1i} & \ldots & x_{1p}\\
+x_{21} &  x_{22}  & \ldots & x_{2i} & \ldots & x_{2p}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{m1} &  x_{m2}  & \ldots & x_{mi} & \ldots & x_{mp}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n1} &  x_{n2}  & \ldots & x_{ni} & \ldots & x_{np}\\
+\end{matrix}
+$$
+]
+---
+# Calculating the sums of squares
+
+- The total sum of squares is still ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$
+- ${df}_{total} = n\cdot p-1$
+- The between participants sum of squares is new. It is $${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $p$ is the number of factor levels
+- Same for the within participans sum of squares: $${SS}_{withinParticipants} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{P}_{m})^2,$$
+where $\bar{P}_m$ is the mean for Participant $m$ and $i$ is the factor level
+
+---
+# Calculating the sums of squares (2)
+
+- Finally, the model SS is just as before: $${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2,$$ where $n$ is the number of participants, $\bar{A}_{i}$ is the mean of level $i$ of the group factor, and $p$ is the number of factor levels.
+- The residual SS is a little bit more complicated (this is already a simplified version): $${SS}_{residual} = \sum\limits_{i=1}^{p}\sum\limits_{m=1}^{n}(x_{mi} - \bar{A}_i-\bar{P}_{m}+\bar{x})^2$$
+- Of course, you can just get it by subtracting the model SS from the within participant SS: $${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$$
+  
+---
+# Degrees of freedom
+
+- ${df}_{total} = p\cdot n - 1$
+- ${df}_{betweenParticipants} = n - 1$
+- ${df}_{withinParticipants} = n \cdot (p - 1)$
+- ${df}_{model} = p - 1$
+- ${df}_{residual} = (n-1) \cdot (p - 1)$
+  - Where $p$ is the number of factor levels and $n$ is the number of participants
+
+---
+# Test statistic
+
+- Important: You get the *F*-value by dividing the model mean squares by the **residual** mean squares: $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+- The degrees of freedom of this *F*-value are ${df}_{numerator} = {df}_{model}$ and ${df}_{denominator} = {df}_{residual}$
+
+---
+# Quick example by hand
+
+- Ten cats were asked (forced?) to try three different brands of cat food: Whiskers, Paws, and Industrial Waste. 
+- They received the same amount of each food after not having eaten for 8 hours. 
+- The dependent variable amount of food (in grammes) that they ate of each brand. 
+  - Do cats prefer one or more brands over others or do they eat the same amount of each?
+
+---
+# Copy this table into Excel (or SPSS)
+
+Or open `Cats and Food Brands.csv` from Brightspace.
+
+```{r echo = F, warning=FALSE, message=FALSE}
+set.seed("3")
+n_participants <- 10
+overall_intercept <- 100
+
+Subject <- rep(1:n_participants, each = 3)
+Brand <- rep(1:3)
+
+subject_intercept <- rnorm(length(Subject), mean = 0, sd = 30)
+
+brand_means <- c(25, 25, -50)
+
+random_error <- rnorm(length(Subject), mean = 0, sd = 10)
+
+df <- data.frame(Subject, Brand)
+
+df$eaten <- round(with(df, overall_intercept + subject_intercept[Subject] + brand_means[Brand] + random_error),0)
+
+df$Subject <- factor(df$Subject, labels = c("Cali",
+	"Callie",
+	"Casper",
+	"Charlie",
+	"Chester",
+	"Chloe",
+	"Cleo",
+	"Coco",
+	"Cookie",
+	"Cuddles"))
+
+df$Brand <- factor(df$Brand, labels = c("Whiskers","Paws","Industrial Waste"))
+
+#df_m <- melt(df, measure = "eaten")
+#df_c <- cast(df_m, Subject ~ Brand)
+df_c <- df %>% group_by(Subject, Brand) %>% summarise(mean = mean(eaten)) %>% pivot_wider(names_from = Brand, values_from = mean )
+kable(df_c)
+```
+
+---
+# Doing the ANOVA in Excel
+
+- Start by calculating subject and condition means using `=AVERAGE`. You should have one mean for each of the $n = 10$ cats (we'll assume that those are in `E2:E11`) and one mean for each of the $p = 3$ conditions (We'll assume that these are in `B12:D12`)
+- Calculate your Sums of Squares
+  - ${SS}_{model} = n \cdot \sum\limits_{i=1}^{p}(\bar{A}_{i} - \bar{x})^2$; in Excel: `=10*DEVSQ(B12:D12)`
+    - Remember, `DEVSQ` is the squared deviation of the input values from their mean. Since we have a balanced design (all sample sizes are equal), the mean of the group means (and the mean of the subject means) is the overall mean.
+  - ${SS}_{betweenParticipants} = p \cdot \sum\limits_{m=1}^{n}(\bar{P}_{m} - \bar{x})^2$; in Excel: `=3*DEVSQ(E2:E11)` (same principle as above)
+  
+---
+# Sums of squares (continued)
+
+- ${SS}_{total} = \sum\limits_{m=1}^{n}\sum\limits_{i = 1}^{p}(x_{mi} - \bar{x})^2$; in Excel: `=DEVSQ(B2:D11)`, assuming that your data are in `B2:D11`
+- ${SS}_{withinParticipants}$ requires a bit of extra work to calculate in Excel. The easiest way is to just subtract ${SS}_{betweenParticipants}$ from ${SS}_{total}$: ${SS}_{withinParticipants} = {SS}_{total} - {SS}_{betweenParticipants}$
+- ${SS}_{residual}$ is also tricky. The easiest way is again to subtract: ${SS}_{residual} = {SS}_{withinParticipants} - {SS}_{model}$
+- Then calculate the degrees of freedom and the MS as shown earlier
+- Important: remember that the *F* value is calculated as $F_{A} = \frac{{MS}_{model}}{{MS}_{residual}}$
+
+---
+# Final step
+
+- Look up the *p*-value: `=F.DIST.RT(E15,2,18)`, where `E15` contains the *F*-value
+
+---
+# Post-hoc comparisons
+
+- Compute pairwise *t*-tests
+  - For each subject, calculate the differences between the conditions
+  - For each comparison, calculate the mean and the sd of the difference values (the sample mean and SD)
+  - Then compute the three observed t-values: $t_{d} = \frac{\mu_1 - \mu_2}{s_{d}/sqrt(n)} = \frac{\bar{d}}{s_d/{sqrt}(n)}$, where $d$ stands for the comparison that you're calculating and $n$ is the sample size within each comparison
+  - Look up the *p*-value using `=T.DIST.2T(ABS(D16), D17)`, assuming that `D16` contains the *t*-value and `D17` contains the degrees of freedom (${df}_{d} = n - 1 = 9$)
+  - Don't forget to correct for multiple comparisons: Multiply the p-values by 3 (because you are making three comparisons). Then you can compare them with a critical *p*-value of $\alpha = .05$.
+
+---
+# One-way repeated measures ANOVA in SPSS
+
+- There are some annoying properties in the SPSS repeated measures module.
+    - Specifically, the module insists that every row be one subject.
+- We're going to use the data file `Cat and Food Brands.csv` -- see the video for all the steps.
+
+---
+# Assumptions
+
+- Essentially the same as for the independent ANOVA
+    - Except: You no longer need to assume that the observations are independent (since observations from the same subjects are of course systematically related).
+    - New assumption: Sphericity (this replaces the homogeneity of variances assumption)
+
+---
+# What is sphericity?
+
+- The variances of the differences between treatment levels should be roughly equal ("spherical")
+- For example, it could be that all cats react similarly to the first two brands
+    - But the "Industrial Waste" brand might might really be enjoyable for some cats, while others might eat nothing (not the case ion our example data)
+- In that case, the difference between "Whiskers" and "Paws" would have a very low variance
+    - But the difference between "Whiskers" or "Paws" and "Industrial Waste" would have a huge variance
+- This could make the ANOVA anticonservative (alpha is inflated)
+
+---
+# Testing for sphericity violations
+
+- Mauchly's Test for Sphericity
+- Performed automatically by SPSS
+- If it's significant, sphericity is violated.
+- In this case, we're OK
+- You only need to test sphericity if you have more than two factor levels (i.e. conditions in your factor)
+- If you only have two levels, there is only one difference, so differences can't be unequal
+
+---
+# Dealing with sphericity violations
+
+- Good news: It's easy. 
+- Essentially, you can lower your degrees of freedom for the F-test to compensate for lack of sphericity
+    - The F-value doesn't change, but lowering the df will make it harder to get a low *p*-value
+- You do this by multiplying the ${df}_{Model}$ and ${df}_{Error}$ by a correction factor $\varepsilon$
+- Two ways to calculate $\varepsilon$:
+    - Greenhouse-Geisser
+    - Huynh-Feldt
+- Recommendation: If Greenhouse-Geisser $\varepsilon < .75$, use it. Otherwise, use Huynh-Feldt.
+   - Of course, if Mauchly's test is not significant, use neither!
+- SPSS computes the dfs for you and you just have to pick the corrected entry in the table
+
+---
+# Post-hoc tests
+
+- You can again use paired *t*-tests to compare factor levels
+- Remember to do Bonferroni corrections if you do these tests by hand
+
+---
+# More than one random factor?
+.pull-left[
+- In many cases, you only have a single random effect, usually *subject* (or *participant*, if you prefer that terminology).
+- But this is not true in all cases:
+  - For example, let's say you show a number of faces (or words, or pictures, or objects, or sentences, or paragraphs, etc. -- let's call them *items* in short) to a group of subjects.
+    - Let's say that the faces have different emotional expressions and you want to find out if subjects react to sad faces more quickly than to happy faces. There is a happy and a sad version of each face.
+    ]
+.pull-right[    
+- However, it is possible that subjects *also* react systematically to certain faces -- Face A might be systematically responded to faster than Face B even though they both are sad
+- **Also,** it is quite likely that subjects vary systematically in their response times -- Person 1 may just respond more slowly to everything than Person 2 
+- **Important:** In both cases, we do not care about the particular differences between Face A and Face B and Person 1 and Person 2
+  - We want our experiment to generalise across all faces and subjects -- the ones we have in our particular sample were just chosen at **random**
+  - We still need to account for these systematic differences because otherwise our observations are not *independent*.
+]
+
+---
+# Using repeated-measures ANOVAs for designs with two random effects
+
+- Repeated-measures ANOVAs are great! They make accounting for one random effect really computationally easy.
+  - As you saw -- you can do them by hand (in Excel)!
+- However, they cannot include more than one random effect.
+  - What to do?
+- If you have no other choice but to use an ANOVA (for example because it's the 1970s and you only have access to a calculator and an *F*-table), you can do that
+    - **BUT** you have to do one ANOVA for each random effect
+    - For example, if your design may have systematic effects of both subjects and items (e.g. faces), you have to do one ANOVA over subjects and one ANOVA over items
+      - This means you have to calculate subject means first and do the ANOVA for your predictor (e.g. emotional expression in the face) with them.
+          - The test statistic for this ANOVA over subjects is usually known as *F1*
+      - Then you calculate item means and do the second ANOVA for your predictor with them.
+          - The resulting test statistic is known as *F2*.
+
+---
+# Dealing with F1 and F2
+
+- Originally, when Clark (1973) first alerted psychological researchers to the fact that they needed to account for all the random effects in their designs or face independence violations, he suggested combining *F1* and *F2* into a joint measure called $F_{min}$ and doing the hypothesis test on it.
+- However, people soon got tired of this (some argued that $F_{min}$ was too conservative) and instead just reported separate tests for *F1* and *F2*.
+    - If both of the tests reached significance, they concluded that the null hypothesis could be rejected overall.
+- Analogously, people did post-hoc *t*-tests over subjects (*t1*) and items (*t2*).
+- This practice is not strictly correct, but it is much superior to just not doing anything about the second random effect in your design.
+- Luckily, there is now a much more appropriate method available to account for multiple random effects in one model: **linear mixed models (LMMs)**.
+  - The *mixed* refers to the fact that these models can include both fixed and random effects.
+
+---
+# Linear mixed models (LMMs)
+- Advantages:
+  - They work just like regression models
+      - You can add continuous and discrete DVs
+      - Thanks to the general linear model we already know the relationship between a between-subjects ANOVA and a regression model 
+      - Thanks to the generalised linear model, we also know how to use link functions to fit regression models for nonlinear dependent variables (e.g. dichotomous dependent variables such as Yes vs. No)
+  - But they allow us to add as many random effects as we want to the model
+    - The random effects can even be nested: you can have data collected from students in different classes in different schools in different council areas in different counties in different countries
+        - Surely all of these factors could have some systematic effect -- LMMs can help us account for all of those without having to do half a dozen ANOVAs.
+        
+- Disadvantages:
+  - Just like generalised linear models, LMMs can only be fitted using (restricted) maximum likelihood
+  - You need a fairly powerful computer to do this (powerful by early 2000s standards)
+  - Models may fail to converge on a solution if they are not specified correctly, if the predictors are scaled in a particular way, etc.
+                    
+---
+# Moving from linear regression to linear mixed models
+
+- In repeated-measures ANOVA, we've dealt with within-subjects effects by removing the variance due to subject differences from the error
+    - Essentially, we have added a "subject" factor to the model
+    - Linear mixed models enable us to do the same thing for all kinds of regression analyses
+
+---
+# Problem: how to add subject as a factor
+
+- We could simply add a "subject" factor to the predictors
+    - This would reflect the systematic differences between subjects
+        - But that's not quite right: how do we deal with a factor with 40 levels?
+        - Also, we want to generalise our model to more than those 40 subjects that are in the analysis
+        - How do we do that?
+    - Subject is really like a random variable: we get a different set each time we run the experiment
+    - Instead of analysing the subject effect in a generalisable way, we really just want to get rid of the subject variance in the most efficient way possible
+
+---
+# Problem: how to add subject as a factor (2)
+
+- Fixed effects vs. random effects
+    - Fixed effects: repeatable, generalisable (e.g. experiment condition)
+    - Random effects: non-repeatable, sampled from a general population
+    - Mixed effects models include both fixed and random effects
+- Another issue with including subject as a fixed effect:
+    - Each subject would take up a degree of freedom
+    - That would majorly impact the power of our analysis
+    - LMMs solve this issue by a procedure called **shrinkage**
+    
+---
+# Shrinkage
+
+- Conceptually, LMMs allow subjects to have individual effects (e.g. in an eye-tracking experiment Subject 1 might have an intercept of 200 ms, while subject 2 might have an intercept of 210 ms), but they pull each subject's effects
+towards an underlying distribution of subject effects
+- This reflects the idea that if 20 other subjects have intercepts between 180 and 220 ms, the current subject is unlikely to have an intercept of 400 ms, even though it looks like that from the data
+- Shrinkage also helps majorly with missing data issues (although it won't fix them for you!)
+- The downside of shrinkage is that it isn't clear what the $df_{Error}$ should be
+    - This leads to some issues later on.
+    
+---
+# Example
+
+A PhD student wants to investigate whether our mood affects how we react to visual scenes. In order to do this, she showed 40 subjects a total of 40 scenes. There are two version of each scene: one contains people, the other one doesn't -- everything else is identical. The PhD student spent a considerable amount of time taking photos to ensure this (until her supervisor got a bit impatient). Before the experiment, all subjects were asked to rate their current mood on a scale from 0 (very sad) to 100 (very happy). They then looked at each scene and rated how much they liked it on a scale from 0 (hate it) to 20 (love it). The student's hypothesis is that if you are happy, you should want to see scenes with people. If you are unhappy, you should prefer scenes without people. The data are given below. Will the student find what she is looking for? Or will she have to start from scratch and be in even more trouble with her supervisor?
+
+---
+# Example Data
+
+- Subject: Subject ID (1-40)
+- Item: Item ID (1-40)
+- Scene Type: within-item factor ("no people" vs. "people")
+- Mood: between-subject factor (scale from 0-100)
+- Rating: Dependent variable (scale from 0 to 20)
+
+```{r, echo = FALSE}
+# Start by loading the data
+scene_liking <- read.csv("Practice exercise data.csv")
+```
+
+---
+# Doing the analysis in SPSS
+
+- See the video and the PowerPoint presentation on Brightspace.
+- Due to the shrinkage procedure, it isn't clear what the degrees of freedom of the *t*-values (and *F*-values) should be
+- In general, if the number of subjects is > 30, we should be able to interpret the *t* value like a *z* value, meaning that any *t* > 1.96 or < -1.96 should be significant
+    - Remember the central limit theorem? *t*-distributions with *df*>30 are basically *z*-distributions.
+- SPSS uses a procedure called the Satterthwaite approximation for coming up with degrees of freedom for the *t*-values
+- Using either of the two is fine as long as you have more than 30 participants and items
+    - If you have fewer, use the Satterthwaite approximation
+    - If you insist on being able to report *p*-values, also use it.
+
+---
+# Interpreting the coefficients
+
+- Remember that scene was coded as 0 = no people, 1 = people
+    - Looks like, on average, subjects gave the scene a rating that was .26 lower when it contained people than when it didn't.
+- The interaction is also significant. When the scene contained no people, there was a very weak, non-significant negative effect of mood. 
+    - When the scene did contain people, there was a significant change in the effect of mood (with each point on the mood scale increasing the picture rating by -.007 + .0101 = .0031). Not a huge effect, but significant.
+
+---
+# Writing it up
+
+- In order to evaluate the effects of scene type (people present vs. no people present; using a treatment contrast where no people present was represented by 0 and people present was represented by 1) and mood (as rated by each participant before the experiment on a scale from 0 to 100, with 0 being sad and 100 being happy; mean = 51.55, SD = 21) on scene rating (on a scale from 0 to 20, with 0 being dislike and 20 being like), we performed both a multiple regression analysis and a linear mixed model analysis in the SPSS statistical software. None of the predictors reached significance for the multiple regression model (all *p*s > .05). There were no multicollinearity issues (maximum VIF = 2) and no highly influential cases (all Cook’s *d* < 1). 
+
+- Note that, as mentioned before, using NHST tests to test for normality is problematic. If you do want to do a test, you can report it like this:
+    - However, a Shapiro-Wilk test indicated that the normality assumption for the residuals was violated (*W* = 0.99, *p* < .01).
+
+
+---
+# Writing it up, Part 2
+
+- In the linear mixed model (assuming that the *t*-values are interpretable as *z*-values, as we have more than 30 participants), there was a significant main effect of scene type (mean rating when people were present in the scene: 11.12, mean rating when no people were present in the scene: 11.33; *b* = -0.26, SE = 0.1, *t* = -2.68), indicating that, on average, scenes without people present were rated .263 points higher than scenes with people present. The main effect of the covariate mood was not significant (*b* = -0.01, SE = 0.01, *t* = -0.51). However, there also was an interaction effect between scene type and the mood covariate (*b* = 0.01, SE = 0, *t* = 2.16), indicating that, when people were present in the scene, the scene rating was positively related to subject mood. When no people were present in the scene, the scene rating was negatively related to the mood. In other words, when people were present in the scene, happy participants rated the scene higher than unhappy participants. When no people were present in the scene, unhappy participants rated the scene higher than happy participants.
+
+- If you want to report the Shapiro-Wilk test:
+
+  - The Shapiro-Wilk test indicated that there was no evidence against the normality assumption for the residuals (*p* > .05).
+
+---
+# Writing it up, Part 3
+- In short, both models find an effect of mood, but only the LMM finds an effect of confederate presence. Which model is more appropriate? When there is the potential for underlying correlations between certain sets of data points (e.g. those associated with the same subject or the same item), this violates the independence assumption of the standard multiple regression. The lack of normality in the residuals of the multiple regression model is indicative of this. Adding subject and item random effects in an LMM not only deals with independence concerns, but it also increases the power of the test since the random effects are no longer confounded with the error term. The higher power enables the LMM to detect the subtle scene type effect and its interaction with the mood covariate. In conclusion, the LMM is clearly the appropriate model for these data.
+
+---
+# Summary
+
+It seems that the PhD student was correct: Participants’ ratings of scenes with and without persons were indeed related to the participants’ mood at the time of performing the rating. There was a small overall effect of scene type, with scenes without people being rated slightly higher than scenes with people. Importantly, the effect of scene type was modulated by mood, with unhappy participants rating scenes without people higher than scenes with people, and happy participants rating scenes with people higher than scenes without people.
+
+---
+# Summary: Linear mixed models
+
+- We can do repeated-measures analyses as well as more complex hierarchical models (e.g. students within classrooms within schools) using linear mixed models (LMMs)
+- Such models combine fixed effects (where we test all possible factor levels or predictor values, e.g. condition) and random effects (where we can only test a subset of a population of factor levels, e.g. participant, or school, or county, or sentence)
+- Usually, you start with a fixed-effects model and then add random intercepts and slopes.
+    - Random effects are always centered around the corresponding fixed effects. For example, we might have a fixed intercept of 50, with a random intercept for Subject 1 of 50-10 = 40 and a random intercept for Subject 2 of 50+10 = 60.
+- Model fitting is iterative and can be tricky. Overspecified models often end up failing to converge.
+- Which random effects to include? Figuring out which random effects actually explain variance can take a while.
+
+---
+# Thank you!
+
+- This is all the content you need for the take-home assignment.
