@@ -1,0 +1,37 @@
+---
+title: "Advanced Statistics Workshop 1"
+author: "What is the role of statistics in quantitative research?"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+  
+---
+
+
+# Introduction
+
+
+In January 2021, Victor Ferreira, who is a Professor of the University of California San Diego and former editor of the high-impact Journal of Memory and Language made the following statement on Twitter (he has deleted it since):
+
+> Doing statistics should be like going to the bathroom. Yes, you have to do it. Yes, when you do it, you want to do it right. But don't make a big deal out of it, be careful about telling other people how to do it, and if your whole life is centered on it, there's something wrong. 
+
+[Link on Archive.org](https://web.archive.org/web/20201221183457/https://twitter.com/victorf13/status/1341089602870775810)
+
+# Angry responses
+- For example, [by Phillip M. Alday](https://phillipalday.com/blog/2020/12/22/statistics-is-not-shit/):
+
+> I suspect part of the reason psychology and psycholinguistics are so willing to accept statistical incompetence and malpractice is that it doesn’t matter if the statistics are wrong. Nobody will die. But countless careers and young minds will be wasted chasing noise, as the replication crisis has shown us. 
+
+>Please don’t insult an entire community via bathroom analogies, then claim to speak for what they want. The words and attitudes of senior scientists have profound implications for the state of the field and lives and careers of junior scientists.
+
+# What should the role of statistics be in psychology?
+
+- Form small groups (3 or 4) and discuss the following questions:
+
+    - Was Vic right (although maybe the bathroom analogy was a bit out of line)? 
+    - Is the statistical tail wagging the theoretical dog? 
+    - In other words: How important should statistics be in psychology? 
+    - Should we prioritise hypotheses and experimental design over “fancy” statistical methods (i.e., in the context of our MSc programmes, is ARM more important than Advanced Statistics?) 
