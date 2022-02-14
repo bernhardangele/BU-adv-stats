@@ -286,6 +286,8 @@ SE_{\bar{x}} = \frac{s}{\sqrt{n}}
 \end{aligned}
 $$
 (Note that we are ignoring the question if the relationship between $s$ and $s^2$ is really the same as the relationship between $\sigma$ and $\sigma^2$. Feel free to simulate that, if you are really curious.)
+
+# The problem with $\sigma$
 - But as you saw in Julian's video, the estimate of $\sigma$ from $s$ is sometimes quite far away from the correct $\sigma$, especially for small sample sizes.
 - This means that our estimate for $\sigma$ is going to vary. Its accuracy will depend on the sample size.
 
@@ -296,6 +298,9 @@ $$
 ```{r, echo = FALSE}
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
 ```
+
+# The chi-square distribution (2)
+
 - This is definitely not a normal distribution, and it is skewed right, meaning that the errors are not symmetrical: a small error to the left of the mean is more likely than a small error to the right
 
 # The chi-square distribution
@@ -402,7 +407,7 @@ $$\chi_{n-1}^2 = \frac{\sum\limits_{j = 1}^{n}(f_{o(j)}-f_{e(j)})^2}{f_{e(j)}}$$
 
 - Remember, when we have a low sample size and we want to use sample standard deviation to estimate the population standard deviation, we have the problem that the sample standard deviations are not symmetrically distributed:
 
-```r{chisq_df_1_plot_2}
+```{r chisq_df_1_plot_2}
 make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_simulations = nsim, population_mean = 0, population_sd = 1))
 ```
 
@@ -410,11 +415,11 @@ make_variance_hist_and_plot(run_variance_simulation(sample_size = 2, number_of_s
 
 - We can do this by correcting the standard normal distribution using the chi-square distribution to account for the skew in the variance estimate
 - The result of this correction is the *t*-distribution (this was the work that William Sealy Gossett published under the pseudonym "Student")
-- The *t*-distribution can be expressed in terms of the z (standard normal) and the chi-square distributions
+- The *t*-distribution can be expressed in terms of the *z* (standard normal) and the chi-square distributions
 $$t_n = \frac{z}{\sqrt{\chi_n^2/n}}$$
-- In other words, if we divide a *z*-value by the square root of an *independent* $\chi^2$ value divided by n, we get a *t*-value 
+- In other words, if we divide a *z*-value by the square root of an *independent* $\chi^2$ value divided by *n*, we get a *t*-value 
     
-#The *t*-distribution
+# The *t*-distribution
 
 - The *t*-value has **degrees of freedom** as well -- it inherits them from the $\chi^2$ value in its denominator.
 - Practically, the denominator makes the distribution have "heavier" tails (it makes extreme values more likely) -- exactly what we need for our problem of the sample variance often underestimating the variance
@@ -461,7 +466,7 @@ multiplot(2,2)
 
 - Solution: assume that the sample means aren't normally distributed, but rather *t*-distributed
 - Why *t*?
-  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call df (for degrees of freedom, but don't worry about the name yet).
+  - The *t*-distribution is like the standard normal distribution, but it has an additional parameter that we call *df* (for degrees of freedom, but don't worry about the name yet).
   - The higher df, the closer the *t*-distribution is to the standard normal distribution
   - For lower df, the *t*-distribution has "heavy tails", meaning that it's wider
     - This reflects greater uncertainty.
@@ -524,7 +529,7 @@ $\bar{x} = \mu_{\bar{x}} \pm `r qt(.975, 99)` \cdot \frac{s}{\sqrt{n}}$
 - Instead of computing the CI from the *t*-value, we can also just take the *t*-value itself as a measure of how far the sample mean is away from the mean specified in the null hypothesis.
 - We just consider the most extreme 5% of the distribution around the mean proposed by the null hypothesis (usually 0)
 - If our observation is within the extreme 5% (i.e. the lowest 2.5% or the highest 2.5%) of the distribution, we can reject the null hypothesis
-- We can determine a critical *t*-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 99, $t_{crit}$ for the upper bound is `=T.INV(.975,99)`, which gives us`r qt(.975, df = 9)` and $t_{crit}$ for the lower bound is `=T.INV(.025,9)`, which gives us`r qt(.025, df = 9)`
+- We can determine a critical *t*-value $t_{crit}$ depending on our $\alpha$ criterion and the df. For example, for a df of 99, $t_{crit}$ for the upper bound is `=T.INV(.975,99)`, which gives us `r qt(.975, df = 99)` and $t_{crit}$ for the lower bound is `=T.INV(.025,99)`, which gives us `r qt(.025, df = 99)`
 - Note that the *t*-distribution is symmetrical
 In short, if $t \ge |t_{crit}|$, we can reject the null hypothesis.
 
@@ -559,7 +564,10 @@ $t = \frac{(\bar{x}_1 - \bar{x}_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}
 # The dependent *t*-test for paired samples
 
 - This is one particular, easier case, so we'll touch on it briefly
-- Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the one-sample *t*-test to check if they are 0.
+- Since we have two samples per person/group/analysis unit, we can simply compute the differences between measurements and then use the *t*-test to check if they are 0.
+
+# The dependent *t*-test for paired samples (2)
+
 - First, we calculate the mean and the standard deviation of our sample of $n$ difference values $d_i = x_{i1}-x_{i2}$:
 $$ 
 \begin{aligned}
@@ -576,9 +584,15 @@ $$
 
 - Then we can calculate the *t*-value:
 $$t = \frac{\bar{d} - \mu_d}{\hat{\sigma}_d}$$, where $\mu_d$ is the population mean for the difference given that the $H_0$ is true. If the $H_0$ is that both samples are the same ($\mu_d = 0$), this simplifies to
-$$t = \frac{\bar{d}}{\hat{\sigma}_d}$$
+$$t = \frac{\bar{d}}{\hat{\sigma}_{\bar{d}}}$$
 -We can estimate the standard error of the difference mean $\hat{\sigma}_{\bar{d}}$ from the standard deviation of the difference: $$\hat{\sigma}_{\bar{d}} = \frac{s_d}{\sqrt{n}}$$
-    -Plugging this into the equation for *t*, we get: $$t_{n-1} =  \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
+
+# The dependent *t*-test for paired samples (3)
+
+- Plugging this into the equation for *t*, we get: 
+
+$$t_{n-1} =  \frac{\bar{d}}{\frac{s_d}{\sqrt{n}}}$$
+
 - The resulting *t*-value will have a df of $n-1$, where $n$ is the number of sample pairs.
 - Since the sd of the differences will be a lot lower than the overall sd, the power of this test is quite a bit higher.
 
@@ -610,7 +624,7 @@ simulation_results <- replicate(1000, t_test_sim(50,5, 25))
 hist(simulation_results, main = paste0("Proportion of |t| > ", round(qt(.975, 49),2), ": ", sum(abs(simulation_results) > qt(.975, 49),2)/length(simulation_results)), 50)
 ```
 
-- Not so great! We can only detect the difference of 5 in 50% of all experiments set up in this way
+- Not so great! We can only detect the difference of 5 in 27.2% of all experiments set up in this way
 
 # How to increase power
 
@@ -702,10 +716,10 @@ barplot(table(simulation_results), names.arg = c("no","yes"),xlab= "Significant"
 
 # The consequences of cheating (2)
 
-Here, you get a significant result 25% of the time, even though we are actually sampling from the *SAME* distribution.
-  - In other words, $\alpha$ is at 25%, instead of 5% where it should be.
+- Here, you get a significant result 25% of the time, even though we are actually sampling from the *SAME* distribution.
+    - In other words, $\alpha$ is at 25%, instead of 5% where it should be.
 - Unfortunately, this strategy of using stopping rules ("data peeking") is quite common.
-  - Solution: do a power analysis, set your sample size beforehand, and stick to it!
+    - Solution: do a power analysis, set your sample size beforehand, and stick to it!
 
 # Testing more interesting hypotheses
 
@@ -721,5 +735,8 @@ Here, you get a significant result 25% of the time, even though we are actually 
 
 # The real-life *5-HTTLPR*
 - The sad truth about the *5-HTTLPR* research is that, in almost 15 years, not many of the initial exciting findings have been replicated.
+- An incredible amount of money was spent
+
+# Funding spent on *5-HTTPLR*
 - Dorothy Bishop (a professor at Oxford University), calculated how much money was wasted on this topic:
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Interesting. I did a little analysis on US $ spent on research on this topic for a talk I did last year, using data from NIH reporter. just a quick and dirty analysis, but wanted to show how jumping on bad stuff is an ethical requirement to prevent waste of scarce funds <a href="https://t.co/OPOEKYQxwQ">pic.twitter.com/OPOEKYQxwQ</a></p>&mdash; Dorothy Bishop (@deevybee) <a href="https://twitter.com/deevybee/status/1490374839785373698?ref_src=twsrc%5Etfw">February 6, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet" data-conversation="none" data-dnt="true"><p lang="en" dir="ltr">Interesting. I did a little analysis on US $ spent on research on this topic for a talk I did last year, using data from NIH reporter. just a quick and dirty analysis, but wanted to show how jumping on bad stuff is an ethical requirement to prevent waste of scarce funds <a href="https://t.co/OPOEKYQxwQ">pic.twitter.com/OPOEKYQxwQ</a></p>&mdash; Dorothy Bishop (@deevybee) <a href="https://twitter.com/deevybee/status/1490374839785373698?ref_src=twsrc%5Etfw">February 6, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

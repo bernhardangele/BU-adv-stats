@@ -11,7 +11,7 @@ $$ s^2 = \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n}$$
 - We can rewrite this as:
 $$
 \begin{aligned}
-s^2 &= \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n} = \frac{\sum\limits_{i=1}^{n}(x_i^2 - 2\cdot x_i + \bar{x})^{2}}{n}\\
+s^2 &= \frac{\sum\limits_{i=1}^{n}(x_i - \bar{x})^2}{n} = \frac{\sum\limits_{i=1}^{n}(x_i^2 - 2\cdot x_i \cdot \bar{x}+ \bar{x}^{2})}{n}\\
     &=\frac{\sum\limits_{i=1}^{n}x_i^2 - 2\cdot \bar{x} \cdot\sum\limits_{i=1}^{n}x_i + \bar{x}^{2}}{n}
 \end{aligned}
 $$
