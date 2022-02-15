@@ -1,0 +1,114 @@
+---
+title: "Advanced Statistics Workshop 2"
+author: "Challenge Activity"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+```
+# Question 1
+
+- Let’s assume you perform 40 statistical tests with $\alpha = .05$. 
+    - What is the Type I error rate for 
+each individual test? 
+    - Assuming that the null hypotheses of all these tests are actually true, what is the probability that at least one of the 40 tests will give you a false positive result? 
+
+
+# Answer
+
+- For each individual test, the Type I error rate is the same as the $\alpha = .05$.
+- For all the tests together, we can first calculate the probability that none of the tests will give you a false positive result.
+- For one test: $P(\text{no false positive}) = 1-P(\text{false positive}) = 1-.05=.95$
+- For two tests: $P(\text{no false positives}) = .95\cdot.95=.95^2=`r .95^2`$
+- For three tests: $P(\text{no false positives}) =.95^3 = `r .95^3`$
+- For 40 tests: $P(\text{no false positives}) =.95^{40} = `r .95^40`$
+- For the opposite probability of having at least one false positive we just subtract this from 1: $P(\text{false positives}) = 1 - P(\text{no false positives} = 1 - `r .95^40` = `r 1-.95^40`$
+    - So the probability of at least one false positive is `r round(1-.95^40,4)` or `r round(100*(1-.95^40),2)`%.
+
+
+# Question 2 
+- Miller and Jones, working in Massachusetts, USA, publish an experiment on a new method 
+for reducing prejudice, with 30 participants in each of two groups, experimental and control. 
+- They obtain a significant difference in prejudice scores between the two groups, significant 
+by (two-tailed) *t*-test, *p* = 0.04. You are based in Dorset, UK, and decide to follow up their 
+work.
+- Before adding modifications to their procedure, you initially attempt as exact a 
+replication as you can in Dorset, but you want to have the best possible chance to find the effect. How many participants should you test?
+    - First, make a guess, 
+then calculate it (adapted from Dienes, 2008, p. 64).  
+
+# Question 2 (Hints)
+- Calculating this one may take you some time. Hints: 
+    - Use GPower for this one. You should aim for decent power (at least .8) 
+    - Missing some input values for GPower? You can calculate the effect size (Cohen’s *d*) 
+for a t-test like this: $d=\frac{2t}{\sqrt{df}}$ where *t* is the t-value and *df* is the degrees of freedom of the test.
+    - You may need the formula `=T.INV` in Excel.
+    - Don’t forget that this is a two-tailed test, so use `=T.INV.2T`! 
+    - Remember, a between subjects t-test has $df=n_1 + n_2 − 2$ degrees of freedom, where $n_1$ is the number of observations in Group 1 and $n_2$ is the number of observations in Group 2
+
+# Answer 2
+
+- The question asks you to do a power analysis to calculate how many participants you need in order to have a power of .8 to reject the null hypothesis, assuming that the effect is of the same size that the original researchers found
+- But what is the effect size? Often, researchers just report test statistics
+- The hints give you a formula to convert a *t*-value into an effect size (Cohen's *d*): $d=\frac{2t}{\sqrt{df}}$
+    - We can figure out the degrees of freedom (see hint): $df=n_1 + n_2 − 2 = 30 + 30 - 2 = 58$
+    - But we don't have the t-value.
+        - With the degrees of freedom, we can get the t-value from the p-value (.04)
+        - Excel can do this: `=T.INV(.02,58)` gives us `r qt(.02,58)`
+        - Why .02? Because it's a two-tailed test, so .02 corresponds to 2% on each tail for a total of 4%
+        - Excel has a shortcut so you don't have to think as much: `=T.INV.2T(.04,58)` gives us `r qt(.02,58, lower.tail = FALSE)`
+        - The sign (positive/negative) doesn't really matter here, we just care about the absolute size of the effect.
+        
+# Answer 2 (continued)
+
+- We now have the t-value (-2.1 or 2.1, it doesn't matter)
+- Now we can calculate Cohen's *d* using the formula: $d=\frac{2t}{\sqrt{df}} = \frac{2\cdot2.1}{\sqrt{58}} = \frac{4.2}{\sqrt{58}} = `r 4.2/sqrt(58)`$
+- This would be classified as a "medium" effect size
+- Now use the effect size in G*Power to calculate the required sample size
+    - Test family: `t tests`
+    - Statistical test: `Means: Difference between two independent means (two groups)`
+    - Type of power analysis: `A priori: Compute required effect size - given ` $\alpha$`, power, and effect size`
+    - Tail(s): `two`
+    - Effect size (d): ``r round(4.2/sqrt(58),2)`` (or ``r round(-4.2/sqrt(58),2)``, the result is the same)
+    - $\alpha$ error prob: `.05`
+    - Power ($1-\beta$ err prob): `.8` (you can go higher, if you want, but .8 is the minimum power that should be used)
+    - Allocation ratio (N2/N1): `1` (because both groups are the same size)
+- For a desired power of .8, this will give you a sample size of 106 or 53 per group.
+
+
+# Question 3 
+- Presume that like Miller and Jones you ran 30 participants in each group. You obtain a non-significant result in the same direction, *t* = 1.24 (p = 0.22). Should you 
+    - try to find an explanation for the difference between the two studies?  
+    - regard the Smith and Jones result as now thrown into doubt; you should reduce 
+your confidence in the effectiveness of their method for overcoming prejudice?  
+    - Do another study with more participants?
+
+# Answer 3
+- A non-significant result in the same direction as the effect you were trying to replicate doesn't tell you much
+    - It is definitely not (necessarily) evidence in favour of the null hypothesis!
+    - Remember, **you cannot accept the null hypothesis**.
+    - So don't interpret your results as if one study had found an effect and the other didn't.
+    - Determining what is evidence in favour of a null effect and what isn't is very difficult in NHST
+        - If your test had high power and failed to reject the $H_0$, that might be seen as evidence in favour of the null
+        - But in this scenario you only tested 60 participants when we know from the previous answer that you would need at least 106 for minimally acceptable power
+    - In Bayesian Statistics, you can calculate a Bayes Factor which can help you quantify the evidence for and against the $H_0$
+
+# Question 4 
+- You read a review of studies looking at whether meditation reduces depression. 
+- One hundred studies have been run and 50 are significant in the right direction and the remainder are non-significant. 
+    - What should you conclude? 
+    - If the null hypothesis were true, how many studies would be significant? How many would be significant in the right direction? (adapted from Dienes, 2008, p. 66) 
+ 
+# Answer 4
+
+- If you were tempted to say "can't tell" or "evidence in favour of the null", that's not correct
+- All the studies show an effect in the right direction, it's just that some are not significant
+- If the null hypothesis is false, but we have a power of only .5, this is exactly the kind of result we would find.
+- If the null hypothesis is true, then we would expect to find (assuming there was no p-hacking or similar issues) 5 significant (false positive studies), and the effects are equally likely to be in one direction or the other

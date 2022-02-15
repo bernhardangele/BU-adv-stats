@@ -1,0 +1,74 @@
+---
+title: "Advanced Statistics Seminar 2"
+author: "Group work and discussion questions"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+# Introduction
+
+-   Please complete the following tasks and answer the following questions in breakout rooms.
+
+    -   We'll have a short breakout room session (10 min) for each question, then we will come together again and talk about it before moving on to the breakout room session for the next question.
+
+# Question 1
+
+- (adapted from Oakes, 1986, as cited in Dienes, 2008, page 56) 
+- You compare the means of your control and experimental groups (20 subjects in each sample). Your result is $t(38) = 2.7, p = 0.01$. 
+
+- Please decide for each of the statements below whether it is 'true' or 'false'. You must be able to justify your decisions:
+    - You have absolutely disproved the null hypothesis (that there is no difference between the population means). 
+    - You have found the probability of the null hypothesis being true. 
+    - You have absolutely proved your experimental hypothesis (that there is a difference between the population means). 
+    - You can deduce the probability of the experimental hypothesis being true. 
+    - You know that if you decided to reject the null hypothesis, the probability that you are making the wrong decision. 
+    - You have a reliable experimental finding in the sense that if, hypothetically, the experiment were repeated a great number of times, you would obtain a significant result on 99 % of occasions.
+
+# Question 2
+
+-   Discuss: Is there ever a circumstance under which you can accept the null hypothesis (rather than just failing to reject it)?
+
+    -   Before answering the main question, consider some scenarios:
+
+        -   What if the effect size in your sample is exactly 0?
+
+        -   What if the effect direction in your sample is contrary to your expectation?
+
+            -   What if you are performing a one-tailed test?
+
+        -   What if your test has low power compared to a situation where it has high power?
+
+-   How do you determine that an effect does not exist?
+
+# Question 3
+
+-   Assume you are experiencing cold-like symptoms and take a rapid COVID test. The package insert of the test gives you the following information about the test performance on samples from symptomatic people compared to a PCR test.
+
+    |                         | PCR negative | PCR positive | Total |
+    |-------------------------|--------------|--------------|-------|
+    | **Rapid test negative** | 433          | 5            | 438   |
+    | **Rapid test positive** | 2            | 165          | 167   |
+    | **Total**                   | 435          | 170          | 605   |
+
+- Assuming that the PCR test is always correct and that these numbers are still correct for Omicron (which they are almost certainly not...):
+    - What is the sensitivity and the specificity of the test?
+  - Assuming that:
+    - 50% of all individuals with cold-like symptoms have COVID (probably the situation last month) *or*
+    - 5% of all individuals with cold-like symptoms have COVID (possibly the situation last year during lockdown)
+  - What is the probability that you actually have COVID
+      - given a positive test?
+      - given a negative test?
+    
+
+
+# Question 4
+
+-   You may want to have Excel open for this one so you can look up z-values and probabilities.
+- Consider the z-Test where we compare a sample mean to a population mean. 
+- For example, let's assume we want to know if Psychology MSc students are more intelligent than the general population. We know that the mean IQ of the general population is 100 and the SD in the general population is 15. 
+- Scenario 1: We tested 10 MSc students and their mean IQ is 105. Can we reject the null hypothesis that the mean IQ for MSc students is 100 with an α of 5%? - Scenario 2: We tested 100 MSc students and their mean IQ is 105. Can we reject the null hypothesis that the mean IQ for MSc students is 100 with an α of 5%? 
+- Scenario 3: Assume the true IQ for MSc students is 110. How many students do we have to test so we have a 95% chance of rejecting the null hypothesis with an α of 5%?

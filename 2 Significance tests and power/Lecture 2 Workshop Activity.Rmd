@@ -1,0 +1,54 @@
+---
+title: "Advanced Statistics Workshop 2"
+author: "Challenge Activity"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+```
+# Question 1
+- Let’s assume you perform 40 statistical tests with $\alpha = .05$. 
+    - What is the Type I error rate for 
+each individual test? 
+    - Assuming that the null hypotheses of all these tests are actually true, what is the probability that at least one of the 40 tests will give you a false positive result? 
+    
+# Question 2 
+- Miller and Jones, working in Massachusetts, USA, publish an experiment on a new method 
+for reducing prejudice, with 30 participants in each of two groups, experimental and control. 
+- They obtain a significant difference in prejudice scores between the two groups, significant 
+by (two-tailed) *t*-test, *p* = 0.04. You are based in Dorset, UK, and decide to follow up their 
+work.
+- Before adding modifications to their procedure, you initially attempt as exact a 
+replication as you can in Dorset, but you want to have the best possible chance to find the effect. How many participants should you test?
+    - First, make a guess, 
+then calculate it (adapted from Dienes, 2008, p. 64).  
+
+# Question 2 (Hints)
+- Calculating this one may take you some time. Hints: 
+    - Use GPower for this one. You should aim for decent power (at least .8) 
+    - Missing some input values for GPower? You can calculate the effect size (Cohen’s *d*) 
+for a t-test like this: $d=\frac{2t}{\sqrt{df}}$ where *t* is the t-value and *df* is the degrees of freedom of the test.
+    - You may need the formula `=T.INV` in Excel.
+    - Don’t forget that this is a two-tailed test, so use `=T.INV.2T`! 
+    - Remember, a between subjects t-test has $df=n_1 + n_2 − 2$ degrees of freedom, where $n_1$ is the number of observations in Group 1 and $n_2$ is the number of observations in Group 2
+
+# Question 3 
+- Presume that like Miller and Jones you ran 30 participants in each group. You obtain a non-significant result in the same direction, *t* = 1.24 (p = 0.22). Should you 
+    - try to find an explanation for the difference between the two studies?  
+    - regard the Smith and Jones result as now thrown into doubt; you should reduce 
+your confidence in the effectiveness of their method for overcoming prejudice?  
+    - Do another study with more participants?
+
+# Question 4 
+- You read a review of studies looking at whether meditation reduces depression. 
+- One  hundred studies have been run and 50 are significant in the right direction and the remainder are non-significant. 
+    - What should you conclude? 
+    - If the null hypothesis were true, how many studies would be significant? How many would be significant in the right direction? (adapted from Dienes, 2008, p. 66) 
+ 
