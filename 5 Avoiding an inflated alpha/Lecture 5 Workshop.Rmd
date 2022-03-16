@@ -1,0 +1,54 @@
+---
+title: "Lecture 5 Workshop"
+author: "Avoiding an inflated alpha"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+# Debate
+
+- We will divide the workshop randomly into four groups:
+    - The "Benjamin" group will argue in favour of changing the established alpha level to .005
+    - The "Lakens" group will argue against changing the established alpha level (at least in general) to .005
+    - The "de Ruiter" group will argue against the arguments the "Lakens" group made
+    - The "McShane" group will argue that statistical significance should be abandoned completely
+- We will give you 20 minutes to prepare, then we will call on people to give one argument each until the main ones have been presented.
+
+# Preparing
+
+- Benjamin group: Look over the Benjamin et al. article: [Redefine Statistical Significance](https://www.nature.com/articles/s41562-017-0189-z)
+
+- Find the main arguments that the authors are making. 
+- Pay special attention to the potential objections.
+
+# Preparing
+- Lakens group: Look over the Benjamin et al. article: [Justify Your Alpha](https://www.diva-portal.org/smash/get/diva2:1194016/FULLTEXT01.pdf)
+- Find the main arguments
+- Pay special attention to the specific issues the authors identify with the proposal
+
+# Preparing
+- De Ruiter group: Look over the de Ruiter (2019) article: [Redefine or justify? Comments on the alpha debate](https://link.springer.com/article/10.3758/s13423-018-1523-9)
+- Why is the author more on the side of Benjamin et al. than on the side of Lakens?
+    - What are the rebuttals to each of Lakens et al.'s arguments?
+
+# Preparing
+- McShane group: [Abandon Statistial Significance](https://www.tandfonline.com/doi/full/10.1080/00031305.2018.1527253)
+- What is the criticism of Benjamin et al.'s proposal?
+- What is the alternative proposed?
+
+# Debate
+
+- Start with an introduction (one student per bullet point):
+  - What is the issue? Why is there a need for change? (Benjamin group)
+  - What is the proposal? (Benjamin Group)
+  - What is wrong with the proposal? (Lakens group)
+  - What is the issue with Lakens et al.'s proposal to "bring your own alpha"? (de Ruiter group)
+  - What is wrong with the Benjamin et al. proposal from McShane et al.'s point of view?
+- One argument per person
+- Then continue with the debate, by default in the order Benjamin-Lakens-de Ruiter-McShane (but people can jump in!)
+  
+- Everybody should take notes: this is highly relevant for your assignment!

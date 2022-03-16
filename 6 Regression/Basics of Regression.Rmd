@@ -143,7 +143,7 @@ Covariance, the regression slope, and correlation
 ======================================================
 - Let's see if this is useful for our goal of getting a least-squares line:
     - We're still trying to minimise $\sum\limits_{i=1}^{n} E_i^2 = \sum\limits_{i=1}^{n}(Y_i - A - B \cdot X_i )^2$
-    - To minimise we'll have to use derivatives of this function. See the Fox (2013) book if you are truely interested.
+    - To minimise we'll have to use derivatives of this function. See the Fox (2013) book if you are truly interested.
 
 Estimating the coefficients
 ======================================================

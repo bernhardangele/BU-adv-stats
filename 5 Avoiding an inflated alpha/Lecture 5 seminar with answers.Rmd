@@ -1,0 +1,84 @@
+---
+title: "Lecture 5 Seminar"
+author: "Avoiding an inflated alpha"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+# Scientific fraud and questionable research practices
+
+- In breakout groups, take a look at the following scenarios and decide whether the scenario is more likely to describe scientific fraud or "just" questionable research practices (or even good practice)
+
+- Also, if you decide that the scenario contains illegal or questionable practices, think about what the consequences for the researchers/the research should be
+
+# Scenario 1
+
+- Researcher S claims to take stacks of survey forms to schools and administer the surveys to students there. He has ethical approval to do this, but his collaborators notice that he always goes to schools alone and never takes any students or research assistants to help him. It turns out that S never actually goes to the schools, but rather fills the forms in himself and then returns the filled-in forms to his students to score and analyse.
+
+- Fraud or questionable research practices or good practice?
+
+    - **Answer: This is clearly fraud and should have legal and/or employment consequences.**
+
+# Scenario 2
+
+- Researcher T has analysed her data on the effect of distraction on reading development in children, but did not find the significant effect she was looking for. Her supervisor, A, recommends to do the analysis on male and female students separately in order to see if there was a difference in gender. Indeed, it turns out that there is a significant effect for males but not for females. Together, T and A develop a new hypothesis stating that boys are more susceptible to distraction when reading than girls. They submit the results for publication.
+
+- Fraud or questionable research practices or good practice?
+
+    - **Answer: This is an example of HARKing and adding independent variables post-hoc (i.e., after the data have been analysed). As such, these are questionable research practices. This may be flagged by peer reviewers, but the most likely outcome is that the study is published anyway.**
+
+# Scenario 3
+
+- Researcher U writes a manuscript about a new experiment. However, he calculates the statistics and draws the plots based on an older, already published data set. 
+
+- Fraud or questionable research practices or good practice?
+
+    - **Answer: This is again clearly fraud, but the researcher will likely claim to have made a mistake. Consequences for the author are unlikely, but the manuscript, if published, will likely be retracted if the issue is noticed later.**
+
+# Scenario 4
+
+- Researcher V decides to use a .1 alpha level for all her tests in her manuscript. She states clearly that she does this to increase the power of her tests given that she has a very low number of participants.
+
+- Fraud or questionable research practices or good practice?
+
+    - **Answer: Not fraud nor questionable research practice, as the alpha level is clearly stated in the manuscript. However, peer reviewers are likely to insist that an alpha level .05 be used.**
+
+# Scenario 5
+
+- Researcher W does a Bayesian analysis estimating the size of a particular effect. He finds that the posterior credible interval of the effect size is too wide to make any clear conclusions. W's supervisor, B, recommends that he should collect more data. W does this, and, in the subsequent analysis with the data added, observes a narrower credible interval that provides clear evidence for the existence of an effect. W and B then send the results for publication.
+
+- Fraud or questionable research practices or good practice?
+
+    - **Answer: This is good research practice when using Bayesian statistics, as there is no hypothesis test here, just a credible interval.**
+
+# Challenge questions from Dienes (2008)
+
+- Take a few minutes to talk about each question either in breakout groups or in the whole group
+
+# Question 1
+  - You have run the 20 subjects you planned and obtain a p value of .08. Despite predicting a difference, you know this won’t be convincing to any editor and run 20 more subjects. SPSS now gives a p of .01. Would you:
+    - A. Submit the study with all 40 participants and report an overall p of .01?
+    - B. Regard the study as non-significant at the 5% level and stop pursuing the effect in question, as each individual 20-subject study had a p of .08?
+    - C. Use a method of evaluating evidence that is not sensitive to your intentions concerning when you planned to stop collecting subjects, and base conclusions on all the data?
+
+# Answer 1
+
+From Dienes: 
+> For question 1, I suspect a majority of researchers have at some time taken a) as their answer in similar cases. They have Bayesian intuitions, but use them with the wrong tools, the only tools apparently available, and tools inappropriate for actually cashing out the intuition. Choice a) is also the answer one might pick by thinking with a meta-analytic mind set, but use of meta-analysis here is complicated by the fact the stopping rule was conditional upon obtaining a significant finding. Arguably, the correct orthodox answer is to regard the data non-significant, as in b). Power may be low, but in effect one committed to that level of Type II error in planning the study. Answer c) spells out the intuition, and Bayes provides the tools for implementing it.
+
+
+# Question 2
+
+- After collecting data in a three-way design  you find an unexpected partial two-way interaction, specifically you obtain a two-way interaction (p = .03) for just the males and not the females. After talking to some colleagues and reading the literature you realise there is a neat way of accounting for these results: certain theories can be used to predict the interaction for the males but they say nothing about females. Would you:
+    - A. Write up the introduction based on the theories leading to a planned contrast for the males, which is then significant?
+    - B. Treat the partial two-way as non-significant, as the three-way interaction was not significant, and the partial interaction won’t survive any corrections for post hoc testing?
+    - C. Determine how strong the evidence of the partial two-way interaction is for the theory you put together to explain it, with no regard to whether you happen to think of the theory before seeing the data or afterwards, as all sorts of arbitrary factors could influence when you thought of a theory?
+
+# Answer 2
+
+- Dienes:
+> For question 2, again I suspect many people have decided a) in similar circumstances, because of the Bayesian intuitions in c), and so used the wrong tools for the right reasons. One suspects in many papers the introduction was written entirely in the light of the results. We implicitly accept this as good practice, indeed train our students to do likewise for the sake of the poor reader of our paper. But b) is the correct answer based on the Neyman Pearson approach, and maybe your conscience told you so. But should you be worrying about what might be murky – which really came first, data or hypothesis? – or, rather, about what really matters, whether the predictions really follow from a substantial theory in a clear simple way?

@@ -1,0 +1,98 @@
+---
+title: "Lecture 3 Seminar"
+author: "The limits of NHST -- Challenge Questions"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+```
+
+# Question 1
+
+- Let's start with some key terms. In groups, come up with definitions for the following: 
+    - population
+    - null and alternative hypotheses 
+    - $\alpha$ 
+    - $\beta$
+    - power
+    - Positive predictive value
+    - False discovery rate
+    - family-wise error rate
+    - significance
+
+# Answer 1
+- population: the entire group that we want to draw conclusions about
+    - examples: All the people in the UK
+    - all university students in the UK
+    - all patients with a diagnosis of depression
+    - all female police officers in England
+    - all first-grade children (including those who haven't been born yet)
+
+# Answer 1
+- null hypothesis: a conjecture about the population, usually stating that there is no difference between groups or no effect of another variable
+    - if the null hypothesis is true, all observed differences have to be due to random variation
+- alternative hypothesis: a conjecture about the population, usually stating that two groups are part of different populations or that there is a systematic effect of a certain variable on another
+
+# Answer 1
+- $\alpha$:
+    - The probability of a test to reject the null hypothesis given that it is actually true (the probability of a Type I error)
+- $\beta$:
+    - The probability of a test **to fail to reject** the null hypothesis given that it is actually false (the probability of a Type II error)
+- power:
+    - The probability of a test **to reject** the null hypothesis given that it is actually false (the probability of not committing a Type II error)
+
+# Answer 1
+- Positive predictive value:
+    - Subjective: The probability of the null hypothesis actually being false given that the null hypothesis was rejected
+    - Objective: The proportion of correct rejections of the null hypothesis out of all rejections of the null hypothesis
+    - Objective: The proportion of false rejections of the null hypothesis out of all rejections of the null hypothesis
+
+- False discovery rate:
+    - Subjective: The probability of the null hypothesis actually being true given that the null hypothesis was rejected
+    - Objective: The proportion of false rejections of the null hypothesis out of all rejections of the null hypothesis
+
+# Answer 1
+- family-wise error rate:
+    - The probability of rejecting the null hypothesis given that it is actually true in one or more of the tests forming a test family
+    - Test family: a group of tests which, if significant, reject the same null hypothesis
+- (statistical) significance:
+    - The observed value of a null hypothesis test statistic being more extreme than the critical value of the test statistic, leading to the rejection of the null hypothesis.
+    
+# Question 2
+- What is the difference between p-value and α?  
+
+# Answer 2
+- A p-value is the probability of obtaining results as extreme or more extreme than the observed results (observed p-value)
+- $\alpha$ is the probability of rejecting the null hypothesis given that the null hypothesis is true. Usually, you can achieve this in a test by comparing the p-value to $\alpha$ (critical p-value).
+    - When doing multiple comparisons, you can adjust the critical p-value so that the overall $\alpha$ level stays the same
+
+# Question 3
+- Describe two legitimate stopping rules and two illegitimate ones.
+
+# Answer 3
+- Examples for legitimate stopping rules:
+    - Stop at 40 participants (no matter what happens)
+    - Stop after 90 days of data collection
+    
+- Examples of illegitimate stopping rules
+    - Stop if a significant result is found after collecting data from 40 participants (otherwise, keep sampling)
+    - Plan to collect data from 40 participants, but check after 30 participants if more are needed or if the result is significant
+
+# Question 4 
+- Some researchers (e.g. [Halsey et al., 2015, Nature Methods](https://www.nature.com/articles/nmeth.3288)) have argued that we should report confidence intervals rather than p-values in research articles. What would be the advantages and disadvantages of reporting them instead of p-values? 
+
+- Advantages:
+    - Confidence intervals give a clear indication of the uncertainty involved in a statistical test result
+    - Confidence intervals emphasise the effect size -- an effect can be significant but irrelevant in reality
+
+- Disadvantages
+    - Confidence intervals still rely on null hypothesis significance testing and suffer from the same issues as any other NHST
+    - The emphasis on the range may invite the incorrect subjective probability interpretation that they reflect uncertainty about the true value (i.e. misinterpreting them as Bayesian Credible Intervals)

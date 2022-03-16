@@ -1,0 +1,222 @@
+---
+title: "Advanced Statistics Seminar 2"
+author: "Group work and discussion questions (with solutions)"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+# Introduction
+
+```{r setup, echo=FALSE}
+options(digits = 3)
+```
+
+-   Please complete the following tasks and answer the following questions in breakout rooms.
+
+    -   We'll have a short breakout room session (10 min) for each question, then we will come together again and talk about it before moving on to the breakout room session for the next question.
+
+# Question 1
+
+- (adapted from Oakes, 1986, as cited in Dienes, 2008, page 56) 
+- You compare the means of your control and experimental groups (20 subjects in each sample). Your result is $t(38) = 2.7, p = 0.01$. 
+
+- Please decide for each of the statements below whether it is 'true' or 'false'. You must be able to justify your decisions:
+    - You have absolutely disproved the null hypothesis (that there is no difference between the population means). 
+    - You have found the probability of the null hypothesis being true. 
+    - You have absolutely proved your experimental hypothesis (that there is a difference between the population means). 
+    - You can deduce the probability of the experimental hypothesis being true. 
+    - You know the probability of making the wrong decision if you decided to reject the null hypothesis. 
+    - You have a reliable experimental finding in the sense that if, hypothetically, the experiment were repeated a great number of times, you would obtain a significant result on 99 % of occasions.
+
+# Answer 1
+
+- You may have already suspected it, but all of the answers are **wrong**.
+- Let's go over them one by one:
+
+> You have absolutely disproved the null hypothesis (that there is no difference between the population means). 
+
+- Of course, you can't make a statement like that, especially if there is a 5% Type I error rate built into the process!
+
+> You have found the probability of the null hypothesis being true. 
+
+- The probability of the null hypothesis ($H_0$) being true is a subjective probability expressing your subjective uncertainty (objectively, it is either true or not
+true).
+    - Remember that NHST deals with objective probabilities only -- you cannot obtain a subjective probability from any NHST
+
+# Answer 1 (Part 2)
+
+> You have absolutely proved your experimental hypothesis (that there is a difference between the population means). 
+
+- You can't make a statement like that about the experimental hypothesis ($H_A$ or $H_1$), either. Absolute proofs are only possible in deductive reasoning, and NHST is an inductive method.
+
+> You can deduce the probability of the experimental hypothesis being true. 
+
+- This is just a slightly more subtle attempt to interpret the outcome of your experiment as a subjective probability again, which you can't do in NHST.
+
+# Answer 1 (Part 3)
+
+> You know the probability of making the wrong decision if you decided to reject the null hypothesis.
+
+- No, you know the probability of falsely rejecting the null hypothesis given that it is true (the Type I error rate). Since you don't know whether the null hypothesis is true or not, you also can't know the probability of making an error.
+    - This is another sneaky way of getting you to commit to a subjective probability (the probability that the $H_0$ is true/false), which you can't do in NHST
+
+# Answer 2 (Part 4)
+
+> You have a reliable experimental finding in the sense that if, hypothetically, the experiment were repeated a great number of times, you would obtain a significant result on 99 % of occasions.
+
+- This may sound reasonable at first, since it sounds like an objective probability, but remember that a significant result can occur both when the $H_0$ is false (and there is a real effect) and when the $H_0$ is true (and you have a Type 1 error).
+    - If there is a real effect, you would have a high probability of repeating a significant result (but we can't actually tell if it would be 99%)
+    - If there is no real effect (and the $H_0$ is true), you would see another significant result with a probability of .05 (or whatever $\alpha$ level you are testing at).
+    - You can't tell which of the two scenarious you are in, so how can you possibly determine what the probability of replicating it is?
+
+# Question 2
+
+-   Discuss: Is there ever a circumstance under which you can accept the null hypothesis (rather than just failing to reject it)?
+
+    -   Before answering the main question, consider some scenarios:
+
+        -   What if the effect size in your sample is exactly 0?
+
+        -   What if the effect direction in your sample is contrary to your expectation?
+
+            -   What if you are performing a one-tailed test?
+
+        -   What if your test has low power compared to a situation where it has high power?
+
+-   How do you determine that an effect does not exist?
+
+# Answer 2
+
+- Let's look at each of the scenarios:
+    - What if the effect size in your sample is exactly 0?
+        - Well, that could just be bad luck
+        - You might just have obtained an extreme sample and the $H_0$ could actually be false
+    - What if the effect direction in your sample is contrary to your expectation?
+        - It's not a problem if you are doing a two-tailed test
+        - But for a one-tailed test?
+            - It is clearly evidence for the $H_0$
+            - But in a NHST framework, we don't have a way to quantify that
+            - There is just no way built into NHST to accept the $H_0$
+    - If you have low power, your failure to find the effect could clearly be due to that instead of the $H_0$ being true
+    - If you have high power, that is again evidence against the $H_0$, but we do not have a mechanism in NHST to accept it
+        - We could come up with a subjective probability for the $H_0$ being true in Bayesian Statistics and make a decision based on that
+
+# Question 3
+
+-   Assume you are experiencing cold-like symptoms and take a rapid COVID test. The package insert of the test gives you the following information about the test performance on samples from symptomatic people compared to a PCR test.
+
+    |                         | PCR negative | PCR positive | Total |
+    |-------------------------|--------------|--------------|-------|
+    | **Rapid test negative** | 433          | 5            | 438   |
+    | **Rapid test positive** | 2            | 165          | 167   |
+    | **Total**               | 435          | 170          | 605   |
+
+- Assuming that the PCR test is always correct and that these numbers are still correct for Omicron (which they are almost certainly not...):
+    - What is the sensitivity and the specificity of the test? Assuming that:
+    - 50% of all individuals with cold-like symptoms have COVID (probably the situation last month) *or*
+    - 5% of all individuals with cold-like symptoms have COVID (possibly the situation last year during lockdown)
+  - What is the probability that you actually have COVID given a positive test?
+    
+# Answer 3: Sensitivity
+
+- This is just a bit of an exercise on conditional probability, which we will revisit when we talk about Bayes' theorem
+- Sensitivity: the probability of getting a positive result given that there is actually an infection:
+    - All cases with an infection (as determined by PCR): 170
+    - Cases with an infection and a positive rapid test result: 165
+  
+$$\begin{align}
+P(\text{Positive Test}\mid\text{Infection})  = \frac{P(\text{Positive test and Infection})}{P(\text{Infection})} \\
+= \frac{\frac{165}{605}}{\frac{170}{605}} = \frac{165}{170} = `r 165/170`
+\end{align}$$
+    
+- Note how this is conceptually the same as power, i.e. the opposite of the Type II error probability!
+
+# Answer 3: Specificity
+
+- Specificity: the probability of getting a positive result given that there is actually an infection:
+    - All cases without an infection (as determined by PCR): 435
+    - Cases without an infection and a negative rapid test result: 433
+  
+$$\begin{align}
+P(\text{Negative Test}\mid\text{No infection})  = \frac{P(\text{Negative test and no infection})}{P(\text{No infection})} \\
+= \frac{\frac{433}{605}}{\frac{435}{605}} = \frac{433}{435} = `r 433/435`
+\end{align}$$
+    
+- Note how this is the probability of obtaining a true negative, conceptually the opposite of the Type I error probability!
+
+# Answer 3: Probability of having COVID
+
+- Now we have the probability of a positive test given that you have COVID and the probability of a negative test given that you don't have it
+- The last question asks about the reverse probability: $P(\text{Infection}\mid\text{Positive test})$
+- The easiest way to think about this is to imagine 1000 people with symptoms and calculate how many are infected and how many of those will have positive and negative test results. However, we need one extra piece of information: the **base rate** (also known as prevalence), i.e. the overall probability of having COVID (in this case, given that you have symptoms)
+- The question gives two base rates, 50% and 5%. Let's start with the first one:
+    - A base rate of 50% means that out of 1000 people with symptoms, 500 have COVID.
+    - Out of the 500 with COVID, $500\cdot`r 165/170`=`r 500*165/170`$ will have a positive test, so $`r 500*5/170`$ will have a negative test.
+    - Out of the 500 without COVID, $500\cdot`r 433/435`=`r 500*433/435`$ will have a negative test, so $`r 500*2/435`$ will have a positive test.
+    - Out of the $`r 500*165/170`+`r 500*2/435` = `r 500*165/170 + 500*2/435`$ with a positive test, $`r 500*165/170`$ actually have COVID, i.e. $`r 500*165/170/(500*165/170 + 500*2/435) * 100`$%.
+
+# Answer 3: Probability of having COVID (5% base rate)
+
+- Now try the same with a base rate of 5%:
+    - This means that out of 1000 people with symptoms, 50 have COVID and 950 don't.
+    - Out of the 50 with COVID, $50\cdot`r 165/170`=`r 50*165/170`$ will have a positive test, so $`r 50*5/170`$ will have a negative test.
+    - Out of the 950 without COVID, $950\cdot`r 433/435`=`r 950*433/435`$ will have a negative test, so $`r 950*2/435`$ will have a positive test.
+    - Out of the $`r 50*165/170`+`r 950*2/435` = `r 50*165/170 + 950*2/435`$ with a positive test, $`r 50*165/170`$ actually have COVID, i.e. $`r 50*165/170/(50*165/170 + 950*2/435) * 100`$%.
+- As you can see, the tests will remain useful for a while...
+
+# Answer 3: Probability of having COVID (0.5% base rate)
+- Now try the same with a base rate of 0.5%:
+    - This means that out of 1000 people with symptoms, 5 have COVID and 995 don't.
+    - Out of the 5 with COVID, $5\cdot`r 165/170`=`r 5*165/170`$ will have a positive test, so $`r 5*5/170`$ will have a negative test.
+    - Out of the 995 without COVID, $995\cdot`r 433/435`=`r 995*433/435`$ will have a negative test, so $`r 995*2/435`$ will have a positive test.
+    - Out of the $`r 5*165/170`+`r 995*2/435` = `r 5*165/170 + 995*2/435`$ with a positive test, $`r 5*165/170`$ actually have COVID, i.e. $`r 5*165/170/(5*165/170 + 995*2/435) * 100`$%.
+- So in a future where only 5 out of 1000 people with cold symptoms have COVID, a positive test only has a probability of $`r (5*165/170/(5*165/170 + 995*2/435))`$. This is called the **Positive Predictive Value**. The reverse of this proportion, $`r 1-(5*165/170/(5*165/170 + 995*2/435))`$ is called the **False Positive Rate**.
+- We will revisit those terms next week when we talk about the diagnostic properties of statistical tests.
+- A formal way of calculating this is using *Bayes' theorem*, which we will talk about in the lecture on Bayesian statistics
+
+# Bonus: Question 4
+
+- You may want to have Excel open for this one so you can look up z-values and probabilities (or just remember the critical z-values of a two-tailed test, -1.96 and 1.96).
+- Consider the two-tailed z-Test where we compare a sample mean to a population mean. 
+- For example, let's assume we want to know if Psychology MSc students are more intelligent than the general population. We know that the mean IQ of the general population is 100 and the SD in the general population is 15 and that it is normally distributed, although this only matters for the first scenario (why?). 
+- Scenario 1: We tested 10 MSc students and their mean IQ is 105. Can we reject the null hypothesis that the mean IQ for MSc students is 100 with an α of 5%?
+- Scenario 2: We tested 100 MSc students and their mean IQ is 105. Can we reject the null hypothesis that the mean IQ for MSc students is 100 with an α of 5%? 
+- Scenario 3: Assume the true IQ for MSc students is 110. How many students do we have to test so we have a 95% chance of rejecting the null hypothesis with an α of 5%?
+
+# Bonus: Answer 4
+- Remember that we are talking about means here, so we are looking for the sampling distribution of the mean.
+    - We said before that the sampling distribution of the mean has the same mean as the distribution the individual observations are from
+    - We also said that it has a standard deviation of $\sigma_{\bar{x}} = \frac{\sigma}{\sqrt{n}}$, where $\sigma$ is the standard deviation of the distribution the individual observations are from and $n$ is the number of observations in each sample
+- Scenario 1: We want to know the probability of the mean IQ from the sample being as or more extreme than 105.
+    - In this scenario, the mean of our sampling distribution is 100 and, because our sample size is 10, our standard deviation is $\frac{15}{\sqrt{10}} = `r 15/sqrt(10)`$
+    - Our z-value is $\frac{105-100}{`r 15/sqrt(10)`} = `r 5/(15/sqrt(10))`$
+    - We know that a z-value of a little more than 1 is not significant, as it is between -1.96 and 1.96.
+
+# Bonus: Answer 4 (Scenario 2)
+- Scenario 2: We want to know the probability of the mean IQ from the sample being as or more extreme than 105.
+    - In this scenario, the mean of our sampling distribution is 100 and, because our sample size is 100, our standard deviation is $\frac{15}{\sqrt{100}} = `r 15/sqrt(100)`$
+    - Our z-value is $\frac{105-100}{`r 15/sqrt(100)`} = `r 5/(15/sqrt(100))`$
+    - This is much larger than the critical z-value for a two-tailed test (1.96), so we can reject the null hypothesis.
+    
+# Bonus: Answer 4 (Scenario 3)
+- Scenario 3: Now we want to know two things:
+    - First, the z-value at which we will reject the null hypothesis
+        - We know that already as a z-value, it's 1.96.
+    - Then, we want to get the mean for z-value for the distribution given that the mean IQ is actually 110, which is -1.64 (the z-value that cuts off the lowest 5% of a standard normal distribution).
+    - We want to find the sample size at which the IQ value corresponding to the critical z-value of 1.96 from the null distribution (mean of 100) is the same as the IQ value that cuts off lowest 5% of the distribution for an IQ of 100
+
+# Bonus: Answer 4 (Scenario 3, solution)    
+- So we convert the z-values back to IQ values and solve for n:
+$$100+1.96\cdot\frac{15}{\sqrt{n}} = 110-1.64\cdot\frac{15}{\sqrt{n}}\\
+  1.96\cdot\frac{15}{\sqrt{n}} = 10-1.64\cdot\frac{15}{\sqrt{n}}\\
+  3.6\cdot\frac{15}{\sqrt{n}} = 10 \\
+  \frac{54}{\sqrt{n}} = 10 \\
+  \frac{54}{10} = \sqrt{n} \\
+  \sqrt{n} = 5.4 \\
+  n = 29.16$$
+  
+  

@@ -1,25 +1,30 @@
 ---
-title: "Avoiding an inflated alpha"
-output:
-  powerpoint_presentation: default
-  beamer_presentation: default
----
+title: "Advanced Statistics Lecture 5"
+author: "Avoiding an inflated alpha"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, cache = TRUE)
 ```
 
 ## Summary of the first part
 
 - We have spent the last lectures talking about the basics of null-hypothesis significance testing (NHST), including considerations of power and what a _p_-value actually means
 - We have also discussed an alternative statistical approach that does not involve a null hypothesis (Bayesian Statistics)
--In this last part, I want to introduce you to some approaches to diagnose (and perhaps remedy) an inflated alpha rate and questionable research practices in general
+- In this last part, I want to introduce you to some approaches to diagnose (and perhaps remedy) an inflated alpha rate and questionable research practices in general
 
 ## Checking _p_-values
 - A surprising amount of published articles contains errors in reporting the _p_-value
     - For example, the _p_-value reported does not correspond to the test statistic and degrees of freedom
     - [Nuijten, Hartgerink, van Assen, Epskamp, and Wicherts](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5101263/) found that half of psychology papers published between 1985 and 2013 contained at least one incorrect _p_-value. 
-        - They now have [a website](http://statcheck.io/) that can analyse a manuscript automatically and spot problematic p-values
+        - They now have [a website](http://statcheck.io/) that can analyse a manuscript automatically and spot problematic *p*-values
 
 ## Analysing digits
 
@@ -55,6 +60,8 @@ knitr::opts_chunk$set(echo = FALSE)
 - Opens authors up to greater scrutiny
     - But wouldn't you want to know if you had made an error?
         - Authors should be given opportunity to fix (if possible and error wasn't deliberate)
+    - Of course, scrutiny is different from abuse
+        - Open Science will only work if interactions between authors and commenters are positive and constructive
 
 ## Meta-analysis
 - Analyse many studies to get a more consistent picture of the research field
@@ -63,18 +70,88 @@ knitr::opts_chunk$set(echo = FALSE)
 - However: what to do about the file-drawer problem?
     - What about all the experiments with null effects that were never published?
 
+
+
 ## The _p_-curve
 
-- What is the distribution of _p_-values given that the null-hypothesis is true?
-  - You have already seen a bit of this in the "Dance of the _p_-values" video that you watched in KTS.
-  - Try [this visualisation by Kristoffer Magnusson](https://rpsychologist.com/d3/pdist/).
-  
-  
-## The distribution of _p_-values when the null hypothesis is true
+- What does a *p*-value tell us?
+    - We have talked about Positive Predictive Value and False Discovery Rate
+- What if we look at all of the published *p*-values in a field?
+    - *p*-curve analysis
+- Try [this visualisation by Kristoffer Magnusson](https://rpsychologist.com/d3/pdist/) to solve the follwing questions:
 
+## Question 1
+
+- What does the following *p*-value distribution suggest?
+
+```{r p30, echo = FALSE}
+nSims <- 1000000 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes)
+N<-32 #number of participants
+lowp<-0.04
+highp<-0.05
+
+#set up some variables
+p<-numeric(nSims) 
+p2<-numeric(nSims) 
+obs_pwr<-numeric(nSims) 
+t<-numeric(nSims) 
+d<-numeric(nSims) 
+
+for(i in 1:nSims){ #for each simulated experiment
+  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  y<-rnorm(n = N, mean = 105, sd = 20) #produce 100 simulated participants
+  z<-t.test(x,y) #perform the t-test
+  p[i]<-z$p.value #get the _p_-value and store it
+}
+
+#Calculate power in simulation
+#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+
+#Count probability of finding p between boundaries specified above
+
+p2<-p[p>lowp & p<=highp]
+#cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
+
+#now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
+p_hist_30_power <- hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+p_hist_30_power
+```
+
+
+## Question 1
+
+- What does the following *p*-value distribution suggest?
+
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
+
+## Answer 1
+
+- The *p*-value distribution for this set of studies is skewed to the right (i.e. low *p*-values are more likely than high *p*-values), but not strongly.
+- This is compatible with a real effect, but not very high power
+- There is no evidence for p-hacking or falsification.
+- None of the answers below is correct:
+
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
+
+
+## Question 2
+
+- What if the p-distribution is uniform (i.e., every p-value is equally likely)?
 
 ```{r pnull, echo = FALSE}
-nSims <- 1000000 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
+nSims <- 1000000 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes)
 N<-32 #number of participants
 lowp<-0.04
 highp<-0.05
@@ -102,49 +179,41 @@ p2<-p[p>lowp & p<=highp]
 #cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
 
 #now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
-hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+p_hist_null <- hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+p_hist_null
 ```
+ 
+## Question 2
 
-  
-## The distribution of _p_-values when the null hypothesis is false 
-- and we have 50% power
+- What if the *p*-distribution is uniform?
 
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
 
-```{r p50, echo = FALSE}
-#nSims <- 100 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
-N<-32 #number of participants
-lowp<-0.04
-highp<-0.05
+ 
+## Answer 2
 
-#set up some variables
-p<-numeric(nSims) 
-p2<-numeric(nSims) 
-obs_pwr<-numeric(nSims) 
-t<-numeric(nSims) 
-d<-numeric(nSims) 
+- What if the *p*-distribution is uniform?
 
-for(i in 1:nSims){ #for each simulated experiment
-  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
-  y<-rnorm(n = N, mean = 110, sd = 20) #produce 100 simulated participants
-  z<-t.test(x,y) #perform the t-test
-  p[i]<-z$p.value #get the _p_-value and store it
-}
+    * **A. The effect the studies are investigating is likely not a real effect.**
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
 
-#Calculate power in simulation
-#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+ 
+ 
 
-#Count probability of finding p between boundaries specified above
+## Question 3
 
-p2<-p[p>lowp & p<=highp]
-#cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
-
-#now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
-hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
-```
-
-
-## The distribution of _p_-values when the null hypothesis is false 
-- and we have 80% power
+- What does the following *p*-value distribution suggest?
 
 ```{r p80, echo = FALSE}
 #nSims <- 100 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes. I used 1000000 simulations for my blog)
@@ -175,8 +244,102 @@ p2<-p[p>lowp & p<=highp]
 #cat ("The probability of finding a p-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
 
 #now plot histograms of _p_-values (the most left bar contains all p-values between 0.00 and 0.05)
-hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+p_hist_80_power <- hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
+p_hist_80_power
 ```
+
+ 
+## Question 3
+
+- What if the *p*-distribution is strongly skewed to the right?
+
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
+
+## Answer 3
+
+- What if the *p*-distribution is strongly skewed to the right?
+
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * **D. The study was performed with high power (more than .8).**
+
+
+## Question 4
+
+- What if the curve looks like this?
+
+```{r pnull_hacked, echo = FALSE}
+nSims <- 1000000 #number of simulated experiments (the more, the more accurate the numbers you get, but the longer it takes)
+N<-32 #number of participants
+lowp<-0.04
+highp<-0.05
+
+#set up some variables
+p<-numeric(nSims) 
+p2<-numeric(nSims) 
+obs_pwr<-numeric(nSims) 
+t<-numeric(nSims) 
+d<-numeric(nSims) 
+
+for(i in 1:nSims){ #for each simulated experiment
+  x<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  y<-rnorm(n = N, mean = 100, sd = 20) #produce 100 simulated participants
+  z<-t.test(x,y) #perform the t-test
+  p[i]<-z$p.value #get the _p_-value and store it
+  
+}
+
+# p-hack!
+
+p[p > .05 & p < .09] <- p[p > .05 & p < .09] + runif(length(p[p > .05 & p < .09]), min = -.04, max = 0)
+
+#Calculate power in simulation
+#cat ("The power is",(sum(p < 0.05)/nSims*100),"%")
+
+#Count probability of finding p between boundaries specified above
+
+p2<-p[p>lowp & p<=highp]
+#cat ("The probability of finding a _p_-value between ",lowp," and ", highp," is ",(length(p2)/nSims*100),"%, which makes it ",((length(p2)/nSims*100)/(((high_p_-lowp)*100)))," times more probable under the alternative hypothesis than the null-hypothesis (numbers below 1 mean the observed _p_-value is more likely under the null-hypothesis than under the alternative hypothesis")
+
+#now plot histograms of _p_-values (the most left bar contains all _p_-values between 0.00 and 0.05)
+hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 100,  xaxp = c(0, 1, 20))
+
+```
+
+## Question 4
+
+- What if the *p*-distribution has a "bump" below .05 and is otherwise flat?
+
+    * A. The effect the studies are investigating is likely not a real effect.
+    
+    * B. The studies are likely *p*-hacked.
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
+
+## Answer 4
+
+- What if the *p*-distribution has a "bump" below .05 and is otherwise flat?
+
+    * **A. The effect the studies are investigating is likely not a real effect.**
+    
+    * **B. The studies are likely *p*-hacked.**
+    
+    * C. The data are likely falsified.
+    
+    * D. The study was performed with high power (more than .8).
+
 
 
 ## Using the _p_-curve as a diagnostic tool
@@ -186,7 +349,7 @@ hist(p, main="Histogram of p-values", xlab=("Observed p-value"), breaks = 20)
 * If there is a real effect (and at least medium power), the _p_-curve will be right-skewed, with low _p_-values more likely than high _p_-values
 
 
-## What if a research field systematically neglects to publish significant results? 
+## What if a research field systematically neglects to publish non-significant results? 
 + To the left of .05, the _p_-distribution is the same as it should be (all results with p<.05 are published)
 + To the right of .05, _p_-values get a lot less frequent as they end up in the file drawer
 + There will be a bump in the distribution just below .05

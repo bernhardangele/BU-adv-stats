@@ -1,0 +1,92 @@
+---
+title: "Lecture 6 Seminar"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+# Using real data
+
+- For this seminar, we will use a real, published data set from a study by [Kwiatkowska and Rogoza (2019)](https://www.sciencedirect.com/science/article/pii/S0191886919303162) (if you are not on campus, this link may not give you access -- in this case, you can access the [preprint](https://psyarxiv.com/a5vq2/).
+- It is important to use data sets that reflect real research. This one falls into the personality/health psychology area.
+- This is a study on the traits of *shyness* and *modesty* and how they fit into the Big 5 personality traits (e.g. Goldberg, 1999).
+- The authors hypothesise that:
+    - Shyness should be related to modesty (positively)
+    - Shyness should be related to extraversion (negatively) and neuroticism (positively)
+    - Modesty should be related to agreeableness (positively) and extraversion (again negatively)
+
+# The data set: Shyness
+
+- Online survey data from 727 Polish young adults (18--35 years old) recruited through Facebook
+- Shyness measured using the Revised Cheek and Buss Shyness scale (**RCBS**, Cheek & Buss, 1981): 13 items, 5-point Likert scale
+
+# The data set: Modesty
+- Modesty measured using three scales:
+    - Modest Responding Scale (**MRS**): 20 items, 7-point Likert scale
+    - Modesty subscale of the International Personality Item Pool (**IPIP**) representation of the HEXACO personality inventory (**IPIP HEXACO**, Goldberg et al., 2006; Lee & Ashton, 2004): 10 items, 5-point Likert scale
+    - Modesty subscale of the International Personality Item Pool (IPIP) representation of the NEO-PI-R personality inventory (**IPIP NEO**, Costa & McCrae, 1992; Goldberg et al., 2006): 10 items, 5-point Likert scale
+
+# The data set: Big 5
+
+- Big 5 personality traits: Big Five Inventory-2 (**BFI2**; Soto & John, 2017)
+    - 60 items, 5-point Likert scale
+    - Subscales:
+        - Extraversion (**BFI2-E**)
+        - Negative emotionality (neuroticism; **BFI2-N**)
+        - Agreeableness (**BFI2-A**)
+        - Conscientiousness (**BFI2-C**)
+        - Open-Mindedness (**BFI2-O**)
+
+# Opening the data file
+
+- Download the data file (`bazka3.sav`) from Brightspace and open it in JASP (or jamovi or SPSS)
+
+# Exploring the data
+
+- Work together in groups to do the following:
+    - First, what does **one row** in this data file represent?
+        - What does **one column** represent?
+    - Second, get descriptive statistics for all the variables
+        - Check these against the descriptive statistics reported in the paper
+        - Are there any discrepancies with the reported values?
+        - Take a look at the mean, median, minimum, and maximum values. Do these make sense and correspond with what the authors tell us about the scales?
+    - How did the authors arrive at these values? For example, how is it possible for Participant 1 to have a **RCBS** value of 2.692 if the scale only allows answers of 1, 2, 3, 4, or 5? 
+        
+# Correlations
+
+- Get the correlation matrix for all the variables 
+    - What do you observe?
+    - Can you already say something about the hypotheses the authors are testing?
+    - What is the null hypothesis that these p-values test?
+    - Is there a relationship between modesty and shyness as predicted?
+        - Does it differ depending on the scale used to measure modesty?
+    - Is it surprising/concerning that the three *Modesty* scales are highly correlated with each other?
+    - Is it surprising/concerning that some of the **BFI-2** scales are correlated with each other?
+    - It is not clear from the file what 0 and 1 represent in the gender variable. Can you make a guess from the correlations of this variable with the other variables (you can also get this from comparing the information in the descriptive statistics with the information given in the paper)?
+        
+# Confirmatory analyses
+
+- The authors run four regression models (**Table 2** in the paper). Reproduce these model fits from the data.
+    - Write down the regression equation for each of these.
+- Check the numbers -- were you able to reproduce them?
+- Which null hypothesis does each of the predictors test? Be specific!
+- There are many correlations that looked to be significant in the correlation matrix, but the corresponding predictor in the models does not reach significance.
+    - For example, *Open-Mindedness* looks to be negatively correlated with *Shyness* and all *Modesty* measures
+        - Why is the *Open-Mindedness* predictor not significant in any of the regression models? **This is incredibly important for you to understand!**
+- What does it mean for a dichotomous variable *Gender* to be included in the model?
+    - Gender is coded as 0 and 1
+        - Is this a problem? What does this do?
+
+# Conclusions
+
+- Read the authors' discussion section carefully. Are the authors' conclusions justified?
+    - What about claims that one predictor is stronger than another?
+
+# Expanding the model
+
+- Let's engage in some exploratory analyses
+    - The authors have not included any interactions in the model. How could we find out if any interactions should be included in a future study?

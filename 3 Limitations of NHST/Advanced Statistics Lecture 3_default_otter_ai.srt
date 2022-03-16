@@ -1,0 +1,4985 @@
+1
+00:00:00,360 --> 00:00:05,550
+Okay, hello, and welcome to our
+third lecture on the limits of
+
+2
+00:00:05,550 --> 00:00:09,510
+knowledge hypothesis
+significance testing. So, in the
+
+3
+00:00:09,510 --> 00:00:15,150
+past few lectures, you've
+probably, at least had some
+
+4
+00:00:15,300 --> 00:00:20,760
+reason to think about what the
+problems are with null
+
+5
+00:00:20,760 --> 00:00:24,630
+hypothesis significance testing,
+so not just the problems due to
+
+6
+00:00:24,660 --> 00:00:28,980
+incorrect use of null hypothesis
+significance testing, although
+
+7
+00:00:29,100 --> 00:00:35,700
+those are definitely there and
+definitely an issue, but also
+
+8
+00:00:35,730 --> 00:00:38,790
+the general issues with null
+hypothesis significance testing,
+
+9
+00:00:38,970 --> 00:00:45,780
+with this particular method of
+trying to get evidence for a
+
+10
+00:00:45,780 --> 00:00:52,680
+particular hypothesis. Okay, so
+we've already mentioned in the
+
+11
+00:00:52,680 --> 00:00:57,210
+previous lecture, type one error
+and type two error. So type one
+
+12
+00:00:57,210 --> 00:01:00,720
+error is when you reject the
+null hypothesis, even though it
+
+13
+00:01:00,720 --> 00:01:05,370
+is true, and the probability of
+that is called alpha. A type two
+
+14
+00:01:05,370 --> 00:01:08,970
+error is when you fail to reject
+the null hypothesis even though
+
+15
+00:01:08,970 --> 00:01:12,540
+it is false. And the alternative
+hypothesis which is here called
+
+16
+00:01:12,570 --> 00:01:17,970
+H1 is true. And the probability
+of making this error is called
+
+17
+00:01:17,970 --> 00:01:24,360
+beta. Now, of course, if not, if
+this is true, and we are not
+
+18
+00:01:24,360 --> 00:01:31,800
+rejecting it, then that is a
+correct decision. And if you
+
+19
+00:01:31,800 --> 00:01:38,580
+have looked at the some of the
+problems in the seminar activity
+
+20
+00:01:38,580 --> 00:01:44,730
+for last week, then you might
+also see that this, the
+
+21
+00:01:44,730 --> 00:01:48,630
+probability of making this
+correct decision is for
+
+22
+00:01:48,870 --> 00:01:56,250
+diagnostic test is called
+specificity. Okay. And then
+
+23
+00:01:56,280 --> 00:01:59,670
+finally, the other correct
+decision that you can make is to
+
+24
+00:01:59,670 --> 00:02:03,870
+reject the null hypothesis. If
+it is actually false, and the
+
+25
+00:02:03,870 --> 00:02:08,730
+alternative hypothesis is true.
+The probability of doing this is
+
+26
+00:02:08,730 --> 00:02:12,390
+called power, and then a
+diagnostic test. This would be
+
+27
+00:02:12,390 --> 00:02:20,580
+known as sensitivity. Okay, so
+we want to avoid a type one
+
+28
+00:02:20,580 --> 00:02:24,000
+error. Right? So how do you
+control it? Well, first of all,
+
+29
+00:02:24,780 --> 00:02:28,950
+we control the type one error
+rate directly because of the way
+
+30
+00:02:29,130 --> 00:02:33,240
+no hypothesis significance
+testing works, by just setting
+
+31
+00:02:33,270 --> 00:02:36,870
+alpha to an appropriate level.
+And usually we're using .05,
+
+32
+00:02:37,500 --> 00:02:42,630
+right. But there are many
+factors that can increase the
+
+33
+00:02:42,630 --> 00:02:46,440
+type one error rate, and we saw
+one in our first workshop
+
+34
+00:02:46,440 --> 00:02:53,880
+question for last week, if you
+remember, we talked about if we
+
+35
+00:02:53,880 --> 00:03:00,090
+have my many tests, and each
+individual test has a type one
+
+36
+00:03:00,090 --> 00:03:06,000
+error rate on alpha level of
+.05, how do these individual
+
+37
+00:03:06,000 --> 00:03:15,510
+alphas add up to the whole
+family, or in the whole family
+
+38
+00:03:15,870 --> 00:03:22,470
+of tests. And that is, for
+example, a problem when you do
+
+39
+00:03:22,470 --> 00:03:26,010
+neuroscience. And when you
+analyse brain areas, and you
+
+40
+00:03:26,010 --> 00:03:29,100
+want to compare lots of
+activation and lots of different
+
+41
+00:03:29,100 --> 00:03:32,970
+brain areas, and you are ready
+to reject your null hypothesis
+
+42
+00:03:33,090 --> 00:03:38,550
+that maybe is just nothing
+changes in the brain, I don't
+
+43
+00:03:38,550 --> 00:03:41,520
+really care about which area, I
+just care at my normal
+
+44
+00:03:41,520 --> 00:03:45,840
+processes, it's just I can see I
+will not see the effect
+
+45
+00:03:45,840 --> 00:03:49,800
+anywhere. And then I have 40
+different areas. And I do 40
+
+46
+00:03:49,800 --> 00:03:53,820
+different t-tests on brain
+activation in those areas. So in
+
+47
+00:03:53,820 --> 00:04:01,140
+this case, I definitely have to
+control the error, or control
+
+48
+00:04:01,140 --> 00:04:07,080
+the alpha, because so you did
+this in the workshop for for 40
+
+49
+00:04:07,080 --> 00:04:11,130
+comparisons, right. And you
+remember it was about the
+
+50
+00:04:11,130 --> 00:04:15,240
+probability was about 87%, of
+making at least one type one
+
+51
+00:04:15,240 --> 00:04:21,360
+error in the 40 tests. The more
+tests you make, of course, the
+
+52
+00:04:21,390 --> 00:04:26,580
+closer the probability gets to
+100. And that is just, if I have
+
+53
+00:04:26,580 --> 00:04:31,500
+a test that has a 5% probability
+built in of making an error,
+
+54
+00:04:31,710 --> 00:04:36,900
+then the more often I do the
+test, the more often I'm going
+
+55
+00:04:36,900 --> 00:04:41,280
+to get the error. So even if, if
+for a single test, right down
+
+56
+00:04:41,280 --> 00:04:46,050
+here, it's quite low. Even for
+two tests, that's already above
+
+57
+00:04:46,050 --> 00:04:53,910
+point oh five, right. And if I
+make many tests, I mean, even if
+
+58
+00:04:53,910 --> 00:04:58,500
+I do -- if I have just 20 tests
+-- we already have a Type I
+
+59
+00:04:58,500 --> 00:05:03,420
+error rate of about 60% Alright,
+so you need to control for this.
+
+60
+00:05:04,440 --> 00:05:08,970
+Otherwise, you're going to make
+a mistake. If what you're doing
+
+61
+00:05:09,000 --> 00:05:17,970
+is, you have one, no hypothesis
+that you would reject. Given any
+
+62
+00:05:17,970 --> 00:05:21,300
+significant result of any of
+these tests, it's important to
+
+63
+00:05:21,300 --> 00:05:26,460
+keep in mind if you if you have
+two different hypotheses, and
+
+64
+00:05:26,640 --> 00:05:30,210
+you do two t tests, and each one
+tests a completely different
+
+65
+00:05:30,210 --> 00:05:34,860
+hypothesis. And t test number
+two does not affect hypothesis
+
+66
+00:05:34,860 --> 00:05:38,220
+number one, then you don't have
+a test family, and then you
+
+67
+00:05:38,220 --> 00:05:44,190
+don't have to correct right, it
+is about rejecting one null
+
+68
+00:05:44,190 --> 00:05:47,430
+hypothesis, but you have
+multiple ways of rejecting it,
+
+69
+00:05:47,550 --> 00:05:54,630
+because you're doing multiple
+comparisons. Okay. So this is
+
+70
+00:05:54,630 --> 00:05:58,710
+called the family-wise Type I
+error rate. And as I just said,
+
+71
+00:05:59,010 --> 00:06:03,090
+a family of hypothesis tests is
+a number of tests that would
+
+72
+00:06:03,120 --> 00:06:08,370
+each on their own, lead you to
+reject one single null
+
+73
+00:06:08,370 --> 00:06:12,120
+hypothesis. So for example,
+let's say you're testing the
+
+74
+00:06:12,120 --> 00:06:15,390
+intervention on depression, and
+you want to see if the treatment
+
+75
+00:06:15,390 --> 00:06:18,300
+group differs from the control
+group in terms of mood,
+
+76
+00:06:18,570 --> 00:06:23,700
+activity, and sleep quality. So
+you're measuring these three
+
+77
+00:06:23,730 --> 00:06:28,710
+dependent variables for each of
+the sort of the difference in
+
+78
+00:06:28,710 --> 00:06:33,180
+these variables for each of the
+four, the control group and the
+
+79
+00:06:33,180 --> 00:06:40,170
+treatment group. And you conduct
+one t-test each for for each of
+
+80
+00:06:40,170 --> 00:06:44,820
+these measures. So your
+hypothesis is just that the
+
+81
+00:06:44,820 --> 00:06:47,700
+intervention has an effect, you
+don't care about whether the
+
+82
+00:06:47,700 --> 00:06:53,610
+effect is on mood, activity,
+sleep quality, a combination of
+
+83
+00:06:53,610 --> 00:06:57,660
+two of them, all three of them,
+you're happy, if it makes any
+
+84
+00:06:57,660 --> 00:07:03,330
+difference at all, okay, in this
+case, those three tests form a
+
+85
+00:07:03,330 --> 00:07:06,720
+test family, because you will
+reject the overall hypothesis
+
+86
+00:07:06,870 --> 00:07:12,990
+that says my treatment has no
+effect. If any of those three t
+
+87
+00:07:12,990 --> 00:07:16,710
+tests become significant, and
+then you can just calculate what
+
+88
+00:07:16,710 --> 00:07:21,780
+would the family-wise Type I
+error rate be? In this scenario,
+
+89
+00:07:21,840 --> 00:07:26,850
+so you have three tests with an
+alpha of 5%, of point oh five,
+
+90
+00:07:27,180 --> 00:07:31,050
+and you're going to reject the
+overall hypothesis, no matter
+
+91
+00:07:31,050 --> 00:07:35,190
+which one of those tests reaches
+significance, or maybe two, or
+
+92
+00:07:35,190 --> 00:07:39,480
+maybe three, could could be any
+of those cases. And, as we've
+
+93
+00:07:39,480 --> 00:07:44,850
+talked about, in the workshop
+last week, and as we talked
+
+94
+00:07:44,850 --> 00:07:49,200
+about in the previous slide,
+this probability is one minus
+
+95
+00:07:49,200 --> 00:07:54,150
+point nine, five, cube so to the
+third power, and that gives us
+
+96
+00:07:54,780 --> 00:08:01,800
+point 143. So 14.3% probability
+of rejecting the null
+
+97
+00:08:01,800 --> 00:08:06,690
+hypothesis, even if it is true.
+So even if there is absolutely
+
+98
+00:08:06,690 --> 00:08:11,430
+no true difference, in any of
+these three variables, we have a
+
+99
+00:08:11,430 --> 00:08:17,040
+14% probability of rejecting the
+null hypothesis and committing a
+
+100
+00:08:17,040 --> 00:08:23,640
+type one error. Okay, and that
+is no longer that is no longer
+
+101
+00:08:23,640 --> 00:08:30,960
+our 5% Alpha. Right? So if we
+said, oh, yeah, 5% probability
+
+102
+00:08:31,230 --> 00:08:37,320
+of, of incorrectly rejecting the
+null hypothesis I'm okay with
+
+103
+00:08:37,620 --> 00:08:42,870
+with that, right. But now we
+have a 14.3% probability of
+
+104
+00:08:42,870 --> 00:08:46,320
+incorrectly rejecting the null
+hypothesis. So what can we do
+
+105
+00:08:46,950 --> 00:08:52,320
+about this. And the easiest way
+to controlling the familywize
+
+106
+00:08:52,320 --> 00:08:57,720
+type one error rate, but also
+the most radical way, is the
+
+107
+00:08:57,720 --> 00:09:00,900
+Bonferroni correction. And if
+you've done undergraduate
+
+108
+00:09:00,900 --> 00:09:02,550
+statistics, you have heard of
+that.
+
+109
+00:09:04,010 --> 00:09:08,480
+What you do for the Bonferroni
+correction is you simply use a
+
+110
+00:09:08,480 --> 00:09:12,590
+different alpha. So you lower
+the alpha level by dividing it
+
+111
+00:09:12,590 --> 00:09:18,650
+by the number of tests. And you
+can see that it works. So if we
+
+112
+00:09:18,650 --> 00:09:23,420
+in this case, we use an alpha of
+point oh five divided by three.
+
+113
+00:09:23,510 --> 00:09:29,300
+So point oh five is our overall
+overall family wide alpha. And
+
+114
+00:09:29,330 --> 00:09:33,650
+now for each individual test, we
+then use an alpha of point o
+
+115
+00:09:33,650 --> 00:09:37,670
+one, seven. Now, of course, that
+makes it harder for us to reject
+
+116
+00:09:37,700 --> 00:09:41,300
+our null hypothesis. So it
+lowers our power, it increases
+
+117
+00:09:41,300 --> 00:09:46,490
+the probability of a Type two
+error. But in general, in Nolet,
+
+118
+00:09:46,490 --> 00:09:50,810
+prothesis significance testing
+we feel that a type one error is
+
+119
+00:09:50,840 --> 00:09:54,440
+worse than a type two error. So
+what we will try to do first is
+
+120
+00:09:54,440 --> 00:09:58,610
+control the type one error and
+then see what the consequences
+
+121
+00:09:58,610 --> 00:10:05,600
+of this is for Type two error.
+So if we look at what this does
+
+122
+00:10:05,600 --> 00:10:10,190
+to our type one error rate, so
+now we have, instead of point oh
+
+123
+00:10:12,710 --> 00:10:21,800
+5.95, we now have point 983,
+some, so one minus point o one,
+
+124
+00:10:21,800 --> 00:10:25,070
+seven, which is our new
+corrected alpha, right? So we
+
+125
+00:10:25,070 --> 00:10:33,140
+cube that. And so we get point,
+oh, four, nine. So it's a little
+
+126
+00:10:33,140 --> 00:10:37,310
+bit lower, even then our
+original alpha of point oh five,
+
+127
+00:10:37,310 --> 00:10:41,870
+but it's close enough. Because
+it is mathematically so easy
+
+128
+00:10:42,020 --> 00:10:47,030
+that we can, we are fine with
+doing it backwards. So although,
+
+129
+00:10:47,210 --> 00:10:51,110
+of course, for every little bit
+that you move the that you lower
+
+130
+00:10:51,110 --> 00:10:55,940
+the alpha, you increase the
+beta, so the probability of
+
+131
+00:10:55,940 --> 00:11:03,380
+making a type two error, and you
+lower your power. So but the
+
+132
+00:11:03,380 --> 00:11:06,770
+main thing is that with this
+correction, our type one error
+
+133
+00:11:06,770 --> 00:11:10,760
+rate is just below point oh,
+five, just like we wanted. Okay,
+
+134
+00:11:11,000 --> 00:11:14,000
+there are variations of this
+correction. So that's the
+
+135
+00:11:14,000 --> 00:11:18,170
+Bonferroni home correction, for
+example, where you say, Okay, I,
+
+136
+00:11:19,040 --> 00:11:24,740
+I don't correct all the tests
+equally, but rather, I, I have,
+
+137
+00:11:24,770 --> 00:11:27,860
+if I have one test that I
+particularly care about, then I
+
+138
+00:11:27,860 --> 00:11:31,940
+can correct that one less, and
+the other ones more, and I still
+
+139
+00:11:31,940 --> 00:11:38,450
+get the overall Type 1 error
+rate that I'm interested in. But
+
+140
+00:11:39,110 --> 00:11:43,310
+basically, the basic principle
+is the same, you sacrifice some
+
+141
+00:11:43,310 --> 00:11:51,500
+power in order to keep the Type
+I error rate controlled. And the
+
+142
+00:11:51,530 --> 00:11:55,310
+Bonferroni-Holm method, as
+opposed to the standard
+
+143
+00:11:55,310 --> 00:11:59,360
+Bonferroni method, just helps
+you do this. So you get the
+
+144
+00:11:59,360 --> 00:12:02,630
+maximum possible power for the
+one comparison, maybe you care
+
+145
+00:12:02,630 --> 00:12:11,120
+most about. Okay. So that's
+multiple comparisons. And and
+
+146
+00:12:11,120 --> 00:12:14,960
+you need to be honest about what
+a multiple or multiple
+
+147
+00:12:14,960 --> 00:12:19,340
+comparison is. Because often
+people are not honest about what
+
+148
+00:12:19,670 --> 00:12:25,190
+tests are a family. But, for
+example, if you're testing eight
+
+149
+00:12:25,190 --> 00:12:29,780
+variables, and so maybe you
+might be, you might be telling
+
+150
+00:12:29,780 --> 00:12:33,260
+yourself, yeah, I wouldn't, I
+wouldn't report this as
+
+151
+00:12:33,260 --> 00:12:36,830
+significant. If just, if it just
+comes out in one of the
+
+152
+00:12:36,830 --> 00:12:41,870
+variables, it has to come out in
+two or something like that. Is
+
+153
+00:12:41,870 --> 00:12:45,260
+that really what you're going to
+do? It is it is a good idea to
+
+154
+00:12:45,260 --> 00:12:50,510
+actually write down your
+decision strategy, and then
+
+155
+00:12:50,540 --> 00:12:54,380
+stick to it. And we'll we'll be
+talking about pre-registration,
+
+156
+00:12:55,130 --> 00:13:01,100
+a little bit in Lecture five.
+But that is part of the idea is,
+
+157
+00:13:01,250 --> 00:13:05,600
+is that you that you stick to
+one decision criterion, so you
+
+158
+00:13:05,600 --> 00:13:10,820
+can't just move go moving the
+goalposts because you say, "Oh,
+
+159
+00:13:11,030 --> 00:13:16,070
+I thought I was going to find an
+effect on mood. But I also
+
+160
+00:13:16,070 --> 00:13:19,280
+tested sleep quality. And sleep
+quality is of course, a
+
+161
+00:13:19,280 --> 00:13:23,930
+completely different hypothesis.
+So now, I'm going to report ---
+
+162
+00:13:25,070 --> 00:13:27,950
+So I'm going to say, oh, yeah,
+this is significant. I'm going
+
+163
+00:13:27,950 --> 00:13:32,240
+to just pretend that I was
+interested in sleep quality to
+
+164
+00:13:32,240 --> 00:13:35,450
+begin with." That doesn't work;
+that is moving the goalposts.
+
+165
+00:13:36,050 --> 00:13:41,030
+Okay. Multiple comparisons are
+not the only way to increase the
+
+166
+00:13:41,030 --> 00:13:43,670
+type one error rate. So in the
+lecture last week, I showed you
+
+167
+00:13:43,670 --> 00:13:48,890
+an example of an optional
+stopping rule. And these
+
+168
+00:13:48,890 --> 00:13:52,610
+stopping rules the way they work
+is -- and this is something that
+
+169
+00:13:52,610 --> 00:13:58,130
+people used to do all the time.
+And in actual research, because
+
+170
+00:13:58,130 --> 00:14:01,280
+they didn't know any better.
+They thought this was fine.
+
+171
+00:14:02,920 --> 00:14:10,450
+So if you so let's say you have
+collected 30 participants, and
+
+172
+00:14:10,450 --> 00:14:16,600
+you just look and see what what
+the data look like. Because it's
+
+173
+00:14:16,600 --> 00:14:20,290
+in general a good idea to check
+what you're actually doing, what
+
+174
+00:14:20,290 --> 00:14:23,080
+data you're actually collecting.
+It's good to check on the data
+
+175
+00:14:23,080 --> 00:14:27,940
+quality. Sure. And just to make
+sure that everything works, you
+
+176
+00:14:27,940 --> 00:14:32,800
+run the significance test and
+you find, yeah, I have a
+
+177
+00:14:32,800 --> 00:14:37,210
+significant effect. So great. So
+you stop data collection, and
+
+178
+00:14:37,210 --> 00:14:40,990
+you decide to publish the
+results with a significant
+
+179
+00:14:40,990 --> 00:14:47,410
+effect. Now the problem is, if
+you don't get a significant
+
+180
+00:14:47,410 --> 00:14:52,750
+result, what do you do then?
+Maybe, and this used to be very,
+
+181
+00:14:52,750 --> 00:14:57,100
+very common, that when people
+went to talk to their
+
+182
+00:14:57,100 --> 00:15:00,250
+dissertation supervisors, the
+supervisor would say, "Oh yeah,
+
+183
+00:15:00,250 --> 00:15:04,690
+you didn't get any results after
+30 participants, oh, well run 10
+
+184
+00:15:04,690 --> 00:15:09,880
+more people see what happens."
+And that is an optional stopping
+
+185
+00:15:09,880 --> 00:15:17,080
+rule. Because that means if I
+had gotten a significant result
+
+186
+00:15:17,080 --> 00:15:22,060
+after 30, participant, I would
+have stopped here. Now I'm
+
+187
+00:15:22,060 --> 00:15:27,220
+running 40 participants. So now
+after 40 participants, if I now
+
+188
+00:15:27,220 --> 00:15:32,950
+have a significant result, then
+I can stop. But if I still don't
+
+189
+00:15:32,950 --> 00:15:35,740
+have one, maybe I'll run 10
+more, maybe I'll go to 50
+
+190
+00:15:35,740 --> 00:15:43,270
+participants. But you see that
+each of these tests, each of
+
+191
+00:15:43,270 --> 00:15:48,940
+these tests is is a new
+comparison. I mean, is the the
+
+192
+00:15:48,940 --> 00:15:52,300
+thing that makes people feel
+better about this is that
+
+193
+00:15:52,300 --> 00:15:54,580
+they're not, of course, not
+completely independent from each
+
+194
+00:15:54,580 --> 00:15:57,700
+other, because you still have
+the 30 participants from the
+
+195
+00:15:57,700 --> 00:16:02,380
+first test. But you have to
+treat this, essentially, as a
+
+196
+00:16:02,380 --> 00:16:06,970
+new test that you are
+performing. And that new test.
+
+197
+00:16:07,420 --> 00:16:14,170
+Well, at worst has another .05
+alpha. Right. So now, with the
+
+198
+00:16:14,170 --> 00:16:18,760
+optional stuffing rule, you're
+again, performing essentially
+
+199
+00:16:18,790 --> 00:16:22,510
+multiple comparisons, and you're
+just picking and choosing the
+
+200
+00:16:22,510 --> 00:16:28,780
+one that is significant, right?
+Maybe when you have a
+
+201
+00:16:28,780 --> 00:16:35,950
+significant effect, after 30,
+then you collect data from some
+
+202
+00:16:35,950 --> 00:16:41,860
+participants who don't show the
+effect. So maybe you just had,
+
+203
+00:16:42,100 --> 00:16:45,130
+maybe you just had good luck or
+bad luck to get a couple of
+
+204
+00:16:45,130 --> 00:16:49,030
+participants where the effect is
+randomly strong. And then you
+
+205
+00:16:49,030 --> 00:16:53,860
+get, and then the next 10, it's
+not going to be very strong. So
+
+206
+00:16:53,860 --> 00:16:56,470
+after 40 participants, maybe you
+wouldn't get the effect
+
+207
+00:16:56,470 --> 00:17:00,100
+significant anymore. But if you
+have stopped collecting the data
+
+208
+00:17:00,130 --> 00:17:02,890
+after 30, because you found a
+significant result, you would
+
+209
+00:17:02,890 --> 00:17:07,180
+never get to these other
+participants, right? So you need
+
+210
+00:17:07,180 --> 00:17:12,970
+to have a firm stopping rule.
+You can say, I'm going to stop
+
+211
+00:17:13,000 --> 00:17:18,070
+after 40 participant data sets,
+no matter what happens, then you
+
+212
+00:17:18,070 --> 00:17:23,950
+are fine, because then you
+perform one test. And and that's
+
+213
+00:17:23,950 --> 00:17:27,130
+the test that that counts. And
+then if you have this firm
+
+214
+00:17:27,130 --> 00:17:31,630
+stopping roll, of course, you
+could peek at the data and say,
+
+215
+00:17:31,660 --> 00:17:36,460
+"Oh, yeah, if I had stopped
+collecting data now, the effect
+
+216
+00:17:36,460 --> 00:17:40,390
+would be significant. But oh,
+well, I need to see what happens
+
+217
+00:17:40,390 --> 00:17:43,930
+after 40 participants, I can't
+just stop at 30, just because
+
+218
+00:17:43,930 --> 00:17:49,330
+the effect is significant." You
+have to be principled like that.
+
+219
+00:17:49,480 --> 00:17:52,240
+And a lot of people aren't, and
+a lot of people don't realise
+
+220
+00:17:52,240 --> 00:17:58,360
+that it's a big deal, which is
+why this is so important. And
+
+221
+00:17:58,390 --> 00:18:05,800
+especially if the test narrowly
+missed significance. So I told
+
+222
+00:18:05,800 --> 00:18:10,720
+you last week, a p value of
+point o seven is for the
+
+223
+00:18:10,720 --> 00:18:14,140
+purposes of null hypothesis
+significance testing is
+
+224
+00:18:14,200 --> 00:18:18,280
+absolutely no different from a p
+value of point nine, nine,
+
+225
+00:18:18,640 --> 00:18:22,750
+right, it is not significant. It
+is not marginal, it is not
+
+226
+00:18:22,780 --> 00:18:30,490
+almost significant. It is it is
+simply not significant. But of
+
+227
+00:18:30,490 --> 00:18:35,560
+course, people like just like
+when you are when you miss the
+
+228
+00:18:35,560 --> 00:18:42,700
+train by 10 seconds instead of
+by 10 minutes. Where the end
+
+229
+00:18:42,700 --> 00:18:46,390
+result is the same. You're not
+on the train, right. But
+
+230
+00:18:47,740 --> 00:18:52,840
+people find it is much more
+frustrating to miss the train by
+
+231
+00:18:53,830 --> 00:18:57,730
+10 seconds, then by 10 minutes,
+because it's much easier to
+
+232
+00:18:57,730 --> 00:19:02,830
+imagine how it could have
+worked. So that is that is one
+
+233
+00:19:02,830 --> 00:19:09,580
+of the biases that Daniel
+Kahneman studied, right. So, of
+
+234
+00:19:09,580 --> 00:19:12,100
+course, and of course,
+psychology researchers are as
+
+235
+00:19:12,100 --> 00:19:17,170
+vulnerable to these biases as
+everyone else. So people say,
+
+236
+00:19:17,200 --> 00:19:20,950
+Oh, well, I have point oh seven
+that is so close to significant.
+
+237
+00:19:20,950 --> 00:19:24,370
+So if I just run five more
+participants, then I'll probably
+
+238
+00:19:24,370 --> 00:19:29,440
+get insignificant. And maybe
+it'll happen. Right? The problem
+
+239
+00:19:29,440 --> 00:19:33,640
+is that you would have to
+collect to correct for making
+
+240
+00:19:33,640 --> 00:19:38,080
+this decision to collect five
+more participants. And that is
+
+241
+00:19:38,380 --> 00:19:40,600
+correcting for it is quite
+tricky. I mean, in the worst
+
+242
+00:19:40,600 --> 00:19:45,760
+case, you would have to have
+your alpha, right, because
+
+243
+00:19:45,760 --> 00:19:49,990
+you're doing two tests, two
+comparisons now. And then of
+
+244
+00:19:49,990 --> 00:19:55,390
+course, a p value, even if after
+five more participants, you get
+
+245
+00:19:55,390 --> 00:19:58,540
+a P value of point oh five,
+that's no longer going to be
+
+246
+00:19:58,540 --> 00:20:02,860
+significant. So But people
+imagine that they don't have to
+
+247
+00:20:02,860 --> 00:20:07,900
+correct for this. And then, even
+worse, let's say it gets the
+
+248
+00:20:07,900 --> 00:20:11,410
+effect gets a tiny bit stronger
+after five more participants,
+
+249
+00:20:11,560 --> 00:20:16,840
+but it's still not at the
+criterion. So P equals point oh
+
+250
+00:20:16,840 --> 00:20:21,520
+six, we're moving in the right
+direction, let's just get some
+
+251
+00:20:21,520 --> 00:20:26,200
+more participants. And I think
+what underlies this problem is
+
+252
+00:20:26,200 --> 00:20:33,520
+that people correctly feel that
+a p-value --- So a result that
+
+253
+00:20:33,520 --> 00:20:38,410
+leads to a p-value of .06 is not
+that different from a result
+
+254
+00:20:38,410 --> 00:20:45,220
+that leads to a p value of .049.
+But if you're doing no
+
+255
+00:20:45,220 --> 00:20:49,600
+hypothesis significance testing,
+it completely changes your
+
+256
+00:20:49,600 --> 00:20:53,260
+decision. And that is just
+because you put the criterion
+
+257
+00:20:53,260 --> 00:20:56,620
+there, you have to put your
+criterion somewhere. Otherwise,
+
+258
+00:20:57,160 --> 00:21:00,400
+you can't use not hypothesis
+significance testing, you have
+
+259
+00:21:00,400 --> 00:21:04,900
+to have your criterion to reject
+or not reject. Right? And
+
+260
+00:21:05,080 --> 00:21:08,740
+because people naturally see,
+well, these results are not that
+
+261
+00:21:08,740 --> 00:21:13,420
+different. I could easily get
+from non significant to
+
+262
+00:21:13,420 --> 00:21:17,200
+significant event, just add a
+few participants. The problem is
+
+263
+00:21:17,200 --> 00:21:22,600
+that then the whole test
+strategy for for null hypothesis
+
+264
+00:21:22,600 --> 00:21:25,570
+significance testing, but the
+whole idea that we're limiting
+
+265
+00:21:25,570 --> 00:21:30,970
+the alpha level to .05 goes out
+the window, if you do that,
+
+266
+00:21:31,180 --> 00:21:39,250
+right. So people are not really
+aware of the reality that if you
+
+267
+00:21:39,250 --> 00:21:44,410
+don't follow null hypothesis
+significance testing completely
+
+268
+00:21:44,980 --> 00:21:52,180
+and and if you if you make some
+kind of weird hybrid version of
+
+269
+00:21:52,420 --> 00:21:55,540
+null hypothesis significance
+testing and interpreting
+
+270
+00:21:55,570 --> 00:22:00,220
+p-values as effect sizes and
+things like that, then
+
+271
+00:22:00,250 --> 00:22:02,710
+essentially, you should not be
+pretending that you're using
+
+272
+00:22:02,710 --> 00:22:05,710
+null hypothesis significance
+testing, because the problem is
+
+273
+00:22:05,770 --> 00:22:10,630
+that you make it look like you
+are actually using a principled
+
+274
+00:22:10,630 --> 00:22:13,120
+version of null hypothesis
+significance testing, when
+
+275
+00:22:13,120 --> 00:22:16,900
+actually you are you are moving
+the goalposts, right? And, and
+
+276
+00:22:16,900 --> 00:22:22,270
+you are, so you are claiming
+that something is evidence for
+
+277
+00:22:22,270 --> 00:22:24,940
+your alternative hypothesis,
+because you were able to reject
+
+278
+00:22:24,940 --> 00:22:28,930
+the null hypothesis, when
+actually the way you were able
+
+279
+00:22:28,930 --> 00:22:34,300
+to reject the null hypothesis is
+by not following the rules for
+
+280
+00:22:34,300 --> 00:22:39,370
+the test as they were set up, or
+as they should have been set up,
+
+281
+00:22:39,760 --> 00:22:44,350
+right? Okay, so you must correct
+for each test that you do on the
+
+282
+00:22:44,350 --> 00:22:49,120
+data, even if you are just
+peeking at the data, unless you
+
+283
+00:22:49,120 --> 00:22:52,840
+are prepared to completely and
+utterly disregard the test
+
+284
+00:22:52,840 --> 00:22:56,530
+pretended didn't happen 20
+participants, you run the test
+
+285
+00:22:56,530 --> 00:23:00,730
+just to see what happens, you
+get a significant result. And
+
+286
+00:23:00,730 --> 00:23:04,870
+you are prepared to completely
+ignore that pretended it didn't
+
+287
+00:23:04,870 --> 00:23:10,330
+happen, or treat it as, "Well,
+it was funny, it if I had
+
+288
+00:23:10,330 --> 00:23:13,540
+decided to just run 20
+participants, I would have found
+
+289
+00:23:13,540 --> 00:23:19,300
+a significant result. But I
+didn't. So I don't have a
+
+290
+00:23:19,300 --> 00:23:21,550
+significant result. And I'm
+completely fine with that,
+
+291
+00:23:21,550 --> 00:23:29,890
+because I made my rule to stop
+after 40 participants. And so
+
+292
+00:23:29,920 --> 00:23:32,350
+what happened after 20
+participants is completely
+
+293
+00:23:32,380 --> 00:23:36,670
+irrelevant for my test now."
+That is the kind of attitude
+
+294
+00:23:36,670 --> 00:23:39,190
+that you have to have with null
+hypothesis significance testing.
+
+295
+00:23:39,670 --> 00:23:41,620
+And that is what people
+criticise about it.
+
+296
+00:23:43,100 --> 00:23:48,110
+Okay, so now talking about the
+Type II error rate or beta (the
+
+297
+00:23:48,140 --> 00:23:52,070
+probability). So that is the
+probability that you fail to
+
+298
+00:23:52,070 --> 00:23:56,210
+reject the null hypothesis even
+though it is actually false. So
+
+299
+00:23:56,210 --> 00:24:00,020
+there is an effect, but your
+experiment failed to detect it.
+
+300
+00:24:00,620 --> 00:24:04,940
+And as I said before, the
+opposite of beta is power, the
+
+301
+00:24:04,940 --> 00:24:08,480
+probability that you correctly
+reject the null hypothesis given
+
+302
+00:24:08,480 --> 00:24:14,750
+that it is actually false. So
+how do you estimate power? Well,
+
+303
+00:24:14,780 --> 00:24:17,840
+first of all, you need to
+determine the critical test
+
+304
+00:24:17,840 --> 00:24:22,190
+statistic for rejecting your
+null hypothesis. So that could
+
+305
+00:24:22,190 --> 00:24:28,070
+be a t statistic, for example.
+So, this uses your assumption of
+
+306
+00:24:28,070 --> 00:24:31,910
+how results will be distributed
+given that the null hypothesis
+
+307
+00:24:31,910 --> 00:24:35,600
+is true, and it will depend on
+your chosen alpha. So for
+
+308
+00:24:35,600 --> 00:24:39,650
+example, if you if your test
+distribution is of F
+
+309
+00:24:39,650 --> 00:24:42,620
+distributions or a standard
+normal distribution, and you
+
+310
+00:24:42,620 --> 00:24:47,660
+have a two tailed test, then
+your critical test statistic
+
+311
+00:24:47,660 --> 00:24:56,060
+will be -1.96 or +1.96. And then
+you make you need to make some
+
+312
+00:24:56,090 --> 00:25:00,260
+additional assumptions about the
+alternative hypothesis because
+
+313
+00:25:00,350 --> 00:25:07,610
+Now, for determining power, you
+not only have to make one, use
+
+314
+00:25:07,610 --> 00:25:12,860
+or make one mathematical model,
+so one use one probability
+
+315
+00:25:12,860 --> 00:25:17,030
+distribution for the non
+hypothesis, but you need to have
+
+316
+00:25:17,030 --> 00:25:20,870
+a second probability
+distribution for the alternative
+
+317
+00:25:20,870 --> 00:25:25,070
+hypothesis. And usually, of
+course, you would assume that
+
+318
+00:25:25,520 --> 00:25:29,930
+the shape of the distribution is
+going to be the same. So the
+
+319
+00:25:29,930 --> 00:25:32,930
+same distribution as for the
+null hypothesis, usually some
+
+320
+00:25:32,930 --> 00:25:38,330
+kind of a normal distribution,
+right, or t-distribution, just
+
+321
+00:25:38,330 --> 00:25:41,750
+with a different mean, okay, and
+you would usually also assume
+
+322
+00:25:41,990 --> 00:25:47,060
+that it has the same variance or
+the same standard deviation as
+
+323
+00:25:47,060 --> 00:25:50,150
+the distribution for the null
+hypothesis, just that it is
+
+324
+00:25:50,150 --> 00:25:59,360
+shifted to one side to the left
+or to the right. Okay. So, for
+
+325
+00:25:59,360 --> 00:26:04,820
+example, let's assume that you
+want to test the effect of a new
+
+326
+00:26:04,820 --> 00:26:08,540
+depression treatment on mood. So
+let's just, let's just deal with
+
+327
+00:26:08,570 --> 00:26:15,170
+mood variable, let's just assume
+that you know, the, the
+
+328
+00:26:15,170 --> 00:26:20,240
+distribution of your measure. So
+let's say mood is normally
+
+329
+00:26:20,240 --> 00:26:24,560
+distributed with a standard
+deviation of four, let's just
+
+330
+00:26:24,560 --> 00:26:29,030
+assume that to make things
+easier, okay. So and you say you
+
+331
+00:26:29,030 --> 00:26:32,150
+would be satisfied with your
+treatment if it increased mood
+
+332
+00:26:32,300 --> 00:26:37,490
+by at least four units on the
+scale. Okay. So if participants
+
+333
+00:26:37,490 --> 00:26:40,880
+mood goes up by one standard
+deviation, which is quite a big
+
+334
+00:26:40,880 --> 00:26:47,570
+effect, you would be happy with
+the treatment. And let's just
+
+335
+00:26:47,570 --> 00:26:50,360
+hypothetically say that you
+don't really care if it improves
+
+336
+00:26:50,360 --> 00:26:57,020
+mood by less. So in that case,
+you can use you can use this as
+
+337
+00:26:57,020 --> 00:27:00,290
+a basis of calculating your
+power. So you want to have the
+
+338
+00:27:00,290 --> 00:27:05,810
+power of detecting an effect of
+one standard deviation. And
+
+339
+00:27:05,810 --> 00:27:13,430
+that's what Cohen's d is: you
+just calculate it by taking your
+
+340
+00:27:13,430 --> 00:27:17,450
+difference, so, subtracting the,
+the mean, ggiven the null
+
+341
+00:27:17,450 --> 00:27:20,360
+hypothesis -- Sorry, subtracting
+the mean, given the null
+
+342
+00:27:20,660 --> 00:27:23,120
+hypothesis from the mean, given
+the alternative hypothesis, so
+
+343
+00:27:23,120 --> 00:27:26,870
+in this case, the mean, given
+the null hypothesis is zero; the
+
+344
+00:27:26,870 --> 00:27:36,320
+mean given the alternative
+hypothesis is four, because we
+
+345
+00:27:36,320 --> 00:27:41,420
+said we want to see mood
+improvement by four points,
+
+346
+00:27:41,540 --> 00:27:48,560
+right, and then you divide by
+the standard deviation. So then
+
+347
+00:27:48,560 --> 00:28:00,140
+you get 4/4=1. Okay, so so that
+would be the simplest possible
+
+348
+00:28:01,820 --> 00:28:08,690
+way of doing this. So so let's
+say so the distribution you're
+
+349
+00:28:08,690 --> 00:28:11,750
+sampling from, you know, what,
+you know, the mean, and you
+
+350
+00:28:11,750 --> 00:28:16,160
+know, the standard deviation,
+and then you can calculate, and
+
+351
+00:28:16,160 --> 00:28:19,010
+then you just say I want to
+detect an effect size of one.
+
+352
+00:28:19,850 --> 00:28:23,000
+Okay, and if you remember, in
+G*Power, you also have to state
+
+353
+00:28:23,000 --> 00:28:28,280
+the effect size that you want to
+detect, of course. Okay, so
+
+354
+00:28:30,320 --> 00:28:40,730
+let's say that you have 16. So
+you have 16 participants. And
+
+355
+00:28:41,900 --> 00:28:47,870
+so, the null hypothesis is that
+this group of 16 participants
+
+356
+00:28:48,020 --> 00:28:52,940
+comes from this same
+distribution with a mean of zero
+
+357
+00:28:52,970 --> 00:29:00,140
+and a standard deviation of 4,
+okay. So, remember, when we are
+
+358
+00:29:00,140 --> 00:29:03,350
+taking when we are calculating
+means,
+
+359
+00:29:04,680 --> 00:29:12,360
+then these means come from
+distribution of the, of the
+
+360
+00:29:12,360 --> 00:29:17,370
+means are sampling distribution
+of the mean, right. And that has
+
+361
+00:29:17,370 --> 00:29:19,650
+the same mean as the
+distribution you're sampling
+
+362
+00:29:19,650 --> 00:29:25,290
+from, and, but smaller standard
+deviation, which is also called
+
+363
+00:29:25,290 --> 00:29:28,650
+the standard error of the mean,
+okay, and the standard error of
+
+364
+00:29:28,650 --> 00:29:34,650
+the mean, is the standard
+deviation of the distribution
+
+365
+00:29:34,650 --> 00:29:40,560
+that you're sampling from,
+divided by the square root of
+
+366
+00:29:40,560 --> 00:29:46,920
+the number of observations in
+each sample. So fall, in this
+
+367
+00:29:46,920 --> 00:29:57,030
+case, 4 over the square root of
+16 is 4/4, and it's 1. So I
+
+368
+00:29:57,030 --> 00:30:00,990
+chose these numbers of course to
+make the math As easy as
+
+369
+00:30:00,990 --> 00:30:09,660
+possible. So that means that for
+a two tailed test, since we are
+
+370
+00:30:09,690 --> 00:30:14,190
+since our distribute sampling
+distribution of the mean that we
+
+371
+00:30:14,190 --> 00:30:17,280
+are sampling from just happens
+to be the standard normal
+
+372
+00:30:17,280 --> 00:30:23,520
+distribution, right? Our
+critical set value for rejecting
+
+373
+00:30:23,520 --> 00:30:28,740
+the null hypothesis is 1.96.
+And, of course, if you were
+
+374
+00:30:28,740 --> 00:30:30,660
+sampling from a different
+distribution, you would, you
+
+375
+00:30:30,660 --> 00:30:35,760
+could just look this up. Okay,
+so you can just, you could just
+
+376
+00:30:35,760 --> 00:30:39,420
+use Excel, for example, to look
+at what your critical value
+
+377
+00:30:39,600 --> 00:30:45,990
+would be in that case. Okay, so
+if the alternative hypothesis is
+
+378
+00:30:45,990 --> 00:30:52,590
+true, we assume that the sample
+from the 16 participants will
+
+379
+00:30:52,590 --> 00:30:56,370
+come from a normal distribution
+with a mean of four, and the
+
+380
+00:30:56,370 --> 00:31:02,910
+standard error, that is also
+one. Okay, so we can so now, of
+
+381
+00:31:02,910 --> 00:31:05,280
+course, this is no longer the
+standard normal distribution.
+
+382
+00:31:05,400 --> 00:31:09,360
+And we can just, we can just
+look this up in a table,
+
+383
+00:31:09,450 --> 00:31:11,610
+although it's not that much
+different from the standard
+
+384
+00:31:11,610 --> 00:31:16,590
+normal distribution. The good
+thing is, we can just check in
+
+385
+00:31:16,620 --> 00:31:23,550
+we can excel can calculate
+probabilities for any kind of
+
+386
+00:31:23,550 --> 00:31:28,620
+distribution. So any kind of
+normal distribution. So what we
+
+387
+00:31:28,620 --> 00:31:32,760
+want to know is, what is the
+probability under this
+
+388
+00:31:32,760 --> 00:31:37,080
+alternative distribution, that
+we get a sample with a mean that
+
+389
+00:31:37,080 --> 00:31:40,740
+is lower than our critical
+value? Because in that case, if,
+
+390
+00:31:41,130 --> 00:31:45,000
+if our mean is lower than the
+critical value, we would fail to
+
+391
+00:31:45,000 --> 00:31:49,650
+reject the null hypothesis, even
+though now we are looking at the
+
+392
+00:31:49,650 --> 00:31:53,310
+distribution where the null
+hypothesis is objectively false,
+
+393
+00:31:53,610 --> 00:32:01,290
+because this distribution has a
+mean of four and not of zero. So
+
+394
+00:32:01,290 --> 00:32:05,220
+given a mean of four, given that
+the null hypothesis is false,
+
+395
+00:32:05,520 --> 00:32:10,650
+given that the mean is actually
+four and not zero, what is the
+
+396
+00:32:10,650 --> 00:32:15,570
+probability of still only
+getting a critical that value
+
+397
+00:32:15,570 --> 00:32:26,280
+here? Of 1.96? Okay, and we can
+ask Excel for that. So I'm just
+
+398
+00:32:26,280 --> 00:32:31,980
+going to pull up Excel here. And
+let's take a look. So what we
+
+399
+00:32:31,980 --> 00:32:38,010
+want here is we want to know,
+what is the probability of
+
+400
+00:32:38,160 --> 00:32:42,630
+getting a value of 1.96 from a
+normal distribution with a mean
+
+401
+00:32:42,630 --> 00:32:47,670
+of four and the standard
+deviation of one. So I can write
+
+402
+00:32:47,670 --> 00:32:52,680
+here =NORM.DIST. And that
+returns the normal distribution
+
+403
+00:32:52,680 --> 00:32:57,720
+for the specified mean, and
+standard deviation. Okay, we
+
+404
+00:32:57,750 --> 00:33:05,250
+would like that. Okay. And then
+then it says here, "x". So that
+
+405
+00:33:05,250 --> 00:33:11,070
+is the value that the or the
+cutoff value that we want to get
+
+406
+00:33:12,090 --> 00:33:20,100
+the area to the left of for the
+distribution. Okay. So 1.96,
+
+407
+00:33:20,910 --> 00:33:26,580
+comma, and then the mean of this
+distribution -- 4 -- then the
+
+408
+00:33:26,580 --> 00:33:31,200
+standard deviation, we said 1,
+and then the last one is, do you
+
+409
+00:33:31,200 --> 00:33:37,920
+want the cumulative
+distribution? Or do you want
+
+410
+00:33:37,920 --> 00:33:43,770
+just the probability density
+function? For our purposes, if
+
+411
+00:33:43,770 --> 00:33:46,800
+we want the area under the
+curve, we always want
+
+412
+00:33:47,310 --> 00:33:52,860
+cumulative? The cumulative
+distribution function, okay, we
+
+413
+00:33:52,860 --> 00:33:59,130
+always want true in this case.
+Okay. So here, we are getting
+
+414
+00:33:59,580 --> 00:34:12,720
+.020675. Okay, so the value of
+1.96 only cuts off about 2% of
+
+415
+00:34:12,720 --> 00:34:16,920
+the distribution given that the
+null hypothesis is false. And
+
+416
+00:34:16,920 --> 00:34:21,660
+the alternative hypothesis that
+the mean is actually 4 is true.
+
+417
+00:34:23,070 --> 00:34:30,690
+Okay, so we can get rid of
+Excel. So yeah, so this tells us
+
+418
+00:34:30,690 --> 00:34:35,280
+again, this is just with
+rounding. So it's .021, beta is
+
+419
+00:34:35,280 --> 00:34:42,390
+.021. So the power is one minus
+point O two one. And that gives
+
+420
+00:34:42,420 --> 00:34:53,790
+us .9799 or rounded again, 98%.
+Okay, so this is so I think,
+
+421
+00:34:54,750 --> 00:34:57,930
+maybe you've seen the principle,
+but it is always nice to have a
+
+422
+00:34:57,930 --> 00:35:04,350
+visualisation for this And
+someone called Kristoffer
+
+423
+00:35:04,350 --> 00:35:08,430
+Magnusson actually made a great
+visual visualisation for this,
+
+424
+00:35:08,970 --> 00:35:13,830
+which I have the link to here.
+So you can we can replicate our
+
+425
+00:35:13,830 --> 00:35:17,190
+analysis here. And then we can
+try different values. So what
+
+426
+00:35:17,190 --> 00:35:20,370
+happens if we increase or
+decrease sample size, we can
+
+427
+00:35:20,370 --> 00:35:24,630
+find out what sample size we
+need for our power of .8. What
+
+428
+00:35:24,630 --> 00:35:32,940
+happens if we use reduce alpha t
+.0025? So let's start with the
+
+429
+00:35:32,970 --> 00:35:38,850
+just replicating the analysis.
+Okay, so here's that website.
+
+430
+00:35:40,650 --> 00:35:47,190
+And so here, this is the
+visualisation. So you can see
+
+431
+00:35:47,190 --> 00:35:54,240
+that this, this makes things
+possibly a lot clearer. So what
+
+432
+00:35:54,240 --> 00:35:59,310
+we just were trying to get was
+power. Okay, so we said we
+
+433
+00:35:59,310 --> 00:36:05,550
+wanted an effect size of Cohen's
+d of 1. So here we go. Oh, now
+
+434
+00:36:05,550 --> 00:36:11,220
+it's .97. Here's 1. Okay. We
+said we had a sample size of 16.
+
+435
+00:36:11,730 --> 00:36:18,570
+And we wanted a significance
+level of point oh, five, and we
+
+436
+00:36:18,570 --> 00:36:24,690
+would like to have a two tailed
+right. So this is exactly what
+
+437
+00:36:24,690 --> 00:36:30,660
+we just calculated using Excel.
+Only that here you have it now,
+
+438
+00:36:30,810 --> 00:36:37,320
+nicely visualised. Okay, so
+here, and and you know, even you
+
+439
+00:36:37,320 --> 00:36:42,300
+can even hover over it over some
+of the areas and it will tell
+
+440
+00:36:42,300 --> 00:36:47,760
+you, so, this, the dotted line
+is the distribution given that
+
+441
+00:36:47,760 --> 00:36:51,450
+the null hypothesis is true.
+Okay, so we're doing a two
+
+442
+00:36:51,450 --> 00:36:54,900
+tailed test. So it's centred on
+zero. And we're doing a two
+
+443
+00:36:54,900 --> 00:36:59,490
+tailed test. So the rejection
+regions are to the left, and to
+
+444
+00:36:59,490 --> 00:37:04,530
+the right. So this the area, the
+red area, here is alpha, the two
+
+445
+00:37:04,530 --> 00:37:10,170
+areas together, okay, then,
+here, we have the critical set
+
+446
+00:37:10,170 --> 00:37:21,480
+value, which we know. In our
+case, which we know. In our
+
+447
+00:37:21,480 --> 00:37:24,780
+case, well, here, this is just
+scaled a little bit differently,
+
+448
+00:37:24,780 --> 00:37:29,670
+because we don't have we have
+this being a standard normal
+
+449
+00:37:29,670 --> 00:37:35,400
+distribution as well. So of the
+distribution here, but
+
+450
+00:37:35,580 --> 00:37:40,650
+essentially, this is the
+critical that value here. And it
+
+451
+00:37:40,650 --> 00:37:46,920
+cuts off exactly 2% of the
+distribution given the
+
+452
+00:37:47,160 --> 00:37:51,630
+alternative hypothesis. And all
+the other area on the
+
+453
+00:37:51,630 --> 00:37:57,300
+distribution here giving the
+alternative hypothesis is power.
+
+454
+00:37:57,780 --> 00:38:02,250
+So the area this, this area, the
+shaded in blue, and this
+
+455
+00:38:02,250 --> 00:38:05,970
+includes the this thing shaded
+in red here, because this is
+
+456
+00:38:05,970 --> 00:38:08,820
+just in front of it, right. So
+all of this (area under the
+
+457
+00:38:08,850 --> 00:38:14,820
+curve) until here, the critical
+z-value, gives us the power.
+
+458
+00:38:15,510 --> 00:38:21,180
+Okay, so power, beta, and alpha.
+And now we can see how things
+
+459
+00:38:21,180 --> 00:38:27,600
+change. So wow do things change,
+if we reduce the sample size to,
+
+460
+00:38:27,630 --> 00:38:34,920
+let's say, eight. So you can
+see, by reducing the sample
+
+461
+00:38:34,920 --> 00:38:41,100
+size, the distributions of the
+mean of the sample mean get
+
+462
+00:38:41,100 --> 00:38:46,380
+wider, because remember you
+there, we're dividing by the
+
+463
+00:38:46,380 --> 00:38:51,990
+square root of the sample size
+to determine the standard error,
+
+464
+00:38:52,230 --> 00:38:58,020
+so, the greater the sample size,
+the smaller the standard error,
+
+465
+00:38:58,020 --> 00:39:00,300
+and the narrower the
+distributions are going to be.
+
+466
+00:39:00,420 --> 00:39:05,100
+So you can see now we have a lot
+more overlap here, beta is a lot
+
+467
+00:39:05,100 --> 00:39:11,670
+greater alpha is still the same
+at 5% Right, but now the price
+
+468
+00:39:11,670 --> 00:39:17,730
+of having an alpha of 5% is
+having a beta of 19%. So by
+
+469
+00:39:17,760 --> 00:39:22,380
+reducing the number of
+participants from 16 to eight,
+
+470
+00:39:22,740 --> 00:39:23,640
+our
+
+471
+00:39:25,520 --> 00:39:36,260
+beta goes up from 2% to 19%.
+Okay, and we can also take a
+
+472
+00:39:36,260 --> 00:39:41,750
+look at what happens if you
+change the significance level.
+
+473
+00:39:42,020 --> 00:39:48,050
+So if we go down to we can do
+point two five, but we can do
+
+474
+00:39:48,050 --> 00:39:53,270
+point oh three, right. So what
+happens so just to give you the
+
+475
+00:39:53,270 --> 00:39:59,600
+comparison, what happens is, if
+you cut off a smaller part of
+
+476
+00:39:59,600 --> 00:40:04,220
+the My extreme parts only have
+the distribution given that the
+
+477
+00:40:04,220 --> 00:40:09,950
+null hypothesis is true. That
+means that the criterion moves
+
+478
+00:40:09,950 --> 00:40:14,270
+to the right, and also cuts off
+a bigger part of the alternative
+
+479
+00:40:14,270 --> 00:40:18,560
+distribution. So that means beta
+goes up. Right, so now we have
+
+480
+00:40:18,560 --> 00:40:24,440
+20%. Beta. If we reduce this to
+point, a one, it goes even
+
+481
+00:40:24,440 --> 00:40:31,280
+further, and we have 40%. Beta,
+right? While the type one error
+
+482
+00:40:31,280 --> 00:40:34,160
+is, of course, no one now,
+because for the type one error,
+
+483
+00:40:34,160 --> 00:40:38,240
+we only have this tiny little
+bit, you can't even hover over
+
+484
+00:40:38,240 --> 00:40:43,610
+that, (it is) so tiny, the
+alpha. But the price of that was
+
+485
+00:40:44,120 --> 00:40:48,140
+a reduction in power. Okay. And
+this is, of course, for a large
+
+486
+00:40:48,140 --> 00:40:55,310
+effect size. Let's, let's go
+back to .05. And let's reset the
+
+487
+00:40:55,310 --> 00:41:00,320
+zoom so we can see all of the
+distributions. So if we reduce
+
+488
+00:41:00,320 --> 00:41:04,670
+the effect size, that means,
+let's see if you are prepared
+
+489
+00:41:04,970 --> 00:41:08,360
+for what's going to happen.
+Think about what's going to
+
+490
+00:41:08,360 --> 00:41:12,170
+happen if I reduce the effect
+size, what part of the plot is
+
+491
+00:41:12,170 --> 00:41:16,970
+going to change? Okay. All
+right. So that's what's going to
+
+492
+00:41:16,970 --> 00:41:20,270
+change. Did you expect this that
+the distributions would be
+
+493
+00:41:20,270 --> 00:41:25,280
+closer together? If so, well
+done. So yeah, so now we have an
+
+494
+00:41:25,280 --> 00:41:30,440
+effect size of only half a
+standard deviation. So Cohen's d
+
+495
+00:41:30,440 --> 00:41:43,880
+equals .5. And now, you can see
+with this smaller effect size,
+
+496
+00:41:44,060 --> 00:41:47,900
+now the distributions overlap
+quite a lot. And now actually,
+
+497
+00:41:47,900 --> 00:41:53,840
+we only have a power of 29%. How
+could we get the power greater
+
+498
+00:41:53,840 --> 00:41:57,170
+again, well, we could increase
+the sample size, let's say we go
+
+499
+00:41:57,170 --> 00:42:02,720
+to 30. Okay, and resetting the
+zoom, so you can see better, so
+
+500
+00:42:02,810 --> 00:42:07,850
+that makes the distributions
+narrower. And now, because they
+
+501
+00:42:07,850 --> 00:42:14,150
+are narrower, they overlap less.
+And that also means that the
+
+502
+00:42:14,150 --> 00:42:18,230
+proportion cut off by the critic
+criterion from the alternative
+
+503
+00:42:18,230 --> 00:42:25,700
+distribution is now lower again,
+so 22%. Similarly, as you can,
+
+504
+00:42:25,730 --> 00:42:32,660
+you can use this to solve for
+other things. So. So for
+
+505
+00:42:32,660 --> 00:42:38,120
+example, if we, so how many
+participants do we need, in this
+
+506
+00:42:38,120 --> 00:42:41,750
+case, let's say we wanted a
+power in this case of point
+
+507
+00:42:41,750 --> 00:42:48,170
+nine, five. So we can just
+adjust the slider. And so we
+
+508
+00:42:48,170 --> 00:42:52,250
+would have the distributions,
+they would have to be so narrow,
+
+509
+00:42:52,430 --> 00:42:59,180
+that only 5% of the area under
+the alternative distribution is
+
+510
+00:42:59,180 --> 00:43:05,480
+smaller than the criteria. And
+of course, 2.5% here and 2.5%
+
+511
+00:43:05,480 --> 00:43:13,190
+here, that's that is just the
+alpha level, right? So so beta
+
+512
+00:43:13,580 --> 00:43:18,650
+here is controlled as 95% but it
+means our sample size goes up
+
+513
+00:43:18,650 --> 00:43:23,720
+quite a bit. So 51.98. And since
+we can't have .98 of a
+
+514
+00:43:23,720 --> 00:43:28,520
+participant in practice, it
+would have to be 52 participants
+
+515
+00:43:28,550 --> 00:43:34,970
+right. And so, you can you can
+just play with this a little bit
+
+516
+00:43:35,000 --> 00:43:45,800
+or you can you can see, I have a
+sample size of 80 and I want I
+
+517
+00:43:45,800 --> 00:43:50,750
+want alpha of point o five and
+power of point nine five, so
+
+518
+00:43:50,780 --> 00:43:57,920
+what is the smallest the
+smallest effect size that I can
+
+519
+00:43:57,920 --> 00:44:04,790
+detect with this? And the answer
+is .4, Cohen's d of .4. Okay. So
+
+520
+00:44:04,820 --> 00:44:12,200
+this is quite useful for you to
+play with, and see how the, how
+
+521
+00:44:12,200 --> 00:44:13,160
+the different
+
+522
+00:44:15,280 --> 00:44:19,750
+how the different parameters
+here of the of the test affect
+
+523
+00:44:20,020 --> 00:44:23,830
+the outcome given that the null
+hypothesis is true, and given
+
+524
+00:44:23,830 --> 00:44:30,700
+that the null hypothesis is not.
+Okay. And so, just to just to go
+
+525
+00:44:30,700 --> 00:44:36,880
+back to our example, from the
+slides, so, if we have again, at
+
+526
+00:44:36,880 --> 00:44:44,260
+Cohen's d of one and we want a
+power of .8, then we would need
+
+527
+00:44:44,260 --> 00:44:48,820
+-- let's just reset the zoom --
+then we would need a sample size
+
+528
+00:44:48,910 --> 00:45:04,480
+of 7.85. So, 8, right, if that
+is what we wanted. Okay, good.
+
+529
+00:45:04,930 --> 00:45:13,150
+So let's move on. So of course,
+in reality, we don't have that
+
+530
+00:45:13,150 --> 00:45:20,410
+distribution. In reality, we
+have to estimate the the
+
+531
+00:45:20,410 --> 00:45:24,070
+standard deviation of the
+population and the standard
+
+532
+00:45:24,070 --> 00:45:27,520
+deviation of the sampling
+distribution using the standard
+
+533
+00:45:27,520 --> 00:45:31,840
+deviation of the sample. And as
+we said last week, This forces
+
+534
+00:45:31,840 --> 00:45:41,710
+us to use the t distribution.
+Okay, so let's say, let's say we
+
+535
+00:45:41,710 --> 00:45:51,400
+still want to find a Cohen's d
+of one. But now, we have two
+
+536
+00:45:51,400 --> 00:45:59,440
+groups in a t test. And we want
+to calculate power, given our 16
+
+537
+00:45:59,440 --> 00:46:07,030
+participants, so eight per
+group. And what the power is,
+
+538
+00:46:07,840 --> 00:46:12,880
+given Cohen's d of 1 and an
+alpha level of .05, so let's go
+
+539
+00:46:12,880 --> 00:46:22,240
+to G*Power. Okay, so there it
+is. And now we have a t-test,
+
+540
+00:46:22,960 --> 00:46:31,900
+again, so we want to get our two
+independent means, okay. And now
+
+541
+00:46:31,900 --> 00:46:38,230
+the type of power analysis that
+we want is compute achieved
+
+542
+00:46:38,230 --> 00:46:42,400
+power. So we want to see, what
+power do we have, in this case
+
+543
+00:46:42,400 --> 00:46:45,880
+with a sample size of eight and
+Group one, and eight in Group
+
+544
+00:46:45,880 --> 00:46:51,820
+two? Of course, we want two
+tailed tests. And we want an
+
+545
+00:46:51,820 --> 00:46:57,700
+effect size of 1. So let's
+calculate that. And you can see
+
+546
+00:46:57,730 --> 00:47:12,190
+we achieve a power of .461. So
+46% power, or a beta of about
+
+547
+00:47:12,190 --> 00:47:24,430
+53? point, let's say 8%. Okay.
+Okay. So what does a significant
+
+548
+00:47:24,430 --> 00:47:29,620
+result actually tell us? And,
+and we got to that a little bit
+
+549
+00:47:29,620 --> 00:47:35,860
+when we talked about the
+statements in the seminar
+
+550
+00:47:35,860 --> 00:47:46,240
+activity last week, so, but I
+want to talk about it a little
+
+551
+00:47:46,240 --> 00:47:52,450
+bit more in terms of multiple
+studies. And so what do we and
+
+552
+00:47:52,450 --> 00:47:58,150
+also in terms of, if you if you
+actually got to in the seminar
+
+553
+00:47:58,420 --> 00:48:03,340
+activity if you got to the
+exercise on sensitivity and
+
+554
+00:48:03,340 --> 00:48:10,960
+specificity? And so, in terms of
+this of diagnosticity of a test,
+
+555
+00:48:11,470 --> 00:48:17,410
+right? So, what proportion of
+significant p values is actually
+
+556
+00:48:17,410 --> 00:48:22,510
+due to a false positive? And
+this is not. So again, if you if
+
+557
+00:48:22,510 --> 00:48:30,760
+you paid attention in the in the
+seminar, for Question 1, you
+
+558
+00:48:30,760 --> 00:48:34,090
+will, you will probably be a
+little bit more careful now. So,
+
+559
+00:48:34,840 --> 00:48:38,140
+what proportion of significant p
+values is actually due to a
+
+560
+00:48:38,140 --> 00:48:45,310
+false positive? If you want to
+say, .05, then, well, you are
+
+561
+00:48:45,310 --> 00:48:48,970
+right, given that the null
+hypothesis is true, but we
+
+562
+00:48:48,970 --> 00:48:51,640
+actually don't know if the null
+hypothesis is true or not.
+
+563
+00:48:51,760 --> 00:48:58,870
+Right. So, if, depending on
+depending on whether the null
+
+564
+00:48:58,870 --> 00:49:06,040
+hypothesis -- if the hypothesis
+is false, then well, then, of
+
+565
+00:49:06,040 --> 00:49:06,730
+course,
+
+566
+00:49:08,040 --> 00:49:12,210
+the significant p value is not
+due to a false positive, right.
+
+567
+00:49:12,360 --> 00:49:16,950
+So, in reality, the significant
+pair of p values that we get are
+
+568
+00:49:16,950 --> 00:49:21,210
+a mix of false positives and
+true positives. Right. So, how
+
+569
+00:49:21,210 --> 00:49:28,170
+do we get the number of true
+positives? And, again, if you
+
+570
+00:49:28,170 --> 00:49:31,590
+want to go back and look at
+question three of the seminar
+
+571
+00:49:31,590 --> 00:49:36,510
+activity last week, to see the
+parallels here, that would be a
+
+572
+00:49:36,510 --> 00:49:41,820
+very neat exercise for you to do
+if you if you have the time. If
+
+573
+00:49:41,820 --> 00:49:46,950
+not, I don't blame you. Okay, so
+let's make some assumptions.
+
+574
+00:49:46,950 --> 00:49:52,320
+Let's assume we have an alpha of
+point oh five, we have a power
+
+575
+00:49:52,320 --> 00:49:56,850
+of point eight. And now we are
+looking at 200 studies. And
+
+576
+00:49:56,850 --> 00:50:04,110
+again, going back to that
+question 3 on "What's the
+
+577
+00:50:04,110 --> 00:50:11,430
+probability that I have COVID
+given a positive test?" This is
+
+578
+00:50:11,430 --> 00:50:16,500
+very similar. What's the
+probability that I have that I
+
+579
+00:50:16,500 --> 00:50:20,880
+have found an actual difference
+in the world based on my
+
+580
+00:50:20,880 --> 00:50:25,410
+significant result, compared to
+the probability that this is a
+
+581
+00:50:25,410 --> 00:50:30,420
+false positive? And I have
+actually, and actually, there is
+
+582
+00:50:30,420 --> 00:50:38,400
+no true difference in the world.
+Okay. So, if you remember, you
+
+583
+00:50:38,400 --> 00:50:44,610
+had to assume that you had to in
+question three, you have to
+
+584
+00:50:44,610 --> 00:50:49,170
+assume something about the base
+rate. So what percentage of
+
+585
+00:50:49,170 --> 00:50:53,850
+people with symptoms actually
+have COVID. And like that, we
+
+586
+00:50:53,850 --> 00:50:58,350
+also have to assume similar
+something about hypotheses. So
+
+587
+00:50:58,470 --> 00:51:03,000
+let's say, in psychology, 50%,
+of all hypotheses that are
+
+588
+00:51:03,000 --> 00:51:06,570
+tested are actually true. And
+then it's actually quite high.
+
+589
+00:51:07,440 --> 00:51:10,920
+So that would mean that people
+are very good at making
+
+590
+00:51:10,920 --> 00:51:15,540
+hypotheses. But let's just say
+it's 50%. So then, if we are
+
+591
+00:51:15,540 --> 00:51:21,570
+looking at 200 studies, at 200 t
+tests, right, from from 200
+
+592
+00:51:21,570 --> 00:51:28,170
+different studies, then then 100
+of them test a hypothesis that's
+
+593
+00:51:28,170 --> 00:51:32,460
+actually true. And 100 of them
+test a hypothesis that's
+
+594
+00:51:32,490 --> 00:51:37,980
+actually false. And so let's
+take, let's take a look at this,
+
+595
+00:51:37,980 --> 00:51:44,010
+then let's fill in this table.
+So we know that we're using an
+
+596
+00:51:44,010 --> 00:51:52,530
+alpha level of point oh five,
+right. So in this case, 95. So
+
+597
+00:51:52,530 --> 00:51:57,570
+if the null hypothesis is true,
+we will not reject and correctly
+
+598
+00:51:57,570 --> 00:52:03,630
+not reject the null hypothesis
+in 95, out of the 100 studies,
+
+599
+00:52:04,020 --> 00:52:11,190
+and we will incorrectly reject
+the null hypothesis and five out
+
+600
+00:52:11,190 --> 00:52:18,120
+of those out of those 100
+studies, right, and the
+
+601
+00:52:18,120 --> 00:52:21,780
+percentage that you have behind
+there is what percentage this is
+
+602
+00:52:21,780 --> 00:52:29,670
+of the total of 200 studies.
+Okay, so then, if the null
+
+603
+00:52:29,670 --> 00:52:33,000
+hypothesis is all is actually
+false, and the alternative
+
+604
+00:52:33,000 --> 00:52:36,990
+hypothesis is true. So again, we
+have 100 studies where that is
+
+605
+00:52:36,990 --> 00:52:44,580
+the case, then. So here, we have
+to make another assumption, we
+
+606
+00:52:44,580 --> 00:52:49,680
+have to assume that our studies
+have a power of point eight,
+
+607
+00:52:50,130 --> 00:52:56,790
+right? So in this case, which is
+quite high. So in this case, we
+
+608
+00:52:56,790 --> 00:52:59,010
+reject the null, like, we
+correctly reject the null
+
+609
+00:52:59,010 --> 00:53:03,150
+hypothesis for 80 out of the 100
+studies, where the null
+
+610
+00:53:03,150 --> 00:53:06,630
+hypothesis is actually false,
+and we fail to reject it
+
+611
+00:53:06,780 --> 00:53:11,490
+incorrectly. So committing a
+type two error in 20, out of the
+
+612
+00:53:11,490 --> 00:53:21,300
+100 studies. Okay. So let's so
+now let's take a look at at the
+
+613
+00:53:21,330 --> 00:53:25,290
+percentages here. And again, go
+back to go back to Question
+
+614
+00:53:25,290 --> 00:53:29,250
+three, if you want to see the
+parallel of this to the COVID
+
+615
+00:53:29,250 --> 00:53:29,730
+test,
+
+616
+00:53:31,070 --> 00:53:36,380
+because you're making the same
+kind of table. Okay, so we have
+
+617
+00:53:36,410 --> 00:53:42,410
+85 significant tests. So
+5+80=85. These are significance
+
+618
+00:53:42,410 --> 00:53:46,160
+test significant tests, where
+the test rejects the null
+
+619
+00:53:46,160 --> 00:53:52,790
+hypothesis. Okay? So out of
+those 85 significant tests, five
+
+620
+00:53:52,820 --> 00:53:59,570
+are false positives. So five
+divided by 85 is 5.88%. And we
+
+621
+00:53:59,570 --> 00:54:03,680
+call this the false positive
+rate. I mentioned this in the
+
+622
+00:54:04,460 --> 00:54:08,570
+seminar, as well in the well in
+the seminar slides, at least if
+
+623
+00:54:08,570 --> 00:54:15,500
+you didn't get to the question.
+And then 80 of the 85
+
+624
+00:54:15,500 --> 00:54:20,180
+significant tests are true
+positives. So that's one minus
+
+625
+00:54:20,300 --> 00:54:25,100
+basically -- well, it's in terms
+of percentages 100 minus the
+
+626
+00:54:25,100 --> 00:54:30,590
+false positive rate. So this is
+the positive predictive value.
+
+627
+00:54:30,920 --> 00:54:37,100
+And these team terms were coined
+by John Ioannides this in a
+
+628
+00:54:37,100 --> 00:54:40,070
+research paper that got a lot of
+attention, you can click on this
+
+629
+00:54:40,070 --> 00:54:50,090
+and and read it. Unfortunately,
+John iron ideas has, well, he
+
+630
+00:54:50,090 --> 00:54:56,930
+has maybe well, he's he's sort
+of gone out of his area of
+
+631
+00:54:56,930 --> 00:55:01,340
+expertise recently with with
+COVID. So If you're interested
+
+632
+00:55:01,610 --> 00:55:07,130
+in that, look it up it has sort
+of damaged the the image that a
+
+633
+00:55:07,130 --> 00:55:11,420
+lot of people had of him.
+Similar to quite similar to
+
+634
+00:55:11,420 --> 00:55:14,930
+Daryl -- to what happened with
+Daryl Bem. Right. So So I guess
+
+635
+00:55:14,930 --> 00:55:24,410
+everyone has their particular
+area where they may be, well,
+
+636
+00:55:24,440 --> 00:55:29,780
+where they may be a little bit
+outside of what, what would
+
+637
+00:55:29,900 --> 00:55:36,590
+possibly be a reasonable
+position. But anyway, in this
+
+638
+00:55:36,590 --> 00:55:42,920
+paper was very well received.
+And it was actually about the
+
+639
+00:55:42,920 --> 00:55:47,330
+false positive rate in medicine.
+And in medicine, the situation
+
+640
+00:55:47,330 --> 00:55:51,500
+is actually a bit better than in
+psychology because at least
+
+641
+00:55:51,740 --> 00:56:01,070
+there you have clinical studies
+that are pre registered, and
+
+642
+00:56:01,280 --> 00:56:04,940
+very carefully controlled double
+blind studies, which in
+
+643
+00:56:04,940 --> 00:56:11,750
+psychology, we tend to do very
+little of those kind of double
+
+644
+00:56:11,750 --> 00:56:14,480
+blind studies where the
+experimenter also doesn't know
+
+645
+00:56:14,630 --> 00:56:19,880
+which group the participant is
+in, or what condition the the
+
+646
+00:56:19,880 --> 00:56:26,690
+participant is working. But
+still, his conclusion was in
+
+647
+00:56:26,690 --> 00:56:32,960
+their paper, that the state of
+testing in medicine was quite
+
+648
+00:56:32,960 --> 00:56:37,640
+worrying with a high false
+positive rate, and a much lower
+
+649
+00:56:37,640 --> 00:56:41,870
+positive predictive value than
+you would want in something as
+
+650
+00:56:41,870 --> 00:56:48,200
+important as clinical testing.
+So why is this a problem, so
+
+651
+00:56:48,200 --> 00:56:53,510
+maybe you didn't find this
+results in the table to be
+
+652
+00:56:53,510 --> 00:56:58,340
+looking so bad, I mean, false
+positive rate of 5.88. That's
+
+653
+00:56:58,340 --> 00:57:02,960
+not, that's not terrible. But
+that is also assuming that
+
+654
+00:57:04,580 --> 00:57:08,000
+making some assumptions that
+maybe aren't that that
+
+655
+00:57:08,000 --> 00:57:14,360
+realistic. So there is a an
+interactive visualisation of the
+
+656
+00:57:14,390 --> 00:57:20,180
+false positive rate by Felix
+Schönbrodt, which I have the
+
+657
+00:57:20,270 --> 00:57:26,030
+link of here. So first, we are
+going to take a look at the
+
+658
+00:57:26,030 --> 00:57:30,470
+situation that I put in the
+table as an example. And then we
+
+659
+00:57:30,470 --> 00:57:35,030
+can explore other situations.
+And there's also an option
+
+660
+00:57:35,720 --> 00:57:39,290
+called the percentage of
+pßhacked studies. And I will
+
+661
+00:57:39,290 --> 00:57:43,910
+talk about that in a second. So
+those are studies where people,
+
+662
+00:57:44,030 --> 00:57:48,860
+for example, do things like
+multiple testing, or without
+
+663
+00:57:48,860 --> 00:57:53,990
+correcting for it, and that just
+turns values that should be, or
+
+664
+00:57:53,990 --> 00:57:58,100
+tests that should be
+non-significant into significant
+
+665
+00:57:58,100 --> 00:58:04,520
+tests, because of problems with
+just applying the null
+
+666
+00:58:04,520 --> 00:58:10,250
+hypothesis significance testing
+method, and a nice and short way
+
+667
+00:58:10,250 --> 00:58:15,170
+of calling this is p-hacking. So
+hacking in the sense of, I am
+
+668
+00:58:15,380 --> 00:58:20,540
+sort of messing with the system
+of null hypothesis significance
+
+669
+00:58:20,540 --> 00:58:24,140
+testing, until I get what I
+want, which could be one one
+
+670
+00:58:24,140 --> 00:58:27,920
+definition of hacking in
+software as well.
+
+671
+00:58:28,800 --> 00:58:35,400
+Okay, so let's take a look at
+the visualisation now. And as
+
+672
+00:58:35,400 --> 00:58:40,560
+you can see, this is called when
+does a significant p-value
+
+673
+00:58:40,740 --> 00:58:44,190
+indicate a true effect,
+understanding the positive
+
+674
+00:58:44,190 --> 00:58:50,850
+predictive value of a p-value?
+Okay, so on the left side, you
+
+675
+00:58:50,850 --> 00:58:54,720
+have the parameters of the
+simulation. So you've got
+
+676
+00:58:54,990 --> 00:58:58,680
+percent of a-priori true
+hypotheses. So this, this means
+
+677
+00:58:58,770 --> 00:59:02,520
+how many prior how many
+hypotheses that we make, for
+
+678
+00:59:02,520 --> 00:59:06,870
+example, in psychology are
+actually true. Before we do
+
+679
+00:59:06,870 --> 00:59:10,560
+that, so (how many) are actually
+true and how many are false;
+
+680
+00:59:10,590 --> 00:59:15,930
+here it's set to 30. Let's,
+let's assume the same thing as
+
+681
+00:59:15,930 --> 00:59:21,210
+in the table and set it to 50.
+Then alpha level .05, we'll
+
+682
+00:59:21,210 --> 00:59:28,020
+leave that do we want to specify
+power directly or indirectly
+
+683
+00:59:28,020 --> 00:59:31,290
+through sample size and effect
+size, we can specify it here
+
+684
+00:59:31,290 --> 00:59:38,430
+directly, we can set it to 2.8.
+The number of p hat studies, we
+
+685
+00:59:38,430 --> 00:59:44,220
+will leave that at zero for now.
+Okay? So and you can see we've
+
+686
+00:59:44,220 --> 00:59:49,770
+replicated the results from the
+table. Right? So 40% true
+
+687
+00:59:49,770 --> 00:59:56,460
+positives 10% false negatives
+47.5%, true negatives 2.5% false
+
+688
+00:59:56,460 --> 01:00:00,780
+positives. So that gives us a
+positive predict. The value of
+
+689
+01:00:00,780 --> 01:00:08,970
+95.1% and a false discovery rate
+of 5.9%. So, yeah, just what,
+
+690
+01:00:09,930 --> 01:00:15,720
+what we found, and in this
+visualisation, so each point is
+
+691
+01:00:15,720 --> 01:00:20,610
+one study here. So the false
+positives are in red, the true
+
+692
+01:00:20,610 --> 01:00:26,100
+negatives are in yellow, the
+true positives are in green, and
+
+693
+01:00:26,100 --> 01:00:32,370
+the false negatives are in blue.
+Okay, so here you can see, in
+
+694
+01:00:32,370 --> 01:00:40,800
+this case, with 80%, power, 50%
+true hypotheses, alpha of .05,
+
+695
+01:00:40,830 --> 01:00:45,570
+or 5%. Most of the studies are
+either true negatives or true
+
+696
+01:00:45,570 --> 01:00:49,770
+positives. There are some false
+negatives. So remember, power is
+
+697
+01:00:49,770 --> 01:00:53,370
+just .8, so 20%, false
+negatives, and a small number of
+
+698
+01:00:53,370 --> 01:00:59,610
+false positives, because alpha
+is at .05, so 5%. If we only
+
+699
+01:00:59,610 --> 01:01:02,580
+consider the significant
+findings, the ratio of true to
+
+700
+01:01:02,580 --> 01:01:06,960
+false positives looks like this:
+Right? So now we're taking all
+
+701
+01:01:06,960 --> 01:01:10,620
+the negatives out the true and
+the false negatives, and just
+
+702
+01:01:10,620 --> 01:01:13,740
+consider the relationship
+between true and false
+
+703
+01:01:13,740 --> 01:01:20,520
+positives. And there are many
+more false positives, of course,
+
+704
+01:01:20,610 --> 01:01:33,270
+than true positives. All right.
+I think I just reset, just reset
+
+705
+01:01:33,270 --> 01:01:36,870
+the page, but not a problem.
+Okay, here we got it. Again, it
+
+706
+01:01:36,870 --> 01:01:44,790
+just went back to the default
+values. Okay, so now, now we can
+
+707
+01:01:44,790 --> 01:01:48,780
+try this out a little bit. So,
+so yeah, so if we, let's say we
+
+708
+01:01:48,780 --> 01:01:54,900
+still have power of point eight,
+but now only 30% of a-priori
+
+709
+01:01:54,900 --> 01:02:00,870
+true hypotheses. So then most
+hypotheses are false here, so
+
+710
+01:02:00,870 --> 01:02:06,150
+you got more yellow and red. And
+because you've got more, because
+
+711
+01:02:06,150 --> 01:02:10,770
+you've got more positive, more,
+more false hypothesis. In
+
+712
+01:02:10,770 --> 01:02:15,690
+general, of course, you also
+have more false positives, you
+
+713
+01:02:15,690 --> 01:02:20,070
+have fewer false negatives,
+because you have fewer negative
+
+714
+01:02:20,670 --> 01:02:26,070
+few negatives. And, of course,
+you have also fewer true
+
+715
+01:02:26,070 --> 01:02:33,480
+positives. So with this, now,
+our our false positives have
+
+716
+01:02:33,480 --> 01:02:37,080
+gone up a little and our true
+positives have gone down. So now
+
+717
+01:02:37,110 --> 01:02:41,910
+12% of all claimed findings are
+actually false positives. And we
+
+718
+01:02:41,910 --> 01:02:46,440
+can keep doing this. We can also
+say, Well, now let's set it to
+
+719
+01:02:46,650 --> 01:02:53,100
+50% power, which is more of
+maybe what happens in
+
+720
+01:02:53,100 --> 01:02:56,880
+psychology. So that means we
+have more false negatives, now,
+
+721
+01:02:57,000 --> 01:03:01,950
+we have even fewer true
+positives. So that means that
+
+722
+01:03:01,950 --> 01:03:08,130
+now we have a false discovery
+rate of 18.9%. Okay, so now,
+
+723
+01:03:09,090 --> 01:03:14,730
+adding to this p-hacked studies,
+let's say, let's say 10% of
+
+724
+01:03:14,730 --> 01:03:22,530
+studies contain questionable
+research practices. So now, now
+
+725
+01:03:22,560 --> 01:03:29,130
+10% of the yellow points have
+turned red. So they have become
+
+726
+01:03:29,130 --> 01:03:33,450
+false positives, instead of true
+negatives. So now we have
+
+727
+01:03:35,310 --> 01:03:39,930
+we have many more false
+positives, and the number of
+
+728
+01:03:40,050 --> 01:03:43,350
+true positives hasn't actually
+changed. So now, we are at a
+
+729
+01:03:43,350 --> 01:03:48,330
+scenario where failure where
+38.1% of claim findings are
+
+730
+01:03:48,330 --> 01:03:56,370
+false. And so so out of out of
+every 10 papers that you're
+
+731
+01:03:56,370 --> 01:04:04,530
+looking at, in there now for our
+faults. And so in the paper by
+
+732
+01:04:05,460 --> 01:04:12,450
+Ioannides you've got different
+scenarios, so like, registered
+
+733
+01:04:12,450 --> 01:04:17,700
+clinical trial, with little
+bias. So there you would have
+
+734
+01:04:17,730 --> 01:04:24,150
+15% of claim findings that are
+false. You could also switch it
+
+735
+01:04:24,150 --> 01:04:35,580
+to for example, a poorly
+performed clinical trial where
+
+736
+01:04:35,940 --> 01:04:40,290
+the assumption is that 80% of
+all results are p-hacked. So
+
+737
+01:04:40,290 --> 01:04:44,490
+then there we would have 82% of
+claim findings that are false.
+
+738
+01:04:46,080 --> 01:04:57,210
+In psychology, we would probably
+have something hopefully, like,
+
+739
+01:04:58,440 --> 01:05:04,080
+an adequately powered,
+exploratory study. So well,
+
+740
+01:05:04,290 --> 01:05:08,730
+exploratory means most of your
+hypotheses are false. Because
+
+741
+01:05:08,730 --> 01:05:11,460
+you're just exploratory in this
+case means you're just trying
+
+742
+01:05:11,460 --> 01:05:15,510
+different things, see what
+sticks. It's adequately powered,
+
+743
+01:05:15,510 --> 01:05:19,560
+it has point eight. But we still
+have p-hacked study. So even if
+
+744
+01:05:19,560 --> 01:05:24,210
+we go with p-hacked studies to
+zero -- oh no, it's 100 now --
+
+745
+01:05:24,210 --> 01:05:28,770
+now, let's go to set p-hacked
+studies to zero, even then, in
+
+746
+01:05:28,770 --> 01:05:34,620
+this case, we have only, we have
+still 38.7% of claimed findings
+
+747
+01:05:34,620 --> 01:05:41,220
+false. And if we set the number
+of px studies to 30, then again,
+
+748
+01:05:41,220 --> 01:05:47,220
+we have 80% of claimed findings
+that are false. So it is really,
+
+749
+01:05:47,250 --> 01:05:51,150
+it is a bit of a scary
+visualisation here to see,
+
+750
+01:05:51,960 --> 01:05:56,580
+depending on how optimistic or
+pessimistic we are about the
+
+751
+01:05:56,580 --> 01:06:01,050
+percentage of true hypotheses,
+for example, and the level of
+
+752
+01:06:01,050 --> 01:06:05,220
+pee hacking. Maybe most of the
+research that's published is
+
+753
+01:06:05,220 --> 01:06:10,380
+actually false. Right? Now,
+people are probably going to
+
+754
+01:06:10,380 --> 01:06:13,950
+have questions about the
+percentage of true hypotheses.
+
+755
+01:06:14,220 --> 01:06:19,710
+And you're right, that this is
+something that is not completely
+
+756
+01:06:19,710 --> 01:06:24,960
+clear how you arrive at this
+value. I mean, the replication
+
+757
+01:06:24,990 --> 01:06:31,230
+project in psychology had was
+able to replicate maybe between
+
+758
+01:06:31,230 --> 01:06:37,290
+30 and 40%, I think it was
+something like 38% or 37%, of
+
+759
+01:06:37,290 --> 01:06:42,810
+all of the studies. So if we
+have that, and we have a power
+
+760
+01:06:42,810 --> 01:06:48,150
+of point eight, and we are very
+hopeful that only problems only
+
+761
+01:06:48,150 --> 01:06:54,420
+exist in 10% of all studies,
+then well, then maybe only 23%
+
+762
+01:06:54,840 --> 01:07:02,010
+of claim findings are false. But
+that is still more than one in
+
+763
+01:07:02,010 --> 01:07:06,000
+five, right? So it is, so it is
+a problem. And I hope this
+
+764
+01:07:06,000 --> 01:07:10,890
+visualisation helps you a little
+bit in in seeing the scale of
+
+765
+01:07:10,920 --> 01:07:17,670
+magnitude of the problem. Okay,
+so, so going back to our
+
+766
+01:07:17,700 --> 01:07:23,460
+presentation, just to to address
+the question of how does
+
+767
+01:07:23,490 --> 01:07:26,580
+p-hacking happen? We have
+already said multiple
+
+768
+01:07:26,580 --> 01:07:31,770
+comparisons without controlling.
+In general, when you perform an
+
+769
+01:07:31,770 --> 01:07:36,030
+experiment, or any kind of
+study, you have what's called
+
+770
+01:07:36,330 --> 01:07:39,750
+experiment the degrees of
+freedom. And if you watched the
+
+771
+01:07:39,900 --> 01:07:44,280
+video by Andrew Gelman that I
+had in the lecture one
+
+772
+01:07:44,520 --> 01:07:51,240
+materials, then he talks about
+the multiverse of possible data
+
+773
+01:07:51,240 --> 01:07:55,200
+analyses. So there are a lot and
+there are lots of things that
+
+774
+01:07:55,200 --> 01:07:58,590
+you can do with your data. So do
+you aggregate the data in a
+
+775
+01:07:58,590 --> 01:08:06,510
+particular way? Do you add a
+control variable? Do you enter
+
+776
+01:08:06,510 --> 01:08:10,380
+something as a continuous
+variable or as a discrete
+
+777
+01:08:10,380 --> 01:08:15,330
+variable? So do you do things
+like a median split, to split a
+
+778
+01:08:15,330 --> 01:08:21,150
+continuous variable into high
+and low, and all of those things
+
+779
+01:08:22,800 --> 01:08:27,480
+affect the outcome of the data
+analysis, and all of these can
+
+780
+01:08:27,510 --> 01:08:33,360
+lead to false positives. If you
+if you do things like, Well, if
+
+781
+01:08:33,360 --> 01:08:38,820
+you if you try different ones,
+different versions of analysing
+
+782
+01:08:39,480 --> 01:08:42,780
+the data, and then just stick
+with the one that has,
+
+783
+01:08:44,760 --> 01:08:50,640
+that manages to reject the null
+hypothesis. And if you listen to
+
+784
+01:08:50,640 --> 01:08:54,510
+this now, as someone who has
+probably never done a study
+
+785
+01:08:54,510 --> 01:08:58,680
+before sat, but some of you will
+do a study, or maybe you've done
+
+786
+01:08:58,680 --> 01:09:02,280
+your psychology project, but
+possibly that was not
+
+787
+01:09:02,280 --> 01:09:06,180
+significant. Anyway. So you
+might not have had this problem.
+
+788
+01:09:06,390 --> 01:09:12,810
+But it's very easy to get into
+this kind of mindset where you
+
+789
+01:09:12,810 --> 01:09:19,410
+say, "Well, I, I am quite sure
+that my hypothesis is actually
+
+790
+01:09:19,440 --> 01:09:23,010
+true. My alternative, my
+experimental hypothesis is
+
+791
+01:09:23,010 --> 01:09:30,120
+actually true. And I just need
+to find so if I if I don't find
+
+792
+01:09:30,120 --> 01:09:35,190
+it, if I don't find it in my
+analysis, then I must be doing
+
+793
+01:09:35,190 --> 01:09:40,800
+something wrong. So I need to
+change my analysis, sort of
+
+794
+01:09:40,800 --> 01:09:48,870
+learn from my data and tweak my
+analysis until I find what I
+
+795
+01:09:48,990 --> 01:09:53,400
+think must be there". And this
+is a very dangerous attitude,
+
+796
+01:09:53,610 --> 01:09:59,670
+but it is also very
+understandable in people who are
+
+797
+01:09:59,670 --> 01:10:03,990
+doing experiments, especially
+for the first time. And
+
+798
+01:10:03,990 --> 01:10:07,290
+unfortunately, I think in some
+people, it just this attitude
+
+799
+01:10:07,290 --> 01:10:11,730
+just persists because no one
+ever tells them any better. They
+
+800
+01:10:11,730 --> 01:10:14,850
+don't, they just don't know
+better. They think that their
+
+801
+01:10:15,330 --> 01:10:19,890
+analysis choices are justified
+by the outcomes that they're
+
+802
+01:10:19,890 --> 01:10:25,320
+finding an effect that they
+think is there anyway. Because
+
+803
+01:10:25,680 --> 01:10:30,510
+that's what they believe, like
+power posing it. If you think
+
+804
+01:10:30,510 --> 01:10:33,420
+about it enough, I think if you
+work about it, if you work on
+
+805
+01:10:33,420 --> 01:10:38,310
+it, for long enough, you really
+develop a very strong conviction
+
+806
+01:10:38,520 --> 01:10:43,890
+that it is real, that it is a
+true effect. And then you will,
+
+807
+01:10:44,340 --> 01:10:47,700
+and then from there, too, I'm
+not saying that Amy Cuddy did
+
+808
+01:10:47,700 --> 01:10:51,780
+this. I don't know, I haven't
+looked at it in that much
+
+809
+01:10:51,780 --> 01:10:55,020
+detail, right?. I've been I've
+read the analysis that other
+
+810
+01:10:55,020 --> 01:11:00,780
+people had of their work. But
+then it is very easy to get into
+
+811
+01:11:00,780 --> 01:11:05,520
+the mindset of saying, if I'm
+not finding the effect, I'm
+
+812
+01:11:05,520 --> 01:11:08,250
+doing something wrong, so I'm
+trying different things until I
+
+813
+01:11:08,250 --> 01:11:12,060
+get it right, which is finding
+the effect. And that is a
+
+814
+01:11:12,060 --> 01:11:18,180
+problem, of course. Another
+thing is HARKing hypothesising,
+
+815
+01:11:18,210 --> 01:11:24,690
+after the results are no. So
+that would be something like
+
+816
+01:11:24,720 --> 01:11:31,950
+saying, Okay, I am studying
+depression, I am really
+
+817
+01:11:31,950 --> 01:11:33,300
+interested in,
+
+818
+01:11:34,650 --> 01:11:40,380
+in the mood variable. But I
+don't find anything there. So
+
+819
+01:11:40,380 --> 01:11:44,580
+now I'm thinking, "Hmm, what,
+what, what about sleep quality?"
+
+820
+01:11:44,000 --> 01:11:47,630
+And maybe I go back to my
+participants, and I have them do
+
+821
+01:11:47,660 --> 01:11:54,650
+a sleep quality, sleep quality
+measure. And then I test that,
+
+822
+01:11:54,980 --> 01:11:59,450
+and, and, oh, is that suddenly
+significant? Or maybe if it's
+
+823
+01:11:59,450 --> 01:12:03,080
+not significant, maybe I go back
+and try another measure, maybe I
+
+824
+01:12:03,080 --> 01:12:11,150
+try to split by, by gender. Or
+maybe I tried to split by
+
+825
+01:12:11,150 --> 01:12:16,640
+socioeconomic status and things
+like that, right. And all of
+
+826
+01:12:16,640 --> 01:12:21,020
+these, so all of these
+hypotheses, I'm coming up with
+
+827
+01:12:21,020 --> 01:12:26,060
+hypotheses based on my data, and
+not based on the theory. And
+
+828
+01:12:26,060 --> 01:12:30,200
+that is also very dangerous.
+Because if you use the same
+
+829
+01:12:30,200 --> 01:12:35,000
+data, to confirm your hypotheses
+that you've used to come up with
+
+830
+01:12:35,000 --> 01:12:39,530
+it, that is not a proper test
+that because then you are going
+
+831
+01:12:39,530 --> 01:12:42,170
+to find, you're going to find
+your effect, because you're
+
+832
+01:12:42,170 --> 01:12:46,130
+studying it on the very same
+data where you have observed the
+
+833
+01:12:46,130 --> 01:12:51,440
+effect, right? The point is, or
+the the idea is that you do
+
+834
+01:12:51,440 --> 01:12:54,680
+exploration, maybe on one
+datasets, you just look at
+
+835
+01:12:54,680 --> 01:12:57,410
+everything that's in one data
+set and say, Oh, look, there's a
+
+836
+01:12:57,410 --> 01:13:00,740
+difference in gender. And then
+you try to replicate it in a
+
+837
+01:13:00,740 --> 01:13:04,520
+different data set. So (in terms
+of) exploratory and confirmatory
+
+838
+01:13:04,520 --> 01:13:10,040
+research, HARKing, is mixing,
+exploratory and confirmatory
+
+839
+01:13:10,040 --> 01:13:13,730
+research. Okay, then we already
+talked about multiple
+
+840
+01:13:13,730 --> 01:13:17,750
+comparisons without controlling
+for them. And then, of course,
+
+841
+01:13:17,750 --> 01:13:20,990
+you could also have assumption
+violations so that you just do
+
+842
+01:13:20,990 --> 01:13:25,730
+the test, you just do a test
+that is not appropriate for your
+
+843
+01:13:25,730 --> 01:13:32,150
+data. But really, that is
+usually fairly well policed by
+
+844
+01:13:32,150 --> 01:13:36,650
+peer review. First of all,
+because it's an easy objective
+
+845
+01:13:36,650 --> 01:13:42,230
+thing to criticise your study
+on. And secondly, the effects of
+
+846
+01:13:42,230 --> 01:13:45,950
+assumption violations. And we'll
+talk about this later in, in
+
+847
+01:13:45,950 --> 01:13:50,480
+this unit. But the effects of
+assumption violations compared
+
+848
+01:13:50,480 --> 01:13:55,250
+to the effects of experimental
+degree of freedom, harking,
+
+849
+01:13:55,460 --> 01:14:01,070
+multiple comparisons, just
+p-hacking in general, are so
+
+850
+01:14:01,070 --> 01:14:05,450
+tiny, that actually, it's hard
+for me to think of a study that
+
+851
+01:14:05,450 --> 01:14:11,390
+had a false positive due to an
+assumption violation, but plenty
+
+852
+01:14:11,390 --> 01:14:14,390
+of studies that had false
+positives due to HARKing,
+
+853
+01:14:14,390 --> 01:14:17,780
+experimenter  degrees of
+freedom, things like that, that
+
+854
+01:14:17,780 --> 01:14:23,540
+did not replicate because of
+that, not because you did the
+
+855
+01:14:23,570 --> 01:14:29,420
+wrong analysis on analysis, that
+wasn't appropriate. And the
+
+856
+01:14:29,450 --> 01:14:32,270
+funny thing is that in
+undergraduate psychology
+
+857
+01:14:32,300 --> 01:14:37,880
+statistics, I hope it's
+changing, but but at least it
+
+858
+01:14:37,880 --> 01:14:42,320
+used to be that you would spend
+endless time on assumption
+
+859
+01:14:42,320 --> 01:14:47,180
+violations and just ignoring
+p-hacking experimented degrees
+
+860
+01:14:47,180 --> 01:14:50,900
+of freedom. Maybe you talked a
+little bit about Bonferroni
+
+861
+01:14:50,900 --> 01:14:56,630
+corrections, but that was pretty
+much it. Right? So you spend a
+
+862
+01:14:56,630 --> 01:15:00,830
+lot of time on on small on a
+small issue. assumption
+
+863
+01:15:00,830 --> 01:15:05,900
+violations. We'll talk about it
+later. How, for example, with
+
+864
+01:15:05,930 --> 01:15:10,850
+tests like ANOVA, they are so
+robust that many assumption
+
+865
+01:15:10,850 --> 01:15:16,070
+violations don't really change
+the outcome. So you spend a lot
+
+866
+01:15:16,070 --> 01:15:19,670
+of time on those, but you spend
+very little time on the actual
+
+867
+01:15:19,670 --> 01:15:25,430
+problems, which is, which are
+p-hacking, underpowered studies?
+
+868
+01:15:27,230 --> 01:15:33,500
+Bad hypothesising, those other
+kinds of things that that cause
+
+869
+01:15:33,530 --> 01:15:37,280
+real problems in psychology and
+with replicability. So again,
+
+870
+01:15:37,310 --> 01:15:40,460
+we've already we've played
+through this on the
+
+871
+01:15:41,000 --> 01:15:44,480
+visualisation, so I'm not going
+to go back to that now. But if
+
+872
+01:15:44,480 --> 01:15:48,620
+we put in 40% of hypotheses that
+are true, so so this is
+
+873
+01:15:48,620 --> 01:15:52,700
+generous, right? average power
+is point five, it might be lower
+
+874
+01:15:53,120 --> 01:15:56,810
+10% of studies or P hacked, then
+we get a false discovery rate of
+
+875
+01:15:56,810 --> 01:16:02,600
+28.3. And so between 1 in 4 and
+1 in 3 psychology studies with
+
+876
+01:16:02,600 --> 01:16:06,080
+significant results are actually
+false. And if you make more
+
+877
+01:16:06,080 --> 01:16:12,080
+pessimistic assumptions, then
+you would get a worse picture
+
+878
+01:16:12,080 --> 01:16:17,930
+and now relevant for your
+assignment, for the coursework.
+
+879
+01:16:18,680 --> 01:16:23,240
+For the essay, try playing with
+the alpha slider, try seeing
+
+880
+01:16:23,450 --> 01:16:28,880
+what happens when you go from
+point .05 to .005, and I'm not
+
+881
+01:16:28,880 --> 01:16:34,160
+going to tell you what happens,
+you have to try it and then and
+
+882
+01:16:34,160 --> 01:16:36,230
+then see if you can use that for
+your essay.
+
+883
+01:16:37,560 --> 01:16:42,337
+Okay. So then finally, so I in
+the past lectures and workshops
+
+884
+01:16:42,414 --> 01:16:46,807
+and seminars, I have often
+hinted at the fact that Fisher
+
+885
+01:16:46,884 --> 01:16:51,353
+caused the problem with his
+approach to the interpretation
+
+886
+01:16:51,431 --> 01:16:55,592
+of p values. So Fisher's
+conception of probability was
+
+887
+01:16:55,669 --> 01:17:00,524
+somewhere between subjective and
+objective. And he did not like
+
+888
+01:17:00,601 --> 01:17:04,762
+like, name and Pearson's
+approach. In fact, they hated
+
+889
+01:17:04,839 --> 01:17:09,694
+each other so much that Neyman
+and Pearson moved from the UK to
+
+890
+01:17:09,771 --> 01:17:14,472
+the US, just to be far away from
+Fisher. Well, I'm sure there
+
+891
+01:17:14,549 --> 01:17:19,095
+were other reasons, but I think
+it was a major reason, they
+
+892
+01:17:19,173 --> 01:17:24,027
+really didn't like each other.
+So in Fishers opinion, a p value
+
+893
+01:17:24,104 --> 01:17:28,497
+of.01 provides more evidence
+against the null hypothesis,
+
+894
+01:17:28,574 --> 01:17:32,427
+then a p value of .05. And
+because Fisher was very
+
+895
+01:17:32,504 --> 01:17:36,974
+influential, people started
+imitating this. The problem is
+
+896
+01:17:37,051 --> 01:17:41,058
+that Fisher never claimed to be
+doing all hypothesis
+
+897
+01:17:41,135 --> 01:17:45,759
+significance testing. And the
+problem is that people started
+
+898
+01:17:45,836 --> 01:17:50,305
+conflating the strict null
+hypothesis significance testing
+
+899
+01:17:50,382 --> 01:17:55,314
+that Neyman and Pearson proposed
+with Fisher's approach to using
+
+900
+01:17:55,391 --> 01:17:59,861
+p values as an an indication of
+evidence or effect size of
+
+901
+01:17:59,938 --> 01:18:04,099
+strength of evidence. And the
+two things just don't go
+
+902
+01:18:04,176 --> 01:18:09,108
+together, you can either do one
+or the other. But people started
+
+903
+01:18:09,185 --> 01:18:13,655
+pretending that they're doing
+null hypothesis significance
+
+904
+01:18:13,732 --> 01:18:18,355
+testing, but mixing it up with,
+with ideas from Fischer, and
+
+905
+01:18:18,433 --> 01:18:22,517
+that, that led to the
+problematic situation where we,
+
+906
+01:18:22,594 --> 01:18:27,140
+that we are in now. So the
+rejection rules are strict for a
+
+907
+01:18:27,217 --> 01:18:31,764
+reason. If you don't do non
+hypothesis significance testing
+
+908
+01:18:31,841 --> 01:18:36,619
+in a principled way, you are not
+going to get the outcome that
+
+909
+01:18:36,696 --> 01:18:41,474
+you think you're getting, but
+you are then communicating it as
+
+910
+01:18:41,551 --> 01:18:46,097
+if you had been following the
+rules. So in general, using p
+
+911
+01:18:46,175 --> 01:18:50,567
+values as measures of evidence
+is a bad idea. And we have
+
+912
+01:18:50,644 --> 01:18:55,345
+better ways of doing that, using
+Bayesian methods. I will see
+
+913
+01:18:55,422 --> 01:18:59,583
+that in the next lecture. So
+finally, to summarise our
+
+914
+01:18:59,660 --> 01:19:04,284
+criticism of null hypothesis
+significance testing: First, it
+
+915
+01:19:04,361 --> 01:19:08,985
+is inflexible and offers only
+black and white decisions. And
+
+916
+01:19:09,062 --> 01:19:13,377
+it offers only two decisions.
+Remember that, right? Only
+
+917
+01:19:13,454 --> 01:19:17,461
+reject a null hypothesis, or
+fail to reject the null
+
+918
+01:19:17,538 --> 01:19:22,316
+hypothesis. There's nothing else
+there's no accepting the null
+
+919
+01:19:22,393 --> 01:19:26,169
+hypothesis. There is no
+accepting the alternative
+
+920
+01:19:26,246 --> 01:19:30,022
+hypothesis. There is no
+rejecting the alternative
+
+921
+01:19:30,099 --> 01:19:34,800
+hypothesis. No, there's only
+rejecting the null hypothesis or
+
+922
+01:19:34,877 --> 01:19:38,807
+not rejecting the null
+hypothesis. There is nothing
+
+923
+01:19:38,884 --> 01:19:43,431
+else. Okay? And that can be a
+problem. For example, what if
+
+924
+01:19:43,508 --> 01:19:48,286
+you're actually interested in
+the null hypothesis? What if you
+
+925
+01:19:48,363 --> 01:19:52,601
+want to show that there is no
+difference? No hypothesis
+
+926
+01:19:52,678 --> 01:19:57,071
+significance testing does not
+really have a mechanism for
+
+927
+01:19:57,148 --> 01:20:01,772
+that. And people have sort of
+tried to do it by doing a test
+
+928
+01:20:01,849 --> 01:20:06,472
+with very high power, and then
+saying, Okay, I had extremely
+
+929
+01:20:06,549 --> 01:20:11,327
+high power. So if an effect was
+there, I should have found it.
+
+930
+01:20:11,404 --> 01:20:16,182
+But instead I failed to reject
+the null hypothesis. And, well,
+
+931
+01:20:16,259 --> 01:20:21,191
+they've that has sort of worked
+in the past, but it's not great.
+
+932
+01:20:21,268 --> 01:20:25,969
+Because you're essentially using
+the logic of null hypothesis
+
+933
+01:20:26,046 --> 01:20:30,592
+significance testing and turning
+it around. Also, the whole
+
+934
+01:20:30,669 --> 01:20:35,062
+concept of significance. So
+--and this is something where
+
+935
+01:20:35,139 --> 01:20:39,454
+people intuitively see that
+Fisher was of course, right,
+
+936
+01:20:39,531 --> 01:20:43,847
+right, that that if you get a
+very low p value, there is
+
+937
+01:20:43,924 --> 01:20:48,625
+something different about a very
+low p value, compared to a p
+
+938
+01:20:48,702 --> 01:20:52,709
+value that's close to .05.
+Right? There is something
+
+939
+01:20:52,786 --> 01:20:57,178
+different about that. But the
+problem is, in non partisan
+
+940
+01:20:57,256 --> 01:21:01,725
+significance testing, you're
+supposed to completely ignore
+
+941
+01:21:01,802 --> 01:21:06,426
+that. Because otherwise, your
+strict testing rules go out of
+
+942
+01:21:06,503 --> 01:21:11,281
+the window. Okay? So so you can
+also understand why people why
+
+943
+01:21:11,358 --> 01:21:15,673
+people would do things like say,
+"Oh, this is marginally
+
+944
+01:21:15,750 --> 01:21:20,066
+significant, or this is very
+significant," right? highly
+
+945
+01:21:20,143 --> 01:21:24,535
+significant. If you're using
+null hypothesis significance
+
+946
+01:21:24,612 --> 01:21:29,236
+testing, do not use terms like
+highly significant, or almost
+
+947
+01:21:29,313 --> 01:21:33,166
+significant, or marginally
+significant or close to
+
+948
+01:21:33,243 --> 01:21:38,098
+significance. There is no such
+such thing. They're significant,
+
+949
+01:21:38,175 --> 01:21:42,567
+and there is not significant.
+That's all there is. But of
+
+950
+01:21:42,645 --> 01:21:47,114
+course, people feel that, that
+doesn't quite describe what
+
+951
+01:21:47,191 --> 01:21:51,815
+they're seeing. And that is the
+problem. So you can also say
+
+952
+01:21:51,892 --> 01:21:56,593
+that, well, the focus on null
+hypotheses limits the amount of
+
+953
+01:21:56,670 --> 01:22:00,523
+thinking that researchers do
+about the alternative
+
+954
+01:22:00,600 --> 01:22:05,301
+hypotheses. So usually, I mean,
+you have to, you only have to
+
+955
+01:22:05,378 --> 01:22:09,539
+specify the alternative
+hypothesis a little bit if you
+
+956
+01:22:09,616 --> 01:22:14,625
+want to, if you want to find out
+power, because for that you need
+
+957
+01:22:14,702 --> 01:22:19,711
+you need some kind of idea about
+what your alternative hypothesis
+
+958
+01:22:19,788 --> 01:22:24,412
+is, if you haven't cared about
+power, then you don't need to
+
+959
+01:22:24,489 --> 01:22:29,344
+think about what the alternative
+hypothesis is at all. So that,
+
+960
+01:22:29,421 --> 01:22:34,044
+and as a result, you're usually
+what you see the alternative
+
+961
+01:22:34,121 --> 01:22:38,051
+hypotheses that you see, are
+very, very vague. Most
+
+962
+01:22:38,129 --> 01:22:42,829
+hypotheses are also just not
+realistic. It's very unlikely in
+
+963
+01:22:42,906 --> 01:22:47,145
+nature for anything to be
+exactly zero. It may the true
+
+964
+01:22:47,222 --> 01:22:51,845
+difference may well be very
+close to zero. But it's unlikely
+
+965
+01:22:51,922 --> 01:22:56,546
+to have an exact that things are
+exactly exactly exactly the
+
+966
+01:22:56,623 --> 01:23:00,553
+same. So that's, that is an
+issue. So in a way, the
+
+967
+01:23:00,630 --> 01:23:05,254
+knowledge hypothesis is this
+kind of straw man, that doesn't
+
+968
+01:23:05,331 --> 01:23:09,415
+really that isn't even
+realistic. So then, of course,
+
+969
+01:23:09,492 --> 01:23:14,039
+we have the familywise error
+rate. So the problem with this
+
+970
+01:23:14,116 --> 01:23:19,048
+is, what is the reference class
+here. And the problem is that it
+
+971
+01:23:19,125 --> 01:23:23,209
+depends on what you were
+planning on doing. So if you
+
+972
+01:23:23,286 --> 01:23:28,141
+have a t-test with p = .04, if
+this is the only t-test you plan
+
+973
+01:23:28,218 --> 01:23:32,919
+on doing, it is significant. The
+exact same result, if you're
+
+974
+01:23:32,996 --> 01:23:36,618
+planning on doing a second
+t-test, is no longer
+
+975
+01:23:36,695 --> 01:23:41,627
+significant. So unless you write
+down very clearly, what you are
+
+976
+01:23:41,704 --> 01:23:46,405
+planning on doing, it's very
+easy to just trick yourself into
+
+977
+01:23:46,482 --> 01:23:50,874
+thinking, "Oh, I wasn't actually
+going to run that second
+
+978
+01:23:50,951 --> 01:23:55,806
+t-test," even though you would
+have absolutely run the second T
+
+979
+01:23:55,883 --> 01:24:00,507
+test if the first one hadn't
+resulted significant. Right. So
+
+980
+01:24:00,584 --> 01:24:05,285
+and with stopping rules, it gets
+even more extreme. So if you
+
+981
+01:24:05,362 --> 01:24:09,831
+have one scientist, that tests
+30 participants and another
+
+982
+01:24:09,908 --> 01:24:13,761
+scientist that tests 30
+participants. If the first
+
+983
+01:24:13,838 --> 01:24:18,231
+scientist, checked the data at
+15 participants would have
+
+984
+01:24:18,308 --> 01:24:22,315
+stopped, but didn't. And the
+second part, the second
+
+985
+01:24:22,392 --> 01:24:27,247
+scientist didn't check the data,
+then they could have the exact
+
+986
+01:24:27,324 --> 01:24:32,025
+exact same means the exact same
+results, but one would have a
+
+987
+01:24:32,102 --> 01:24:36,726
+significant result. So the one
+who didn't stop and peek, and
+
+988
+01:24:36,803 --> 01:24:41,272
+the other one would have a
+nonsignificant result. And that
+
+989
+01:24:41,349 --> 01:24:45,742
+is a problem. That doesn't
+really make a lot of sense. So
+
+990
+01:24:45,819 --> 01:24:50,211
+in the next lecture, we will
+talk about an alternative to
+
+991
+01:24:50,288 --> 01:24:54,219
+null hypothesis significance
+testing, just Bayesian
+
+992
+01:24:54,296 --> 01:24:58,996
+statistics and maybe you We'll
+find that these are a lot more
+
+993
+01:24:59,073 --> 01:25:03,851
+intuitive compared to what we've
+done now. But it is of course
+
+994
+01:25:03,928 --> 01:25:08,860
+important to talk about another
+hypothesis significance testing,
+
+995
+01:25:08,937 --> 01:25:12,867
+because that's what almost
+everyone is doing today.
+
+996
+01:25:12,944 --> 01:25:17,491
+Bayesian statistics is sort of
+gaining, but there's still a
+
+997
+01:25:17,568 --> 01:25:21,961
+long way to go. Still most
+studies report p values. Okay.
+
+998
+01:25:22,038 --> 01:25:26,970
+And that is it for this week.
+Thank you very much for listening.
+

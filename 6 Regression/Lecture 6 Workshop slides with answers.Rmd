@@ -1,0 +1,270 @@
+---
+title: "Lecture 6 Seminar"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+library(jmv)
+library(haven)
+library(sjPlot)
+library(equatiomatic)
+```
+
+# Using real data
+
+-   For this seminar, we will use a real, published data set from a study by [Kwiatkowska and Rogoza (2019)](https://www.sciencedirect.com/science/article/pii/S0191886919303162) (if you are not on campus, this link may not give you access -- in this case, you can access the [preprint](https://psyarxiv.com/a5vq2/).
+-   It is important to use data sets that reflect real research. This one falls into the personality/health psychology area.
+-   This is a study on the traits of *shyness* and *modesty* and how they fit into the Big 5 personality traits (e.g. Goldberg, 1999).
+-   The authors hypothesise that:
+    -   Shyness should be related to modesty (positively)
+    -   Shyness should be related to extraversion (negatively) and neuroticism (positively)
+    -   Modesty should be related to agreeableness (positively) and extraversion (again negatively)
+
+# The data set: Shyness
+
+-   Online survey data from 727 Polish young adults (18--35 years old) recruited through Facebook
+-   Shyness measured using the Revised Cheek and Buss Shyness scale (**RCBS**, Cheek & Buss, 1981): 13 items, 5-point Likert scale
+
+# The data set: Modesty
+
+-   Modesty measured using three scales:
+    -   Modest Responding Scale (**MRS**): 20 items, 7-point Likert scale
+    -   Modesty subscale of the International Personality Item Pool (**IPIP**) representation of the HEXACO personality inventory (**IPIP HEXACO**, Goldberg et al., 2006; Lee & Ashton, 2004): 10 items, 5-point Likert scale
+    -   Modesty subscale of the International Personality Item Pool (IPIP) representation of the NEO-PI-R personality inventory (**IPIP NEO**, Costa & McCrae, 1992; Goldberg et al., 2006): 10 items, 5-point Likert scale
+
+# The data set: Big 5
+
+-   Big 5 personality traits: Big Five Inventory-2 (**BFI2**; Soto & John, 2017)
+    -   60 items, 5-point Likert scale
+    -   Subscales:
+        -   Extraversion (**BFI2-E**)
+        -   Negative emotionality (neuroticism; **BFI2-N**)
+        -   Agreeableness (**BFI2-A**)
+        -   Conscientiousness (**BFI2-C**)
+        -   Open-Mindedness (**BFI2-O**)
+
+# Opening the data file
+
+-   Download the data file (`bazka3.sav`) from Brightspace and open it in JASP (or jamovi or SPSS)
+
+# Exploring the data
+
+```{r load_data}
+library(haven)
+b <- read_sav("bazka3.sav")
+```
+
+-   Work together in groups to do the following:
+    -   First, what does **one row** in this data file represent?
+        -   What does **one column** represent?
+    -   Second, get descriptive statistics for all the variables
+        -   Check these against the descriptive statistics reported in the paper
+        -   Are there any discrepancies with the reported values?
+        -   Take a look at the mean, median, minimum, and maximum values. Do these make sense and correspond with what the authors tell us about the scales?
+    -   How did the authors arrive at these values? For example, how is it possible for Participant 1 to have a **RCBS** value of 2.692 if the scale only allows answers of 1, 2, 3, 4, or 5?
+
+# Descriptive statistics
+
+```{r descriptives, results = "asis"}
+cat("<pre>")
+jmv::descriptives(
+    data = b,
+    vars = vars(rcbs, mrs, mod.ipip.neo, mod.ipip.hexaco, gender))
+  cat("</pre>")
+  
+cat("<pre>")
+jmv::descriptives(
+    data = b,
+    vars = vars(bfi2_e, bfi2_n, bfi2_a, bfi2_c, bfi2_o, age))
+  cat("</pre>")
+```
+
+# Correlations
+
+-   Get the correlation matrix for all the variables
+    -   What do you observe?
+    -   Can you already say something about the hypotheses the authors are testing?
+    -   What is the null hypothesis that these p-values test?
+    -   Is there a relationship between modesty and shyness as predicted?
+        -   Does it differ depending on the scale used to measure modesty?
+    -   Is it surprising/concerning that the three *Modesty* scales are highly correlated with each other?
+    -   Is it surprising/concerning that some of the **BFI-2** scales are correlated with each other?
+    -   It is not clear from the file what 0 and 1 represent in the gender variable. Can you make a guess from the correlations of this variable with the other variables (you can also get this from comparing the information in the descriptive statistics with the information given in the paper)?
+
+# Correlation matrix
+
+-   This is impossible to fit on a slide properly -- please check it in JASP/jamovi
+
+```{r corr_mat}
+jmv::corrMatrix(
+    data = b,
+    vars = vars(rcbs, mrs, mod.ipip.neo, mod.ipip.hexaco, bfi2_e, bfi2_n, bfi2_a, bfi2_c, bfi2_o, age, gender))
+```
+
+
+# Answers
+- Can you already say something about the hypotheses the authors are testing?
+    - **Yes, since the correlations are significant, we can already say that there is evidence for a positive relationship between _Modesty_ and _Shyness_**
+-   What is the null hypothesis that these p-values test?
+    - **The null hypothesis is that the true (population) correlation between each of the two variables is exactly 0.**
+- Is there a relationship between modesty and shyness as predicted? **Yes, see above**
+    - **No evidence for that (and we also don't test it). All three correlation coefficients are significant.**
+- Is it surprising/concerning that the three *Modesty* scales are highly correlated with each other?
+    - **No, they are supposed to measure the same construct, so they should be correlated.**
+
+# Answers (2)
+-   Is it surprising/concerning that some of the **BFI-2** scales are correlated with each other?
+    - **A bit, since these are supposed to measure different constructs. However, they are not perfect and every population is different.**
+-   It is not clear from the file what 0 and 1 represent in the gender variable. Can you make a guess?
+    - **We would expect male participants to probably on average have lower neuroticism, agreeableness, and conscientiousness. Based on this, 0 = female and 1 = male, since the correlations are all negative.**
+
+
+
+# Confirmatory analyses
+
+-   The authors run four regression models (**Table 2** in the paper). Reproduce these model fits from the data.
+    -   Write down the regression equation for each of these.
+-   Check the numbers -- were you able to reproduce them?
+-   Which null hypothesis does each of the predictors test? Be specific!
+-   There are many correlations that looked to be significant in the correlation matrix, but the corresponding predictor in the models does not reach significance.
+    -   For example, *Open-Mindedness* looks to be negatively correlated with *Shyness*
+        -   Why is the *Open-Mindedness* predictor not significant in any of the regression models? **This is incredibly important for you to understand!**
+-   What does it mean for a dichotomous variable *Gender* to be included in the model?
+    -   Gender is coded as 0 and 1
+        -   Is this a problem? What does this do?
+
+# First model (RCBS)
+
+```{r lm1, results = "asis"}
+lm1 <- lm(data = b, rcbs ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
+extract_eq(lm1, font_size = "tiny")
+tab_model(lm1, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+```
+
+# Second model (MRS)
+
+```{r lm2, results = "asis"}
+lm2 <- lm(data = b, mrs ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
+extract_eq(lm2, font_size = "tiny")
+tab_model(lm2, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+```
+
+# Third model (IPIP NEO-PI-R)
+
+```{r lm3, results = "asis"}
+lm3 <- lm(data = b, mod.ipip.neo ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
+extract_eq(lm3, font_size = "tiny")
+tab_model(lm3, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+```
+
+# Fourth model (IPIP HEXACO)
+
+```{r lm4, results = "asis"}
+lm4 <- lm(data = b, mod.ipip.hexaco ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
+extract_eq(lm4, font_size = "tiny")
+tab_model(lm4, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
+```
+
+# Answers (3)
+
+-   Which null hypothesis does each of the t-values test? Be specific!
+    - **Each t-value test the hypothesis that the true (population) value of the corresponding coefficient is 0 _GIVEN THAT ALL THE OTHER PREDICTORS IN THE MODEL ARE ALREADY INCLUDED_**
+    - _In other words, it tests the hypothesis that the coefficient does not explain any of the variance above and beyond what is already explained by the other coefficients._
+
+# Answers (4)
+-   There are many correlations that looked to be significant in the correlation matrix, but the corresponding predictor in the models does not reach significance.
+    -   For example, *Open-Mindedness* looks to be negatively correlated with *Shyness*
+        -   Why is the *Open-Mindedness* predictor not significant in any of the regression models?
+            - **As you can see from the correlation matrix, almost everything is weakly correlated with everything. When we do a multiple regression, we test whether a precitor has an effect ABOVE AND BEYOND the ones already in the model.**
+            - In this case, *Open-Mindedness* might only predict *Shyness* because both are correlated with *Extraversion*.
+                - This means that, when *Extraversion* is already in the model, *Open-Mindedness* does not add anything (significantly)
+
+# Answers (5)
+-   What does it mean for a dichotomous variable *Gender* to be included in the model?
+    -   Gender is coded as 0 and 1
+        -   Is this a problem? What does this do?
+- **Answer:** Maybe surprisingly, this is not a problem. Replacing categorical variables with numbers is very common.
+    - We will talk about this more next week.
+    - The coefficient represents the difference between male and female participants
+
+# Conclusions
+
+-   Read the authors' discussion section carefully. Are the authors' conclusions justified?
+    -   What about the effect of neuroticism on modesty?
+    -   *Answer*: In general, it seems like it -- all of the regressions they report seem correct
+        -   They mostly ignore or at least downplay some of the significant effects they did not expect, e.g. the effect of Open-Mindedness on Modesty MRS and NEO-PI-R or the effect of Neuroticism on Modesty
+        -   On one hand, this is good, since they are not HARKing
+        -   On the other hand, why did they include these predictors if they were not interested in them? Just as control variables?
+            -   In general, do not include predictors that you do not plan to interpret later, unless you already know that they will have an effect and want to eliminate the corresponding variance from the model
+-   What about claims that one predictor is stronger than another?
+    -   *Answer:* They do not test any of this, except for one F-test about extraversion and agreeableness, where it is unclear how they arrived at the numbers
+
+# F-test to compare Extraversion and Agreeableness
+
+-   This F-test tests the null hypothesis that agreeableness has a stronger effect than extraversion on the IPIP HEXACO Modesty scale
+-   The result is not what the authors report
+-   If you want to know how this test is done, ask us (but we won't cover it on the unit)
+
+```{r linearHyp}
+library(effectsize)
+bz <- standardize(b) # need to standardise all variables (convenient function from effectsize package) so that we can compare the coefficients
+library(car)
+lm4z <- lm(data = bz, mod.ipip.hexaco ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
+linearHypothesis(lm4z, "bfi2_e = bfi2_a")
+
+```
+
+# Expanding the model
+
+-   Let's engage in some exploratory analyses
+    -   The authors have not included any interactions in the model. How could we find out if any interactions should be included in a future study?
+    -   *Answer:*: Try a model that includes interactions (even all of them) and see if it improves the prediction
+        -   JASP is not great for model comparison -- jamovi is better for this. They are both free, so you can just use the one that is better suited
+        -   How would you do this? In jamovi you can specify different models as **Blocks**. Jamovi will then automatically compute a model comparison between the blocks.
+        -   For example, you could try having one block with just the main effects (as above) and one with all possible interactions
+-   **Remember that all these additional analyses are EXPLORATORY and any suggestive results would have to be confirmed by a subsequent study.**
+
+# For Model 1
+
+-   Do the model comparison between a model with no interactions and one with all the interactions:
+
+```{r lm1_comparison}
+lm1_interactions <- lm(data = b, rcbs ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender)
+anova(lm1,lm1_interactions)
+```
+
+-   This looks like at least one of the interactions might improve the model
+-   Finding out which one is the difficult part, especially due to multicollinearity
+
+# For Model 2
+
+-   Do the model comparison between a model with no interactions and one with all the interactions:
+
+```{r lm2_comparison}
+lm2_interactions <- lm(data = b, mrs ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender)
+anova(lm2,lm2_interactions)
+```
+
+-   No evidence of any interaction here
+
+# For Model 3
+
+```{r lm3_comparison}
+lm3_interactions <- lm(data = b, mod.ipip.neo ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender)
+anova(lm3,lm3_interactions)
+```
+
+# For Model 4
+
+```{r lm4_comparison}
+lm4_interactions <- lm(data = b, mod.ipip.hexaco ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender)
+anova(lm4,lm4_interactions)
+```

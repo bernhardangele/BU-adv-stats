@@ -1,0 +1,100 @@
+---
+title: "Lecture 3 Workshop"
+author: "The limits of NHST -- p-Hacking"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+```
+
+# p-hacking simulation
+
+- For this activity, please go to the [p-hacking activity](https://www.shinyapps.org/apps/p-hacker/) by Felix Schönbrodt
+
+- This activity lets you explore how researchers can "p-hack"
+    - It lets you simulate collecting up to 10 dependent variables from two groups
+    - If you leave the `True effect` slider at 0, you simulate data given that the null hypothesis is actually true, so any significant effects you find are false positives (Type I errors)
+    - The point of the activity is to see how easy it is to use seemingly legitimate procedures to increase the Type I error rate to the point where you are virtually guaranteed significant effects
+    - Of course, in reality, researchers who engage in these procedures do not know whether the null hypothesis is true or not, meaning that they are likely to interpret any significant tests as evidence against the null hypothesis
+    
+# Try it out
+
+- To start with, generate an experiment with 20 participants per group (40 total), no real effect, and 4 dependent variables
+- You can give the groups any name you want, e.g. `Power pose` and `No power pose`
+- Unfortunately, you can't name the DVs, but you could imagine that they come, for example from a scale where participants report how powerful, confident, fearless, and agressive they feel.
+- Do you see any significant effect yet?
+
+# Question 1
+- What is the probability of seeing one or more significant effects with 4 DVs (remember, the null hypothesis is true)?
+- See how many of you have at least one significant effect at this point
+
+# Answer 1
+
+- You can calculate this just like in Week 2:
+
+$$1-.95^4 = `r 1-.95^4`$$
+
+# Try it out (2)
+
+- Now click on `Now: p-hack!`
+- You can now do several things to the data that past studies have (presumably in good faith) done. Tick the following boxes:
+    - Control for socio-economic status
+        - Maybe power-pose effects are affected by SES? Remove any variance related to SES from the model
+    - Control for age
+        - Maybe if we remove any variance related with participant age?
+    - Control for gender
+        - Maybe the effect is confounded with participant gender?
+    - Interaction with gender
+        - Maybe the power posing effect only appears for women/men?
+- See how many of you have a significant effect now?
+
+# Try it out (3)
+
+- Remove outliers
+    - Outlier removal is very common in studies. For each dependent variable (select in drop-down menu), try taking out any values that look "extreme" to you by clicking on them
+    - Of course, the simulation re-calculates p-values every time you remove a point
+- How many of you have a significant effect now?
+
+# Try it out (4)
+
+- Add participants
+    - If you are convinced that your effect is real, maybe you didn't run enough participants? Try clicking the `Add 5 new participants` and `Add 10 new participants` a few times and see what happens
+- You may see some effects disappearing, but don't worry, you can recover them if you remove outliers again
+
+# Try it out (5)
+
+- Finally tick the box for "expert subgroup analysis"
+- Now you can look for the effect in each of the age/gender subgroups
+- Check all of the DVs to ensure you don't miss a significant effect
+- With this many subgroups, a significant effect should be very likely
+    - If not, just run some more participants
+- Is there anyone at this point who did not have a false positive effect?
+
+# Discuss
+
+- What have you learned from this activity?
+- Is there a problem in principle with procedures like outlier removal, inclusion of control variables, subgroup analyses?
+- What would you need to do if you wanted to conduct a study like this? How can you avoid *p-hacking*?
+
+# Possible answers
+
+- What have you learned from this activity?
+    - p-hacking is very easy if you are determined to do it
+        - But then so is just faking the data
+    - It is important to recognise that many researchers, at least in the past, have engaged in these kinds of behaviour without realising that they increase the Type I error rate
+    - If you genuinely believe that the effect you are studying is real, you may be inclined to see control variables, selective outlier removal, and subgroup analyses as legitimate ways to "clean up" the data
+    
+- Is there a problem in principle with procedures like outlier removal, inclusion of control variables, subgroup analyses?
+    - Not necessarily, but the problem arises when they are done selectively depending on the outcome of the test
+- What would you need to do if you wanted to conduct a study like this? How can you avoid *p-hacking*?
+    - Plan all steps of data cleaning and analysis ahead of collecting the data
+    - Ideally, pre-register the procedure so there is no doubt that you had planned every step in advance
+    - Correct for multiple comparisons (e.g. if you have multiple DVs or do a subgroup analysis)

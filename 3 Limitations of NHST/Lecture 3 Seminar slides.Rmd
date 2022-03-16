@@ -1,0 +1,38 @@
+---
+title: "Lecture 3 Seminar"
+author: "The limits of NHST -- Challenge Questions"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---  
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(tidyverse)
+```
+
+# Question 1
+
+- Let's start with some key terms. In groups, come up with definitions for the following: 
+    - population
+    - null and alternative hypotheses 
+    - $\alpha$ 
+    - $\beta$
+    - power
+    - Positive predictive value
+    - False discovery rate
+    - family-wise error rate
+    - significance
+
+# Question 2
+- What is the difference between p-value and α?  
+
+# Question 3
+- Describe two legitimate stopping rules and two illegitimate ones.  
+
+# Question 4
+- Some researchers (e.g. [Halsey et al., 2015, Nature Methods](https://www.nature.com/articles/nmeth.3288)) have argued that we should report confidence intervals rather than p-values in research articles. What would be the advantages and disadvantages of reporting them instead of p-values? 
