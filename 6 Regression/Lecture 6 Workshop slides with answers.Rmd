@@ -205,12 +205,11 @@ tab_model(lm4, show.std = TRUE, show.se = TRUE, show.stat = TRUE)
         -   On the other hand, why did they include these predictors if they were not interested in them? Just as control variables?
             -   In general, do not include predictors that you do not plan to interpret later, unless you already know that they will have an effect and want to eliminate the corresponding variance from the model
 -   What about claims that one predictor is stronger than another?
-    -   *Answer:* They do not test any of this, except for one F-test about extraversion and agreeableness, where it is unclear how they arrived at the numbers
+    -   *Answer:* They do not test any of this, except for one F-test about extraversion and agreeableness
 
 # F-test to compare Extraversion and Agreeableness
 
 -   This F-test tests the null hypothesis that agreeableness has a stronger effect than extraversion on the IPIP HEXACO Modesty scale
--   The result is not what the authors report
 -   If you want to know how this test is done, ask us (but we won't cover it on the unit)
 
 ```{r linearHyp}
@@ -218,7 +217,7 @@ library(effectsize)
 bz <- standardize(b) # need to standardise all variables (convenient function from effectsize package) so that we can compare the coefficients
 library(car)
 lm4z <- lm(data = bz, mod.ipip.hexaco ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender)
-linearHypothesis(lm4z, "bfi2_e = bfi2_a")
+linearHypothesis(lm4z, "bfi2_e = -1*bfi2_a")
 
 ```
 

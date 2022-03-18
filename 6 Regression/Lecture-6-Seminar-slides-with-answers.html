@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="generator" content="pandoc">
   <meta name="author" content="Regression" />
-  <title>Lecture 6 Seminar</title>
+  <title>Lecture 6 Seminar slides with answers</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -688,1609 +688,170 @@ document.addEventListener('DOMContentLoaded', function(e) {
     <div class="slides">
 
 <section id="title-slide">
-  <h1 class="title">Lecture 6 Seminar</h1>
+  <h1 class="title">Lecture 6 Seminar slides with answers</h1>
   <h2 class="author">Regression</h2>
   <h3 class="date">Press F for fullscreen</h3>
 </section>
 
-<section id="using-real-data" class="title-slide slide level1">
-<h1>Using real data</h1>
+<section id="some-questions-about-regression" class="title-slide slide level1">
+<h1>Some questions about regression</h1>
 <ul>
-<li>For this seminar, we will use a real, published data set from a
-study by <a href="https://www.sciencedirect.com/science/article/pii/S0191886919303162">Kwiatkowska
-and Rogoza (2019)</a> (if you are not on campus, this link may not give
-you access – in this case, you can access the <a href="https://psyarxiv.com/a5vq2/">preprint</a>.</li>
-<li>It is important to use data sets that reflect real research. This
-one falls into the personality/health psychology area.</li>
-<li>This is a study on the traits of <em>shyness</em> and
-<em>modesty</em> and how they fit into the Big 5 personality traits
-(e.g. Goldberg, 1999).</li>
-<li>The authors hypothesise that:
+<li>For this seminar, we will use various interactive visualisations to
+address some important details about regression that may still not be
+completely clear.</li>
+</ul>
+</section>
+
+<section id="how-is-the-regression-curve-fitted" class="title-slide slide level1">
+<h1>How is the regression curve fitted?</h1>
 <ul>
-<li>Shyness should be related to modesty (positively)</li>
-<li>Shyness should be related to extraversion (negatively) and
-neuroticism (positively)</li>
-<li>Modesty should be related to agreeableness (positively) and
-extraversion (again negatively)</li>
+<li>How does Ordinary Least Squares (OLS) work?
+<ul>
+<li>Minimise the sum (or the mean) of the squared errors (differences
+between predictions – the line – and the actual data points).</li>
 </ul></li>
 </ul>
 </section>
 
-<section id="the-data-set-shyness" class="title-slide slide level1">
-<h1>The data set: Shyness</h1>
+<section id="two-ways-to-fit-a-regression-curve" class="title-slide slide level1">
+<h1>Two ways to fit a regression curve</h1>
 <ul>
-<li>Online survey data from 727 Polish young adults (18–35 years old)
-recruited through Facebook</li>
-<li>Shyness measured using the Revised Cheek and Buss Shyness scale
-(<strong>RCBS</strong>, Cheek &amp; Buss, 1981): 13 items, 5-point
-Likert scale</li>
-</ul>
-</section>
-
-<section id="the-data-set-modesty" class="title-slide slide level1">
-<h1>The data set: Modesty</h1>
+<li><p>Solve some equations:</p>
 <ul>
-<li>Modesty measured using three scales:
-<ul>
-<li>Modest Responding Scale (<strong>MRS</strong>): 20 items, 7-point
-Likert scale</li>
-<li>Modesty subscale of the International Personality Item Pool
-(<strong>IPIP</strong>) representation of the HEXACO personality
-inventory (<strong>IPIP HEXACO</strong>, Goldberg et al., 2006; Lee
-&amp; Ashton, 2004): 10 items, 5-point Likert scale</li>
-<li>Modesty subscale of the International Personality Item Pool (IPIP)
-representation of the NEO-PI-R personality inventory (<strong>IPIP
-NEO</strong>, Costa &amp; McCrae, 1992; Goldberg et al., 2006): 10
-items, 5-point Likert scale</li>
+<li><a href="https://antoinesoetewey.shinyapps.io/statistics-202/" title="Link to webapp">This interactive demonstration</a> by Antoine
+Soetewey from UC Louvain shows how you can calculate any simple
+regression equation by hand – just enter the data in the
+spreadsheet.</li>
 </ul></li>
-</ul>
-</section>
-
-<section id="the-data-set-big-5" class="title-slide slide level1">
-<h1>The data set: Big 5</h1>
+<li><p>Try different solutions until you find the best possible one:</p>
 <ul>
-<li>Big 5 personality traits: Big Five Inventory-2
-(<strong>BFI2</strong>; Soto &amp; John, 2017)
+<li><p><a href="http://shinyapps.org/showapp.php?app=https://tellmi.psy.lmu.de/felix/lmfit" title="Find-a-fit!">This interactive visualisation</a> by Felix
+Schönbrodt lets you try different intercepts and slopes to best fit the
+points in a data set. It plots the residual sum of squares (i.e., the
+sum of squared errors) for each attempt.</p>
 <ul>
-<li>60 items, 5-point Likert scale</li>
-<li>Subscales:
-<ul>
-<li>Extraversion (<strong>BFI2-E</strong>)</li>
-<li>Negative emotionality (neuroticism; <strong>BFI2-N</strong>)</li>
-<li>Agreeableness (<strong>BFI2-A</strong>)</li>
-<li>Conscientiousness (<strong>BFI2-C</strong>)</li>
-<li>Open-Mindedness (<strong>BFI2-O</strong>)</li>
+<li>You can also let an optimisation algorithm do the work for you. This
+is how parameters are estimated using maximum likelihood. Click the
+second button to see how this is done.</li>
 </ul></li>
 </ul></li>
 </ul>
 </section>
 
-<section id="opening-the-data-file" class="title-slide slide level1">
-<h1>Opening the data file</h1>
+<section id="visualising-the-sums-of-squares" class="title-slide slide level1">
+<h1>Visualising the sums of squares</h1>
 <ul>
-<li>Download the data file (<code>bazka3.sav</code>) from Brightspace
-and open it in JASP (or jamovi or SPSS)</li>
-</ul>
-</section>
-
-<section id="exploring-the-data" class="title-slide slide level1">
-<h1>Exploring the data</h1>
+<li>Try this <a href="https://seeing-theory.brown.edu/regression-analysis/index.html">visualisation
+by Daniel Kunin from Brown University</a> which visualises the squared
+errors for each data point as actual squares. You can also move data
+points around and see how the regression equation changes</li>
+<li>The data used here are four data sets known as <strong>Anscombe’s
+quartet</strong>:
 <ul>
-<li>Work together in groups to do the following:
-<ul>
-<li>First, what does <strong>one row</strong> in this data file
-represent?
-<ul>
-<li>What does <strong>one column</strong> represent?</li>
-</ul></li>
-<li>Second, get descriptive statistics for all the variables
-<ul>
-<li>Check these against the descriptive statistics reported in the
-paper</li>
-<li>Are there any discrepancies with the reported values?</li>
-<li>Take a look at the mean, median, minimum, and maximum values. Do
-these make sense and correspond with what the authors tell us about the
-scales?</li>
-</ul></li>
-<li>How did the authors arrive at these values? For example, how is it
-possible for Participant 1 to have a <strong>RCBS</strong> value of
-2.692 if the scale only allows answers of 1, 2, 3, 4, or 5?</li>
+<li><p>Each of the data sets has the exact same regression equation, but
+if you plot them, they are very different indeed</p></li>
+<li><p>This is a reminder that a linear regression is not guaranteed to
+describe your data well</p></li>
+<li><p>You can fit a line to anything, but the line is not necessarily
+an appropriate fit to your data</p></li>
 </ul></li>
 </ul>
 </section>
 
-<section id="descriptive-statistics" class="title-slide slide level1">
-<h1>Descriptive statistics</h1>
-<pre>
- DESCRIPTIVES
-
- Descriptives                                                                                    
- ─────────────────────────────────────────────────────────────────────────────────────────────── 
-                         rcbs         mrs         mod.ipip.neo    mod.ipip.hexaco    gender      
- ─────────────────────────────────────────────────────────────────────────────────────────────── 
-   N                           727         727             727                727          727   
-   Missing                       0           0               0                  0            0   
-   Mean                   2.937044    4.088583        3.180468           3.336176    0.3012380   
-   Median                 3.000000    4.150000        3.200000           3.400000     0.000000   
-   Standard deviation    0.8725862    1.120784       0.5994288          0.7163946    0.4591117   
-   Minimum                1.000000    1.100000        1.600000           1.300000     0.000000   
-   Maximum                5.000000    6.850000        4.600000           5.000000     1.000000   
- ─────────────────────────────────────────────────────────────────────────────────────────────── 
-
-</pre>
-<pre>
- DESCRIPTIVES
-
- Descriptives                                                                                        
- ─────────────────────────────────────────────────────────────────────────────────────────────────── 
-                         bfi2_e       bfi2_n       bfi2_a       bfi2_c       bfi2_o       age        
- ─────────────────────────────────────────────────────────────────────────────────────────────────── 
-   N                           727          727          727          727          727         727   
-   Missing                       0            0            0            0            0           0   
-   Mean                   3.226845     3.353966     3.424576     3.268684     3.796538    22.18707   
-   Median                 3.250000     3.416667     3.500000     3.250000     3.750000    22.00000   
-   Standard deviation    0.5569588    0.8092091    0.6329004    0.7728539    0.6706526    2.536390   
-   Minimum                1.750000     1.250000     1.416667     1.000000     1.333333    18.00000   
-   Maximum                4.500000     5.000000     4.916667     5.000000     5.000000    35.00000   
- ─────────────────────────────────────────────────────────────────────────────────────────────────── 
-
-</pre>
-</section>
-
-<section id="correlations" class="title-slide slide level1">
-<h1>Correlations</h1>
+<section id="multicollinearity" class="title-slide slide level1">
+<h1>Multicollinearity</h1>
 <ul>
-<li>Get the correlation matrix for all the variables
+<li>The interpretability of a model can be affected by
+multicollinearity, i.e. correlations between the predictors</li>
+<li><a href="https://saskiaotto.de/shiny/collinearity/" title="Collinearity visualisation">This visualisation by Saskia Otto</a>
+shows the effect of covariance (or correlation) between two predictor
+variables on the resulting regression model.</li>
+<li>Note that the standard error of the estimates is larger the more
+covariance there is</li>
+<li>Why is that the case?
 <ul>
-<li>What do you observe?</li>
-<li>Can you already say something about the hypotheses the authors are
-testing?</li>
-<li>What is the null hypothesis that these p-values test?</li>
-<li>Is there a relationship between modesty and shyness as predicted?
-<ul>
-<li>Does it differ depending on the scale used to measure modesty?</li>
-</ul></li>
-<li>Is it surprising/concerning that the three <em>Modesty</em> scales
-are highly correlated with each other?</li>
-<li>Is it surprising/concerning that some of the <strong>BFI-2</strong>
-scales are correlated with each other?</li>
-<li>It is not clear from the file what 0 and 1 represent in the gender
-variable. Can you make a guess from the correlations of this variable
-with the other variables (you can also get this from comparing the
-information in the descriptive statistics with the information given in
-the paper)?</li>
+<li><em>Answer:</em> Higher multicollinearity leads to higher standard
+errors of the coefficient estimates. You can think of it in terms of the
+ease of estimating the model: if there are two variables that are
+completely independent from each other, it is easy to say how much each
+contributes to the model. If the two variables are highly related to
+each other, it is very difficult to determine. In the extreme case of
+having two variables that are perfectly correlated (e.g. height in cm
+and height in inches), it is impossible to add them both to a regression
+model since the model would would be exactly as good with just one of
+the two or any combination of the two.</li>
 </ul></li>
 </ul>
 </section>
 
-<section id="correlation-matrix" class="title-slide slide level1">
-<h1>Correlation matrix</h1>
+<section id="regression-coefficients-are-random-variables" class="title-slide slide level1">
+<h1>Regression coefficients are random variables</h1>
 <ul>
-<li>This is impossible to fit on a slide properly – please check it in
-JASP/jamovi</li>
-</ul>
-<pre><code>## 
-##  CORRELATION MATRIX
-## 
-##  Correlation Matrix                                                                                                                                                                                 
-##  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-##                                      rcbs          mrs           mod.ipip.neo    mod.ipip.hexaco    bfi2_e        bfi2_n        bfi2_a        bfi2_c        bfi2_o        age           gender      
-##  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-##    rcbs               Pearson&#39;s r             —                                                                                                                                                     
-##                       p-value                 —                                                                                                                                                     
-##                                                                                                                                                                                                     
-##    mrs                Pearson&#39;s r     0.4373052             —                                                                                                                                       
-##                       p-value        &lt; .0000001             —                                                                                                                                       
-##                                                                                                                                                                                                     
-##    mod.ipip.neo       Pearson&#39;s r     0.5179861     0.6964606               —                                                                                                                       
-##                       p-value        &lt; .0000001    &lt; .0000001               —                                                                                                                       
-##                                                                                                                                                                                                     
-##    mod.ipip.hexaco    Pearson&#39;s r     0.3190465     0.5284325       0.7998787                  —                                                                                                    
-##                       p-value        &lt; .0000001    &lt; .0000001      &lt; .0000001                  —                                                                                                    
-##                                                                                                                                                                                                     
-##    bfi2_e             Pearson&#39;s r    -0.6601224    -0.4045579      -0.5535191         -0.3779493             —                                                                                      
-##                       p-value        &lt; .0000001    &lt; .0000001      &lt; .0000001         &lt; .0000001             —                                                                                      
-##                                                                                                                                                                                                     
-##    bfi2_n             Pearson&#39;s r     0.4564217     0.2266774       0.2724209          0.2000983    -0.4327045             —                                                                        
-##                       p-value        &lt; .0000001    &lt; .0000001      &lt; .0000001         &lt; .0000001    &lt; .0000001             —                                                                        
-##                                                                                                                                                                                                     
-##    bfi2_a             Pearson&#39;s r    -0.1060411     0.1287398       0.1780398          0.2716160     0.0955769    -0.0991199             —                                                          
-##                       p-value         0.0042053     0.0005019       0.0000014         &lt; .0000001     0.0099229     0.0074829             —                                                          
-##                                                                                                                                                                                                     
-##    bfi2_c             Pearson&#39;s r    -0.3063928    -0.0717948      -0.1459648         -0.0901610     0.3832002    -0.2953168     0.2013730             —                                            
-##                       p-value        &lt; .0000001     0.0529946       0.0000781          0.0150250    &lt; .0000001    &lt; .0000001    &lt; .0000001             —                                            
-##                                                                                                                                                                                                     
-##    bfi2_o             Pearson&#39;s r    -0.2075166    -0.2445722      -0.2945409         -0.2967457     0.3141061     0.0016123     0.0918203     0.1217817             —                              
-##                       p-value        &lt; .0000001    &lt; .0000001      &lt; .0000001         &lt; .0000001    &lt; .0000001     0.9653838     0.0132597     0.0010012             —                              
-##                                                                                                                                                                                                     
-##    age                Pearson&#39;s r    -0.0174113    -0.0251461      -0.0415325         -0.0445882    -0.0140741     0.0006894     0.0460552    -0.0585845     0.0991974             —                
-##                       p-value         0.6392933     0.4984362       0.2633985          0.2298457     0.7048032     0.9851949     0.2148627     0.1145089     0.0074361             —                
-##                                                                                                                                                                                                     
-##    gender             Pearson&#39;s r    -0.0356423    -0.0507254      -0.1297427         -0.2057187     0.0564929    -0.2867842    -0.1717526    -0.1633974    -0.0612506    -0.0650192            —   
-##                       p-value         0.3372206     0.1718658       0.0004531         &lt; .0000001     0.1280567    &lt; .0000001     0.0000032     0.0000095     0.0989010     0.0797830            —   
-##  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</code></pre>
-</section>
-
-<section id="answers" class="title-slide slide level1">
-<h1>Answers</h1>
+<li><a href="https://saskiaotto.de/shiny/reproducibility/">This
+visualisation, also by Saskia Otto</a>, illustrates the point that, just
+like means, regression coefficients estimated from a sample are likely
+to be different from the true regression coefficients in the population
+(if indeed a true linear relationship exists in the population)
 <ul>
-<li>Can you already say something about the hypotheses the authors are
-testing?
-<ul>
-<li><strong>Yes, since the correlations are significant, we can already
-say that there is evidence for a positive relationship between
-<em>Modesty</em> and <em>Shyness</em></strong></li>
-</ul></li>
-<li>What is the null hypothesis that these p-values test?
-<ul>
-<li><strong>The null hypothesis is that the true (population)
-correlation between each of the two variables is exactly
-0.</strong></li>
-</ul></li>
-<li>Is there a relationship between modesty and shyness as predicted?
-<strong>Yes, see above</strong>
-<ul>
-<li><strong>No evidence for that (and we also don’t test it). All three
-correlation coefficients are significant.</strong></li>
-</ul></li>
-<li>Is it surprising/concerning that the three <em>Modesty</em> scales
-are highly correlated with each other?
-<ul>
-<li><strong>No, they are supposed to measure the same construct, so they
-should be correlated.</strong></li>
+<li>The larger our sample size, the closer the coefficients in our
+estimated sample will (on average) be to the coefficients in the
+population</li>
+<li>Of course, the more noise there is in the population, the more
+variability there is in the samples.</li>
 </ul></li>
 </ul>
 </section>
 
-<section id="answers-2" class="title-slide slide level1">
-<h1>Answers (2)</h1>
+<section id="challenge-questions" class="title-slide slide level1">
+<h1>Challenge questions</h1>
 <ul>
-<li>Is it surprising/concerning that some of the <strong>BFI-2</strong>
-scales are correlated with each other?
+<li>What is the intercept and what does it represent?
 <ul>
-<li><strong>A bit, since these are supposed to measure different
-constructs. However, they are not perfect and every population is
-different.</strong></li>
-</ul></li>
-<li>It is not clear from the file what 0 and 1 represent in the gender
-variable. Can you make a guess?
+<li><strong>Answer:</strong> In a plot, it represents the predicted
+value when all the predictors are zero. Depending what zero means for
+each predictor that can mean different things in practice.
 <ul>
-<li><strong>We would expect male participants to probably on average
-have lower neuroticism, agreeableness, and conscientiousness. Based on
-this, 0 = female and 1 = male, since the correlations are all
-negative.</strong></li>
-</ul></li>
-</ul>
-</section>
-
-<section id="confirmatory-analyses" class="title-slide slide level1">
-<h1>Confirmatory analyses</h1>
-<ul>
-<li>The authors run four regression models (<strong>Table 2</strong> in
-the paper). Reproduce these model fits from the data.
-<ul>
-<li>Write down the regression equation for each of these.</li>
-</ul></li>
-<li>Check the numbers – were you able to reproduce them?</li>
-<li>Which null hypothesis does each of the predictors test? Be
-specific!</li>
-<li>There are many correlations that looked to be significant in the
-correlation matrix, but the corresponding predictor in the models does
-not reach significance.
-<ul>
-<li>For example, <em>Open-Mindedness</em> looks to be negatively
-correlated with <em>Shyness</em>
-<ul>
-<li>Why is the <em>Open-Mindedness</em> predictor not significant in any
-of the regression models? <strong>This is incredibly important for you
-to understand!</strong></li>
+<li>For example, in a simple regression where your predicted variable is
+a person’s weight and your predictor is a person’s height (in cm), 0 is
+essentially meaningless, and the value of the intercept is, too.</li>
+<li>If you have centred your height predictor so that 0 now represents
+the average height of your participants, then the intercept reflects the
+predicted weight of a participant of average height.</li>
 </ul></li>
 </ul></li>
-<li>What does it mean for a dichotomous variable <em>Gender</em> to be
-included in the model?
+<li>If the coefficient for the intercept in a regression model is
+significant (or not significant), what does that mean?
 <ul>
-<li>Gender is coded as 0 and 1
-<ul>
-<li>Is this a problem? What does this do?</li>
+<li>It means that we can reject the null hypothesis that the intercept
+is exactly 0. Usually, that is not very surprising, so we do not care
+about this test in many situations.</li>
 </ul></li>
+<li>If the coefficient for a slope in a regression model is significant,
+what does that mean?
+<ul>
+<li>It means that the null hypothesis that the slope is exactly 0 can be
+rejected. In other words, it means that there is evidence that the
+predictor helps explain the variance in the model <strong>above and
+beyond</strong> what the other predictors in the model explain.</li>
+</ul></li>
+<li>Can you have a situation where the regression model as a whole is
+significant (on the F-test), but none of the coefficients are
+significant?
+<ul>
+<li>Yes, in case of multicollinearity, where the predictors all share a
+lot of variance. In this case, it is clear that the predictors taken
+together improve the model, but it is impossible to tell which one
+improves the model <strong>above and beyond</strong> the others, since
+they are so similar.</li>
+</ul></li>
+<li>What is the difference between a t-test between two groups (assuming
+both have the same variance) and the t-tests we do for the coefficients
+in a regression model?
+<ul>
+<li>There really is very little difference – we will talk about this in
+the next lecture.</li>
 </ul></li>
 </ul>
-</section>
-
-<section id="first-model-rcbs" class="title-slide slide level1">
-<h1>First model (RCBS)</h1>
-<span class="math display">\[
-\tiny
-\begin{aligned}
-\operatorname{rcbs} &amp;= \alpha + \beta_{1}(\operatorname{bfi2\_e}) +
-\beta_{2}(\operatorname{bfi2\_n}) + \beta_{3}(\operatorname{bfi2\_a}) +
-\beta_{4}(\operatorname{bfi2\_c}) + \beta_{5}(\operatorname{bfi2\_o}) +
-\beta_{6}(\operatorname{gender}) + \epsilon
-\end{aligned}
-\]</span>
-<table style="border-collapse:collapse; border:none;">
-<tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
- 
-</th>
-<th colspan="8" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-rcbs
-</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
-Predictors
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Beta
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-standardized std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
-standardized CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
-p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-(Intercept)
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-5.12
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.29
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.55 – 5.68
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.05 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-17.72
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 e
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.86
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.55
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.96 – -0.76
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.61 – -0.48
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--16.53
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 n
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.25
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.23
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.18 – 0.32
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.17 – 0.29
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-7.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 a
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.10 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.07 – 0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.58
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.562
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 c
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.08 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.07 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.41
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.678
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 o
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.11 – 0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.09 – 0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--1.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.311
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-gender
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.10
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01 – 0.21
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.00 – 0.11
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.83
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.067
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="8">
-727
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-R<sup>2</sup> / R<sup>2</sup> adjusted
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="8">
-0.476 / 0.472
-</td>
-</tr>
-</table>
-</section>
-
-<section id="second-model-mrs" class="title-slide slide level1">
-<h1>Second model (MRS)</h1>
-<span class="math display">\[
-\tiny
-\begin{aligned}
-\operatorname{mrs} &amp;= \alpha + \beta_{1}(\operatorname{bfi2\_e}) +
-\beta_{2}(\operatorname{bfi2\_n}) + \beta_{3}(\operatorname{bfi2\_a}) +
-\beta_{4}(\operatorname{bfi2\_c}) + \beta_{5}(\operatorname{bfi2\_o}) +
-\beta_{6}(\operatorname{gender}) + \epsilon
-\end{aligned}
-\]</span>
-<table style="border-collapse:collapse; border:none;">
-<tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
- 
-</th>
-<th colspan="8" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-mrs
-</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
-Predictors
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Beta
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-standardized std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
-standardized CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
-p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-(Intercept)
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-5.22
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.45
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.00
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.33 – 6.10
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.06 – 0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-11.57
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 e
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.71
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.08
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.35
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.87 – -0.55
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.43 – -0.27
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--8.74
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 n
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.18
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.13
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.07 – 0.29
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.05 – 0.21
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-3.32
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 a
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.32
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.18
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.20 – 0.44
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.11 – 0.25
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-5.25
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 c
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.13
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.09
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03 – 0.24
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.02 – 0.17
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-2.47
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>0.014</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 o
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.27
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.16
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.38 – -0.15
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.23 – -0.09
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--4.53
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-gender
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.11
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.09
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.07 – 0.28
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.03 – 0.11
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.19
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.233
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="8">
-727
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-R<sup>2</sup> / R<sup>2</sup> adjusted
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="8">
-0.226 / 0.219
-</td>
-</tr>
-</table>
-</section>
-
-<section id="third-model-ipip-neo-pi-r" class="title-slide slide level1">
-<h1>Third model (IPIP NEO-PI-R)</h1>
-<span class="math display">\[
-\tiny
-\begin{aligned}
-\operatorname{mod.ipip.neo} &amp;= \alpha +
-\beta_{1}(\operatorname{bfi2\_e}) + \beta_{2}(\operatorname{bfi2\_n}) +
-\beta_{3}(\operatorname{bfi2\_a}) + \beta_{4}(\operatorname{bfi2\_c}) +
-\beta_{5}(\operatorname{bfi2\_o}) + \beta_{6}(\operatorname{gender}) +
-\epsilon
-\end{aligned}
-\]</span>
-<table style="border-collapse:collapse; border:none;">
-<tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
- 
-</th>
-<th colspan="8" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-mod.ipip.neo
-</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
-Predictors
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Beta
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-standardized std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
-standardized CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
-p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-(Intercept)
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.46
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.21
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.00
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.04 – 4.88
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.06 – 0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-20.84
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 e
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.54
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.50
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.62 – -0.46
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.57 – -0.43
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--14.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 n
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.08
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.01 – 0.11
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.01 – 0.15
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-2.17
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>0.030</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 a
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.22
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.23
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.17 – 0.28
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.17 – 0.29
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-7.74
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 c
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02 – 0.08
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.03 – 0.10
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.298
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 o
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.15
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.17
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.20 – -0.09
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.23 – -0.10
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--5.31
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-gender
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.14 – 0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.11 – 0.02
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--1.36
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.173
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="8">
-727
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-R<sup>2</sup> / R<sup>2</sup> adjusted
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="8">
-0.390 / 0.384
-</td>
-</tr>
-</table>
-</section>
-
-<section id="fourth-model-ipip-hexaco" class="title-slide slide level1">
-<h1>Fourth model (IPIP HEXACO)</h1>
-<span class="math display">\[
-\tiny
-\begin{aligned}
-\operatorname{mod.ipip.hexaco} &amp;= \alpha +
-\beta_{1}(\operatorname{bfi2\_e}) + \beta_{2}(\operatorname{bfi2\_n}) +
-\beta_{3}(\operatorname{bfi2\_a}) + \beta_{4}(\operatorname{bfi2\_c}) +
-\beta_{5}(\operatorname{bfi2\_o}) + \beta_{6}(\operatorname{gender}) +
-\epsilon
-\end{aligned}
-\]</span>
-<table style="border-collapse:collapse; border:none;">
-<tr>
-<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
- 
-</th>
-<th colspan="8" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-mod.ipip.hexaco
-</th>
-</tr>
-<tr>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
-Predictors
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-std. Beta
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-standardized std. Error
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
-standardized CI
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
-</td>
-<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
-p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-(Intercept)
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.26
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.27
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.00
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-3.72 – 4.79
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.06 – 0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-15.61
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 e
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.38
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.29
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.47 – -0.28
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.37 – -0.22
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--7.65
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 n
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01 – 0.12
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.01 – 0.13
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.63
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.104
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 a
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.35
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.31
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.28 – 0.42
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.24 – 0.37
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-9.53
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 c
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.02
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.08 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.08 – 0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.43
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.671
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-bfi2 o
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.26
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.04
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.24
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.33 – -0.19
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.31 – -0.17
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--7.22
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-gender
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.21
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.05
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.14
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.32 – -0.11
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
--0.20 – -0.07
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--3.98
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001</strong>
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="8">
-727
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-R<sup>2</sup> / R<sup>2</sup> adjusted
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="8">
-0.307 / 0.301
-</td>
-</tr>
-</table>
-</section>
-
-<section id="answers-3" class="title-slide slide level1">
-<h1>Answers (3)</h1>
-<ul>
-<li>Which null hypothesis does each of the t-values test? Be specific!
-<ul>
-<li><strong>Each t-value test the hypothesis that the true (population)
-value of the corresponding coefficient is 0 <em>GIVEN THAT ALL THE OTHER
-PREDICTORS IN THE MODEL ARE ALREADY INCLUDED</em></strong></li>
-<li><em>In other words, it tests the hypothesis that the coefficient
-does not explain any of the variance above and beyond what is already
-explained by the other coefficients.</em></li>
-</ul></li>
-</ul>
-</section>
-
-<section id="answers-4" class="title-slide slide level1">
-<h1>Answers (4)</h1>
-<ul>
-<li>There are many correlations that looked to be significant in the
-correlation matrix, but the corresponding predictor in the models does
-not reach significance.
-<ul>
-<li>For example, <em>Open-Mindedness</em> looks to be negatively
-correlated with <em>Shyness</em>
-<ul>
-<li>Why is the <em>Open-Mindedness</em> predictor not significant in any
-of the regression models?
-<ul>
-<li><strong>As you can see from the correlation matrix, almost
-everything is weakly correlated with everything. When we do a multiple
-regression, we test whether a precitor has an effect ABOVE AND BEYOND
-the ones already in the model.</strong></li>
-<li>In this case, <em>Open-Mindedness</em> might only predict
-<em>Shyness</em> because both are correlated with <em>Extraversion</em>.
-<ul>
-<li>This means that, when <em>Extraversion</em> is already in the model,
-<em>Open-Mindedness</em> does not add anything (significantly)</li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-
-<section id="answers-5" class="title-slide slide level1">
-<h1>Answers (5)</h1>
-<ul>
-<li>What does it mean for a dichotomous variable <em>Gender</em> to be
-included in the model?
-<ul>
-<li>Gender is coded as 0 and 1
-<ul>
-<li>Is this a problem? What does this do?</li>
-</ul></li>
-</ul></li>
-<li><strong>Answer:</strong> Maybe surprisingly, this is not a problem.
-Replacing categorical variables with numbers is very common.
-<ul>
-<li>We will talk about this more next week.</li>
-<li>The coefficient represents the difference between male and female
-participants</li>
-</ul></li>
-</ul>
-</section>
-
-<section id="conclusions" class="title-slide slide level1">
-<h1>Conclusions</h1>
-<ul>
-<li>Read the authors’ discussion section carefully. Are the authors’
-conclusions justified?
-<ul>
-<li>What about the effect of neuroticism on modesty?</li>
-<li><em>Answer</em>: In general, it seems like it – all of the
-regressions they report seem correct
-<ul>
-<li>They mostly ignore or at least downplay some of the significant
-effects they did not expect, e.g. the effect of Open-Mindedness on
-Modesty MRS and NEO-PI-R or the effect of Neuroticism on Modesty</li>
-<li>On one hand, this is good, since they are not HARKing</li>
-<li>On the other hand, why did they include these predictors if they
-were not interested in them? Just as control variables?
-<ul>
-<li>In general, do not include predictors that you do not plan to
-interpret later, unless you already know that they will have an effect
-and want to eliminate the corresponding variance from the model</li>
-</ul></li>
-</ul></li>
-</ul></li>
-<li>What about claims that one predictor is stronger than another?
-<ul>
-<li><em>Answer:</em> They do not test any of this, except for one F-test
-about extraversion and agreeableness</li>
-</ul></li>
-</ul>
-</section>
-
-<section id="f-test-to-compare-extraversion-and-agreeableness" class="title-slide slide level1">
-<h1>F-test to compare Extraversion and Agreeableness</h1>
-<ul>
-<li>This F-test tests the null hypothesis that agreeableness has a
-stronger effect than extraversion on the IPIP HEXACO Modesty scale</li>
-<li>If you want to know how this test is done, ask us (but we won’t
-cover it on the unit)</li>
-</ul>
-<pre><code>## Linear hypothesis test
-## 
-## Hypothesis:
-## bfi2_e  + bfi2_a = 0
-## 
-## Model 1: restricted model
-## Model 2: mod.ipip.hexaco ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + 
-##     gender
-## 
-##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
-## 1    721 503.48                           
-## 2    720 503.41  1   0.06343 0.0907 0.7634</code></pre>
-</section>
-
-<section id="expanding-the-model" class="title-slide slide level1">
-<h1>Expanding the model</h1>
-<ul>
-<li>Let’s engage in some exploratory analyses
-<ul>
-<li>The authors have not included any interactions in the model. How
-could we find out if any interactions should be included in a future
-study?</li>
-<li><em>Answer:</em>: Try a model that includes interactions (even all
-of them) and see if it improves the prediction
-<ul>
-<li>JASP is not great for model comparison – jamovi is better for this.
-They are both free, so you can just use the one that is better
-suited</li>
-<li>How would you do this? In jamovi you can specify different models as
-<strong>Blocks</strong>. Jamovi will then automatically compute a model
-comparison between the blocks.</li>
-<li>For example, you could try having one block with just the main
-effects (as above) and one with all possible interactions</li>
-</ul></li>
-</ul></li>
-<li><strong>Remember that all these additional analyses are EXPLORATORY
-and any suggestive results would have to be confirmed by a subsequent
-study.</strong></li>
-</ul>
-</section>
-
-<section id="for-model-1" class="title-slide slide level1">
-<h1>For Model 1</h1>
-<ul>
-<li>Do the model comparison between a model with no interactions and one
-with all the interactions:</li>
-</ul>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: rcbs ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender
-## Model 2: rcbs ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender
-##   Res.Df    RSS Df Sum of Sq      F   Pr(&gt;F)   
-## 1    720 289.42                                
-## 2    663 252.66 57    36.759 1.6923 0.001568 **
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<ul>
-<li>This looks like at least one of the interactions might improve the
-model</li>
-<li>Finding out which one is the difficult part, especially due to
-multicollinearity</li>
-</ul>
-</section>
-
-<section id="for-model-2" class="title-slide slide level1">
-<h1>For Model 2</h1>
-<ul>
-<li>Do the model comparison between a model with no interactions and one
-with all the interactions:</li>
-</ul>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: mrs ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender
-## Model 2: mrs ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender
-##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
-## 1    720 706.21                           
-## 2    663 640.45 57     65.76 1.1943  0.162</code></pre>
-<ul>
-<li>No evidence of any interaction here</li>
-</ul>
-</section>
-
-<section id="for-model-3" class="title-slide slide level1">
-<h1>For Model 3</h1>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: mod.ipip.neo ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + gender
-## Model 2: mod.ipip.neo ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * gender
-##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
-## 1    720 159.24                           
-## 2    663 145.13 57    14.102 1.1302 0.2445</code></pre>
-</section>
-
-<section id="for-model-4" class="title-slide slide level1">
-<h1>For Model 4</h1>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: mod.ipip.hexaco ~ bfi2_e + bfi2_n + bfi2_a + bfi2_c + bfi2_o + 
-##     gender
-## Model 2: mod.ipip.hexaco ~ bfi2_e * bfi2_n * bfi2_a * bfi2_c * bfi2_o * 
-##     gender
-##   Res.Df    RSS Df Sum of Sq      F Pr(&gt;F)
-## 1    720 258.36                           
-## 2    663 236.66 57    21.699 1.0665 0.3494</code></pre>
 </section>
     </div>
   </div>

@@ -1,0 +1,712 @@
+---
+title: "Advanced Statistics Lecture 7"
+author: "The General Linear Model (GLM)"
+
+output: powerpoint_presentation
+
+---  
+
+# Goals for today's lecture
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(jmv)
+library(haven)
+library(knitr)
+library(car)
+library(tidyverse)
+```
+
+- Learn about using discrete variables in regression models
+- Start using dummy coding
+- Discuss model examples:
+    - Two groups, no covariate
+    - Two groups, one covariate, same slopes across groups
+    - Two groups, one covariate, different slopes across groups
+    - Three groups, no covariate
+    - Three groups, one covariate, same slopes across groups
+    - Three groups, one covariate, different slopes across groups
+- Making model comparisons using the F-test
+    - Connection to ANOVA
+
+# Discrete variables
+
+- Is it possible to perform a regression analysis with discrete (instead of continuous) variables?
+  - **Yes!**
+  - In fact, when you ask your statistics software to perform an ANOVA, what it does behind the scenes is run a linear model and then do model comparisons using the F-Test
+  - How can we put discrete (that is, non-numerical) variables into the regression model?
+      - We can just replace the different values with (sensible) numbers.
+      - This is called *dummy coding*.
+      
+# Example
+
+```{r, echo=FALSE}
+n <- 30
+intercept <- 100
+options(digits = 3, scipen = 4)
+
+set.seed("126")
+cat_weight <- rnorm(n, mean = 5, sd = 1) # cat weight in kg
+cat_age <- rnorm(n, mean = 60, sd = 24) # cat age in months
+cat_breed <- factor(c(rep("Shorthair",n/2), rep("Manx", n/2)))
+
+food_eaten <- intercept + 20*(cat_weight - mean(cat_weight)) + 2 + .5*(cat_age - mean(cat_age)) + rnorm(n, mean = 0, sd = 10)
+catfood <- data.frame(CatWeight = cat_weight, FoodEaten = food_eaten)
+catfood_age <- data.frame(CatWeight = cat_weight, CatAge = cat_age, FoodEaten = food_eaten)
+
+
+print_p <- function(p){
+  if(p < .01) return("*p* < .01")
+  if(p <= .05) return(paste("*p* =", p))
+  if(p > .05) return("*p* > .05")
+}
+
+catfood_age2 <- catfood_age
+catfood_age2$CatWeight_centered <- scale(catfood_age$CatWeight, scale = FALSE)
+catfood_age2$CatAge_centered <- scale(catfood_age$CatAge, scale = FALSE)
+
+catfood_breed <- with(catfood_age2, data.frame(CatWeight = CatWeight_centered, CatAge = CatAge_centered, CatBreed = cat_breed, FoodEaten = food_eaten))
+catfood_breed$FoodEaten <- catfood_breed$FoodEaten + ifelse(cat_breed == "Manx", 15, -15)
+```
+- Let's just stay with the cat data for a little bit longer
+- Let's say our cats came from two breeds, shorthair and manx.
+    - Does breed have an influence on food eaten?
+    - The corresponding file is on Brightspace (`catfood_breed.sav`; first 6 rows of the table shown)
+    
+```{r, results='asis', echo = FALSE}
+kable(head(catfood_breed))
+write.csv(catfood_breed, file = "catfood_breed.csv")
+write_sav(catfood_breed, path = "catfood_breed.sav")
+```
+
+# We could do a t-test
+<pre>
+```{r, echo = FALSE}
+jmv::ttestIS(
+    formula = FoodEaten ~ CatBreed,
+    data = catfood_breed,
+    vars = FoodEaten,
+    meanDiff = TRUE,
+    desc = TRUE)
+```
+</pre>
+
+# Or we could assign dummy values and do a regression
+
+- Let's recode our variable and assign "0" to all Shorthairs and "1" to all Manxes
+- We can do that in jamovi under Variables --> Transform --> using transform --> Create New Transform
+    - Then click the `Add recode condition` button
+        - The first field should read: `if $source == "Shorthair" use 0`
+        - The second field should read: `else use 1`
+- It's a bit trickier in SPSS, but we can to it there too: `Data` --> `Recode into Different Variables...`, and assign 0 to Shorthair and 1 to Manx
+    - We recode our cat breed variable into a variable called `dummy`, containing 0s and 1s
+- Or use Excel: for example, if your `Breed` column is C and the first row is the column labels, make a new formula in D2 that reads `=IF(C2 = "Shorthair", 0, 1)` and apply it to all rows below 
+
+# Dummy analysis
+
+- In jamovi: `Regression -> Linear Regression`, then add your dummy variable as a covariate.
+- In SPSS: `Analyze -> Regression -> Linear...`, then add your dummy variable as a predictor.
+
+```{r, echo = FALSE}
+# assign 0 to all shorthairs and 1 to all manxs
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", 0, 1)
+kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
+```
+
+# Let's plot the situation
+
+```{r, echo = FALSE}
+plot(x = catfood_breed$dummy, y = catfood_breed$FoodEaten, xlab = "Dummy variable", ylab = "Food Eaten")
+abline(lm(formula = FoodEaten ~ dummy, data = catfood_breed))
+```
+
+# Interpreting dummy variables
+
+- Now, the intercept is the mean for group "shorthair" and the slope gives the difference between group "shorthair" and group "manx"
+- Remember the regression equation: $Y_i = \alpha + \beta_1 X_{i} + \varepsilon_i$
+- If $x_i$ is 0 (shorthair group), the predicted value y is the intercept ($\alpha$)
+- If $x_i$ is 1 (manx group), the predicted value is the sum of the intercept ($\alpha$) and the slope ($\beta_1$). 
+- Fox (2015) uses $D_i$ instead of $X_i$ for dummy variables to distinguish them from continuous predictors and $\gamma_i$ (*gamma*) instead of $\beta_i$ for the corresponding coefficients, so we'll go with that, too:
+$$Y_i = \alpha + \gamma_1 D_{i} + \varepsilon_i$$
+- But really, this is just a matter of switching the letters, nothing else!
+
+# Two regression equations
+
+- We can write our regression equations separately for $D_i = 0$ and $D_i = 1$:
+    - When $D_i = 0$ (shorthair cats):
+    
+$$Y_i = \alpha + \gamma_1 D_{i} + \varepsilon_i = \alpha + \gamma_1 \cdot 0 + \varepsilon_i = \alpha + \varepsilon_i$$
+
+- So here we have an intercept of $\alpha$
+- When $D_i = 1$ (Manx cats):
+
+$$Y_i = \alpha + \gamma_1 D_{i} + \varepsilon_i = \alpha + \gamma_1 \cdot 1 + \varepsilon_i = \alpha + \gamma_1 + \varepsilon_i$$
+
+- So here we have an intercept of $\alpha + \gamma_1$
+- So, the intercept $\alpha$ of the model will be the mean of the observations for shorthair cats ($D_1 = 0$)
+- The coefficient $\gamma_1$ will be the difference between the mean of the observations for shorthair cats and the mean of the observations for manx cats ($D_1 = 1$).
+    
+    
+
+# Different dummy values
+
+- Nobody forces us to set the values to 0 and 1
+- We could use any values we want, e.g. 99 and 23419 (but it would make the resulting equation incredibly hard to interpret)
+- -1 and 1 might be reasonable. 
+    - In jamovi, make a new Transformation and Create a New Transform
+    - Then click the `Add recode condition` button
+        - The first field now reads: `if $source == "Shorthair" use -1`
+        - The second field now reads: `else use 1`
+- In SPSS, we again use: `Data` --> `Recode into Different Variables...`, and assign -1 to Shorthair and 1 to Manx
+    - We recode our cat breed variable into a variable called `dummy`, containing 0s and 1s
+- Or use Excel: for example, if your `Breed` column is C and the first row is the column labels, make a new formula in D2 that reads `=IF(C2 = "Shorthair", -1, 1)` and apply it to all rows below 
+- Doing this, we make a new dummy variable with `-1` representing Shorthair and `1` representing Manx.
+```{r, echo = FALSE}
+catfood_breed$dummy <- ifelse(catfood_breed$CatBreed == "Shorthair", -1, 1)
+```
+
+# Two regression equations, again!
+
+- We can write our regression equations separately for $D_i = -1$ and $D_i = 1$:
+    - When $D_i = -1$ (shorthair cats):
+$$Y_i = \alpha + \gamma_1 D_{i} + \varepsilon_i = \alpha + \gamma_1 \cdot -1 + \varepsilon_i = \alpha - \gamma_1 + \varepsilon_i$$
+        - So here we have an intercept of $\alpha$
+    - When $D_i = 1$ (manx cats):
+$$Y_i = \alpha + \gamma_1 D_{i} + \varepsilon_i = \alpha + \gamma_1 \cdot 1 + \varepsilon_i = \alpha + \gamma_1 + \varepsilon_i$$
+            - So here we have an intercept of $\alpha + \gamma_1$
+- So, the intercept $\alpha$ of the model will be the overall mean of all observations
+- The coefficient $\gamma_1$ will be **half** of the difference between the mean of the observations for shorthair cats and the mean of the observations for manx cats.
+
+# Two regression equations, again!  (2)
+
+- If we want $\gamma_1$ to reflect all difference between the mean of the observations for shorthair cats and the mean of the observations for manx cats, we just have to use `-.5` and `.5` instead of `-1` and `1` as the dummy variables. 
+
+- This is perfectly fine to do, you just have to remember which one you used when interpreting your estimate of $\gamma_1$.
+
+# Re-run the analysis
+
+
+```{r, results='asis', echo = FALSE}
+kable(coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed))))
+```
+
+- Note that the numbers are different: now the intercept represents the grand (overall) mean.
+- The slope tells you how far the means of shorthair and manx are from the grand mean.
+     - The prediction for shorthair is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` - `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] - coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
+     - The prediction for manx is $`r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"]` + `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]` = `r coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["(Intercept)","Estimate"] + coef(summary(lm(formula = FoodEaten ~ dummy, data = catfood_breed)))["dummy","Estimate"]`$
+    - The *t* and *p* values are exactly the same as in the 0 vs. 1 model. **The models are equivalent**.
+
+# Continuous covariates
+
+- For example, someone's IQ might influence their performance in a memory experiment
+- By including the covariate in the model, we can explain more variance (and take it out of the error variance)
+- The regression equation (using Fox's distinction between $X_i$ and $D_i$ and $\beta_i$ and $\gamma_i$) for a model with one covariate and one dummy variable (and no interaction) looks like this:
+$$ Y_i = \alpha + \beta_1 X_i + \gamma_1 D_{i} + \varepsilon_i$$
+
+# Discrete and continuous factors in one model
+
+- Now that we have breed coded as a dummy variable, there is no reason why we can't add other continuous predictor variables and make it a multiple regression.
+- Let's see if there is an effect of cat breed if we enter cat age and cat weight into the analysis as covariates (we don't care about their interaction, which we have shown to not be significant in the first place).
+
+# Interpreting the coefficients
+
+```{r, echo = FALSE}
+catfood_breed_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + CatAge + dummy)
+kable(coef(summary(catfood_breed_lm)))
+```
+
+- We can reject the null hypothesis that Cat Breed (represented by our dummy variable) does not have an effect on food eaten.
+- Note that, since we are coding Cat Breed as `-1` and `1` (and the continuous predictors are centred), our intercept is still the grand mean of FoodEaten. Our dummy variable tells us the distance between the mean of the Shorthair group and the grand mean (on the left) and the distance between the Manx group and the grand mean (on the right)
+
+
+# F-Test
+
+- We can do an F-test by ticking `F-Test` under `Overall Model Test` in `Model Fit` in jamovi.
+- In SPSS, we can do an F-test by using the `Univariate` test from the `General Linear Model` module (in the `Analyze` menu)
+```{r, echo = FALSE}
+Anova(catfood_breed_lm, type = "III")
+```
+
+# What does a model with a dummy variable and a covariate look like?
+
+- For simplicity, let's use a model that just has CatWeight and the dummy variable:
+
+```{r, echo = FALSE}
+catfood_breed_weight_only_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight + dummy)
+
+kable(coef(summary(catfood_breed_weight_only_lm)))
+```
+
+# Plot for a model with a dummy variable and a covariate
+
+```{r, echo = FALSE}
+library(ggplot2)
+qplot(data = catfood_breed, y = FoodEaten, x = CatWeight, colour = factor(dummy)) + labs(colour = "Dummy variable")
+```
+
+# Fitting a line for all points
+
+```{r, echo = FALSE}
+library(ggplot2)
+lm_nodummy <- lm(data = catfood_breed, FoodEaten ~ CatWeight)
+intercept <- lm_nodummy$coefficients[1]
+slope <- lm_nodummy$coefficients[2]
+
+
+qplot(data = catfood_breed, y = FoodEaten, x = CatWeight, colour = factor(dummy)) + labs(colour = "Dummy variable") + geom_abline(intercept = intercept, slope = slope)
+```
+
+# Fitting different regression lines for each group (1)
+
+- Let's use -1 and 1 as the dummy variable again
+$$ Y_i = \alpha + \beta_1 X_i + \gamma_1 D_{i} + \varepsilon_i$$
+
+- We can write our regression equations separately for $D_i = -1$ and $D_i = 1$:
+- When $D_i = -1$ (shorthair cats):
+    
+$$Y_i = \alpha + \gamma_1 D_{i} + \beta_1 X_i + \varepsilon_i = \alpha + \gamma_1 \cdot -1 + \beta_1 X_i + \varepsilon_i = \alpha - \gamma_1 + \beta_1 X_i +\varepsilon_i$$
+
+- So here we have an intercept of $\alpha - \gamma_1$ and a slope of $\beta_1$
+
+# Fitting different regression lines for each group (2)
+
+- When $D_i = 1$ (manx cats):
+    
+$$Y_i = \alpha + \gamma_1 D_{i} + \beta_1 X_i + \varepsilon_i = \alpha + \gamma_1 \cdot 1 + \beta_1 X_i + \varepsilon_i = \alpha + \gamma_1 + \beta_1 X_i +\varepsilon_i$$
+
+- So here we have an intercept of $\alpha + \gamma_1$ and a slope of $\beta_1$
+
+
+# Fitting different regression lines for each group (2)
+
+- So, the intercept $\alpha$ of the model will be the overall mean of all observations
+- The coefficient $\gamma_1$ will be **half** of the difference between the mean of the observations for shorthair cats and the mean of the observations for manx cats.
+- The slope of both regression lines will be exactly the same, namely $\beta_1$. The lines should be **parallel**.
+
+
+# Plotting the effect of the dummy variable
+
+```{r, echo = FALSE}
+library(ggplot2)
+lm_nodummy <- lm(data = catfood_breed, FoodEaten ~ CatWeight)
+intercept <- lm_nodummy$coefficients[1]
+intercept_dummy1 <- intercept + catfood_breed_weight_only_lm$coefficients[3]
+intercept_dummy2 <- intercept - catfood_breed_weight_only_lm$coefficients[3]
+slope <- lm_nodummy$coefficients[2]
+
+
+qplot(data = catfood_breed, y = FoodEaten, x = CatWeight, colour = factor(dummy)) + labs(colour = "Dummy variable") + geom_abline(intercept =  intercept_dummy1, slope = slope, colour = 5) + geom_abline(intercept =  intercept_dummy2, slope = slope, colour = 2)
+```
+
+# Interactions: Allowing different slopes
+
+- What if the effect of CatWeight differs between Shorthair and Manx cats?
+- If we constrain the slope to be the same for both breeds, we won't be able to tell if that is the case.
+- Here is a model that allows for an interaction between one dummy variable and one continuous variable:
+  $$ Y_i = \alpha + \beta_1 X_i + \gamma_1 D_i + \delta_1(X_i D_i) + \varepsilon_i$$
+- Note that the interaction coefficient is called $\delta_1$ (delta) here. This is just a name to remind you of what it's there for -- to the model, it's just another coefficient.
+
+# Two regression equations with different slopes
+
+- We're still using `-1` as the dummy variable for Shorthair and `1` as the dummy variable for Manx
+    - If you want to see the same thing with `0` and `1`, look on page 142 of Fox (2015).
+- For Shorthair cats ($D_i$ = -1):
+$$Y_i = \alpha + \beta_1 X_i + \gamma_1 \times -1 + \delta_1(X_i \times -1) + \varepsilon_i = \alpha - \gamma_1 + (\beta_1 - \delta_1) X_i + \varepsilon_i$$
+- So the intercept is $\alpha - \gamma_1$ and the slope is $\beta_1 - \delta_1$
+- For Manx cats ($D_i$ = 1):
+$$Y_i = \alpha + \beta_1 X_i + \gamma_1 \times 1 + \delta_1(X_i \times 1) + \varepsilon_i = \alpha + \gamma_1 + (\beta_1 + \delta_1) X_i + \varepsilon_i$$
+- So the intercept is $\alpha + \gamma_1$ and the slope is $\beta_1 + \delta_1$
+
+
+# Plotting different slopes
+
+```{r, echo = FALSE}
+
+qplot(data = catfood_breed, y = FoodEaten, x = CatWeight, colour = factor(dummy)) + labs(colour = "Dummy variable") + geom_smooth(method = "lm", se = FALSE)
+```
+
+# Interpreting the coefficients
+
+- $\beta_1$ is the average effect of CatWeight across breeds
+- $\delta_1$ is the slope difference between the two breeds (actually, **half** the difference, since we used -1 and 1 as dummy variables)
+- $\alpha$ is the grand mean (the average FoodEaten across cats and CatWeights)
+- $\gamma_1$ is the difference between the breeds when $X_i = 0$
+    - It's **not** the overall difference between breeds
+    - Often, $X_i = 0$ is not meaningful
+    - Like here: A cat that weighs 0 kg does not exist.
+        - Be **very** careful interpreting main effects in the presence of interactions!
+        
+# Marginality
+
+- If $\gamma_1$ is not interpretable, can we just leave it out of the model?
+  - We could, but that would constrain our model so that Shorthair cats and Manx cats **have** to have the same intercept.
+      - Why would we do that? Who knows!
+      - Unless you have a specific hypothesis that says that they *should* have the same intercept, better leave $\gamma_1$ in the model.
+- **In general:** If you include *high-order* terms (e.g. interactions), you should also include the corresponding lower order terms (the main effects), **unless you have a very good reason not to**.
+
+
+# How to fit a model with different slopes
+
+- One slope per level of the dichotomous variable
+- Add the interaction between dummy and covariate to the model
+
+```{r, echo = FALSE}
+catfood_breed_weight_interact_lm <- lm(data = catfood_breed, formula = FoodEaten ~ CatWeight * dummy)
+kable(coef(summary(catfood_breed_weight_interact_lm)))
+```
+
+- In this case, the t-test of the coefficient indicates that the interaction is not significant. We can't reject the null hypothesis that the slopes are the same for each level of the dichotomous variable (despite the slight trend in the data visible in the plot).
+
+# Factors with more than two levels
+
+- What if we have three (or more) groups that we want to compare in our regression model?
+    - Let's start with three to keep things simple
+
+# Example
+
+- Enough about cats, let's talk about dogs!
+- In this ficticious example, let's assume we are testing 45 dogs to see how many object names they know (e.g. when you tell them to bring you a "ball", "stick", etc., do they bring you the correct object or a random one?)
+- Our sample contains 15 beagles, 15 border collies, and 15 terriers.
+- Let's assume that the true means $\mu_i$ for each breed are:
+
+| Breed        | Number of object names known|
+|-------------:|----------------------------:|
+| Beagle       |                           10|
+| Border Collie|                           60|
+| Terrier      |                           15|
+
+# Example (2)
+
+- In a regression model, we would want get three lines, one per group
+    - Of course, there is no covariate in this model, so the lines should be horizontal
+- The lines should reflect the differences between the means:
+
+| Comparison              | Difference                  |
+|------------------------:|----------------------------:|
+| Border Collie -- Beagle |                           50|
+| Border Collie -- Terrier|                           35|
+| Terrier -- Beagle       |                            5|
+
+# Dummy contrasts for three groups
+
+- How do we make contrasts in this situation?
+    - Remember, the dummy contrasts for two groups had one level coded as 0 (the baseline) and one coded as 1
+    - The coefficient for the dummy contrasts then told us how the level coded as 1 differed from the baseline
+    - We can apply the same scheme here. Let's make Beagles the baseline, because they are fantastic dogs:
+    
+| Breed        | X1                          |X2                           |
+|-------------:|----------------------------:|----------------------------:|
+| Beagle       |                            0|                            0|
+| Border Collie|                            1|                            0|
+| Terrier      |                            0|                            1|
+    
+- Note that we need **two** contrasts here to describe **three** regression lines
+    - The baseline is described by the intercept
+
+
+```{r, echo = FALSE}
+# Seed for random number generators, so that we all get the same results
+set.seed("67")
+# Column 1: Breed - repeat each breed name 15 times, then combine
+breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15))
+# Column 2: Objects - repeat each true group mean 15 times, then combine
+objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
+
+# Add centered covariate
+dog_iq <-rnorm(n = 45, mean = 0, sd = 15)
+
+# Add random noise to the objects scores
+objects <- objects + 0.15 * dog_iq + rnorm(n = 45, mean = 0 , sd = 6)
+# for more realism, round the objects scores to full integers
+# (what does it mean if a dog knows a fraction of an object?)
+objects <- round(objects, digits = 0)
+objects[objects < 0] <- 0
+# Combine into data frame
+dogs <- data.frame(breed, objects, dog_iq)
+write.csv(dogs, "dogs.csv")
+write_sav(dogs, "dogs.sav")
+```
+
+# The data
+
+- We're going to simulate getting a sample from the populations I just described.
+    - Note that sample means are not neccessarily the same as the population means
+        - Which is of course the reason why we do inferential statistics in the first place!
+    - The data are in the file `dogs.sav` on Brightspace
+- Let's calculate the means:
+
+# Means table
+```{r, echo = FALSE}
+# get the means for each breed
+means_table <- data.frame(tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean))
+colnames(means_table) <- c("Mean number of objects known")
+kable(means_table)
+```
+
+# Adding contrasts
+
+- We can use `Transform -> Recode into Different Variables...` in SPSS to make the contrasts.
+    - $x_1$ will be 1 for all "Border Collie" cases, and 0 otherwise
+    - $x_2$ will be 1 for all "Terrier" cases, and 0 otherwise
+    - This will make "Beagle" the baseline
+
+```{r, results='asis', echo=FALSE}
+library(knitr)
+contrast_matrix <- contr.treatment(3)
+colnames(contrast_matrix) <- c("$x_1$","$x_2$")
+rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
+kable(contrast_matrix)
+```
+
+
+# How contrasts work
+
+- Remember the linear regression equation:
+    - $Y_{i} = \alpha + \gamma_1 D_{1} + \gamma_2 D_{2} + \varepsilon_i$
+    - i.e. the predicted value for $Y_i$ is $\hat{Y_i} = \alpha + \gamma_1 D_{1} + \gamma_2 D_{2}$
+- Now let's substitute in the values from the table if breed is "Beagle":
+
+```{r, results='asis', echo=FALSE}
+contrast_matrix <- contr.treatment(3)
+colnames(contrast_matrix) <- c("$D_1$","$D_2$")
+rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
+kable(contrast_matrix)
+```
+
+
+- $\hat{Y_{i}} = \alpha + \gamma_1 \times 0 + \gamma_2 \times 0 = \alpha$
+
+- The predicted value for the Beagle group is $\alpha$, the intercept
+
+- That means that in this analysis, the intercept will reflect the mean for the Beagle group
+
+# How contrasts work (2)
+
+- The predicted value for $Y_i$ is still $\hat{Y_i} = \alpha + \gamma_1 D_{1} + \gamma_2 D_{2}$
+- Now let's substitute in the values from the table if breed is "Border Collie":
+
+```{r, results='asis', echo=FALSE}
+contrast_matrix <- contr.treatment(3)
+colnames(contrast_matrix) <- c("$D_1$","$D_2$")
+rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
+kable(contrast_matrix)
+```
+
+- $\hat{Y_{i}} = \alpha + \gamma_1 \times 1 + \gamma_2 \times 0 = \alpha + \gamma_1$
+- The predicted value for the Border Collie group is $\alpha + \gamma_1$, i.e. the sum of the intercept and the first slope $\gamma_1$
+- That means that in this analysis, the slope $\gamma_1$ will reflect the difference between the mean for the Border Collie group and the mean for the Beagle group ($60 - 10 = 50$)
+
+# How contrasts work (3)
+
+- The predicted value for $Y_i$ is still $\hat{Y_i} = \alpha + \gamma_1 D_{1} + \gamma_2 D_{2}$
+- Now let's substitute in the values from the table if breed is "Terrier":
+```{r, results='asis', echo=FALSE}
+contrast_matrix <- contr.treatment(3)
+colnames(contrast_matrix) <- c("$D_1$","$D_2$")
+rownames(contrast_matrix) <- c("Beagle","Border Collie","Terrier")
+kable(contrast_matrix)
+```
+
+- $\hat{y_{i}} = \alpha + \gamma_1 \times 0 + \gamma_2 \times 1 = \alpha + \gamma_2$
+- The predicted value for the Terrier group is $\alpha + \gamma_2$, i.e. the sum of the intercept and the second slope $\gamma_2$
+- That means that in this analysis, the slope $\gamma_2$ will reflect the difference between the mean for the Terrier group and the mean for the Beagle group ($15 - 10 = 5$)
+
+# Why only two contrasts and not three?
+
+- Why can't we use three contrasts like this?
+
+
+| Breed        | Beagle                      |Border Collie                |  Terrier            |
+|-------------:|----------------------------:|----------------------------:|--------------------:|
+| Beagle       |                            1|                            0|                    0|
+| Border Collie|                            0|                            1|                    0|
+| Terrier      |                            0|                            0|                    1|
+
+
+- We would have too many parameters: There are only three group means, but we would represent them using four parameters, namely $\alpha$, $\gamma_1$, $\gamma_2$, and $\gamma_3$.
+- Also, the dummy variable for Terrier is completely dependent on the other two: $D_3 = 1 - D_1 - D_2$.
+- This means that $D_3$ is perfectly correlated with $D_1$ and $D_2$ ($R_2 = 1$), making it impossible to fit a least-squares model.
+
+# Let's run the regression analysis
+
+- In jamovi: `Regression -> Linear Regression`, then add `D_1` and `D_2` as covariates.
+    - **OR** `Regression -> Linear Regression`, then add `breed` as a factor
+    - **OR** install `gamlj` (in `Modules`), then `Linear Models -> General Linear Model`, then add `breed` as a factor
+        - Advantage: you have many more built-in contrast schemes to choose from (under `Factors Coding`, the one we want is `dummy`)
+- In SPSS: `Analyze -> Regression -> Linear...`, then add `D_1` and `D_2` as predictors.
+
+# Results
+
+```{r, echo = FALSE}
+kable(coef(summary(lm(data = dogs, objects ~ breed))))
+```
+
+- Note that `D_1` is called `breedBorder Collie` here and `D_2` is called `breedTerrier` as a reminder of what they stand for
+
+- Looks just about right in terms of the intercept and the differences (remember, the means differ from the true population means because this is a (simulated) sample and contains random error)
+
+# Adding a covariate
+
+- Let's assume that we have done a "Doggy IQ" test on each dog (no idea how that would work, but bear with me), and that there are no differences in "Doggy IQ" between breeds
+- Let's fit a model that tests the effect of "Doggy IQ" and breed, assuming that the effect of "Doggy IQ" is the same across breeds (i.e. no interactions).
+    - For our convenience, `dog_iq` is centred already.
+
+```{r, echo = FALSE}
+kable(coef(summary(dogs_iq_lm <- lm(data = dogs, objects ~ breed + dog_iq))))
+```
+
+# Regression equations
+
+- This time, our general equation is (note the difference between this and using -1 and 1 for contrasts):
+$$\hat{Y_{i}} = \alpha + \beta_1 \times X_1 + \gamma_1 \times D_1 + \gamma_2 \times D_2$$
+- Plugging in the dummy values for the Beagle group:
+$$\hat{Y_{i}} = \alpha + \beta_1 \times X_1 + \gamma_1 \times 0 + \gamma_2 \times 0 = \alpha + \beta_1 \times X_1$$
+    - Intercept is $\alpha$ and slope is $\beta_1$
+- Plugging in the dummy values for the Border Collie group:
+$$\hat{Y_{i}} = \alpha + \beta_1 \times X_1 + \gamma_1 \times 1 + \gamma_2 \times 0 = \alpha + \gamma_1 + \beta_1 \times X_1$$
+    - Intercept is $\alpha + \gamma_1$ and slope is $\beta_1$
+- Plugging in the dummy values for the Terrier group:
+$$\hat{Y_{i}} = \alpha + \beta_1 \times X_1 + \gamma_1 \times 0 + \gamma_2 \times 1 = \alpha + \gamma_2 + \beta_1 \times X_1$$
+    - Intercept is $\alpha + \gamma_2$ and slope is $\beta_1$
+
+# Interpreting the coefficients
+
+- $\alpha$ is the mean for the Beagle group
+- $\gamma_1$ is the difference between the mean for the Beagle group and the mean for the Border Collie group 
+- $\gamma_2$ is the difference between the mean for the Beagle group and the mean for the Terrier group 
+- $\beta_1$ is the slope, which is the same for all groups
+
+# Plotting this situation
+
+```{r, echo = FALSE}
+library(ggplot2)
+intercept <- dogs_iq_lm$coefficients[1]
+border_collie_intercept <- intercept + dogs_iq_lm$coefficients[2]
+terrier_intercept <- intercept + dogs_iq_lm$coefficients[3]
+slope <- dogs_iq_lm$coefficients[4]
+
+
+qplot(data = dogs, y = objects, x = dog_iq, colour = breed) + geom_abline(intercept =  intercept, slope = slope, colour = "red") + geom_abline(intercept =  border_collie_intercept, slope = slope, colour = "green") + geom_abline(intercept =  terrier_intercept, slope = slope, colour = "blue")
+```
+
+# Allowing different slopes (interactions)
+
+- Note that we're using 0 vs. 1 dummy contrasts now! This affects the interpretation of the coefficients!
+- Now, our general equation is:
+$$\hat{Y_{i}} = \alpha + \beta_1 X_1 + \gamma_1 D_1 + \gamma_2  D_2 + \delta_1(X_1 D_1) + \delta_2(X_1 D_2)$$
+- Plugging in the dummy values for the Beagle group:
+$$\hat{Y_{i}} = \alpha + \beta_1 X_1 = \alpha + \beta_1 X_1$$
+    - Intercept is $\alpha$ and slope is $\beta_1$, since everything else is 0
+    
+# Allowing different slopes (interactions, 2)
+
+- Plugging in the dummy values for the Border Collie group:
+$$\hat{Y_{i}} = \alpha + \beta_1 X_1 + \gamma_1 + \delta_1 X_1 = \alpha + \gamma_1 + (\beta_1+\delta_1) X_1$$
+    - Intercept is $\alpha + \gamma_1$ and slope is $\beta_1 + \delta_1$
+
+# Allowing different slopes (interactions, 3)
+
+- Plugging in the dummy values for the Terrier group:
+$$\hat{Y_{i}} = \alpha + \beta_1 X_1 + \gamma_2 + \delta_2 X_1 = \alpha + \gamma_2 + (\beta_1+\delta_2) X_1$$
+    - Intercept is $\alpha + \gamma_2$ and slope is $\beta_1 + \delta_2$
+
+# Interpreting the coefficients
+
+- $\alpha$ is the mean for the Beagle group at $X_i = 0$ (remember, interactions! Here, $X_i = 0$ is actually meaningful since it is the mean of all "Doggie IQ" scores)
+- $\gamma_1$ is the difference between the mean for the Beagle group and the mean for the Border Collie group at $X_i = 0$ 
+- $\gamma_2$ is the difference between the mean for the Beagle group and the mean for the Terrier group at $X_i = 0$
+- $\beta_1$ is the slope for the Beagle group
+- $\delta_1$ is the difference between the slope for the Beagle group and the slope for the Border Collie group
+- $\delta_2$ is the difference between the slope for the Beagle group and the slope for the Terrier group
+
+# Plotting this situation
+
+```{r, echo = FALSE}
+
+qplot(data = dogs, y = objects, x = dog_iq, colour = breed) + geom_smooth(method = "lm", se = FALSE)
+```
+
+# Let's run the regression analysis
+
+- In SPSS: Use `Compute Variable...` to add interaction terms between `dog_iq` and the dummy variables
+    - Then `Analyze -> Regression -> Linear...`, then add `dog_iq`, `D_1`, `D_2` and the two interaction terms as predictors.
+- In jamovi: `Regression -> Linear Regression`, then add `breed` as a factor and `dog_iq` as a covariate
+    - **OR** install `gamlj` (in `Modules`), then `Linear Models -> General Linear Model`, then add `breed` as a factor and `dog_iq` as a covariate (no need to calculate the interaction terms separately in jamovi)
+    
+
+```{r, echo = FALSE}
+kable(coef(summary(lm(data = dogs, objects ~ breed * dog_iq))))
+```
+
+# Summary:  Contrasts
+
+- The link between (multiple) regression, t-tests, and ANOVA
+- Using dummy coding to turn a discrete variable into a number of "continuous" contrasts
+- Many possible contrasts -- you can make your own!
+    - Not very many *sensible* contrasts.
+- Basic principles: A factor with $k$ levels gets split into $k-1$ contrasts.
+    - i.e. one contrast per degree of freedom
+
+# Hypothesis tests for dummy-coded variables
+
+- We've already seen t-tests in the coefficient tables
+    - These work just like we've seen in the last lecture
+- Can we test more general hypotheses? For example, can we just test whether adding *breed* as a predictor improves the model (without considering the different dummy contrasts?)
+- Yes, we can! Remember the F-test from the last lecture?
+- We can use this F-test not only to test the entire model, but to compare several models.
+- To start with, let's consider the model with different intercepts, but the same slopes:
+  $$\hat{Y_{i}} = \alpha + \beta_1 X_1 + \gamma_1 D_1 + \gamma_2 D_2$$
+
+# The incremental F-test
+
+- We can use an F-test to test a null hypothesis about a subset of the regression slopes.
+- In this case, we'd like to test the null hypothesis of whether $\gamma_1$ and $\gamma_2$ are 0
+$$ H_0: \gamma_1 = \gamma_2 = 0$$
+- Assume we don't care about $\beta_1$, so let's not test that.
+- In effect, we want to compare these two models:
+Model 1: $\hat{Y_{i}} = \alpha + \beta_1 X_1 + \gamma_1 D_1 + \gamma_2  D_2$
+vs.
+Model 0: $\hat{Y_{i}} = \alpha + \beta_1 X_1 + 0 \times D_1 + 0 \times D_2$
+or simplified:
+Model 0: $\hat{Y_{i}} = \alpha + \beta_1 X_1$
+
+# The incremental F-test (2)
+
+- We want to compare which of the models explains more (systematic) variance
+    - Remember from last time that a model with extra predictors will always explain a little bit of extra variance just by chance?
+    - We want to test if the increase in explained variance is **significant**.
+- In order to do this, we need the residual sums of squares of the null model (${RSS}_0$) and the residual sums of squares of the full model (${RSS}_1$)
+- If the full model explains a lot of extra variance (i.e. if the null hypothesis is wrong), ${RSS}_1$ should be a lot smaller than ${RSS}_0$, so that ${RSS}_0 - {RSS}_1$ should be **large**.
+
+# The incremental F-test (3)
+
+- We can also express this in terms of the regression sums of squares of the models (${RegSS}_0$ and ${RegSS}_1$)
+- If the full model explains a lot of extra variance (i.e. if the null hypothesis is wrong), ${RegSS}_0$ should be a lot smaller than ${RegSS}_1$, so that ${RegSS}_1 - {RegSS}_0 = {RSS}_0 - {RSS}_1$ should be **large**.
+- If the null hypothesis is true, the incremental variance should simply be another unbiased estimator of the residual error $\sigma_{\varepsilon}^2$, so that dividing it by the residual error variance of the full model should result in a value close to 1.
+- How do we calculate the incremental variance? We divide ${RegSS}_1 - {RegSS}_0$ by the number of extra predictors in the full model (i.e the extra degrees of freedom, in this case 2)
+
+# The incremental F-test (4)
+
+- The residual error variance of the full model is still $\frac{{RSS}_1}{n-k-1}$, so overall we get:
+$$ F_0 = \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)}$$
+- $q$ is the number of extra predictors, i.e. 2 in our example
+- We can also express this using the squared multiple correlations of the full and null models ($R^2_1$ and $R^2_0$):
+$$F_0 = \frac{n-k-1}{q} \times \frac{R_1^2 - R_0^2}{1 - R_1^2}$$
+
+# Example
+
+- In our dog example, the model with the two dummy contrasts for breed has $R_1^2 = `r (r12 <- summary(dogs_iq_lm)$r.squared)`$, while the model with just `dog_iq` has $R_0^2 = `r (r02 <- summary(lm(data = dogs, objects ~ dog_iq))$r.squared)`$
+- So, the $F_0$-value is
+$$F_0 = \frac{n-k-1}{q} \times \frac{R_1^2 - R_0^2}{1 - R_1^2} = \frac{`r nrow(dogs) - 3 - 1`}{2} \times \frac{`r r12` - `r r02`}{1 - `r r12`} = `r (nrow(dogs) - 3 - 1)/2 * (r12-r02)/(1-r12)`$$
+- This is a bit of an extreme case!
+- The F-value has ${df}_1 = `r nrow(dogs) - 3 - 1`$ and ${df}_2 = 2$
+- We could look this up now, but the resulting p-value is almost certainly tiny!
+- Now let's do this in SPSS!
+
+# Final notes
+
+- You may have noticed that this is (essentially) an ANCOVA!
+- If we didn't have `dog_iq` in the model, it would be an ANOVA.
+- So there you have it -- the two methods are essentially the same!
+- Next week, we'll talk more about ANOVAs and about using contrasts for planned comparisons.

@@ -1,5 +1,5 @@
 ---
-title: "Lecture 6 Seminar"
+title: "Lecture 6 Seminar slides with answers"
 author: "Regression"
 date: "Press F for fullscreen"
 output: 
@@ -46,6 +46,7 @@ output:
 -   [This visualisation by Saskia Otto](https://saskiaotto.de/shiny/collinearity/ "Collinearity visualisation") shows the effect of covariance (or correlation) between two predictor variables on the resulting regression model.
 -   Note that the standard error of the estimates is larger the more covariance there is
 -   Why is that the case?
+    - *Answer:* Higher multicollinearity leads to higher standard errors of the coefficient estimates. You can think of it in terms of the ease of estimating the model: if there are two variables that are completely independent from each other, it is easy to say how much each contributes to the model. If the two variables are highly related to each other, it is very difficult to determine. In the extreme case of having two variables that are perfectly correlated (e.g. height in cm and height in inches), it is impossible to add them both to a regression model since the model would would be exactly as good with just one of the two or any combination of the two.
 
 # Regression coefficients are random variables
 
@@ -56,7 +57,14 @@ output:
 # Challenge questions
 
 -   What is the intercept and what does it represent?
+    - **Answer:** In a plot, it represents the predicted value when all the predictors are zero. Depending what zero means for each predictor that can mean different things in practice. 
+        - For example, in a simple regression where your predicted variable is a person's weight and your predictor is a person's height (in cm), 0 is essentially meaningless, and the value of the intercept is, too.
+        - If you have centred your height predictor so that 0 now represents the average height of your participants, then the intercept reflects the predicted weight of a participant of average height.
 -   If the coefficient for the intercept in a regression model is significant (or not significant), what does that mean?
+    - It means that we can reject the null hypothesis that the intercept is exactly 0. Usually, that is not very surprising, so we do not care about this test in many situations.
 -   If the coefficient for a slope in a regression model is significant, what does that mean?
+    - It means that the null hypothesis that the slope is exactly 0 can be rejected. In other words, it means that there is evidence that the predictor helps explain the variance in the model **above and beyond** what the other predictors in the model explain.
 -   Can you have a situation where the regression model as a whole is significant (on the F-test), but none of the coefficients are significant?
+    - Yes, in case of multicollinearity, where the predictors all share a lot of variance. In this case, it is clear that the predictors taken together improve the model, but it is impossible to tell which one improves the model **above and beyond** the others, since they are so similar.
 -   What is the difference between a t-test between two groups (assuming both have the same variance) and the t-tests we do for the coefficients in a regression model?
+    - There really is very little difference -- we will talk about this in the next lecture.
