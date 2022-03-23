@@ -1,0 +1,72 @@
+---
+title: "Lecture 7 Workshop"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+# Using real data
+
+-   For this workshop, we will use a real, published data set collected by Rachel Moseley along with Nicola Gregory and their external collaborators ([Moseley, Gregory, Allison, & Baron-Cohen, 2019](https://molecularautism.biomedcentral.com/articles/10.1186/s13229-019-0267-3 "Moseley, Gregory, Allison, & Baron-Cohen, 2019"))
+-   It is important to use data sets that reflect real research. This one falls into the cognitive neuropsychology and clinical psychology area.
+-   The tradeoff of using real data is that the topic area can sometimes somewhat uncomfortable or even distressing.
+    -   In this case, the study is about self-harm in autistic individuals
+
+        -   This is mostly described in an abstract way, but there are some concrete examples and categorisations, especially in Table 4 of the manuscript.
+
+        -   If you have any issues with the topic of this seminar, please feel free to tell us and we can provide you with an alternative data set to use on your own.
+
+# The dataset
+
+- `ASC_vs_Control.sav` on Brightspace.
+-   Survey data from 103 autistic participants who were either:
+    -   currently showing self-harming behaviour
+    -   had shown self-harming behaviour in the past, or
+    -   had never shown self-harming behaviour.
+-   Dependent variables: Various scales, including
+    -   alexithymia
+    -   autistic traits
+    -   sensory processing differences
+    -   mentalising abilities
+    -   depression, and
+    -   anxiety.
+-   Take a look at the Word document explaining the variable names (on Brightspace) to find out what is what.
+
+# Prepare the data
+
+-   We would like to see if we can predict a participant's depression and anxiety score by whether he/she has ever engaged in self-harming behaviour.
+-   We also would like to know if there is a difference between currently self-harming and historically self-harming participants.
+-   We will use contrasts so that we do not have to perform lots of post-hoc t-tests.
+    -   Create two dummy contrasts, one for the difference between participants who have never self-harmed and those who have self-harmed (both currently and historically), and one between current and historical self-harmers.
+        -   You can do this either by hand or using the built-in contrasts JASP and SPSS provide
+    -   Filter out the non-autistic control participants (Groups 4, 5, and 6) as they did not feature in the manuscript. For each contrast, specify the null hypothesis and the alternative hypothesis.
+
+# Set up the tests
+
+-   Use the contrasts as predictor variables in regression analyses predicting:
+
+    -   Depression (BDI, Beck's Depression Inventory)
+
+    -   Anxiety (BAI, Beck's Anxiety Inventory)
+
+    -   Alexithymia
+
+-   Note that this is the opposite approach taken to that in the manuscript, where Rachel and colleagues predict group membership from these variables (for two groups, this is a logistic regression, which we will cover later).
+
+-   What can you conclude for each test?
+
+# Adding a covariate
+
+-   Add autistic traits (AQ) as a continuous predictor.
+-   How does the analysis change?
+-   By adding autistic traits to the analysis, we statistically control for it. Explain what this means!
+
+# Additional tests
+
+- If you have time after performing the analyses described, engage in some free exploration of the data. 
+- What other dependent variables could be associated with self-harming status?
+- If you want, even try the original logistic regression Rachel and colleagues performed in the manuscript!

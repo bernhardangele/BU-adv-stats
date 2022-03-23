@@ -1,0 +1,146 @@
+---
+title: "Lecture 7 Seminar slides with answers"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+# Understanding contrasts a bit more
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(report)
+library(MASS)
+library(jmv)
+library(gamlj)
+library(haven)
+library(tidyverse)
+library(sjPlot)
+library(equatiomatic)
+```
+
+-   For this seminar, we will use an invented data set that will let you experience a bit more about how contrasts work
+-   Please download the following data set from Brightspace and open it in jamovi/SPSS: fluffy.csv
+    -   For SPSS, you may have to use the CSV import wizard (see [here](https://libguides.library.kent.edu/SPSS/ImportData) for detailed instructions)
+    -   jamovi will open the file immediately without issues.
+-   These (fictitious) data are from an experiment in which participant rate the positivity of emotions triggered by looking at photos of different dogs and cats (on a scale from 0 - 100, where 0 is most negative and 100 is most positive).
+-   An unrelated group of participants rated the same photos in terms of how fluffy they thought the animal was (also on a scale from 0 to 100, where 0 is sandpaper and 100 is extra-soft plush fabric).
+-   Also, the file notes whether the photo showed a cat or a dog.
+
+# Your task
+
+-   First, perform a regression analysis where you predict positive feelings only by fluffiness. Note down the results, and write one sentence to summarise what they suggest.
+
+-   Then, perform a regression analysis where, in addition to fluffiness, you also add animal type (cat vs. dog) as a discrete predictor. How is this model different from the first one? How can you explain the difference?
+
+```{r read_data}
+fl <- read_csv("fluffy.csv")
+```
+
+# Set up the tests
+
+```{r prepare_data}
+fl <- fl %>% mutate(animal = factor(animal, levels = c("cat", "dog")))
+#contrasts_for_animal <- cbind(c(0, 1))
+#contrasts(asc$Group_factor) <- contrasts_for_group %>% ginv %>% t %>% zapsmall %>% `colnames<-`(c("noSH_vs_SH", "HistoricSH_vs_CurrentSH"))
+
+```
+
+-   Start by fitting a regression model on `positive_feelings` with just `fluffiness`
+    -   You can do that in the `Linear Regression` module in jamovi.
+        -   In SPSS, use `General Linear Model` → `Univariate...` so it is easier to add the factor later.
+
+# Results: Simple regression
+
+-   Note the slope for `fluffiness`.
+
+```{r simple_regression}
+lm1 <- lm(data = fl, positive_feelings ~ fluffiness)
+tab_model(lm1, show.stat = TRUE)
+fl$predicted1 <- predict(lm1)
+```
+
+-   In words: `r report(lm1)`
+
+# Now add the contrast for animal
+
+-   In SPSS/jamovi: add `animal` to `Factors`
+-   What happens to the slope for `fluffiness`?
+
+# Results: adding the contrast
+
+```{r multiple_regression}
+lm2 <- lm(data = fl, positive_feelings ~ fluffiness + animal)
+tab_model(lm2, show.stat = TRUE)
+fl$predicted2 <- predict(lm2)
+```
+
+# Results: adding the contrast (in words)
+
+-   In words: `r report(lm2)`
+    -   (note that this is a standard reporting template that was automatically generated, so you don't have to follow it exactly)
+
+# Question
+
+-   Why was the slope for `fluffiness` negative when only `fluffiness` was in the model, but positive when we have both `fluffiness` and `animal` in the model?
+-   How is this related to the idea of "statistically controlling" for a variable?
+-   Hint: plotting might help -- think of Anscombe's Quartet!
+
+# Answer
+
+-   Consider the plot of the analysis of fluffiness alone:
+
+```{r gaml_plots1, echo=FALSE}
+p1  <- ggplot(fl, aes(x=fluffiness, y=positive_feelings, colour=animal))+
+geom_point()+
+scale_colour_discrete(name='Animal', labels=c('Cat','Dog'))+
+geom_smooth(aes(x = fluffiness, y = predicted1), method = "lm", colour = 1) +
+scale_linetype_discrete(name='Animal', labels=c('Cat','Dog'))+
+labs(x = 'Fluffiness', y = 'Positive Feelings')
+p1
+```
+
+# Answer (2)
+
+-   And now the plot for the analysis including `animal`:
+
+```{r gaml_plots2, echo=FALSE}
+p2  <- ggplot(fl, aes(x=fluffiness, y=positive_feelings, colour=animal))+
+geom_point()+
+scale_colour_discrete(name='Animal', labels=c('Cat','Dog'))+
+geom_line(aes(x = fluffiness, y = predicted2, linetype = animal)) +
+scale_linetype_discrete(name='Animal', labels=c('Cat','Dog'))+
+labs(x = 'Fluffiness', y = 'Positive Feelings')
+p2
+```
+
+# Answer (3)
+
+- As you can see, the line fitted when `animal` is not included is technically the best possible fit if you don't know that there are two groups, but in practice it ignores the trend we care about
+- When we take `animal` into account, we can fit the line **within** the groups instead of **between**
+- In this way, we can say that we have controlled for the effect of `animal` statistically -- we have removed the confound by including the confounding variable in the model
+- Of course, it does not always work this nicely in reality!
+- For example, the slope does not have to be the same for cats and dogs.
+
+# Final activity (if there is time)
+
+- Use a contrast of -1 and 1 for `animal` instead of 0 and 1.
+- What changes?
+- Write the regression equation and plug in the dummy values.
+- Why is the coefficient in the -1 and 1 model exactly half of the coefficient in the 0 and 1 model?
+
+# Answer
+```{r multiple_regression2}
+contrasts(fl$animal) <- contr.sum
+lm3 <- lm(data = fl, positive_feelings ~ fluffiness + animal)
+tab_model(lm3, show.stat = TRUE)
+```
+- The value of the coefficient always tells us how much the y-value changes when the x-value changes by 1
+- When we use the 0 and 1 contrasts, that means the means for cat and dog are exactly 1 unit on the x-axis apart
+    - That means 1 unit on the x-axis corresponds to 84 units on the y-axis
+- When we use the -1 and 1 contrasts, that means the means for cat and dog are exactly 2 unit on the x-axis apart
+    - That means 1 unit on the x-axis corresponds to 42 units on the y-axis

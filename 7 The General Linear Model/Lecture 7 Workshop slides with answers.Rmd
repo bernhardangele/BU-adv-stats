@@ -1,0 +1,178 @@
+---
+title: "Lecture 7 Workshop slides with answers"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+# Using real data
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(jmv)
+library(haven)
+library(tidyverse)
+library(sjPlot)
+#library(equatiomatic)
+```
+
+-   For this workshop, we will use a real, published data set collected by Rachel Moseley along with Nicola Gregory and their external collaborators ([Moseley, Gregory, Allison, & Baron-Cohen, 2019](https://molecularautism.biomedcentral.com/articles/10.1186/s13229-019-0267-3 "Moseley, Gregory, Allison, & Baron-Cohen, 2019"))
+-   It is important to use data sets that reflect real research. This one falls into the cognitive neuropsychology and clinical psychology area.
+-   The tradeoff of using real data is that the topic area can sometimes somewhat uncomfortable or even distressing.
+    -   In this case, the study is about self-harm in autistic individuals
+
+        -   This is mostly described in an abstract way, but there are some concrete examples and categorisations, especially in Table 4 of the manuscript.
+
+        -   If you have any issues with the topic of this seminar, please feel free to tell us and we can provide you with an alternative data set to use on your own.
+
+```{r read_data}
+library(MASS)
+library(haven)
+library(tidyverse)
+asc <- read_sav("ASC_vs_Control.sav")
+```
+
+# The dataset
+
+-   `ASC_vs_Control.sav` on Brightspace.
+-   Survey data from 103 autistic participants who were either:
+    -   currently showing self-harming behaviour
+    -   had shown self-harming behaviour in the past, or
+    -   had never shown self-harming behaviour.
+-   Dependent variables: Various scales, including
+    -   alexithymia
+    -   autistic traits
+    -   sensory processing differences
+    -   mentalising abilities
+    -   depression, and
+    -   anxiety.
+-   Take a look at the Word document explaining the variable names (on Brightspace) to find out what is what.
+
+# Prepare the data
+
+```{r prepare_data}
+asc <- asc %>% mutate(Group_factor = as_factor(Group, levels = "labels"), ASC = as_factor(ASC, levels = "labels")) %>% filter(ASC == "asc") %>% mutate(Group_factor = factor(Group_factor, levels = c("ASC_NoSH", "ASC_HistoricSH", "ASC_CurrentSH"))) # need to use as_factor from haven so we can use the labels
+contrasts_for_group <- cbind(c(-1, .5, .5), c(0,-1,1))
+contrasts(asc$Group_factor) <- contrasts_for_group %>% ginv %>% t %>% zapsmall %>% `colnames<-`(c("noSH_vs_SH", "HistoricSH_vs_CurrentSH"))
+
+```
+
+-   We would like to see if we can predict a participant's depression and anxiety score by whether he/she has ever engaged in self-harming behaviour.
+-   We also would like to know if there is a difference between currently self-harming and historically self-harming participants.
+-   We will use contrasts so that we do not have to perform lots of post-hoc t-tests.
+    -   Create two dummy contrasts, one for the difference between participants who have never self-harmed and those who have self-harmed (both currently and historically), and one between current and historical self-harmers.
+        -   You can do this either by hand or using the built-in contrasts JASP and SPSS provide
+    -   Filter out the non-autistic control participants (Groups 4, 5, and 6) as they did not feature in the manuscript. For each contrast, specify the null hypothesis and the alternative hypothesis.
+
+# Set up the tests
+
+-   Use the contrasts as predictor variables in regression analyses predicting:
+
+    -   Depression (BDI, Beck's Depression Inventory)
+
+    -   Anxiety (BAI, Beck's Anxiety Inventory)
+
+    -   Alexithymia
+
+-   Note that this is the opposite approach taken to that in the manuscript, where Rachel and colleagues predict group membership from these variables (for two groups, this is a logistic regression, which we will cover later).
+
+-   What can you conclude for each test?
+
+# How do I...
+
+-   Filter out control participants?
+    -   In jamovi: `Variables` &rarr; click on `Filter`
+        -   in `Filter 1` enter `= ASC == "asc"`
+        -   This will retain only rows with `asc` in the column `ASC` and remove any control participants
+        -   You can see the filter in the leftmost column
+    -   In SPSS: 
+        - In the Variable View you can see that `ASC` has two possible values. `asc` is coded as `1` and `control` is coded as `2`
+        - Go to: `Data` &rarr; `Select Cases...` &rarr; `If condition is satisfied` &rarr; `If...` &rarr; Type: `ASC = 1` &rarr; `Continue`, `OK`
+        - The `Data` view should now display 103 rows.
+        
+# How do I... (2)
+
+-   Pick the right contrasts without selecting them by hand?
+    -   In jamovi: Make sure the factor levels are in the correct order
+        -   `Variables` &rarr; click on the `Group` factor to select it
+        -   In the `Levels` list, use the up/down arrow buttons to move the levels into this order:
+            1.  `ASC_NoSH`
+
+            2.  `ASC_HistoricSH`
+
+            3.  `ASC_CurrentSH`
+        -   To fit the model, use `General Linear Model` from `Linear Models` rather than `Linear Regression`
+            - If you can't see `Linear Models`, install `GAMLj` first by clicking on `Modules` (right side of the toolbar) and select `jamovi Library`
+                - In the list, look for `gamlj - General Analyses for Linear Models in jamovi` and click the `INSTALL` button below the description.
+        - To select the correct contrast for `Group`, go to `Factors Coding` and choose `helmert` in the drop-down list. 
+        
+# How do I... (3)
+
+-   Pick the right contrasts without selecting them by hand in SPSS?
+    - This is surprisingly difficult in SPSS
+    - Go to `Transform` &rarr; `Recode into different variable`
+        - Recode `Group` into a new variable called, e.g. `Group_helmert`
+        - In `Old and new values...` ensure that `ASC_noSH` (which was coded as `3`) now is coded as 1
+        - ensure that `ASC_currentSH` (which was coded as `1`) is coded as `3`
+        - ensure that `ASC_historicSH` is still coded as `2`
+    - In `General linear model` &rarr; `Univariate...` put `Group` into `Factors` and click `Contrasts...`
+        - Set the contrasts for `Group` to `Helmert`
+
+# Results
+
+-   Depression/Anxiety:
+
+```{r models}
+lmBDI <- lm(data = asc, BDI ~ Group_factor)
+lmBAI <- lm(data = asc, BAI ~ Group_factor)
+lmAlex <- lm(data = asc, Alexithymia ~ Group_factor)
+tab_model(list(lmBDI, lmBAI), show.stat = TRUE)
+```
+
+# Results (2)
+
+-   Alexithymia:
+
+```{r models_2}
+tab_model(list(lmAlex), show.stat = TRUE)
+```
+
+# Adding a covariate
+
+-   Add autistic traits (AQ) as a continuous predictor.
+-   How does the analysis change?
+-   By adding autistic traits to the analysis, we statistically control for that variable. Explain what this means!
+    - It means that the other variables are interpreted as if there were no differences in the controlled variables
+
+# Results (BDI/BAI)
+```{r models_AQ}
+lmBDI_AQ <- lm(data = asc, BDI ~ Group_factor + AQ)
+lmBAI_AQ <- lm(data = asc, BAI ~ Group_factor + AQ)
+lmAlex_AQ <- lm(data = asc, Alexithymia ~ Group_factor + AQ)
+tab_model(list(lmBDI_AQ, lmBAI_AQ), show.stat = TRUE)
+```
+
+# Results (Alexithymia)
+```{r models_AQ_2}
+tab_model(list(lmAlex_AQ), show.stat = TRUE)
+```
+
+# Writing up the results
+- Example write-up for the BDI model:
+    - (Note that this is just a very detailed example, you could do it differently.)
+
+- We fitted a linear model (estimated using OLS) to predict BDI with self-harm group and AQ (formula: BDI ~ Group + AQ). The model explains a statistically significant and moderate proportion of variance (R2 = 0.16, F(3, 88) = 5.58, p = 0.002, adj. R2 = 0.13). The model's intercept, corresponding to the overall mean across all groups and AQ = 0, is at 10.25 (95% CI [-1.39, 21.90], t(88) = 1.75, p = 0.084). Within this model:
+    - The effect associated with the contrast comparing the no self-harm group and the mean of the two historic and current self-harm groups is statistically significant and positive ($b$ = 9.15, 95% CI [2.88, 15.43], t(88) = 2.90, p = 0.005; Std. $\beta$ = 0.65, 95% CI [0.21, 1.10])
+    - The effect associated with the contrast comparing the historic and the current self-harm groups is statistically non-significant and positive ($b$ = 3.43, 95% CI [-3.10, 9.96], t(88) = 1.04, p = 0.299; Std. $\beta$ = 0.25, 95% CI [-0.22, 0.71])
+    - The effect of AQ is statistically non-significant and positive ($b$ = 0.30, 95% CI [-2.68e-03, 0.60], t(88) = 1.97, p = 0.052; Std. $\beta$ = 0.19, 95% CI [-1.75e-03, 0.39])
+
+
+# Additional tests
+
+-   If you have time after performing the analyses described, engage in some free exploration of the data.
+-   What other dependent variables could be associated with self-harming status?
+-   If you want, even try the original logistic regression Rachel and colleagues performed in the manuscript!
