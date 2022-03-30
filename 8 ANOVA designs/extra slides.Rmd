@@ -1,0 +1,91 @@
+---
+title: "Untitled"
+output: 
+  revealjs::revealjs_presentation: default
+---
+
+# Types of sums of squares for the F-test
+- Type I: Compare a model containing the predictor **and all other predictors** entered *so far* with a model only containing the predictors entered **so far** (order matters).
+   - This is what the `anova` command in R does.
+- Type II: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question **and its interactions**.
+   
+- Type III: Compare a model containing the predictor *along with* all the other predictors to a model containing *all the other predictors* **except** the predictor in question, but **including its interactions**.
+   - This is the equivalent of the *t*-tests.
+   - This is the standard in SPSS.
+
+# Summary: Sums of square types
+- ANOVA results (both classic ANOVA and regression model tests) can vary depending on which SS you use
+   - Make sure that you know which ones you are using
+   - If you are using SPSS, the answer is *probably* III.
+- In standard ANOVA (with only discrete predictors), all SS types give the same result *as long as your design is balanced*
+   - An unbalanced design will lead to differing sums of squares.
+- In multiple regression, all SS types give the same result *as long as your predictor variables are not correlated*
+
+
+# Another way of thinking about ANOVA designs and contrasts
+- Some people have asked me where the -1 and 1 contrast coding came from, and when we use it
+- Very good question! This will take a couple of slides to explain
+- Let's start out by re-writing the regression model for the one-way ANOVA so that it contains the group effects explicitly
+$$Y_{ij} = \mu + \alpha_j + \varepsilon_{ij}$$
+- Here, $\mu$ is the (population) grand mean of the dependent variable, and $\alpha_1$, $\alpha_2$, ..., $\alpha_j$ are the (population) group effects.
+
+# Too many parameters
+- There is a problem with this: we have more parameters than we have actual group means. For example, for $m=3$, we have:
+$$\mu_1 = \mu + \alpha_1$$
+$$\mu_2 = \mu + \alpha_2$$
+$$\mu_3 = \mu + \alpha_3$$
+- We'd be estimating four coefficients ($\mu$, $\alpha_1$, $\alpha_2$, and $\alpha_3$), but we only have three group means.
+- As we've seen in the previous lecture, you can only have $m-1$ predictors. Any more than that, and they become perfectly collinear.
+- In other words, the model is *overspecified* and *underdetermined*.
+
+# Reducing the number of parameters
+- We could set $\alpha_1$ to be 0. That way we get:
+$$\mu_1 = \mu $$
+$$\mu_2 = \mu + \alpha_2$$
+$$\mu_3 = \mu + \alpha_3$$
+- In this case, the first group mean $\mu_1$ becomes the baseline, represented by the intercept parameter $\mu$. This is the 0 vs. 1 dummy coding scheme!
+- But other restrictions are possible, too.
+   - We could constrain the $\alpha$ parameters so that they sum to 0:
+$$ \sum\limits_{j=1}^m \alpha_j = 0 $$
+
+# Parameters that sum to 0
+- If we want parameters which sum to 0, the $\mu$ parameter becomes the mean of the group means (if the design is balanced, the grand mean):
+$$\mu = \frac{\sum \mu_j}{m}$$
+- The $\alpha_j$ parameters become the differences between the grand mean and the group means (for the first $m-1$ group means):
+$$\alpha_j = \mu_j -\mu$$
+$$\mu_j = \mu + \alpha_j$$
+- The last group mean is the difference between the grand mean and the sum of the other group means:
+$$\mu_m = \mu - \sum\limits_{j=1}^{m-1} \alpha_j$$
+
+# Deviation or sum contrasts
+- These contrasts are called **deviation** contrasts in SPSS
+
+```{r, echo = FALSE, as.is = TRUE}
+sum_contrasts <- data.frame(contr.sum(3))
+colnames(sum_contrasts) <- c("S1", "S2")
+kable(sum_contrasts)  
+```
+
+- Here is how this works for three levels:
+$$\mu_1 = \mu + 1 \times \alpha_1 + 0 \times \alpha_2 = \mu + \alpha_1$$
+$$\mu_2 = \mu + 0 \times \alpha_1 + 1 \times \alpha_2 = \mu + \alpha_2$$
+$$\mu_3 = \mu + -1 \times \alpha_1 + -1 \times \alpha_2 = \mu - \alpha_1 - \alpha_2$$
+
+# Making deviation or sum contrasts by hand
+- Each contrast $S_j$ is defined like this:
+   - For each group ($j = 1,2,3...m$) set the row that coresponds to the current group j to 1
+   - Set the row that corresponds to group m (the last group) to -1
+   - Set all other values to 0.
+- The F-values etc are just the same!
+
+# Using SPSS to perform a one-way ANOVA
+- This data set was originally created by Andy Johnson, who makes up better example scenarios which do not always involve cats or dogs
+- We are investigating the effect of swearing on pain tolerance (see Stephens et al., 2009)
+- Three groups: continuous use of swear word, neutral word, or no word whilst hand in cold water (DV = time until participant can't stand the pain and pulls hand from water)
+- Get the SPSS data file `Swearing and Pain Data.sav` from Brightspace.
+
+# Make your own contrasts?
+- **DANGER**: If you apply your contrasts directly as dummy variables, you must use the **inverse** of your contrast matrix
+- If your contrasts are not orthogonal, and you don't use the inverse of your matrix, you won't be comparing what you think you're comparing.
+- If you don't know what this means, don't use your own contrasts until you do. 
+- For more background information on regression and linear models, see John Fox's book (Warning: it does involve matrix algebra). Check Chapter 8 for information about how the contrasts work and why you need to be careful.

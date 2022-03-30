@@ -1,0 +1,392 @@
+---
+title: "Advanced Statistics Lecture 8"
+author: "ANOVA Designs"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+--- 
+
+# Goals for today's lecture
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(ez)
+library(jmv)
+library(haven)
+library(knitr)
+library(kableExtra)
+library(car)
+library(sjPlot)
+library(tidyverse)
+```
+
+- Learn about the relationship between dummy-coding and ANOVA
+- Learn how to perform and report various types of ANOVA analyses
+- Learn about the role of different contrasts
+
+# Dummy-coded variables and ANOVA
+- Essentially, the Analysis of Variance is simply a multiple regression with only discrete variables coded as dummy contrasts
+- As we've seen, we can perform F-tests comparing the full model with the dummy contrasts to a null model without the contrasts
+- This gives us an overall test of whether there are *any* differences between the levels of the discrete variable, rather than a specific comparison..
+
+# Analysis of Variance
+- The idea behind the analysis of variance is simple: We want to split the total variance in our data into variance explained by our grouping factor and random noise (error) variance.
+- If the grouping factor explains more of the variance than we would expect based on random noise, then we can conclude that the grouping factor *significantly* improves our model (because yes, an ANOVA is a very simple statistical model)
+- In other words, we can conclude that at least two of the factor levels are significantly different
+
+# Which contrasts should we use?
+- Simplest way: Dummy contrasts (0 vs. 1)
+   - Just like we did last time: 
+       - Here's a regression model with just one discrete predictor (let's assume for now that it has two levels only):
+ 
+ $$ Y_i = \alpha + \gamma_1 D_i + \varepsilon_i$$
+
+# ANOVA as dummy contrast regression
+- We want to compare the full model to the null model without the discrete predictor (intercept-only)
+   - Full model: $Y_i = \alpha + \gamma_1 D_i + \varepsilon_i$
+   - Null model: $Y_i = \alpha + \varepsilon_i$
+- Remember, we need to get the regression and residual sums of squares for both models:
+$$ F_0 = \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)}$$
+   - Also remember that ${RSS} = SS_{Total} - {RegSS}$
+
+# Calculating the sums of squares
+- With a model this simple the sums of squares are easy enough to calculate
+   - These equations are directly taken from our lecture on regression, so they are not new!
+$$SS_{total} = \sum\limits_{i=1}^{n}(Y_i - \bar{Y})^2$$
+
+$$SS_{model_1} = {RegSS_1} = \sum\limits_{i=1}^{n}(\hat{Y}_i - \bar{Y})^2$$
+
+- In a model with just discrete predictors, the predictions are just the group means!
+
+# The regression sums of squares
+- Let's call the group means $\bar{A_1}$ and $\bar{A_2}$ and substitute them for $\hat{Y}_i$:
+$${RegSS_1} = \sum\limits_{i=1}^{i}(\hat{Y}_i - \bar{Y})^2 = \sum\limits_{j=1}^{m} n_j (\bar{Y}_j - \bar{Y})^2$$
+- $m$ is the number of levels, so 2 in this case. $j$ is the current level. $n_j$ is the number of observations in the current level. $\bar{Y}_j$ is the mean of $Y$ for the current level. In effect, For each observation, we put in the corresponding group mean and subtract the overall mean.
+     - (actually, we subtract the mean of group means, but that's only important if our groups are of different sizes)
+
+# The regression sums of squares (2)
+- The null model predicts every observation with the overall mean $\bar{Y}$, so actually it explains **no** variance (every prediction is the same!)
+$${RegSS_0} = \sum\limits_{i=1}^{n}(\hat{Y} - \bar{Y})^2 = n \cdot (\bar{Y} - \bar{Y})^2 = 0$$
+- For the error sum of squares ${RSS}_1$, remember that the error is simply the difference between the observed and the predicted Y-values are just the group means $\bar{Y}_{j}$:
+$${RSS}_1 = \sum\limits_{j=1}^{m}\sum\limits_{i=1}^{n_j}(Y_{ij} - \hat{Y}_{ij})^2 = \sum\limits_{j=1}^{m}\sum\limits_{i=1}^{n_j}(Y_{ij} - \bar{Y}_{j})^2$$
+
+
+# Contrasts and means
+- Now let's plug in ${RegSS_0}$, ${RegSS}_1$, and ${RSS}_1$ into the equation for the *F*-value:
+$$
+\begin{aligned}
+F_0 &= \frac{({RegSS}_1 - {RegSS}_0)/q}{{RSS}_1/(n-k-1)}\\
+&= \frac{({RegSS}_1 - 0/k}{{RSS}_1/(n-k-1)} = \frac{{RegSS}_1/k}{{RSS}_1/(n-k-1)}
+\end{aligned}
+$$
+
+- $q$ is the number of extra predictors. In our example with two groups, null model has 0 predictors, and the full model has one dummy predictor, so $q = k- 0 = k$
+- $k = m -1$ is the number of predictors of the full model (i.e. the number of group means *m* minus 1).
+- This *F*-value has degrees of freedom of ${df}_1 = m-1$ and ${df}_2 = n-(m-1)-1= n-m$ or $n-k-1$ (same thing!)
+
+# Textbook ANOVA
+- In undergraduate textbooks, usually a slightly different terminology is used.
+- Often, people use the index $j$ to denote the factor level and the index $i$ to denote the $i^{th}$ observation (e.g. the $i^{th}$ person) within each factor level.  Here the dependent variable is (somewhat confusingly) called $x$ and the group means are called $A_1$, $A_2$, ... up to $A_j$, while the observations within each group are called $x_{i1}$, $x_{i2}$, ... up to $x_{ij}$.
+- Let's also keep calling the number of factor levels $m$ and the number of observations per level $n_j$.
+
+# Textbook ANOVA (2)
+-These are the exact same formulas, though! I just mention this so you don't get confused when you look back into your old textbooks.
+
+$${SS}_{total} = \sum\limits_{j=1}^{m}\sum\limits_{i = 1}^{n_j}(x_{ij} - \bar{x})^2$$
+$${SS}_{model} = {RegSS}_1 = \sum\limits_{j = 1}^{m}n\cdot(\bar{A}_j - \bar{x})^2 = n\cdot\sum\limits_{j = 1}^{m}(\bar{A}_j - \bar{x})^2$$
+$${SS}_{error} = {RSS}_1 = \sum\limits_{j = 1}^{m}\sum\limits_{i=1}^{n_j}(x_{ij} - \bar{A}_i)^2$$
+
+# Textbook ANOVA (3)
+-The rest of the ANOVA works just like before (MS stands for mean squares):
+
+$${df}_{total} = n-1$$
+$${df}_{model} = m-1$$
+$${df}_{error} = n-m$$
+$${MS}_{model} = \frac{{SS}_{model}}{{df}_{model}}$$
+$${MS}_{error} = \frac{{SS}_{error}}{{df}_{error}}$$
+$$F_{{df}_{model}, {df}_{error}} = \frac{{MS}_{model}}{{MS}_{error}}$$
+
+
+# Data matrix for an ANOVA
+- Using "textbook" terminology
+- Columns are factor levels, rows are observations within a level
+- $j$ = factor level, $m$ = number of factor levels
+- $i$ = observation, $n_j$ = number of observations per factor level
+
+$$
+\begin{matrix}
+x_{11} &  x_{12}  & \ldots & x_{1j} & \ldots & x_{1m}\\
+x_{21} &  x_{22}  & \ldots & x_{2j} & \ldots & x_{2m}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{i1} &  x_{i2}  & \ldots & x_{ij} & \ldots & x_{im}\\
+\vdots & \vdots   &       & \vdots  &        &\vdots \\
+x_{n_{1}1} &  x_{n_{j}2}  & \ldots & x_{n_{j}j} & \ldots & x_{n_{j}m}\\
+\end{matrix}
+$$
+
+# Reminder: What is an F-value?
+- If you have followed our discussion of how **variance estimates** of random variables that come from a normal distribution are always $\chi^2$ distributed, you may not be too surprised by this.
+- An *F*-value is the *quotient* of two random variables following the $\chi^2$ distribution, each divided by their degrees of freedom:
+$$ F_{(n_1, n_2)} = \frac{\chi_{n_1}^2/n_1}{\chi_{n_2}^2/n_2} = \frac{\chi_{n_1}^2}{\chi_{n_2}^2}\cdot\frac{n_2}{n_1}$$
+ - *F*-values inherit both of the $\chi^2$'s degrees of freedom, so that they have both a numerator and a denominator degree of freedom.
+
+(Remember that a quotient -- or a ratio --is the result of a division)
+
+# Reminder: The F distribution
+- It turns out that the ratio between model and error variance follows a specific distribution:
+    - If there is no actual effect (i.e. the groups are just assigned at random) and
+    - As long as certain assumptions are valid (more on that later)
+- This distribution is called the F-distribution
+- Occasionally you will get a high ${MS}_{model}$ simply by chance, but such occurrences are quite rare
+- The F-distribution is the probability density function for different values of the variance ratio, i.e. the F-value.
+- We essentially want to test if the F-value we get is extreme enough that it could only have occurred by chance 5% of the time (our $\alpha$ level)
+
+# Reminder: The F-distribution (2)
+- Like the *t*-distribution, the shape of the F-distribution varies depending on sample size (degrees of freedom).
+- Remember that F is the *ratio* of two variances (both $chi^2$-distributed).
+ - Because of this, the F distribtion has *two* degrees of freedom parameters
+   - ${df}_1$, also called ${df}_{numerator}$
+   - ${df}_2$, also called ${df}_{denominator}$
+ 
+# The F distribution (1)
+- Let's take a look:
+
+```{r, echo = FALSE}
+curve(df(x, df1 = 1, df2 = 30), from = -3, to = 3)
+```
+
+- Notice that F can't be negative
+    - This makes sense: it's the quotient of two $\chi^2$. You may remember that a square of a number can never be negative!
+
+# The F-distribution (2)
+```{r, echo = F, fig.width=20, fig.height=10}
+par(mfrow = c(4,4))
+for(df1 in c(1,2,4,40)){
+ for(df2 in c(1,2,4,40)){
+   curve(df(x, df1 = df1, df2 = df2), from = 0, to = 5, ylab = "f(x)", main = paste0("df1 = ", df1, ", df2 = ", df2))    
+ }
+}
+```
+
+# Effect size
+- Just like for *t*-tests, we can get an estimate of effect sizes (called $\eta^2$, "eta-squared")
+- $\eta^2 = \frac{{SS}_{model}}{{SS}_{total}}$
+- $\eta^2$ is an estimate of the relationship between variance explained by the ANOVA model and total variance in the data
+- You can use $\eta^2$ for power estimates with GPower.
+- Compare this to Cohen's $d$, another estimate of effect size that we used for *t*-tests:
+ - $d$ = $\frac{\bar{x_1} - \bar{x_2}}{s}$
+ - Cohen's $d$ is an estimate of how large a difference in means is (in sample standard deviations)
+
+# Multiway ANOVA
+- For brevity, I'll just talk about the "textbook" version of the ANOVA here.
+- What if we have two independent variables, $A$ and $B$?
+- We can still split the total variance into ${SS}_{total} = {SS}_{model} + {SS}_{error}$
+ - But now ${SS}_{model}$ is composed of multiple terms: ${SS}_{model} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B}$, so that ${SS}_{total} = {SS}_{A} + {SS}_{B} + {SS}_{A \times B} + {SS}_{Error}$
+ - Each of these terms has degrees of freedom: ${df}_{Total} = {df}_A + {df}_B + {df}_{A \times B} + {df}_{Error}$
+ 
+# Multiway ANOVA (2)
+ - For each term, you can compute mean squares and F values, e.g. $F_A = \frac{{MS}_A}{{MS}_{Error}}$
+ - What is ${SS}_{A \times B}$? It's the **interaction** between A and B
+     - A *main effect* (A or B) is a difference between means
+     - An *interaction* is a difference between differences
+- We will leave the computations to the software in this case.
+
+# Multiway ANOVA (3)
+- How to compute the dfs:
+   - For main effects, just like in the oneway ANOVA: ${df}_A = k_{A} - 1$, where $k_A$ is the number of groups or *levels* of that variable
+   - For interactions, it's the product of the dfs of the corresponding main effects:
+     - ${df}_{A \times B} = {df}_A \cdot {df}_B$
+   - Just as a reminder: ${df}_{Total}$ is still $N - 1$, where $N = m*l*n_{ijk}$ is the total number of subjects or observations in your study (across all variables)
+   - And as before, if you subtract all the other dfs from ${df}_{Total}$, you get ${df}_{Error}$ 
+   - ${df}_{Error} = {df}_{Total} - {df}_A - {df}_B - {df}_{A \times B}$ 
+
+# Interactions
+- Main effects are additive
+- For example, this table shows the (fictional) total calories that you might have for lunch given two different food choices and two different drink choices:
+
+```{r, echo = FALSE, results='asis'}
+library(knitr)
+food_example <- data.frame(Food = c(rep("Pizza",2),rep("Salad",2)), Drink = rep(c("Water","Cola"), 2), Calories = c(800, 1100, 200, 500))
+kable(food_example)
+```
+
+# Additive effects
+```{r, echo=FALSE}
+options(digits = 3, scipen = 5)
+library(ggplot2)
+qplot(data = food_example, geom = c("point","line"), x = Food, fill = Drink, colour = Drink, group = Drink, y = Calories)
+```
+
+# Non-additive effects
+- Example: Animal and maximum movement speed (meters/s) on land and in water (mostly non-fictional, based on a very quick Wikipedia search)
+
+```{r, echo = FALSE, results='asis'}
+move_example <- data.frame(Where = c(rep("Land",2),rep("Water",2)), Animal = rep(c("Dog","Dolphin"), 2), Speed = c(15, 0, .4, 11))
+kable(move_example)
+```
+
+# Non-additive effects (2)
+```{r, echo=FALSE}
+library(ggplot2)
+qplot(data = move_example, geom = c("point","line"), x = Where, fill = Animal, colour = Animal, group = Animal, y = Speed, ylab = "Maximum speed in m/s")
+```
+- Crossover interaction
+
+# Marginal effects
+- In the presence of a significant interaction, main effects are much harder to interpret
+   - Better to call them marginal effects (although few people do, even in publications!)
+- What does it mean that the marginal speed of a dolphin is 7.5 m/s (when averaging over the water and land conditions)?
+    - Marginal effects are often uninterpretable
+ 
+# Marginal effects (2)
+- In some cases, you will still be interested in the marginal effects
+   - For example, your anxiety treatment might differ in its effectiveness for male and female participants, but the marginal effects show that overall, everyone benefits from it at least a little.
+   - Of course, if males get a little more anxious and females get a lot less anxious (a crossover interaction), the positive marginal effect still doesn't mean you should give males this treatment!
+
+```{r, echo = FALSE}
+# Seed for random number generators, so that we all get the same results
+set.seed("67")
+# Column 1: Breed - repeat each breed name 15 times, then combine
+breed <- c(rep("Beagle", 15), rep("Border Collie", 15), rep("Terrier", 15)) %>% as.factor
+# Column 2: Objects - repeat each true group mean 15 times, then combine
+objects <- c(rep(10, 15), rep(60, 15), rep(15, 15))
+
+# Add centered covariate
+dog_iq <-rnorm(n = 45, mean = 0, sd = 15)
+
+# Add random noise to the objects scores
+objects <- objects + 0.15 * dog_iq + rnorm(n = 45, mean = 0 , sd = 6)
+# for more realism, round the objects scores to full integers
+# (what does it mean if a dog knows a fraction of an object?)
+objects <- round(objects, digits = 0)
+objects[objects < 0] <- 0
+# Combine into data frame
+dogs <- data.frame(breed, objects, dog_iq)
+write.csv(dogs, "dogs.csv")
+```
+
+# Trying different contrasts
+- Back to the dog data!
+```{r, echo = FALSE}
+# get the means for each breed
+means_table <- data.frame(tapply(X = dogs$objects, INDEX = dogs$breed, FUN = mean))
+colnames(means_table) <- c("Mean number of objects known")
+kable(means_table)
+```
+
+# Trying different contrasts (2)
+- We can try some different contrast coding schemes to see how they work
+- We can do this here because there are fake data and we know the actual means
+- With real data, you need to plan your contrasts **before** you analyse your data (ideally, before you even collect them)
+   - That's why they are called **planned** contrasts as opposed to **post hoc**.
+- You can't even look at the means first!
+- Otherwise, you would have to correct for multiple comparisons, where every set of contrasts you try is one comparison.
+
+# Using contrasts in SPSS and jamovi
+- In SPSS, you can specify your own contrasts using the Univariate ANOVA module, but you can't do that for the General Linear Model module
+   - Instead, you have to pick a number of standard contrasts
+- In theory, you could define your own contrasts, but it's a bit tricky
+- In jamovi, the General Linear Model module from Gamlj has largely the same contrasts that SPSS offers
+
+# Standard contrasts
+- Simple
+   - Compares each level to the reference level, the intercept is the grand mean
+- Deviation
+   - Compares each level to the overall mean of the dependent variable (the reference level is not compared)
+- Helmert
+   - Compares each level to the mean of the subsequent ones
+- Difference (reverse Helmert)
+   - Compares each level to the mean of the previous ones
+- Repeated (successive differences)
+   - Compares each level to the subsequent level 
+
+# Interpreting sum/deviation contrasts
+- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
+- $\beta_1$ is the difference between the grand mean and the mean of Beagle ($10 - 28.33 = -18.33$)
+- $\beta_2$ is the difference between the grand mean and the mean of Border Collie ($60 - 28.33 = 31.67$)
+- Terrier is never explicitly compared to the grand mean.
+- In general: each level (except for the last level) is compared to the grand mean.
+
+# Applying difference (reverse Helmert) contrasts
+
+```{r, results='asis', echo = FALSE}
+contrasts(dogs$breed) <- contr.helmert
+tab_model(lm(data = dogs, objects ~ breed), show.est = TRUE, show.se = TRUE)
+```
+
+# Interpreting (reverse) Helmert contrasts
+- The intercept $\alpha$ is the grand mean of all the observations ($28.33$)
+- $\beta_1$ is half of the difference between the mean of Beagle and the mean of Border Collie ($(60 - 10)/2 = 25$)
+- $\beta_2$ is half of the difference between the joint mean of Beagle and Border Collie and the mean of Terrier ($(15 - (60+10)/2)/2 = -10$)
+- In general: each level is compared to the mean of the previous levels
+
+# How to do a multiway ANOVA
+- Example data: Attractiveness, music, and alcohol
+- Again, we have a video made by Andy Johnson on how this works in jamovi/SPSS
+- Download the SPSS data file (`Music, beer, and courting.sav`) and follow along with the video.
+
+```{r, echo = FALSE, results='asis'}
+attract <- read_csv("attract.csv")
+# by default, R will sort factor levels alphabetically
+# the following line will make "No alcohol" the baseline level for the "Alcohol" factor
+attract$Alcohol <- factor(attract$Alcohol, levels = c("No alcohol", "1 Pint of Stella", "4 pints of Stella"))
+attract$Music <- factor(attract$Music)
+# Now we make the "subject" column that ezANOVA needs
+# Every row gets a different subject number
+# The subject column is discrete, so we make it a factor
+attract$subject <- factor(1:nrow(attract))
+```
+
+# Make a means table
+
+```{r, echo = FALSE, results='asis'}
+attract_stats <- ezStats(data = attract, 
+                        dv = Attractiveness.Rating, 
+                        wid = subject, 
+                        between = .(Music, Alcohol))
+kable(attract_stats[,-ncol(attract_stats)])
+```
+
+# Do the ANOVA
+```{r echo = FALSE}
+attract_anova <- ezANOVA(data = attract, 
+                         dv = Attractiveness.Rating, 
+                         wid = subject, 
+                         between = .(Music, Alcohol), return_aov = TRUE)
+kable(attract_anova$ANOVA, col.names = c("Effect", "${df}_n$", "${df}_d$", "$F$", "$p$", "Significant", "$\\eta_P^2$"))
+
+#report(attract_anova$aov)
+```
+
+- All three terms are significant.
+   - Why $\eta_P^2$ instead of $\eta^2$? We want an estimate of the **partial** effect of each predictor. The standard $\eta^2$ is still the comparison between ${SS}_{model}$ and ${SS}_{error}$, which doesn't tell us much. 
+- Partial $\eta^2$ (i.e. $\eta_P^2$) only takes into account the SS for our effect and ${SS}_{error}$, e.g. for Factor A: $\eta_P^2 = \frac{{SS}_A}{{SS}_A + {SS}_{error}}$
+
+# Assumption tests:
+- Levene's test (see next lecture:
+
+```{r echo=FALSE}
+kable(attract_anova$"Levene's Test for Homogeneity of Variance", col.names = c("${df}_n$", "${df}_d$", "${SS}_n$","${SS}_d$","$F$", "$p$", "Significant"))
+```
+
+- No problems with homogeneity of variances
+
+# Post-hoc comparisons
+- Should be avoided, but if you must, and you have no idea about which levels you want to compare (if you do, use contrasts!), you can use Tukey's HSD, which does all comparisons at once and corrects for multiple comparisons
+
+# Tukey's HSD
+
+```{r tukey}
+
+attract_anova$aov %>% TukeyHSD() %>% broom::tidy() %>% kable(col.names = c("Effect","Comparison","$H_0$", "Estimate", "CI low", "CI high", "Adj. *p*-value")) %>% kable_styling(font_size = 14)
+```
+
+# Writing it up
+- A 2-factor (2x3) independent samples ANOVA was conducted where the first factor represents music exposure (quiet and music) and the second factor represents alcohol condition (no alcohol, 1-pint, and 4-pints). There was no evidence for a violation of the homogeneity of variance assumption. Overall, the ANOVA method should be robust to the slight deviation from normality that was observed. Attractiveness ratings were significantly higher with music exposure, *F*(1,54) = 5.01, *p* =.03, $\eta_P^2$ = .09. The main effect of alcohol was also significant, *F*(2,54) = 59.79, *p* < .001, $\eta_P^2$ = .69. A post hoc test (Tukey's HSD) indicated that participants who drank 4 pints of beer rated attractiveness as significantly higher than participants who had no alcohol (*p* < .001) and one pint (*p* < .001). There was no difference between the no alcohol and 1-pint groups (*p* = .11). 
+
+# Writing it up (2)
+- The music by alcohol interaction was also significant, *F*(2,54) = 3.24, *p* = .047, $\eta_P^2$ = .11. This indicates that alcohol had different effects under conditions of music exposure. Specifically, post-hoc comparisons showed that with no alcohol there was no difference in attractiveness ratings for music (M = 49.30, SD = 5.50) and no music (M = 47.90, SD = 4.91). Similarly, following 1-pint there was no difference in attractiveness ratings for music (M = 52.20, SD = 5.88) and no music (M = 52.30, SD = 5.77). However, following 4-pints attractiveness ratings were higher with music (M = 70.40, SD = 5.04) than without music (M = 62.30, SD = 5.36). This effect was significant (*p* = .018).

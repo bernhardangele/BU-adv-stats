@@ -1,0 +1,96 @@
+---
+title: "Lecture 8 Workshop slides with answers"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+# Introduction
+
+```{r prepare, echo = F, message=FALSE}
+options(digits = 3)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(jmv)
+library(haven)
+library(knitr)
+library(car)
+library(tidyverse)
+```
+
+-   For this workshop, we will use a real, published data set from the Reproducibility Project. This was a [replication effort led by Kristi Lemm](https://osf.io/2gx4k/) of Experiment 5A of a study by [Blankenship and Wegener, 2008](https://www.researchgate.net/profile/Duane-Wegener/publication/303752392_Opening_the_Mind_to_Close_It_Considering_a_Message_in_Light_of_Important_Values_Increases_Message_Processing_and_Later_Resistance_to_Change/links/585962c308ae3852d2559756/Opening-the-Mind-to-Close-It-Considering-a-Message-in-Light-of-Important-Values-Increases-Message-Processing-and-Later-Resistance-to-Change.pdf)).
+
+# The study
+- The study by Blankenship and Wegener investigated how people are persuaded about political issues by arguments concerning values. In this case, the example was whether a fictitious European country should become a member of the EU. 
+- The experimenters manipulated both the strength of the arguments (weak vs. strong) and the value importance (*self-respect*, *loyalty*, and *freedom* were identified as important values in a pre-test, while *wealth*, *social power*, and *unity* were identified as less important). 
+- The hypothesis was that the strength of an argument should have more of an impact on attitudes (in this case towards EU membership of the country) if it concerns important values than if it concerns unimportant values.
+
+# Example arguments
+- Strong, important value (loyalty)
+
+> The people of Tashkentistan have a good history of strong work ethics and family connections.  Overall, the people are hard working, responsible, have strong attachments and pride toward their country and kin.  Countries with people and cultures from this background have been influential in maintaining alliances within a nation worldwide.  The addition of yet another country with these attributes will be a positive one for the EU.
+
+# Example arguments
+- Weak, important value (loyalty)
+
+> The predominant culture in Tashkentistan tends to have strong value and family systems.  Many of Tashkentistan’s citizens have populated the surrounding EU countries, and if it became a member, family members who visit neighboring EU countries would not have to go through as many security checks.  This would further continue to unite and strengthen the family systems. 
+
+# Example arguments
+- Strong, unimportant value (social power)
+
+> As we all know, a stable economy leads to stable governmental systems.  A strong government in turn leads to citizens’ nationalism and pride in themselves and their country.   Right now Tashkentistan’s economy is in a position to anchor a strong government, which will lead to Tashkentistan being as influential as other EU members.  Induction into the EU would help enhance the quality of the governing system of Tashkentistan, by making sure it is a democratic one with worldwide influence. 
+
+# Example arguments
+- Weak, unimportant value (social power)
+
+> Being part of the EU has some intangible benefits as well, such as providing members a sense of pride and self-worth, due to the EU’s world-renowned and influential status.  Tashkentistan’s citizens would benefit from feeling like they belong to such a proud and powerful institution, andfeel like they might be able to contribute to governmental and social policy if part of the EU.  
+
+# Attitudes
+- Measured on nine-level Likert scales:
+- Rate how you feel about whether Tashkentistan should be part of the EU.            
+    - Harmful (1) vs. Beneficial (9)                                                              - Foolish (1) vs. Wise (9)                                                               
+    - Bad (1) vs. Good (9)
+    - Unfavourable (1) vs. Favourable (9)                                                    
+    - Undesirable (1) vs. Desirable (9)                                                    
+- To what extent do you agree with Tashkentistan becoming part of the EU?
+
+- **Overall response variable: Attitude (mean of all the Likert scale responses)**
+
+
+# Issue involvement
+- Second dependent variable: **Issue involvement**
+  - How personally involved do you feel with the issue of Tashkentistan entering the EU?      
+  - How important is the issue of whether Tashkentistan becomes a member of the EU?           
+  - To what extent should other people feel the issue of Tashkentistan becoming a member of the EU
+  - To what extent do you think the issue of whether Tashkentistan becomes a member of the EU     warrants consideration?
+
+```{r read_data}
+bw <- read_sav("Blankenship-Wegener-Fulldataset.sav")
+```
+
+# Your task
+
+-   Use OSF independently to find the data set, find the appropriate variables, and replicate the key analysis of the replication effect reported by Lemm: 
+>  Replication of the key interaction result was unsuccessful. Participants were more persuaded overall by strong arguments than by weak arguments, F(1,247) = 13.01, p < .001, partial eta-sq = .05, but this main effect was not moderated by the manipulation of value importance F(1,247) = .49, p = .49, partial eta-sq = .002. Consistent with the original article, the main effect of value importance was not significant, F(1,247) = .20, p = .66, partial eta-sq = .001.
+
+- Check the normality of the residuals
+
+- Check the homogeneity of variances
+
+- Make a plot of the results, including an indication of variability in the data
+
+# Discussion
+- What does the finding mean for the original study?
+    - What does the finding mean for the hypothesis that persuasion attempts aimed at core values are more successful and long-lasting than those aimed at less important values?
+- Is there anything you should do about the assumption tests?
+
+# Additional questions
+
+-   If you have time after performing the analyses described, engage in some more exploration of the data.
+- What about the second variable, issue involvement? Were the findings replicated or not?
+- There were also some questions about involvement with news and general interest in political and EU issues.
+    - Does adding these responses as covariates change anything about the results?
+
