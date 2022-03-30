@@ -12,7 +12,7 @@ output:
 # Using real data
 
 ```{r prepare, echo = F, message=FALSE}
-knitr::opts_chunk$set(echo = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
 library(jmv)
 library(haven)
 library(tidyverse)

@@ -1,6 +1,6 @@
 ---
-title: "Lecture 8 Workshop slides with answers"
-author: "ANOVA designs"
+title: "Lecture 9 Seminar slides with answers"
+author: "Assumption tests"
 date: "Press F for fullscreen"
 output: 
   revealjs::revealjs_presentation:
@@ -13,15 +13,16 @@ output:
 
 ```{r prepare, echo = F, message=FALSE}
 options(digits = 3)
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
-library(ez)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(jmv)
 library(haven)
 library(knitr)
 library(car)
 library(tidyverse)
 ```
 
--   For this workshop, we will use a real, published data set from the Reproducibility Project. This was a [replication effort led by Kristi Lemm](https://osf.io/2gx4k/) of Experiment 5A of a study by [Blankenship and Wegener, 2008](https://www.researchgate.net/profile/Duane-Wegener/publication/303752392_Opening_the_Mind_to_Close_It_Considering_a_Message_in_Light_of_Important_Values_Increases_Message_Processing_and_Later_Resistance_to_Change/links/585962c308ae3852d2559756/Opening-the-Mind-to-Close-It-Considering-a-Message-in-Light-of-Important-Values-Increases-Message-Processing-and-Later-Resistance-to-Change.pdf)).
+-   For this workshop, we will use a real, published data set from (Rodriguez, Ryan, vande Kemp, & Foy, 1997) The data for this example come from a study of the effects of childhood sexual abuse on adult females. 45 women being treated at a clinic, who reported childhood sexual abuse, were measured for post traumatic stress disorder and childhood physical abuse both on standardized scales. 31 women also being treated at the same clinic, who did not report childhood sexual abuse, were also measured.
+-   The full study was more complex than reported here -- see the original article [(Rodriguez, Ryan, vande Kemp, & Foy, 1997)](https://www.researchgate.net/profile/Hendrika-Vande-Kemp-2/publication/14113428_Posttraumatic_stress_disorder_in_adult_female_survivors_of_child_sexual_abuse_A_comparison_study/links/54d429050cf2464758058200/Posttraumatic-stress-disorder-in-adult-female-survivors-of-child-sexual-abuse-A-comparison-study.pdf). These data come from the example data set compiled by Julian Faraway (2016).
 
 # The study
 
@@ -90,47 +91,11 @@ bw <- read_sav("Blankenship-Wegener-Fulldataset.sav")
 
 -   Make a plot of the results, including an indication of variability in the data
 
-# Answers
-
--   You can find the file [here](https://osf.io/qifnv "Blankenship & Wegener (2008) replication data file").
-
-- In jamovi, choose `ANOVA` from the `ANOVA` menu
-- Put `Attitude` in the `Dependent Variable` field
-- Put `arg_qual` and `value_imp` in the `Fixed Factors` field
-- Tick "partial $\eta^2$" for effect size
-
-# Output
-
-```{r jmv_anova, echo=FALSE}
-bw_anova <- ezANOVA(data = bw, dv = Attitude, wid = subID, between = .(arg_qual, value_imp), detailed = FALSE, return_aov = TRUE)
-
-knitr::kable(bw_anova$ANOVA)
-```
-
-# Assumption tests
-
-```{r assumptions}
-resid(bw_anova$aov) %>% shapiro.test()
-
-car::leveneTest(y = bw$Attitude, group = paste(bw$arg_qual, bw$value_imp))
-```
-# Plot
-
-```{r bw_plot} 
-bw_plot <- ggplot(data = bw, aes(x = arg_qual %>% as_factor, y = Attitude, colour = value_imp %>% as_factor, group = value_imp %>% as_factor)) + geom_jitter() + geom_smooth()#stat_summary(fun=mean, geom="line", aes(group = value_imp))
-bw_plot
-```
-
-# Discussion with answers
+# Discussion
 
 -   What does the finding mean for the original study?
-    - Answer: The main finding, the interaction between argument quality and value importance, was not replicated.
     -   What does the finding mean for the hypothesis that persuasion attempts aimed at core values are more successful and long-lasting than those aimed at less important values?
-        - It does not corroborate this hypothesis -- at the very least there should be another attempt at replication
 -   Is there anything you should do about the assumption tests?
-    - There is an apparent violation of the assumption of normality in the ANOVA residuals.
-    - This may affect the power of the test, although likely not greatly since the ANOVA is quite robust to normality violations
-    - You could try transforming the data
 
 # Additional questions
 

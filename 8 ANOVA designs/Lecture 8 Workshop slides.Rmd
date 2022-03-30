@@ -1,6 +1,6 @@
 ---
 title: "Lecture 8 Workshop slides with answers"
-author: "Regression"
+author: "ANOVA designs"
 date: "Press F for fullscreen"
 output: 
   revealjs::revealjs_presentation:

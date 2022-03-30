@@ -1,0 +1,226 @@
+---
+title: "Lecture 8 Workshop slides with answers"
+author: "Regression"
+date: "Press F for fullscreen"
+output: 
+  revealjs::revealjs_presentation:
+    self_contained: true
+    transition: fade
+    css: "robot-lung.css"
+---
+
+# Using real data
+
+```{r prepare, echo = F, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, out.height = "50%", fig.width = 8, fig.height = 4.5, cache = TRUE)
+library(jmv)
+library(haven)
+library(tidyverse)
+library(sjPlot)
+#library(equatiomatic)
+
+# R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+# Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+# Slide with R Code and Output
+
+```{r}
+summary(cars)
+```
+
+# Slide with table
+
+```{r, echo = FALSE}
+knitr::kable(head(cars))
+```
+
+You can use any external R package **gt** or **flextable** to create beautiful tables.
+
+# Slide with Plot
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+# Slide with Quote
+
+You can use usual markdown syntax `>` to add a Quote part on the slide
+
+> This is a nice quote by an awesome person !
+
+# Vertical slides
+
+Slides can be nested inside of each other. 
+
+Use the Space key to navigate through all slides. Or the arrow key.
+
+## Basement Level 1
+
+Nested slides are useful for adding additional detail underneath a high level horizontal slide.
+
+## Basement Level 2
+
+That's it, time to go back up. 
+
+Keep pressing the Space key to go to next horizontal slide.
+
+# Slides overview
+
+You can press ESC to enter the slide overview layout and quickly see and access any horizontal / vertical slide in the presentation. 
+
+In overview mode, you can navigate using arrow keys and go back to normal mode using ESC again.
+
+# Slide with two columns layout
+
+Main content 
+
+:::: columns
+
+::: column
+
+Showing an [underline text]{.underline} on the left
+
+:::
+
+::: column
+
+and a text in [smallcap]{.smallcaps} on the right
+
+:::
+
+::::
+
+# Insert an image
+
+You can insert images
+
+![revealjs logo](https://revealjs.com/images/logo/reveal-black-text.svg)
+
+# Insert an image on the whole slide
+
+Using the `.strech` class
+
+![revealjs logo](https://revealjs.com/images/logo/reveal-black-text.svg){.stretch}
+
+This will not show any caption even when `fig_caption` is `TRUE`.
+
+# Fragments
+
+Hit the next arrow (or space key)...
+
+. . .
+
+to step through
+
+[...a]{.fragment} [fragmented]{.fragment} [slide.]{.fragment}
+
+::: fragment
+Also called an incremental reveal.
+:::
+
+# Slide transition {data-transition="zoom"}
+
+This slide was revealed with another slide transition set using `data-transition` attributes. You can also change this globally for all slides
+
+```yaml
+output:
+  revealjs::revealjs_presentation:
+    transition: zoom
+```
+# Slide background {data-background-color="#33ffd8"}
+
+This slide has another background changed using `data-background-color`. 
+
+Next vertical slides show variants
+
+## Using an image 1 {data-background-image="https://cran.r-project.org/Rlogo.svg"}
+
+Which will be used in whole background
+
+## Using an image 2 {data-background-image="https://cran.r-project.org/Rlogo.svg" data-background-repeat="repeat" data-background-size="100px"}
+
+## Using a gif {data-background-image="https://media4.giphy.com/media/vKHKDIdvxvN7vTAEOM/giphy.gif" data-background-size="contain" data-background-repeat="no-repeat"}
+
+## What to customize
+
+Most of configuration there should work 
+
+https://revealjs.com/backgrounds/
+
+# Background transitions {background-color="#4d7e65" data-background-transition="zoom"}
+
+The transition of the background revealing can be customized using `data-background-transition` attribute on a per slide basis or globally using the option configuration: 
+
+```yaml
+output:
+  revealjs::revealjs_presentation:
+    background_transition: "zoom"
+```
+
+# Link between slides {#link}
+
+You can easily link between slides using the slide number 
+
+[link to the first slide](#0)
+
+## Or using a specific id
+
+[Link to the slides about links](#link)
+
+## You can also create link for navigation
+
+[Link to previous horizontal slide](){.navigate-prev}
+
+Click following arrow to go to previous slides
+
+![arrow up](https://static.slid.es/reveal/arrow.png "Click me"){.navigate-up style="background: rgba(255,255,255,0.1); transform: rotate(180deg);"}
+
+More on this at https://revealjs.com/links/
+
+# Speaker view
+
+A speaker view is available if you activate the `notes` pluggin
+
+````yaml
+output:
+  revealjs::revealjs_presentation:
+    self_contained: false
+    reveal_plugins: notes
+````
+
+On any slide, pressing S key will enter Speaker view in another window with a timer, preview of next slides and speaker 
+
+::: notes
+You can then add notes using a div of class `notes`
+:::
+
+# Taking a pause
+
+Press B or . to hide the content of the slide at your convenience.
+
+# Auto slide {data-autoslide=10000}
+
+You can set the configuration `autoSlide` (in millisecond) to automatically switch to next slide after a certain time. 
+
+This can be done on a per slide basis using `data-autoslide` or globally using
+````yaml
+output:
+  revealjs::revealjs_presentation:
+    autoSlide: 10000 #10 sec
+````
+# Auto slide next
+
+It was activated automatically by previous slide. 
+
+* Setting globally `autoSlide` to 0 (the default) deactivate auto progress but allow per slide config using `data-autoslide` attribute.
+* Setting to an integer value in millisecond activates for all slides. A special control should appear on the slide footer. Using `autoSlideStoppable: false` will prevent any action to stop the slide progress. 
+* Setting to `autoSlide: false` will disallow auto progress even with the attributes. 
